@@ -22,15 +22,25 @@ BaselineOfEsope >> baseline: spec [
 BaselineOfEsope >> defineDependencies: spec [
 	spec
 		baseline: 'PetitParser2'
-		with: [ spec repository: 'github://kursjan/petitparser2' ]
+		with: [ spec repository: 'github://kursjan/petitparser2' ];
+		
+		baseline: 'FamixFortran'
+		with: [ spec repository: 'github://moosetechnology/Famix-Fortran' ];
+		
+		baseline: 'FASTFortran'
+		with: [ spec repository: 'github://moosetechnology/FAST-Fortran' ]
 ]
 
 { #category : #baselines }
 BaselineOfEsope >> defineGroups: spec [
-	spec 
-		group: 'core'
-		with: #( 'Esope' 'Esope-Tests' )
 
+	spec
+		group: 'rewriter'
+		with: #( 'Esope-Rewriter' 'Esope-Rewriter-Tests' );
+		
+		group: 'famix'
+		with: #( 'Famix-Esope-Entities' 'Famix-Esope-Generator'
+			   'Famix-Esope-Tests' )
 ]
 
 { #category : #baselines }
@@ -38,8 +48,6 @@ BaselineOfEsope >> definePackages: spec [
 	spec
 		repository: 'github://moosetechnology/Esope';
 		package: 'Esope-Rewriter' with: [ spec requires: #(PetitParser2) ];
-		package: 'Esope-Rewriter-Tests';
-		package: 'Famix-Esope-Entities' with: [ spec requires: #(Famix) ] ;
-		package: 'Famix-Esope-Generator' with: [ spec requires: #(Famix) ];
-		package: 'Famix-Esope-Tests'
+		package: 'Famix-Esope-Entities' with: [ spec requires: #(FamixFortran) ] ;
+		package: 'Famix-Esope-Generator' with: [ spec requires: #(FamixFortran) ]
 ]
