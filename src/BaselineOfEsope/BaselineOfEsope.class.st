@@ -48,6 +48,8 @@ BaselineOfEsope >> definePackages: spec [
 	spec
 		repository: 'github://moosetechnology/Esope';
 		package: 'Esope-Rewriter' with: [ spec requires: #(PetitParser2) ];
+		package: 'Esope-Rewriter-Tests' with: [ spec requires: #(PetitParser2) ];
 		package: 'Famix-Esope-Entities' with: [ spec requires: #(FamixFortran) ] ;
-		package: 'Famix-Esope-Generator' with: [ spec requires: #(FamixFortran) ]
+		package: 'Famix-Esope-Generator' with: [ spec requires: #(FamixFortran) ] ;
+		package: 'Famix-Esope-Tests' with: [ spec requires: #(FamixFortran) ]
 ]
