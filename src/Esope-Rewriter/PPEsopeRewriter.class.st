@@ -37,7 +37,7 @@ PPEsopeRewriter class >> regexForEsopeWithSlash [
 		  asRegexIgnoringCase
 ]
 
-{ #category : #regex }
+{ #category : #utilities }
 PPEsopeRewriter class >> rewriteFrom: esopeFile to: annotatedFile [
 
 	| rewriter |
@@ -62,6 +62,13 @@ PPEsopeRewriter >> annotateByEsopePrefix [
 	stream << 'cESO  '
 ]
 
+{ #category : #transformations }
+PPEsopeRewriter >> applyTransformation: inputSource [
+	
+	self slashTransformation: inputSource.
+	self dotTransformation: inputSource.
+]
+
 { #category : #utilities }
 PPEsopeRewriter >> copyLine: nodes from: start to: end [
 
@@ -72,6 +79,37 @@ PPEsopeRewriter >> copyLine: nodes from: start to: end [
 PPEsopeRewriter >> copyTokens: nodes from: start to: end [
 
 	start to: end do: [ :i | stream << (nodes at: i) ]
+]
+
+{ #category : #transformations }
+PPEsopeRewriter >> dotTransformation: inputSource [
+
+	| regex i |
+	i := 1.
+	String new writeStreamDo: [ :outputStream | 
+		regex := '([a-zA-Z][a-zA-Z0-9_]*)(\.)([a-zA-Z][a-zA-Z0-9_]*)((\([^)]+\))*)'
+			         asRegexIgnoringCase.
+		(regex matchingRangesIn: inputSource) do: [ :interval | 
+			| subText indexOfDot |
+			(self
+				 fortranOperator: inputSource
+				 from: interval first
+				 to: interval last) ifFalse: [ 
+				outputStream << (inputSource copyFrom: i to: interval first - 1).
+				i := interval first.
+				subText := inputSource copyFrom: i to: interval last.
+				outputStream << 'D__('.
+				indexOfDot := subText indexOf: $..
+				outputStream
+					<< (subText copyFrom: 1 to: indexOfDot - 1);
+					<< $,.
+				i := i + indexOfDot.
+				outputStream
+					<< (subText copyFrom: indexOfDot + 1 to: subText size);
+					<< $).
+				i := interval last + 1 ] ].
+		outputStream << (inputSource copyFrom: i to: inputSource size).
+		^ outputStream contents ]
 ]
 
 { #category : #accessing }
@@ -261,6 +299,52 @@ PPEsopeRewriter >> segsup [
 	" beginOfLine , spaces, 'segsup' asPParser, segIdentifier, endOfLine"
 
 	^ super segsup ==> [ :nodes | self processNodes: nodes ]
+]
+
+{ #category : #transformations }
+PPEsopeRewriter >> slashTransformation: inputSource [
+
+	| regex i |
+	i := 1.
+	String new writeStreamDo: [ :outputStream | 
+		regex := '(([a-zA-Z][a-zA-Z0-9_]*)(\.)*)([a-zA-Z][a-zA-Z0-9_]*)(\([^)]+\))'
+			         asRegexIgnoringCase.
+		(regex matchingRangesIn: inputSource) do: [ :interval | 
+			| subText indexOfDot |
+			(self
+				 fortranOperator: inputSource
+				 from: interval first
+				 to: interval last) ifFalse: [ 
+				| attrPart dimsPart |
+				outputStream << (inputSource copyFrom: i to: interval first - 1).
+				i := interval first.
+				subText := inputSource copyFrom: i to: interval last.
+				indexOfDot := subText indexOf: $..
+				attrPart := subText copyUpToSubstring: '(/'.
+				dimsPart := subText
+					            copyFrom: attrPart size + 3
+					            to: subText size - 1.
+				indexOfDot = 0 ifFalse: [ 
+					attrPart := String new writeStreamDo: [ :innerStrem | 
+						            innerStrem
+							            << 'D__(';
+							            << (attrPart copyFrom: 1 to: indexOfDot - 1);
+							            << $,;
+							            <<
+								            (attrPart
+									             copyFrom: indexOfDot + 1
+									             to: attrPart size);
+							            << ')'.
+						            innerStrem contents ] ].
+				outputStream
+					<< 'S__(';
+					<< attrPart;
+					<< $,;
+					<< dimsPart;
+					<< $).
+				i := interval last + 1 ] ].
+		outputStream << (inputSource copyFrom: i to: inputSource size).
+		^ outputStream contents ]
 ]
 
 { #category : #utilities }
