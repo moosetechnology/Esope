@@ -128,22 +128,19 @@ PPEsopeRewriter >> endOfLine [
 
 { #category : #rules }
 PPEsopeRewriter >> fortranLine [
+
 	"'Cc*' indicates that a line is a comment. So we check that the first letter of the line starts with one of these characters"
+
 	"endOfLine negate star flatten , endOfLine"
 
-	^ super fortranLine
-		==> [ :nodes | 
-			| line |
-			line := ''
-				writeStreamDo: [ :str | 
-					nodes do: [ :node | str << node value ].
-					str contents ].
-			('Cc*' includes: line first)
-				ifTrue: [ stream << line ]
-				ifFalse: [ stream
-					<< (self
-							translateEsopeAt: (self translateEsopeArray: (self translateEsopeSlash: line))) ] ]
-				
+	^ super fortranLine ==> [ :nodes | 
+	  | line |
+	  line := '' writeStreamDo: [ :str | 
+		          nodes do: [ :node | str << node value ].
+		          str contents ].
+	  ('Cc*' includes: line first)
+		  ifTrue: [ stream << line ]
+		  ifFalse: [ stream << (self applyTransformation: line) ] ]
 ]
 
 { #category : #utilities }
