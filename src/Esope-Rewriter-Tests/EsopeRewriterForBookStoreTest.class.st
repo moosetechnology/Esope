@@ -298,7 +298,7 @@ EsopeRewriterForBookStoreTest >> testComplexDot [
 	expectedSource := '         D__(ur,ubb(jr)) == D__(ur,ubb(jr + 1))'.
 	self
 		assert:
-			(parser dotTransformation: actualSource)
+			(parser applyTransformation: actualSource)
 		equals: expectedSource
 ]
 
@@ -310,7 +310,7 @@ EsopeRewriterForBookStoreTest >> testComplexSlashPointerDotAttribute [
 	expectedSource := '       brcnt = S__(D__(lb,bref),j/2)'.
 	self
 		assert:
-			(parser slashTransformation: actualSource )
+			(parser applyTransformation: actualSource )
 		equals: expectedSource
 ]
 
@@ -322,7 +322,7 @@ EsopeRewriterForBookStoreTest >> testDotWithPointerAndArrayAttribute [
 	expectedSource := '       brcnt = D__(ptr,a_attr(i))'.
 	self
 		assert:
-			(parser dotTransformation: actualSource)
+			(parser applyTransformation: actualSource)
 		equals: expectedSource
 ]
 
@@ -334,7 +334,7 @@ EsopeRewriterForBookStoreTest >> testDotWithPointerAndArrayAttributeComplex [
 	expectedSource := '       brcnt = D__(ptr,a_attr(i+j))'.
 	self
 		assert:
-			(parser dotTransformation: actualSource)
+			(parser applyTransformation: actualSource)
 		equals: expectedSource
 ]
 
@@ -346,7 +346,7 @@ EsopeRewriterForBookStoreTest >> testDotWithPointerAndScalarAttribute [
 	expectedSource := '       brcnt = D__(ptr,s_attr)'.
 	self
 		assert:
-			(parser dotTransformation: actualSource)
+			(parser applyTransformation: actualSource)
 		equals: expectedSource
 ]
 
@@ -358,7 +358,7 @@ EsopeRewriterForBookStoreTest >> testFortranLine [
 	expectedSource := '       brcnt = ptr + a'.
 	self
 		assert:
-			(parser dotTransformation: actualSource)
+			(parser applyTransformation: actualSource)
 		equals: expectedSource
 ]
 
@@ -370,7 +370,19 @@ EsopeRewriterForBookStoreTest >> testFortranLineWithDot [
 	expectedSource := '       brcnt = ptr + a'.
 	self
 		assert:
-			(parser dotTransformation: actualSource)
+			(parser applyTransformation: actualSource)
+		equals: expectedSource
+]
+
+{ #category : #'tests-transformation' }
+EsopeRewriterForBookStoreTest >> testFortranLineWithOperatorDot [
+	| actualSource expectedSource |
+
+	actualSource := '         if ( a.eq.b) then'.
+	expectedSource := '         if ( a.eq.b) then'.
+	self
+		assert:
+			(parser applyTransformation: actualSource)
 		equals: expectedSource
 ]
 
@@ -382,7 +394,7 @@ EsopeRewriterForBookStoreTest >> testSimpleSlashAttribute [
 	expectedSource := '       brcnt = S__(D__(ptr,bref),j)'.
 	self
 		assert:
-			(parser slashTransformation: actualSource)
+			(parser applyTransformation: actualSource)
 		equals: expectedSource
 ]
 
@@ -393,6 +405,6 @@ EsopeRewriterForBookStoreTest >> testSimpleSlashAttributeWithoutPrefix [
 	actualSource := '       brcnt = bref(/j)'.
 	expectedSource := '       brcnt = S__(bref,j)'.
 	self
-		assert: (parser slashTransformation: actualSource)
+		assert: (parser applyTransformation: actualSource)
 		equals: expectedSource
 ]
