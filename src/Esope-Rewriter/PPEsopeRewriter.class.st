@@ -68,6 +68,12 @@ PPEsopeRewriter >> applyTransformation: inputSource [
 	^ self dotTransformation: (self slashTransformation: inputSource)
 ]
 
+{ #category : #annotations }
+PPEsopeRewriter >> commentAnnotation [
+
+	^ 'c@_   '
+]
+
 { #category : #utilities }
 PPEsopeRewriter >> copyLine: nodes from: start to: end [
 
@@ -239,7 +245,7 @@ PPEsopeRewriter >> processLinesInsideSegment: anOrderedCollection [
 { #category : #rules }
 PPEsopeRewriter >> processNodes: nodes [
 
-	self annotateByEsopePrefix.
+	stream << self commentAnnotation.
 	^ self copyTokens: nodes from: 2 to: nodes size
 ]
 
@@ -273,10 +279,10 @@ PPEsopeRewriter >> segdef [
 	- Annotate them, and be a master of regular expressions during ESOPE comment processing."
 
 	^ super segdef ==> [ :nodes | 
-	  self annotateByEsopePrefix.
+	  stream << self commentAnnotation.
 	  self copyTokens: nodes from: 2 to: 6.
 	  self processLinesInsideSegment: (nodes at: 7).
-	  self annotateByEsopePrefix.
+	  stream << self commentAnnotation.
 	  self copyTokens: nodes from: 10 to: nodes size ]
 ]
 
