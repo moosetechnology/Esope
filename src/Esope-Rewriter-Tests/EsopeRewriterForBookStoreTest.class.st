@@ -553,7 +553,7 @@ EsopeRewriterForBookStoreTest >> testSegmentComplex [
 c@_    pointeur ptr.seg
 c@_   end segment
 '.
-	self parse: actualSource rule: #segdef.
+	self parse: actualSource rule: #segment.
 	self assert: parser output equals: expectedSource.
 ]
 
@@ -570,7 +570,7 @@ EsopeRewriterForBookStoreTest >> testSegmentSimple [
        integer ubb(ubbcnt)
 c@_   end segment
 '.
-	self parse: actualSource rule: #segdef.
+	self parse: actualSource rule: #segment.
 	self assert: parser output equals: expectedSource.
 ]
 
@@ -589,7 +589,7 @@ EsopeRewriterForBookStoreTest >> testSegmentSimpleWithMoreThanSixSpaces [
         integer ubb(ubbcnt)
 c@_   end segment
 '.
-	self parse: actualSource rule: #segdef.
+	self parse: actualSource rule: #segment.
 	self assert: parser output equals: expectedSource.
 ]
 

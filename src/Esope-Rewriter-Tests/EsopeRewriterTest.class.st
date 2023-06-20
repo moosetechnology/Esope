@@ -392,25 +392,6 @@ EsopeRewriterTest >> testSegadj [
 ]
 
 { #category : #tests }
-EsopeRewriterTest >> testSegdef [
-	| finalcode sourcecode |
-	sourcecode := '      segment,values
-        character*8        valtyp
-        real               valf(valnf)
-        integer            vale(valne)
-      endsegment
-'.
-	finalcode := 'cESO  segment,values
-        character*8        valtyp
-        real               valf(valnf)
-        integer            vale(valne)
-cESO  endsegment
-'.
-	self parse: sourcecode rule: #segdef.
-	self assert: (parser outputForSegment) equals: finalcode.
-]
-
-{ #category : #tests }
 EsopeRewriterTest >> testSegdefFromBorbk [
 
 	| rewriterdCode inputCode |
@@ -424,7 +405,7 @@ EsopeRewriterTest >> testSegdefFromBorbk [
         integer     ibseg, ibref,        pntseg(nbseg), pntref(nbref)
 cESO  endsegment
 '.
-	self parse: inputCode rule: #segdef.
+	self parse: inputCode rule: #segment.
 	self assert: parser outputForSegment equals: rewriterdCode
 ]
 
@@ -442,7 +423,7 @@ EsopeRewriterTest >> testSegdefUpperCase [
         integer     ibseg, ibref,        pntseg(nbseg), pntref(nbref)
 cESO  endsegment
 '.
-	self parse: inputCode rule: #segdef.
+	self parse: inputCode rule: #segment.
 	self assert: parser outputForSegment equals: rewriterdCode
 ]
 
@@ -462,6 +443,25 @@ EsopeRewriterTest >> testSegini [
 '.
 	self parse: sixSpaces, sourcecode rule: #segini.
 	self assert: parser output equals: 'cESO  ' , sourcecode
+]
+
+{ #category : #tests }
+EsopeRewriterTest >> testSegment [
+	| finalcode sourcecode |
+	sourcecode := '      segment,values
+        character*8        valtyp
+        real               valf(valnf)
+        integer            vale(valne)
+      endsegment
+'.
+	finalcode := 'cESO  segment,values
+        character*8        valtyp
+        real               valf(valnf)
+        integer            vale(valne)
+cESO  endsegment
+'.
+	self parse: sourcecode rule: #segment.
+	self assert: (parser outputForSegment) equals: finalcode.
 ]
 
 { #category : #tests }

@@ -9,7 +9,6 @@ Class {
 		'pointerName',
 		'segact',
 		'segadj',
-		'segdef',
 		'segdes',
 		'segini',
 		'segsup',
@@ -25,7 +24,9 @@ Class {
 		'endToken',
 		'segmentToken',
 		'dotToken',
-		'pointerKeyWord'
+		'pointerKeyWord',
+		'endSegment',
+		'segment'
 	],
 	#category : #'Esope-Rewriter-Parser'
 }
@@ -35,7 +36,7 @@ PPEsopeGrammar class >> getSourceFromFile: filename [
 	^ filename asFileReference contents asText
 ]
 
-{ #category : #accessing }
+{ #category : #tokens }
 PPEsopeGrammar >> beginOfLine [
 
 	^ '      ' asPParser flatten
@@ -59,6 +60,13 @@ PPEsopeGrammar >> endOfLine [
 	^ (Character cr asPParser / Character lf asPParser) plus flatten
 ]
 
+{ #category : #'grammar-helper' }
+PPEsopeGrammar >> endSegment [
+
+	^ beginOfLine , optionalBlanks , endToken , optionalBlanks
+	  , segmentToken , optionalBlanks , endOfLine
+]
+
 { #category : #tokens }
 PPEsopeGrammar >> endToken [
 
@@ -76,7 +84,7 @@ PPEsopeGrammar >> esopeLine: esopeKeyword [
 { #category : #grammar }
 PPEsopeGrammar >> file [
 
-	^ (segact / segadj / segdef / segdes / segini / segsup / pointer
+	^ (segact / segadj / segment / segdes / segini / segsup / pointer
 	   / include / fortranLine / emptyLine) plus
 ]
 
@@ -169,14 +177,6 @@ PPEsopeGrammar >> segadj [
 ]
 
 { #category : #grammar }
-PPEsopeGrammar >> segdef [
-
-	^ (self esopeLine: 'segment') , lines , beginOfLine , optionalBlanks
-	  , endToken , optionalBlanks , segmentToken , optionalBlanks
-	  , endOfLine
-]
-
-{ #category : #grammar }
 PPEsopeGrammar >> segdes [
 
 	^ self esopeLine: 'segdes'
@@ -186,6 +186,14 @@ PPEsopeGrammar >> segdes [
 PPEsopeGrammar >> segini [
 
 	^ self esopeLine: 'segini'
+]
+
+{ #category : #grammar }
+PPEsopeGrammar >> segment [
+
+	^ (self esopeLine: 'segment') 
+	, lines 
+	, endSegment
 ]
 
 { #category : #tokens }

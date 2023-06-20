@@ -56,12 +56,6 @@ PPEsopeRewriter >> addLineSeparator [
 	stream << Character cr
 ]
 
-{ #category : #rules }
-PPEsopeRewriter >> annotateByEsopePrefix [
-
-	stream << 'cESO  '
-]
-
 { #category : #transformations }
 PPEsopeRewriter >> applyTransformation: inputSource [
 
@@ -72,6 +66,12 @@ PPEsopeRewriter >> applyTransformation: inputSource [
 PPEsopeRewriter >> commentAnnotation [
 
 	^ 'c@_   '
+]
+
+{ #category : #utilities }
+PPEsopeRewriter >> containsPointeurKeyword: line [
+
+	^ (line asString indexOfSubCollection: #pointeur) ~= 0
 ]
 
 { #category : #utilities }
@@ -130,6 +130,16 @@ PPEsopeRewriter >> endOfLine [
 	
 	^ super endOfLine
 	==> [ :nodes | String streamContents: [ :str | nodes do: [ :c | str nextPut: c ] ] ]
+]
+
+{ #category : #rules }
+PPEsopeRewriter >> endSegment [
+
+	"^ beginOfLine , optionalBlanks , endToken , optionalBlanks
+	  , segmentToken , optionalBlanks , endOfLine"
+
+	^ super endSegment ==> [ :nodes | 
+	  nodes allButFirst ]
 ]
 
 { #category : #rules }
@@ -225,20 +235,24 @@ PPEsopeRewriter >> processLinesInsideSegment: anOrderedCollection [
 
 	"  (beginOfLine, 'end' asPParser not, endOfLine negate plus, endOfLine) star"
 
-	self flag: #TODO.
 	" #processLinesInsideSegment 
 	There are several ways of handling the components of a segment:
-	- let a fortran77 parser handle them for us at this stage. this means not annotating them and having to process them later when parsing the AST obtained by the fortran77 parser by using the position of the token.
-	- modify our grammars to handle the components correctly
-	- Annotate them, and be a master of regular expressions during ESOPE comment processing."
+	- option1: let a fortran77 parser handle them for us at this stage. this means not annotating them and having to process them later when parsing the AST obtained by the fortran77 parser by using the position of the token.
+	- option2: modify our grammars to handle the components correctly
+	- option3: Annotate them, and be a master of regular expressions during ESOPE comment processing.
+	"
+
+	"option1: implemented but need to take an account a `pointeur` attribute and hide it"
 
 	"option2: not yet implemented"
+
 	"option3: tested and not approuved.
 		""self annotateByEsopePrefix.
 		stream << (line at: 3) value.
 		self addLineSeparator"""
 
-	anOrderedCollection do: [ :line | "option1" 
+	anOrderedCollection do: [ :line | "option1"
+		(self containsPointeurKeyword: line) ifTrue: [ line at: 1 put: self commentAnnotation ].
 		line do: [ :part | part ifNotNil: [ stream << part value ] ] ]
 ]
 
@@ -266,27 +280,6 @@ PPEsopeRewriter >> segadj [
 ]
 
 { #category : #rules }
-PPEsopeRewriter >> segdef [
-
-	"(self esopeLine: 'segment') , lines , beginOfLine , optionalBlanks
-	  , endToken , optionalBlanks , segmentToken , optionalBlanks
-	  , endOfLine"
-
-	" #processLinesInsideSegment 
-	There are several ways of handling the components of a segment:
-	- let a fortran77 parser handle them for us at this stage. this means not annotating them and having to process them later when parsing the AST obtained by the fortran77 parser.
-	- modify our grammars to handle the components correctly
-	- Annotate them, and be a master of regular expressions during ESOPE comment processing."
-
-	^ super segdef ==> [ :nodes | 
-	  stream << self commentAnnotation.
-	  self copyTokens: nodes from: 2 to: 6.
-	  self processLinesInsideSegment: (nodes at: 7).
-	  stream << self commentAnnotation.
-	  self copyTokens: nodes from: 10 to: nodes size ]
-]
-
-{ #category : #rules }
 PPEsopeRewriter >> segdes [
 
 	" beginOfLine, spaces, 'segdes' asPParser, segIdentifier, endOfLine"
@@ -300,6 +293,27 @@ PPEsopeRewriter >> segini [
 	" beginOfLine, spaces, 'segini' asPParser, segIdentifier, endOfLine"
 
 	^ super segini ==> [ :nodes | self processNodes: nodes ]
+]
+
+{ #category : #rules }
+PPEsopeRewriter >> segment [
+
+	"(self esopeLine: 'segment') , lines , beginOfLine , optionalBlanks
+	  , endToken , optionalBlanks , segmentToken , optionalBlanks
+	  , endOfLine"
+
+	" #processLinesInsideSegment 
+	There are several ways of handling the components of a segment:
+	- let a fortran77 parser handle them for us at this stage. this means not annotating them and having to process them later when parsing the AST obtained by the fortran77 parser.
+	- modify our grammars to handle the components correctly
+	- Annotate them, and be a master of regular expressions during ESOPE comment processing."
+
+	^ super segment ==> [ :nodes |
+	  stream << self commentAnnotation.
+	  self copyTokens: nodes from: 2 to: 6.
+	  self processLinesInsideSegment: (nodes at: 7).
+	  stream << self commentAnnotation.
+	  self copyTokens: nodes eighth from: 1 to: nodes eighth size ]
 ]
 
 { #category : #rules }
