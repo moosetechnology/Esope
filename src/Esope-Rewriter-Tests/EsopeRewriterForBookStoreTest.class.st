@@ -134,6 +134,38 @@ EsopeRewriterForBookStoreTest >> testDotWithPointerAndScalarAttribute [
 ]
 
 { #category : #'tests-transformation' }
+EsopeRewriterForBookStoreTest >> testEsopeDotTransformationInsideInvocationOrArraySubscript [
+
+	| actualSource expectedSource |
+	self skip.
+	self flag: #TODO. "The regex we're using treats everything inside the outer parentheses as an index and therefore doesn't apply a transformation to it.
+	So it won't work for examples like this. 
+	Make sure you test (#testEsopeTransformationInsideInvocationOrArraySubscript) and add other situations to cover special cases that may arise."
+
+	actualSource := '      bk = lb.bref(ur.ubb(ibor))'.
+	expectedSource := '      bk = D__(lb,bref(D__(ur,ubb(ibor))))'.
+	self
+		assert: (parser applyTransformation: actualSource)
+		equals: expectedSource
+]
+
+{ #category : #'tests-transformation' }
+EsopeRewriterForBookStoreTest >> testEsopeSlashTransformationInsideInvocationOrArraySubscript [
+
+	| actualSource expectedSource |
+	self skip.
+	self flag: #TODO. "The regex we're using treats everything inside the outer parentheses as an index and therefore doesn't apply a transformation to it.
+	So it won't work for examples like this. 
+	Make sure you test (#testEsopeTransformationInsideInvocationOrArraySubscript) and add other situations to cover special cases that may arise."
+
+	actualSource := '      bk = lb.bref(ur.ubb(/ibor))'.
+	expectedSource := '      bk = D__(lb,bref(S__(D__(ur,ubb),ibor)))'.
+	self
+		assert: (parser applyTransformation: actualSource)
+		equals: expectedSource
+]
+
+{ #category : #'tests-transformation' }
 EsopeRewriterForBookStoreTest >> testEsopeTransformationInsideInvocationOrArraySubscript [
 
 	| actualSource expectedSource |
