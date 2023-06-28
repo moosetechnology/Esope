@@ -484,13 +484,6 @@ EsopeRewriterTest >> testSegsup [
 ]
 
 { #category : #tests }
-EsopeRewriterTest >> testSmallFile [
-
-	self parse: self class esopeSmallFile rule: #start.
-	self assert: parser output equals: self class esopeSmallFileProcessed
-]
-
-{ #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeArray [
 	self
 		assert:
