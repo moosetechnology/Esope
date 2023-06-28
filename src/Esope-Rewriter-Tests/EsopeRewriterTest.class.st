@@ -7,16 +7,6 @@ Class {
 	#category : #'Esope-Rewriter-Tests'
 }
 
-{ #category : #tests }
-EsopeRewriterTest class >> esopeBigFile [
-	^ EsopeGrammarTest esopeBigFile
-]
-
-{ #category : #tests }
-EsopeRewriterTest class >> esopeSmallFile [
-	^ EsopeGrammarTest esopeSmallFile
-]
-
 { #category : #accessing }
 EsopeRewriterTest >> parserClass [
 	^ PPEsopeRewriter 
