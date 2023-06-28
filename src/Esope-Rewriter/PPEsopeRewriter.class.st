@@ -71,7 +71,7 @@ PPEsopeRewriter >> dotAnnotation [
 PPEsopeRewriter >> dotTransformation: inputSource [
 
 	"The regex we're using treats everything inside the outer parentheses as an index and therefore doesn't apply a transformation to it.
-	So it won't work for examples like this. 
+	So it won't work for examples like this: `a.b(c.d)`. 
 	Make sure you test (#testEsopeTransformationInsideInvocationOrArraySubscript) and add other situations to cover special cases that may arise."
 
 	^ String new writeStreamDo: [ :outputStream | 
