@@ -321,6 +321,14 @@ PPEsopeRewriter >> segment [
 ]
 
 { #category : #rules }
+PPEsopeRewriter >> segprt [
+
+	"beginOfLine, spaces, 'segprt' asPParser, segIdentifier, endOfLine"
+
+	^ super segprt ==> [ :nodes | self processNodes: nodes ]
+]
+
+{ #category : #rules }
 PPEsopeRewriter >> segsup [
 
 	" beginOfLine , spaces, 'segsup' asPParser, segIdentifier, endOfLine"
