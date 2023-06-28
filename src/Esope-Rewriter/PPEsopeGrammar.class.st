@@ -104,10 +104,10 @@ PPEsopeGrammar >> identifier [
 { #category : #grammar }
 PPEsopeGrammar >> include [
 
-	self flag: #FIXME. "pas du Esope/Fortran, directive du preprocesseur.
-	mais utilisé pour inclure définition des segments, ..."
-	
-	^ (self terminal: '#include') flatten , optionalBlanks , includeName , endOfLine
+	self flag: #FIXME. "Not Esope/Fortran, `c/c++` preprocessor directive. But used to include segment definition, ..."
+
+	^ (self terminal: '#include') flatten , optionalBlanks , includeName
+	  , endOfLine
 ]
 
 { #category : #grammar }
