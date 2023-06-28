@@ -26,7 +26,8 @@ Class {
 		'dotToken',
 		'pointerKeyWord',
 		'endSegment',
-		'segment'
+		'segment',
+		'segprt'
 	],
 	#category : #'Esope-Rewriter-Parser'
 }
@@ -84,7 +85,7 @@ PPEsopeGrammar >> esopeLine: esopeKeyword [
 { #category : #grammar }
 PPEsopeGrammar >> file [
 
-	^ (segact / segadj / segment / segdes / segini / segsup / pointer
+	^ (segment / segact / segadj / segdes / segini / segprt / segsup / pointer
 	   / include / fortranLine / emptyLine) plus
 ]
 
@@ -200,6 +201,12 @@ PPEsopeGrammar >> segment [
 PPEsopeGrammar >> segmentToken [
 
 	^ (self terminal: 'segment') flatten
+]
+
+{ #category : #grammar }
+PPEsopeGrammar >> segprt [
+
+	^ self esopeLine: 'segprt'
 ]
 
 { #category : #grammar }

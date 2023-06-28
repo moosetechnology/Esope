@@ -969,6 +969,16 @@ EsopeGrammarTest >> testSegmentSimpleWithMoreThanSixSpaces [
 ]
 
 { #category : #tests }
+EsopeGrammarTest >> testSegprt [
+
+	self
+		parse: sixSpaces , 'segprt,rlist
+'
+		rule: #segprt.
+	self fail: 'segprt,rlist' rule: #segprt
+]
+
+{ #category : #tests }
 EsopeGrammarTest >> testSegsup [
 
 	self

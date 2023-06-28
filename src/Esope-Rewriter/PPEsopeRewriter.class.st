@@ -42,7 +42,7 @@ PPEsopeRewriter class >> rewriteFrom: esopeFile to: annotatedFile [
 
 	| rewriter |
 	rewriter := self new.
-	rewriter parse: esopeFile.
+	rewriter parse: esopeFile contents.
 	annotatedFile asFileReference writeStreamDo: [ :stream | 
 		stream truncate.
 		stream << (rewriter output

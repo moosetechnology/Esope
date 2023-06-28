@@ -465,6 +465,16 @@ cESO  endsegment
 ]
 
 { #category : #tests }
+EsopeRewriterTest >> testSegprt [
+
+	| sourcecode |
+	sourcecode := 'segprt,rlist
+'.
+	self parse: sixSpaces , sourcecode rule: #segprt.
+	self assert: parser output equals: 'c@_   ' , sourcecode
+]
+
+{ #category : #tests }
 EsopeRewriterTest >> testSegsup [
 	| sourcecode |
 	sourcecode := 'segsup,rlist
