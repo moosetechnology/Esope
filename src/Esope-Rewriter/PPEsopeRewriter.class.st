@@ -12,37 +12,12 @@ PPEsopeRewriter class >> ignoredNames [
 	^ super ignoredNames , #(stream)
 ]
 
-{ #category : #regex }
-PPEsopeRewriter class >> regexForEsopeWithArray [
-
-	self flag: #FIXME. "how to deal with: ur.ubb(jr + 1).
-	By now, we have ESOat(ur, ubb)(jr+1) instead of ESOar(ESOat(ub, ubb), jr + 1).
-	By now we are not able to process this kind of statement when the subscript is an expression and not a litteral integer"
-	"Using PetitParser2 instead of regex"
-
-	^ '([a-zA-Z][a-zA-Z0-9]+\.[a-zA-Z][a-zA-Z0-9]+)\(([^)]+)\)'
-		  asRegexIgnoringCase
-]
-
-{ #category : #regex }
-PPEsopeRewriter class >> regexForEsopeWithDot [
-
-	^ '[a-zA-Z][a-zA-Z0-9]+\.[a-zA-Z][a-zA-Z0-9]+' asRegexIgnoringCase
-]
-
-{ #category : #regex }
-PPEsopeRewriter class >> regexForEsopeWithSlash [
-
-	^ '([a-zA-Z][a-zA-Z0-9]+\.[a-zA-Z][a-zA-Z0-9]+)\(/[^)]+\)'
-		  asRegexIgnoringCase
-]
-
-{ #category : #regex }
+{ #category : #utilities }
 PPEsopeRewriter class >> rewriteFrom: esopeFile to: annotatedFile [
 
 	| rewriter |
 	rewriter := self new.
-	rewriter parse: esopeFile.
+	rewriter parse: esopeFile contents.
 	annotatedFile asFileReference writeStreamDo: [ :stream | 
 		stream truncate.
 		stream << (rewriter output
@@ -56,10 +31,22 @@ PPEsopeRewriter >> addLineSeparator [
 	stream << Character cr
 ]
 
-{ #category : #rules }
-PPEsopeRewriter >> annotateByEsopePrefix [
+{ #category : #transformations }
+PPEsopeRewriter >> applyTransformation: inputSource [
 
-	stream << 'cESO  '
+	^ self dotTransformation: (self slashTransformation: inputSource)
+]
+
+{ #category : #annotations }
+PPEsopeRewriter >> commentAnnotation [
+
+	^ 'c@_   '
+]
+
+{ #category : #utilities }
+PPEsopeRewriter >> containsPointeurKeyword: line [
+
+	^ (line asString indexOfSubCollection: #pointeur) ~= 0
 ]
 
 { #category : #utilities }
@@ -74,6 +61,48 @@ PPEsopeRewriter >> copyTokens: nodes from: start to: end [
 	start to: end do: [ :i | stream << (nodes at: i) ]
 ]
 
+{ #category : #annotations }
+PPEsopeRewriter >> dotAnnotation [
+
+	^ 'D__('
+]
+
+{ #category : #transformations }
+PPEsopeRewriter >> dotTransformation: inputSource [
+
+	"The regex we're using treats everything inside the outer parentheses as an index and therefore doesn't apply a transformation to it.
+	So it won't work for examples like this. 
+	Make sure you test (#testEsopeTransformationInsideInvocationOrArraySubscript) and add other situations to cover special cases that may arise."
+
+	^ String new writeStreamDo: [ :outputStream | 
+		  | regex index |
+		  index := 1.
+		  regex := '([a-zA-Z][a-zA-Z0-9_]*)(\.)([a-zA-Z][a-zA-Z0-9_]*)((\([^)]+\))*)'
+			           asRegexIgnoringCase.
+		  (regex matchingRangesIn: inputSource) do: [ :interval | 
+			  | subText indexOfDot |
+			  (self
+				   fortranOperator: inputSource
+				   from: interval first
+				   to: interval last) ifFalse: [ 
+				  outputStream
+				  << (inputSource copyFrom: index to: interval first - 1).
+				  index := interval first.
+				  subText := inputSource copyFrom: index to: interval last.
+				  outputStream << self dotAnnotation.
+				  indexOfDot := subText indexOf: $..
+				  outputStream
+					  << (subText copyFrom: 1 to: indexOfDot - 1);
+					  << $,.
+				  index := index + indexOfDot.
+				  outputStream
+					  << (subText copyFrom: indexOfDot + 1 to: subText size);
+					  << $).
+				  index := interval last + 1 ] ].
+		  outputStream << (inputSource copyFrom: index to: inputSource size).
+		  outputStream contents ]
+]
+
 { #category : #accessing }
 PPEsopeRewriter >> endOfLine [
 	"(Character cr asPParser / Character lf asPParser)  plus"
@@ -83,23 +112,30 @@ PPEsopeRewriter >> endOfLine [
 ]
 
 { #category : #rules }
+PPEsopeRewriter >> endSegment [
+
+	"^ beginOfLine , optionalBlanks , endToken , optionalBlanks
+	  , segmentToken , optionalBlanks , endOfLine"
+
+	^ super endSegment ==> [ :nodes | 
+	  nodes allButFirst ]
+]
+
+{ #category : #rules }
 PPEsopeRewriter >> fortranLine [
+
 	"'Cc*' indicates that a line is a comment. So we check that the first letter of the line starts with one of these characters"
+
 	"endOfLine negate star flatten , endOfLine"
 
-	^ super fortranLine
-		==> [ :nodes | 
-			| line |
-			line := ''
-				writeStreamDo: [ :str | 
-					nodes do: [ :node | str << node value ].
-					str contents ].
-			('Cc*' includes: line first)
-				ifTrue: [ stream << line ]
-				ifFalse: [ stream
-					<< (self
-							translateEsopeAt: (self translateEsopeArray: (self translateEsopeSlash: line))) ] ]
-				
+	^ super fortranLine ==> [ :nodes | 
+	  | line |
+	  line := '' writeStreamDo: [ :str | 
+		          nodes do: [ :node | str << node value ].
+		          str contents ].
+	  ('Cc*' includes: line first)
+		  ifTrue: [ stream << line ]
+		  ifFalse: [ stream << (self applyTransformation: line) ] ]
 ]
 
 { #category : #utilities }
@@ -178,27 +214,31 @@ PPEsopeRewriter >> processLinesInsideSegment: anOrderedCollection [
 
 	"  (beginOfLine, 'end' asPParser not, endOfLine negate plus, endOfLine) star"
 
-	self flag: #TODO.
 	" #processLinesInsideSegment 
 	There are several ways of handling the components of a segment:
-	- let a fortran77 parser handle them for us at this stage. this means not annotating them and having to process them later when parsing the AST obtained by the fortran77 parser by using the position of the token.
-	- modify our grammars to handle the components correctly
-	- Annotate them, and be a master of regular expressions during ESOPE comment processing."
+	- option1: let a fortran77 parser handle them for us at this stage. this means not annotating them and having to process them later when parsing the AST obtained by the fortran77 parser by using the position of the token.
+	- option2: modify our grammars to handle the components correctly
+	- option3: Annotate them, and be a master of regular expressions during ESOPE comment processing.
+	"
+
+	"option1: implemented but need to take an account a `pointeur` attribute and hide it"
 
 	"option2: not yet implemented"
+
 	"option3: tested and not approuved.
 		""self annotateByEsopePrefix.
 		stream << (line at: 3) value.
 		self addLineSeparator"""
 
-	anOrderedCollection do: [ :line | "option1" 
+	anOrderedCollection do: [ :line | "option1"
+		(self containsPointeurKeyword: line) ifTrue: [ line at: 1 put: self commentAnnotation ].
 		line do: [ :part | part ifNotNil: [ stream << part value ] ] ]
 ]
 
 { #category : #rules }
 PPEsopeRewriter >> processNodes: nodes [
 
-	self annotateByEsopePrefix.
+	stream << self commentAnnotation.
 	^ self copyTokens: nodes from: 2 to: nodes size
 ]
 
@@ -219,27 +259,6 @@ PPEsopeRewriter >> segadj [
 ]
 
 { #category : #rules }
-PPEsopeRewriter >> segdef [
-
-	"(self esopeLine: 'segment') , lines , beginOfLine , optionalBlanks
-	  , endToken , optionalBlanks , segmentToken , optionalBlanks
-	  , endOfLine"
-
-	" #processLinesInsideSegment 
-	There are several ways of handling the components of a segment:
-	- let a fortran77 parser handle them for us at this stage. this means not annotating them and having to process them later when parsing the AST obtained by the fortran77 parser.
-	- modify our grammars to handle the components correctly
-	- Annotate them, and be a master of regular expressions during ESOPE comment processing."
-
-	^ super segdef ==> [ :nodes | 
-	  self annotateByEsopePrefix.
-	  self copyTokens: nodes from: 2 to: 6.
-	  self processLinesInsideSegment: (nodes at: 7).
-	  self annotateByEsopePrefix.
-	  self copyTokens: nodes from: 10 to: nodes size ]
-]
-
-{ #category : #rules }
 PPEsopeRewriter >> segdes [
 
 	" beginOfLine, spaces, 'segdes' asPParser, segIdentifier, endOfLine"
@@ -256,6 +275,35 @@ PPEsopeRewriter >> segini [
 ]
 
 { #category : #rules }
+PPEsopeRewriter >> segment [
+
+	"(self esopeLine: 'segment') , lines , beginOfLine , optionalBlanks
+	  , endToken , optionalBlanks , segmentToken , optionalBlanks
+	  , endOfLine"
+
+	" #processLinesInsideSegment 
+	There are several ways of handling the components of a segment:
+	- let a fortran77 parser handle them for us at this stage. this means not annotating them and having to process them later when parsing the AST obtained by the fortran77 parser.
+	- modify our grammars to handle the components correctly
+	- Annotate them, and be a master of regular expressions during ESOPE comment processing."
+
+	^ super segment ==> [ :nodes |
+	  stream << self commentAnnotation.
+	  self copyTokens: nodes from: 2 to: 6.
+	  self processLinesInsideSegment: (nodes at: 7).
+	  stream << self commentAnnotation.
+	  self copyTokens: nodes eighth from: 1 to: nodes eighth size ]
+]
+
+{ #category : #rules }
+PPEsopeRewriter >> segprt [
+
+	"beginOfLine, spaces, 'segprt' asPParser, segIdentifier, endOfLine"
+
+	^ super segprt ==> [ :nodes | self processNodes: nodes ]
+]
+
+{ #category : #rules }
 PPEsopeRewriter >> segsup [
 
 	" beginOfLine , spaces, 'segsup' asPParser, segIdentifier, endOfLine"
@@ -263,86 +311,55 @@ PPEsopeRewriter >> segsup [
 	^ super segsup ==> [ :nodes | self processNodes: nodes ]
 ]
 
-{ #category : #utilities }
-PPEsopeRewriter >> translateEsopeArray: inputStream [
+{ #category : #annotations }
+PPEsopeRewriter >> slashAnnotation [
 
-	| regex i |
-	i := 1.
-	'' writeStreamDo: [ :outputStream | 
-		regex := self class regexForEsopeWithArray.
-		(regex matchingRangesIn: inputStream) do: [ :interval | 
-			(self
-				 fortranOperator: inputStream
-				 from: interval first
-				 to: interval last) ifFalse: [ 
-				i to: interval first - 1 do: [ :idx | 
-				outputStream nextPut: (inputStream at: idx) ].
-				outputStream << 'ESOar('.
-				i := interval first.
-				[ (inputStream at: i) == $( ] whileFalse: [ 
-					outputStream nextPut: (inputStream at: i).
-					i := i + 1 ].
-				outputStream nextPut: $,.
-				[ (inputStream at: i) == $) ] whileFalse: [ 
-					outputStream nextPut: (inputStream at: i + 1).
-					i := i + 1 ].
-				i + 1 to: interval last do: [ :idx | 
-				outputStream nextPut: (inputStream at: idx) ].
-				i := interval last + 1 ] ].
-		i to: inputStream size do: [ :idx | 
-		outputStream nextPut: (inputStream at: idx) ].
-		^ outputStream contents ]
+	^ 'S__('
 ]
 
-{ #category : #utilities }
-PPEsopeRewriter >> translateEsopeAt: inputStream [
+{ #category : #transformations }
+PPEsopeRewriter >> slashTransformation: inputSource [
 
-	| regex i |
-	i := 1.
-	'' writeStreamDo: [ :outputStream | 
-		regex := self class regexForEsopeWithDot.
-		(regex matchingRangesIn: inputStream) do: [ :interval | 
-			(self
-				 fortranOperator: inputStream
-				 from: interval first
-				 to: interval last) ifFalse: [ 
-				i to: interval first - 1 do: [ :idx | 
-				outputStream nextPut: (inputStream at: idx) ].
-				outputStream << 'ESOat('.
-				i := interval first.
-				[ (inputStream at: i) == $. ] whileFalse: [ 
-					outputStream nextPut: (inputStream at: i).
-					i := i + 1 ].
-				outputStream nextPut: $,.
-				i + 1 to: interval last do: [ :idx | 
-				outputStream nextPut: (inputStream at: idx) ].
-				outputStream nextPut: $).
-				i := interval last + 1 ] ].
-		i to: inputStream size do: [ :idx | 
-		outputStream nextPut: (inputStream at: idx) ].
-		^ outputStream contents ]
-]
-
-{ #category : #utilities }
-PPEsopeRewriter >> translateEsopeSlash: inputStream [
-
-	| regex i |
-	i := 1.
-	'' writeStreamDo: [ :outputStream | 
-		regex := self class regexForEsopeWithSlash.
-		(regex matchingRangesIn: inputStream) do: [ :interval | 
-			i to: interval first - 1 do: [ :idx | 
-			outputStream nextPut: (inputStream at: idx) ].
-			outputStream << 'ESOsl('.
-			i := interval first.
-			[ (inputStream at: i) == $( ] whileFalse: [ 
-				outputStream nextPut: (inputStream at: i).
-				i := i + 1 ].
-			outputStream nextPut: $,.
-			i + 2 to: interval last do: [ :idx | 
-			outputStream nextPut: (inputStream at: idx) ].
-			i := interval last + 1 ].
-		i to: inputStream size do: [ :idx | 
-		outputStream nextPut: (inputStream at: idx) ].
-		^ outputStream contents ]
+	^ String new writeStreamDo: [ :outputStream | 
+		  | regex index |
+		  index := 1.
+		  regex := '(([a-zA-Z][a-zA-Z0-9_]*)(\.)*)([a-zA-Z][a-zA-Z0-9_]*)(\(\/[^)]+\))'
+			           asRegexIgnoringCase.
+		  (regex matchingRangesIn: inputSource) do: [ :interval | 
+			  | subText indexOfDot |
+			  (self
+				   fortranOperator: inputSource
+				   from: interval first
+				   to: interval last) ifFalse: [ 
+				  | attrPart dimsPart |
+				  outputStream
+				  << (inputSource copyFrom: index to: interval first - 1).
+				  index := interval first.
+				  subText := inputSource copyFrom: index to: interval last.
+				  indexOfDot := subText indexOf: $..
+				  attrPart := subText copyUpToSubstring: '(/'.
+				  dimsPart := subText
+					              copyFrom: attrPart size + 3
+					              to: subText size - 1.
+				  indexOfDot = 0 ifFalse: [ 
+					  attrPart := String new writeStreamDo: [ :dotPartStream | 
+						              dotPartStream
+							              << self dotAnnotation;
+							              << (attrPart copyFrom: 1 to: indexOfDot - 1);
+							              << $,;
+							              <<
+								              (attrPart
+									               copyFrom: indexOfDot + 1
+									               to: attrPart size);
+							              << ')'.
+						              dotPartStream contents ] ].
+				  outputStream
+					  << self slashAnnotation;
+					  << attrPart;
+					  << $,;
+					  << dimsPart;
+					  << $).
+				  index := interval last + 1 ] ].
+		  outputStream << (inputSource copyFrom: index to: inputSource size).
+		  outputStream contents ]
 ]

@@ -910,29 +910,6 @@ EsopeGrammarTest >> testSegadjVcAcc226 [
 ]
 
 { #category : #tests }
-EsopeGrammarTest >> testSegdef [
-
-	| segment |
-	segment := '      segment,values
-        character*8        valtyp
-        real               valf(valnf)
-        integer            vale(valne)
-        logical            vall(valnl)
-        character*(valsmx) valc(valnc)
-        integer            vals(valnc)
-      endsegment
-'.
-	self parse: segment rule: #segdef.
-	segment := '      segment string
-        character cstg*(lstg)
-      endsegment
-'.
-	self parse: segment rule: #segdef.
-
-	self fail: '      segment,values' rule: #segdef
-]
-
-{ #category : #tests }
 EsopeGrammarTest >> testSegdes [
 
 	self
@@ -954,6 +931,51 @@ EsopeGrammarTest >> testSegini [
 '
 		rule: #segini.
 	self fail: 'segini,rlist' rule: #segini
+]
+
+{ #category : #tests }
+EsopeGrammarTest >> testSegment [
+
+	| segment |
+	segment := '      segment,values
+        character*8        valtyp
+        real               valf(valnf)
+        integer            vale(valne)
+        logical            vall(valnl)
+        character*(valsmx) valc(valnc)
+        integer            vals(valnc)
+      endsegment
+'.
+	self parse: segment rule: #segment.
+	segment := '      segment string
+        character cstg*(lstg)
+      endsegment
+'.
+	self parse: segment rule: #segment.
+
+	self fail: '      segment,values' rule: #segment
+]
+
+{ #category : #tests }
+EsopeGrammarTest >> testSegmentSimpleWithMoreThanSixSpaces [
+
+	| segment |
+	segment := '       segment, user
+        character*40 uname
+        integer ubb(ubbcnt)
+      end segment
+'.
+	self parse: segment rule: #segment
+]
+
+{ #category : #tests }
+EsopeGrammarTest >> testSegprt [
+
+	self
+		parse: sixSpaces , 'segprt,rlist
+'
+		rule: #segprt.
+	self fail: 'segprt,rlist' rule: #segprt
 ]
 
 { #category : #tests }

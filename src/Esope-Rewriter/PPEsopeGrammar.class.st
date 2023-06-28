@@ -9,7 +9,6 @@ Class {
 		'pointerName',
 		'segact',
 		'segadj',
-		'segdef',
 		'segdes',
 		'segini',
 		'segsup',
@@ -25,7 +24,10 @@ Class {
 		'endToken',
 		'segmentToken',
 		'dotToken',
-		'pointerKeyWord'
+		'pointerKeyWord',
+		'endSegment',
+		'segment',
+		'segprt'
 	],
 	#category : #'Esope-Rewriter-Parser'
 }
@@ -35,7 +37,7 @@ PPEsopeGrammar class >> getSourceFromFile: filename [
 	^ filename asFileReference contents asText
 ]
 
-{ #category : #accessing }
+{ #category : #tokens }
 PPEsopeGrammar >> beginOfLine [
 
 	^ '      ' asPParser flatten
@@ -59,6 +61,13 @@ PPEsopeGrammar >> endOfLine [
 	^ (Character cr asPParser / Character lf asPParser) plus flatten
 ]
 
+{ #category : #'grammar-helper' }
+PPEsopeGrammar >> endSegment [
+
+	^ beginOfLine , optionalBlanks , endToken , optionalBlanks
+	  , segmentToken , optionalBlanks , endOfLine
+]
+
 { #category : #tokens }
 PPEsopeGrammar >> endToken [
 
@@ -76,7 +85,7 @@ PPEsopeGrammar >> esopeLine: esopeKeyword [
 { #category : #grammar }
 PPEsopeGrammar >> file [
 
-	^ (segact / segadj / segdef / segdes / segini / segsup / pointer
+	^ (segment / segact / segadj / segdes / segini / segprt / segsup / pointer
 	   / include / fortranLine / emptyLine) plus
 ]
 
@@ -95,10 +104,10 @@ PPEsopeGrammar >> identifier [
 { #category : #grammar }
 PPEsopeGrammar >> include [
 
-	self flag: #FIXME. "pas du Esope/Fortran, directive du preprocesseur.
-	mais utilisé pour inclure définition des segments, ..."
-	
-	^ (self terminal: '#include') flatten , optionalBlanks , includeName , endOfLine
+	self flag: #FIXME. "Not Esope/Fortran, `c/c++` preprocessor directive. But used to include segment definition, ..."
+
+	^ (self terminal: '#include') flatten , optionalBlanks , includeName
+	  , endOfLine
 ]
 
 { #category : #grammar }
@@ -169,14 +178,6 @@ PPEsopeGrammar >> segadj [
 ]
 
 { #category : #grammar }
-PPEsopeGrammar >> segdef [
-
-	^ (self esopeLine: 'segment') , lines , beginOfLine , optionalBlanks
-	  , endToken , optionalBlanks , segmentToken , optionalBlanks
-	  , endOfLine
-]
-
-{ #category : #grammar }
 PPEsopeGrammar >> segdes [
 
 	^ self esopeLine: 'segdes'
@@ -188,10 +189,24 @@ PPEsopeGrammar >> segini [
 	^ self esopeLine: 'segini'
 ]
 
+{ #category : #grammar }
+PPEsopeGrammar >> segment [
+
+	^ (self esopeLine: 'segment') 
+	, lines 
+	, endSegment
+]
+
 { #category : #tokens }
 PPEsopeGrammar >> segmentToken [
 
 	^ (self terminal: 'segment') flatten
+]
+
+{ #category : #grammar }
+PPEsopeGrammar >> segprt [
+
+	^ self esopeLine: 'segprt'
 ]
 
 { #category : #grammar }
