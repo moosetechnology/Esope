@@ -323,7 +323,7 @@ PPEsopeRewriter >> slashTransformation: inputSource [
 	^ String new writeStreamDo: [ :outputStream | 
 		  | regex index |
 		  index := 1.
-		  regex := '(([a-zA-Z][a-zA-Z0-9_]*)(\.)*)([a-zA-Z][a-zA-Z0-9_]*)(\(\/[^)]+\))'
+		  regex := '(([a-zA-Z][a-zA-Z0-9_]*)(\.)*)*([a-zA-Z][a-zA-Z0-9_]*)(\(\/[^)]+\))'
 			           asRegexIgnoringCase.
 		  (regex matchingRangesIn: inputSource) do: [ :interval | 
 			  | subText indexOfDot |

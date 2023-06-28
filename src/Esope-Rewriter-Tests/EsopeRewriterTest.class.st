@@ -29,8 +29,6 @@ EsopeRewriterTest >> testEsoArImplicit [
 { #category : #tests }
 EsopeRewriterTest >> testEsoSlImplicit [
 
-	self skip.
-	self flag: #TODO. "Make the pointer followed by the dot prefix optional in the #slashTransformation: regex"
 	self assert: (parser applyTransformation: 'a(/b)') equals: 'S__(a,b)'
 ]
 
