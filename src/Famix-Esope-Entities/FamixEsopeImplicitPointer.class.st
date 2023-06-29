@@ -1,13 +1,13 @@
 Class {
 	#name : #FamixEsopeImplicitPointer,
-	#superclass : #FamixEsopeFortranVariable,
+	#superclass : #FamixFortran77Variable,
 	#category : #'Famix-Esope-Entities-Entities'
 }
 
 { #category : #meta }
 FamixEsopeImplicitPointer class >> annotation [
 
-	<FMClass: #ImplicitPointer super: #FamixEsopeFortranVariable>
+	<FMClass: #ImplicitPointer super: #FamixFortran77Variable>
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 	^ self

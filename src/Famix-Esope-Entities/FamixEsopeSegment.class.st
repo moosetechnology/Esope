@@ -23,168 +23,17 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 "
 Class {
 	#name : #FamixEsopeSegment,
-	#superclass : #FamixEsopeEntity,
-	#traits : 'FamixTType',
-	#classTraits : 'FamixTType classTrait',
-	#instVars : [
-		'#attributes => FMMany type: #FamixEsopeAttribute opposite: #segment',
-		'#parameters => FMMany type: #FamixEsopeParameter opposite: #segment',
-		'#pointers => FMMany type: #FamixEsopePointer opposite: #segment'
-	],
+	#superclass : #FamixFortran77Type,
+	#traits : 'FamixTWithAttributes',
+	#classTraits : 'FamixTWithAttributes classTrait',
 	#category : #'Famix-Esope-Entities-Entities'
 }
 
 { #category : #meta }
 FamixEsopeSegment class >> annotation [
 
-	<FMClass: #Segment super: #FamixEsopeEntity>
+	<FMClass: #Segment super: #FamixFortran77Type>
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 	^ self
-]
-
-{ #category : #'private - utility' }
-FamixEsopeSegment class >> getNameFrom: anEntity [
-
-	^ (((anEntity removePrefix: #eso) trim removePrefix: #segment)
-		  trim removePrefix: ',') trim
-]
-
-{ #category : #'private - utility' }
-FamixEsopeSegment class >> newEntity: anEntity [
-
-	| aSegment |
-
-	aSegment := self new
-		            comment: anEntity;
-		            mooseModel: anEntity mooseModel;
-		            name: (self getNameFrom: anEntity content lines first);
-		            yourself.
-
-	aSegment addAttributes: anEntity.
-	^ aSegment
-]
-
-{ #category : #meta }
-FamixEsopeSegment class >> newFromFortranComment: aFortranComment [
-	^(super newFromFortranComment: aFortranComment)
-		name: (self getNameFrom: aFortranComment content without: #segment);
-		yourself
-]
-
-{ #category : #adding }
-FamixEsopeSegment >> addAttribute: anObject [
-	<generated>
-	^ self attributes add: anObject
-]
-
-{ #category : #meta }
-FamixEsopeSegment >> addAttributes: anEntity [
-
-	| content |
-	content := anEntity content lines.
-
-	(content sliceFrom: 2 to: content size - 1) do: [ :a | 
-		self
-			addAttribute:
-				(FamixEsopeAttribute new mooseModel: anEntity mooseModel; name: (' ' split: a) last);
-			yourself ]
-]
-
-{ #category : #adding }
-FamixEsopeSegment >> addParameter: anObject [
-	<generated>
-	^ self parameters add: anObject
-]
-
-{ #category : #adding }
-FamixEsopeSegment >> addPointer: anObject [
-	<generated>
-	^ self pointers add: anObject
-]
-
-{ #category : #accessing }
-FamixEsopeSegment >> attributes [
-	"Relation named: #attributes type: #FamixEsopeAttribute opposite: #segment"
-
-	<generated>
-	<derived>
-	^ attributes
-]
-
-{ #category : #accessing }
-FamixEsopeSegment >> attributes: anObject [
-
-	<generated>
-	attributes value: anObject
-]
-
-{ #category : #navigation }
-FamixEsopeSegment >> attributesGroup [
-	<generated>
-	<navigation: 'Attributes'>
-	^ MooseSpecializedGroup withAll: self attributes asSet
-]
-
-{ #category : #accessing }
-FamixEsopeSegment >> eComment [
-	"Relation named: #eComment type: #FamixFortran77EComment opposite: #segment"
-
-	<generated>
-	<derived>
-	<FMProperty: #eComment type: #FamixFortran77EComment opposite: #segment>
-	^ self attributeAt: #eComment ifAbsent: [ nil ]
-]
-
-{ #category : #accessing }
-FamixEsopeSegment >> eComment: anObject [
-
-	<generated>
-	(self attributeAt: #eComment ifAbsentPut: [nil]) == anObject ifTrue: [ ^ anObject ].
-	anObject ifNil: [ | otherSide |
-		otherSide :=  self eComment.
-		self attributeAt: #eComment put: anObject.
-		otherSide segment: nil ]
-	ifNotNil: [ 
-		self attributeAt: #eComment put: anObject.
-		anObject segment: self ]
-]
-
-{ #category : #accessing }
-FamixEsopeSegment >> parameters [
-	"Relation named: #parameters type: #FamixEsopeParameter opposite: #segment"
-
-	<generated>
-	<derived>
-	^ parameters
-]
-
-{ #category : #accessing }
-FamixEsopeSegment >> parameters: anObject [
-
-	<generated>
-	parameters value: anObject
-]
-
-{ #category : #navigation }
-FamixEsopeSegment >> parametersGroup [
-	<generated>
-	<navigation: 'Parameters'>
-	^ MooseSpecializedGroup withAll: self parameters asSet
-]
-
-{ #category : #accessing }
-FamixEsopeSegment >> pointers [
-	"Relation named: #pointers type: #FamixEsopePointer opposite: #segment"
-
-	<generated>
-	<derived>
-	^ pointers
-]
-
-{ #category : #accessing }
-FamixEsopeSegment >> pointers: anObject [
-
-	<generated>
-	pointers value: anObject
 ]
