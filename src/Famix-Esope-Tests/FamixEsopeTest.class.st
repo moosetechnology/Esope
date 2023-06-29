@@ -29,12 +29,6 @@ FamixEsopeTest >> defaultAttribute: varName withType: typeName [
 ]
 
 { #category : #running }
-FamixEsopeTest >> defaultEsopeComment: comment [
-
-	^ (self newEntity: FamixFortran77EComment) content: comment
-]
-
-{ #category : #running }
 FamixEsopeTest >> defaultSegment: segmentName with: dictDeclarations [
 
 	^ (self newEntity: FamixEsopeSegment)
