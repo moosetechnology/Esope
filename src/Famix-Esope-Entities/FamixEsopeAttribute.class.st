@@ -21,43 +21,17 @@ the segment `myseg` have the following attributes: `scalar`, `array`, `matrix`, 
 "
 Class {
 	#name : #FamixEsopeAttribute,
-	#superclass : #FamixEsopeFortranVariable,
+	#superclass : #FamixFortran77Variable,
 	#traits : 'FamixTAttribute',
 	#classTraits : 'FamixTAttribute classTrait',
-	#instVars : [
-		'#segment => FMOne type: #FamixEsopeSegment opposite: #attributes'
-	],
 	#category : #'Famix-Esope-Entities-Entities'
 }
 
 { #category : #meta }
 FamixEsopeAttribute class >> annotation [
 
-	<FMClass: #Attribute super: #FamixEsopeFortranVariable>
+	<FMClass: #Attribute super: #FamixFortran77Variable>
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 	^ self
-]
-
-{ #category : #accessing }
-FamixEsopeAttribute >> segment [
-	"Relation named: #segment type: #FamixEsopeSegment opposite: #attributes"
-
-	<generated>
-	<container>
-	^ segment
-]
-
-{ #category : #accessing }
-FamixEsopeAttribute >> segment: anObject [
-
-	<generated>
-	segment := anObject
-]
-
-{ #category : #navigation }
-FamixEsopeAttribute >> segmentGroup [
-	<generated>
-	<navigation: 'Segment'>
-	^ MooseSpecializedGroup with: self segment
 ]

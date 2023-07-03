@@ -2,188 +2,149 @@ Class {
 	#name : #FamixEsopeTest,
 	#superclass : #TestCase,
 	#instVars : [
-		'model',
-		'segini',
-		'segact',
-		'pointer',
-		'segdes',
-		'segsup',
-		'segadj'
+		'model'
 	],
 	#category : #'Famix-Esope-Tests'
 }
 
 { #category : #running }
-FamixEsopeTest >> defaultEsopeComment: comment [
-	^(self newEntity: FamixFortran77EComment)
-		content: comment
+FamixEsopeTest >> defaultAnchorFrom: startPoint to: endPoint [
+
+	^ (self newEntity: FamixFortran77IndexedFileAnchor)
+		  startLine: startPoint x;
+		  startColumn: startPoint y;
+		  endLine: endPoint x;
+		  endColumn: endPoint y;
+		  fileName: 'fortran77.f';
+		  yourself
+]
+
+{ #category : #running }
+FamixEsopeTest >> defaultAttribute: varName withType: typeName [
+
+	^ (self newEntity: FamixEsopeAttribute)
+		  sourceAnchor: (self defaultAnchorFrom: 2 @ 7 to: 2 @ 19);
+		  name: varName;
+		  declaredType: (self defaultType: typeName)
+]
+
+{ #category : #running }
+FamixEsopeTest >> defaultSegment: segmentName with: dictDeclarations [
+
+	^ (self newEntity: FamixEsopeSegment)
+		  name: segmentName;
+		  sourceAnchor: (self defaultAnchorFrom: 2 @ 7 to: 2 @ 8);
+		  attributes: (dictDeclarations collect: [ :assoc | 
+					   self defaultAttribute: assoc key withType: assoc value ]);
+		  yourself
+]
+
+{ #category : #tests }
+FamixEsopeTest >> defaultSegmentComand: commandName [
+
+	^ (self newEntity: FamixEsopeCommand)
+		  name: commandName;
+		  sourceAnchor: (self defaultAnchorFrom: 2 @ 7 to: 2 @ 19);
+		  target: (self defaultVariable: 'attr' withType: 'integer');
+		  yourself
+]
+
+{ #category : #tests }
+FamixEsopeTest >> defaultSegmentComand: commandName on: varPointer [
+
+	^ (self newEntity: FamixEsopeCommand)
+		  name: commandName;
+		  sourceAnchor: (self defaultAnchorFrom: 2 @ 7 to: 2 @ 19);
+		  target: (self defaultVariable: varPointer withType: 'pointeur');
+		  yourself
+]
+
+{ #category : #running }
+FamixEsopeTest >> defaultType: typeName [
+
+	^ (self newEntity: FamixFortran77Type)
+		  sourceAnchor: (self defaultAnchorFrom: 2 @ 7 to: 2 @ 19);
+		  name: typeName
+]
+
+{ #category : #running }
+FamixEsopeTest >> defaultVariable: varName withType: typeName [
+
+	^ (self newEntity: FamixFortran77Variable)
+		  sourceAnchor: (self defaultAnchorFrom: 2 @ 7 to: 2 @ 19);
+		  name: varName;
+		  declaredType: (self defaultType: typeName)
 ]
 
 { #category : #running }
 FamixEsopeTest >> newEntity: aFamixClass [
-	^aFamixClass new
-		mooseModel: model;
-		yourself
-]
 
-{ #category : #running }
-FamixEsopeTest >> sampleAttribute [
-	^FamixEsopeAttribute new
-		name: '';
-		declaredType: (self sampleType: 'integer');
-		yourself
-]
-
-{ #category : #running }
-FamixEsopeTest >> sampleAttribute: attributeName [
-	^FamixEsopeAttribute new
-		name: attributeName;
-		declaredType: (self sampleType: 'integer');
-		yourself
-]
-
-{ #category : #running }
-FamixEsopeTest >> sampleParameter: parameterName [
-	
-]
-
-{ #category : #running }
-FamixEsopeTest >> samplePointerRef [
-	^FamixEsopePointer new
-		name: '';
-		segment: self sampleSegment;
-		yourself
-]
-
-{ #category : #running }
-FamixEsopeTest >> sampleSegini [
-	^FamixEsopeSegini new
-		pointer: self samplePointerRef;
-		yourself
-]
-
-{ #category : #running }
-FamixEsopeTest >> sampleSegment: segmentName [
-	^FamixEsopeSegment new
-		name: segmentName;
-		attributes: { self sampleAttribute: 'var' };
-		parameters: { self sampleParameter: 'i' };
-		yourself
-]
-
-{ #category : #running }
-FamixEsopeTest >> sampleType: typeName [
-	^FamixFortran77Type new
-		name: typeName;
-		yourself
-		
-]
-
-{ #category : #running }
-FamixEsopeTest >> sampleVariable [
-	^FamixFortran77Variable new
-		name: '';
-		declaredType: (self sampleType: 'integer');
-		yourself
-]
-
-{ #category : #running }
-FamixEsopeTest >> sampleVariable: variableName [
-	^FamixFortran77Variable new
-		name: variableName;
-		declaredType: (self sampleType: 'integer');
-		yourself
+	^ aFamixClass new
+		  mooseModel: model;
+		  yourself
 ]
 
 { #category : #running }
 FamixEsopeTest >> setUp [
+
 	super setUp.
 
-	model := FamixEsopeModel new.
-
-	segact := self defaultEsopeComment: 'eso  segact,xs'.
-	segadj := self defaultEsopeComment: 'eso  segadj xs'.
-	segdes := self defaultEsopeComment: 'eso  segdes,xs'.
-	segini := self defaultEsopeComment: 'eso  segini,xs'.
-	segsup := self defaultEsopeComment: 'eso  segsup,xs'.
-
-	pointer := self defaultEsopeComment: 'eso  pointeur ptr.myseg'.
+	model := FamixEsopeModel new
 ]
 
 { #category : #tests }
-FamixEsopeTest >> testCreationEsopeEntityFromFortranEComment [
+FamixEsopeTest >> testCreateSegmentCommandSegini [
 
-	| result |
-	
-	self skip. 
-	
-	result := FamixEsopeSegdes newEntity: segdes.
-	self assert: result pointer notNil.
-	self assert: result pointer name equals: pointer name.
-	self assert: result pointer name equals: 'xs'.
+	"
+	segini ptr
+	"
 
-	result := FamixEsopeSegini newEntity: segini.
-	self assert: result pointer notNil.
-	self assert: result pointer name equals: pointer name.
-	self assert: result pointer name equals: 'xs'.
+	| segini |
+	segini := self defaultSegmentComand: 'segini' on: 'ptr'.
 
-	result := FamixEsopeSegact newEntity: segact.
-	self assert: result pointer notNil.
-	self assert: result pointer name equals: pointer name.
-	self assert: result pointer name equals: 'xs'.
+	self assert: segini class equals: FamixEsopeCommand.
+	self assert: segini name equals: 'segini'.
 
-	result := FamixEsopeSegsup newEntity: segsup.
-	self assert: result pointer notNil.
-	self assert: result pointer name equals: pointer name.
-	self assert: result pointer name equals: 'xs'.
-	
-	result := FamixEsopeSegadj newEntity: segadj.
-	self assert: result pointer notNil.
-	self assert: result pointer name equals: pointer name.
-	self assert: result pointer name equals: 'xs'
+	self assert: segini variable class equals: FamixFortran77Variable.
+	self assert: segini variable name equals: 'ptr'.
+	self assert: segini variable declaredType name equals: 'pointeur'
 ]
 
 { #category : #tests }
-FamixEsopeTest >> testCreationFamixEsopeSegment [
-
-	| result |
-	self skip.
-	self flag: #TODO. ""
-
-	result := FamixEsopeSegment newEntity: segment.
-	self assert: result pointers size equals: 0.
-	self assert: result attributes size equals: 3.
-	self assert: result attributes first name equals: 'valtyp'.
-	self assert: result name equals: 'values'.
-	self assert: result parameters size equals: 0.
+FamixEsopeTest >> testCreateSegmentWithMultipleAttributes [
+	"
+	segment myseg
+	 character*40 uname
+	 integer age
+	end segment
+	"
 	
-	"self assert: result attributes first type equals: 'character*8'"
-]
-
-{ #category : #tests }
-FamixEsopeTest >> testCreationOfSegment [
-
 	| segment |
-	self skip.
 	
-	segment := self sampleSegment: 'myseg'.
-	1halt
+	segment := self defaultSegment: 'myseg' with: { 
+			           (#uname -> #character).
+			           (#status -> #logical).
+			           (#age -> #integer) }.
 	
+	self assert: segment name equals: 'myseg'.
+	self assert: segment attributes size equals: 3.
+	self assert: segment attributes first class equals: FamixEsopeAttribute.
+	self assert: segment attributes first name equals: 'uname'.
+	self assert: segment attributes first declaredType class equals: FamixFortran77Type.
+	self assert: segment attributes first declaredType name equals: 'character'.
 ]
 
 { #category : #tests }
-FamixEsopeTest >> testSegment [
+FamixEsopeTest >> testCreateVariablePointeur [
 
-	| result |
-	self skip.
-	self flag: #TODO. ""
+	"
+	pointeur ptr.book
+	"
 
-	result := FamixEsopeSegment newEntity: segment.
-	self assert: result pointers size equals: 0.
-	self assert: result attributes size equals: 3.
-	self assert: result attributes first name equals: 'valtyp'.
-	self assert: result name equals: 'values'.
-	
-	
-	"self assert: result attributes first type equals: 'character*8'"
+	| pointeur |
+	pointeur := self defaultVariable: 'ptr' withType:  'book'.
+
+	self assert: pointeur class equals: FamixFortran77Variable.
+	self assert: pointeur name equals: 'ptr'.
+	self assert: pointeur declaredType name equals: 'book'
 ]

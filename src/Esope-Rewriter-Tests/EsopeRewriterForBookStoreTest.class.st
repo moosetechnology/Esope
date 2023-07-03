@@ -330,7 +330,7 @@ EsopeRewriterForBookStoreTest >> testSeginiSimpleWithSpace [
 { #category : #'tests-cannotation' }
 EsopeRewriterForBookStoreTest >> testSegmentComplex [
 	| actualSource expectedSource |
-	self skip.
+
 	actualSource := '      segment, user
        character*40 uname
        integer ubb(ubbcnt)

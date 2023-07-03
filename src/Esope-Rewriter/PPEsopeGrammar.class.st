@@ -1,3 +1,12 @@
+"
+Extracts Esope constructs from an fortran-77 file without having grammar for the whole fortran-77. 
+
+Try can try with:
+
+`PPEsopeGrammar example`
+
+The example starts take a Esope source file and hide then either in comment or in function invocations.
+"
 Class {
 	#name : #PPEsopeGrammar,
 	#superclass : #PP2CompositeNode,
@@ -32,7 +41,7 @@ Class {
 	#category : #'Esope-Rewriter-Parser'
 }
 
-{ #category : #'as yet unclassified' }
+{ #category : #utility }
 PPEsopeGrammar class >> getSourceFromFile: filename [
 	^ filename asFileReference contents asText
 ]
