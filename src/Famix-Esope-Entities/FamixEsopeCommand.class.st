@@ -15,8 +15,9 @@ As in Fortran, we are led to have a declarative instruction of the SEGMENT and t
 Class {
 	#name : #FamixEsopeCommand,
 	#superclass : #FamixFortran77Access,
-	#traits : 'FamixTNamedEntity',
-	#classTraits : 'FamixTNamedEntity classTrait',
+	#instVars : [
+		'#commandName => FMProperty'
+	],
 	#category : #'Famix-Esope-Entities-Entities'
 }
 
@@ -27,4 +28,22 @@ FamixEsopeCommand class >> annotation [
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 	^ self
+]
+
+{ #category : #accessing }
+FamixEsopeCommand >> commandName [
+
+	<FMProperty: #commandName type: #String>
+	<generated>
+	<FMComment: 'Carrying the actual name of the esope command.
+		
+		Instead of using a property to distinguish esope''s commands,
+		it can be a better solution to use inheritance.'>
+	^ commandName
+]
+
+{ #category : #accessing }
+FamixEsopeCommand >> commandName: anObject [
+	<generated>
+	commandName := anObject
 ]
