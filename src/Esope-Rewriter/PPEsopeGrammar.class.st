@@ -116,7 +116,7 @@ PPEsopeGrammar >> include [
 	self flag: #FIXME. "Not Esope/Fortran, `c/c++` preprocessor directive. But used to include segment definition, ..."
 
 	^ (self terminal: '#include') flatten , optionalBlanks , includeName
-	  , endOfLine
+	  , optionalBlanks , endOfLine
 ]
 
 { #category : #grammar }
