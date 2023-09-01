@@ -8,7 +8,7 @@ Class {
 }
 
 { #category : #'private-helper' }
-FamixFortran77Resolver class >> newFrom: aMooseModel [
+FamixFortran77Resolver class >> on: aMooseModel [
 	"Answer an instance with same model as aMooseModel."
 	^self new
 		  model: aMooseModel;

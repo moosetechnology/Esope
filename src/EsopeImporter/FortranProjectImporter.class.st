@@ -1,90 +1,16 @@
-Class {
-	#name : #FortranProjectImporter,
-	#superclass : #Object,
-	#category : #'EsopeImporter-Importer'
-}
+"
+Responsible to import an Esope project into a Famix model
 
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> annotateEsopeSourcesFrom [
-
-	(self srcPath allChildrenMatching: '*.E') do: [ :esopeFile | 
-		PPEsopeRewriter
-			rewriteFrom: esopeFile
-			to: (self rewriterPath / ('' join: { 
-						  (esopeFile basename removeSuffix: self esopeSuffix).
-						  self fortranSuffix })) pathString ]
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> buildPath [
-
-	^ (self rootPath / self buildPathName) asFileReference ensureCreateDirectory
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> buildPathName [
-
-	^ 'build'
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> esopeSuffix [
-
-	^ '.E'
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> exportAstFrom: astFile [
-
-	self shouldBeImplemented
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> exportToEsope [
-
-	(self parserPath allChildrenMatching: self jsonFileRegex) do: [ 
-		:astFile | self exportAstFrom: astFile ]
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> f77FileRegex [
-
-	^ '*.f'
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> f77parser [
-
-	^ 'fortran-src-extras serialize -t json -v77l encode'
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> famixResolve: aFamixModel [
-
-	1 halt.
-	(FamixFortran77Resolver newFrom: aFamixModel) resolve
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> fortranSuffix [
-
-	^ '.f'
-]
-
-{ #category : #'instance creation' }
-FortranProjectImporter class >> fromPath: srcPath [
-
-	"
-	1. #handleIncludedFiles: used to create a dummy subroutine to wrap the statements defined in the included files.
+	1. `#handleIncludedFiles` : used to create a dummy subroutine to wrap the statements defined in the included files.
 
 	To find all kind of included files use this shell command: 
-	`grep -iIhR --include=\*.{E,e} -E ""#include (\""|\<)"" . | cut -d'.' -f2 | sed 's/.$//' | sort | uniq`
+	`grep -iIhR --include=\*.{E,e} -E """"#include (\""""|\<)"""" . | cut -d'.' -f2 | sed 's/.$//' | sort | uniq`
 	
 	                       +----------------------+
 	==> *.(inc|seg|..) --> | #handleIncludedFiles | --> *.(inc|seg|...).E ==>
 	                       +----------------------+	
 	
-	2. #annotateEsopeSourcesFrom: Rewrite Esope source file by hidden ""all"" the esope constructs
+	2. #annotateEsopeSourcesFrom: Rewrite Esope source file by hidden """"all"""" the esope constructs
 
 	            +-----------------+
 	==> *.E --> | PPEsopeRewriter | --> *.E.f
@@ -127,181 +53,146 @@ FortranProjectImporter class >> fromPath: srcPath [
 	               +-----------+
 
 "
+Class {
+	#name : #FortranProjectImporter,
+	#superclass : #Object,
+	#instVars : [
+		'srcFolder',
+		'famixModel',
+		'iastmodel'
+	],
+	#category : #'EsopeImporter-Importer'
+}
 
-	| iastmodel famixModel |
-	srcPath exists ifFalse: [ 
-		Notification signal:
-			'' , srcPath pathString , '' , '''No such file or directory'.
-		^ self ].
-
-	self handleIncludedFiles.
-
-	self annotateEsopeSourcesFrom.
-	self parseAnnotatedFortranSources.
-
-	iastmodel := self json2Iast.
-	famixModel := self iast2Famix: iastmodel.
-	self famixResolve: famixModel.
-	1 halt.
-	"self iasttofamix. ""creer le model famix avec l'ensemble des fichiers.
-	
-	A chaque include, il previent l'importer de la dependance avec le fichier inclu.
-		Dictionary (fichier inclu -> l'ensemble des prog Unit qui l'inclu ).
-	Verifier que tous les fichiers inclus ont été rencontrés.
-		Sinon trouvé (Fichier non trouvé dans prog unit donc pas possible de le traiter).
-	"
-	"self famixresolve." ""
-	"famixModel asMSEString."
-	"self exportToEsope: famixModel."
+{ #category : #importing }
+FortranProjectImporter class >> import [
+	<script>
+	^self new
+		import
 ]
 
-{ #category : #'instance creation' }
-FortranProjectImporter class >> handleIncludedFiles [
-
-	(self srcPath allChildrenMatching: '*.inc') do: [ :includedFile | 
-		(self srcPath / ('' join: { 
-				  includedFile basename.
-				  '.E' })) pathString asFileReference writeStreamDo: [ :tmpStream | 
-			tmpStream
-				<< '      subroutine __$__';
-				<< Character cr;
-				<< includedFile contents;
-				<< '      end';
-				<< Character cr ] ]
+{ #category : #accessing }
+FortranProjectImporter >> astFolder [
+	^'Json'
 ]
 
-{ #category : #'instance creation' }
-FortranProjectImporter class >> iast2Famix: iastmodelFiles [
+{ #category : #private }
+FortranProjectImporter >> copyEsopeFiles [
+	(self srcFolder allChildrenMatching: '*.E') do: [ :esopeFile |
+		esopeFile copyTo: (self fileReference: esopeFile into: self esopeFolder)
+	]
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> esopeFolder [
+	^'Esope'
+]
+
+{ #category : #private }
+FortranProjectImporter >> esopeToFortran [
+
+	(self esopeFolder asFileReference allChildren) do: [ :esopeFile || fortranFile |
+		fortranFile := self 
+				fileReference: (esopeFile withExtension: '.f')
+				into: self fortranFolder.
+
+		PPEsopeRewriter
+			rewriteFrom: esopeFile
+			to: fortranFile
+		]
+]
+
+{ #category : #'private - accessing' }
+FortranProjectImporter >> f77parser [
+
+	^ 'fortran-src-extras serialize -t json -v77l encode'
+]
+
+{ #category : #private }
+FortranProjectImporter >> famixResolve [
+
+	(FamixFortran77Resolver on: famixModel)
+		resolve
+]
+
+{ #category : #private }
+FortranProjectImporter >> fileReference: aFileReference into: aFolderName [
+	^aFolderName asFileReference / aFileReference basename
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> fortranFolder [
+	^'Fortran'
+]
+
+{ #category : #private }
+FortranProjectImporter >> iASTToFamix [
 
 	| visitor |
 	visitor := IASTToFamixVisitor new.
-	iastmodelFiles collect: [ :iastProgramFile | 
-		iastProgramFile accept: visitor ].
-	^ visitor model
+
+	iastmodel do: [ :iastProgramFile | iastProgramFile accept: visitor ].
+
+	famixModel := visitor model
 ]
 
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> import [
+{ #category : #run }
+FortranProjectImporter >> import [
 
-	<script>
-	self fromPath: self srcPath
+	srcFolder exists ifFalse: [ 
+		Notification signal: srcFolder pathString , ' ''No such file or directory'''.
+		^ self ].
+
+	self copyEsopeFiles.
+	self includedFilesToEsope.
+	self esopeToFortran.
+	self fortranToJsonAST.
+	self jsonASTToIAST.
+	self iASTToFamix.
+
+	self famixResolve.
+	
+	^famixModel 
+
 ]
 
-{ #category : #'instance creation' }
-FortranProjectImporter class >> json2Iast [
+{ #category : #private }
+FortranProjectImporter >> includedFilesToEsope [
 
-	| visitor progFiles |
+	(self srcFolder allChildrenMatching: '*.inc') do: [ :includedFile | 
+		(self 
+			fileReference: (((includedFile pathString) , '.E') asFileReference)
+			into: self esopeFolder)
+			writeStreamDo: [ :tmpStream | 
+				tmpStream
+					<< '      subroutine __$__' ;
+					cr ;
+					<< includedFile contents ;
+					<< '      end' ;
+					cr ]
+		]
+]
+
+{ #category : #private }
+FortranProjectImporter >> jsonASTToIAST [
+
+	| visitor |
 	visitor := JsonToIASTVisitor new.
 
-	progFiles := (self parserPath allChildrenMatching: '*.json') 
-		             collect: [ :jsonFile | 
-			             visitor visitProgramFile:
-				             (NeoJSONReader fromString: jsonFile contents) ].
-
-	visitor model: progFiles.
-	^ progFiles
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> jsonFileRegex [
-
-	^ '*.json'
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> jsonSuffix [
-
-	^ '.json'
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> parseAnnotatedFortranSources [
-
-	(self rewriterPath allChildrenMatching: self f77FileRegex) do: [ 
-		:annotatedFile | self parseToAst: annotatedFile ]
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> parseToAst: f77file [
-
-	| outputFile |
-	outputFile := self parserPath
-	              / (f77file basename removeSuffix: self fortranSuffix).
-	LibC runCommand: ('{1} "{2}" > "{3}.json" 2> "{3}.err"' format: { 
-				 self f77parser.
-				 f77file pathString.
-				 outputFile pathString })
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> parserPath [
-
-	^ (self buildPath / self parserPathName) asFileReference ensureCreateDirectory
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> parserPathName [
-
-	^ 'parser'
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> rewritedEsopeSuffix [
-
-	^ '.E'
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> rewriterPath [
-
-	^ (self buildPath / self rewriterPathName) asFileReference ensureCreateDirectory
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> rewriterPathName [
-
-	^ 'rewriter'
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> rootPath [
-
-	^ self rootPathName asPath
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> rootPathName [
-
-		^ '/tmp/bookstore'
+	iastmodel := (self astFolder asFileReference allChildrenMatching: '*.json') 
+		collect: [ :jsonFile | 
+			visitor visitProgramFile: (NeoJSONReader fromString: jsonFile contents) ].
 
 ]
 
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> searchPaths [
+{ #category : #accessing }
+FortranProjectImporter >> srcFolder [
 
-	^ { self srcPath }
+	^srcFolder asFileReference 
 ]
 
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> srcPath [
+{ #category : #accessing }
+FortranProjectImporter >> srcFolder: aString [
 
-	^ (self rootPath / self srcPathName) asFileReference
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> srcPathName [
-
-	^ 'src'
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> targetPath [
-
-	^ (self buildPath / self targetPathName) asFileReference ensureCreateDirectory
-]
-
-{ #category : #'private - accessing' }
-FortranProjectImporter class >> targetPathName [
-
-	^ 'target'
+	srcFolder := aString 
 ]

@@ -32,6 +32,38 @@ EsopeRewriterTest >> testEsoSlImplicit [
 	self assert: (parser applyTransformation: 'a(/b)') equals: 'S__(a,b)'
 ]
 
+{ #category : #'tests-transformation' }
+EsopeRewriterTest >> testEsopeDotTransformationInsideInvocationOrArraySubscript [
+
+	| actualSource expectedSource |
+	self skip.
+	self flag: #TODO. "The regex we're using treats everything inside the outer parentheses as an index and therefore doesn't apply a transformation to it.
+	So it won't work for examples like this. 
+	Make sure you test (#testEsopeTransformationInsideInvocationOrArraySubscript) and add other situations to cover special cases that may arise."
+
+	actualSource := '      bk = lb.bref(ur.ubb(ibor))'.
+	expectedSource := '      bk = D__(lb,bref(D__(ur,ubb(ibor))))'.
+	self
+		assert: (parser applyTransformation: actualSource)
+		equals: expectedSource
+]
+
+{ #category : #'tests-transformation' }
+EsopeRewriterTest >> testEsopeSlashTransformationInsideInvocationOrArraySubscript [
+
+	| actualSource expectedSource |
+	self skip.
+	self flag: #TODO. "The regex we're using treats everything inside the outer parentheses as an index and therefore doesn't apply a transformation to it.
+	So it won't work for examples like this. 
+	Make sure you test (#testEsopeTransformationInsideInvocationOrArraySubscript) and add other situations to cover special cases that may arise."
+
+	actualSource := '      bk = lb.bref(ur.ubb(/ibor))'.
+	expectedSource := '      bk = D__(lb,bref(S__(D__(ur,ubb),ibor)))'.
+	self
+		assert: (parser applyTransformation: actualSource)
+		equals: expectedSource
+]
+
 { #category : #tests }
 EsopeRewriterTest >> testFortranLine [
 
@@ -40,7 +72,7 @@ EsopeRewriterTest >> testFortranLine [
 '.
 	self parse: sourcecode rule: #fortranLine.
 
-	self assert: parser output equals: sourcecode
+	self assert: parser generatedCode equals: sourcecode
 ]
 
 { #category : #tests }
@@ -50,7 +82,7 @@ EsopeRewriterTest >> testFortranLineEsoAt [
 		parse: sixSpaces , 'rlist.ilist=0
 '
 		rule: #fortranLine.
-	self assert: parser output equals: '      D__(rlist,ilist)=0
+	self assert: parser generatedCode equals: '      D__(rlist,ilist)=0
 '
 ]
 
@@ -61,7 +93,7 @@ EsopeRewriterTest >> testFortranLineEsoSlash [
 		parse: '        lxs=xs.cstg(/1)
 '
 		rule: #fortranLine.
-	self assert: parser output equals: '        lxs=S__(D__(xs,cstg),1)
+	self assert: parser generatedCode equals: '        lxs=S__(D__(xs,cstg),1)
 '
 ]
 
@@ -74,7 +106,7 @@ EsopeRewriterTest >> testFortranLineNoEsoAt [
 '
 		rule: #fortranLine.
 	self
-		assert: parser output
+		assert: parser generatedCode
 		equals:
 			'      call newbook(lib,''le petit chaperon rouge'',10,2.12)
 '
@@ -87,7 +119,7 @@ EsopeRewriterTest >> testPointer [
 	sourcecode := 'pointeur splist.list
 '.
 	self parse: sixSpaces , sourcecode rule: #pointer.
-	self assert: parser output equals: 'c@_   ' , sourcecode
+	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
 { #category : #tests }
@@ -97,7 +129,7 @@ EsopeRewriterTest >> testPointerWithSpaces [
 	sourcecode := '   pointeur t1.mytab    
 '.
 	self parse: '      ' , sourcecode rule: #pointer.
-	self assert: parser output equals: 'c@_   ' , sourcecode
+	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
 { #category : #tests }
@@ -107,7 +139,7 @@ EsopeRewriterTest >> testSegact [
 	sourcecode := 'segact,splist
 '.
 	self parse: sixSpaces , sourcecode rule: #segact.
-	self assert: parser output equals: 'c@_   ' , sourcecode
+	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
 { #category : #tests }
@@ -117,7 +149,7 @@ EsopeRewriterTest >> testSegactWithSpaces [
 	sourcecode := '  segact,xs
 '.
 	self parse: sixSpaces , sourcecode rule: #segact.
-	self assert: parser output equals: 'c@_   ' , sourcecode
+	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
 { #category : #tests }
@@ -127,7 +159,7 @@ EsopeRewriterTest >> testSegadj [
 	sourcecode := 'segadj,aplist
 '.
 	self parse: sixSpaces , sourcecode rule: #segadj.
-	self assert: parser output equals: 'c@_   ' , sourcecode
+	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
 { #category : #tests }
@@ -145,7 +177,7 @@ EsopeRewriterTest >> testSegdefFromBorbk [
 c@_   endsegment
 '.
 	self parse: inputCode rule: #segment.
-	self assert: parser outputForSegment equals: rewriterdCode
+	self assert: parser generatedCode equals: rewriterdCode
 ]
 
 { #category : #tests }
@@ -163,7 +195,7 @@ EsopeRewriterTest >> testSegdefUpperCase [
 c@_   endsegment
 '.
 	self parse: inputCode rule: #segment.
-	self assert: parser outputForSegment equals: rewriterdCode
+	self assert: parser generatedCode equals: rewriterdCode
 ]
 
 { #category : #tests }
@@ -173,7 +205,7 @@ EsopeRewriterTest >> testSegdes [
 	sourcecode := 'segdes,alist
 '.
 	self parse: sixSpaces , sourcecode rule: #segdes.
-	self assert: parser output equals: 'c@_   ' , sourcecode
+	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
 { #category : #tests }
@@ -183,7 +215,7 @@ EsopeRewriterTest >> testSegini [
 	sourcecode := 'segini,rlist
 '.
 	self parse: sixSpaces , sourcecode rule: #segini.
-	self assert: parser output equals: 'c@_   ' , sourcecode
+	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
 { #category : #tests }
@@ -203,7 +235,30 @@ EsopeRewriterTest >> testSegment [
 c@_   endsegment
 '.
 	self parse: sourcecode rule: #segment.
-	self assert: parser outputForSegment equals: finalcode
+	self assert: parser generatedCode equals: finalcode
+]
+
+{ #category : #'tests-cannotation' }
+EsopeRewriterTest >> testSegmentSimpleWithMoreThanSixSpaces [
+	| actualSource expectedSource |
+	self skip.
+	self flag: #TODO. 
+	"When we have more than sixSpace, the test for segment fails:
+	- it seems related to end of the segment definition
+	- 
+	"
+	actualSource := '       segment, user
+        character*40 uname
+        integer ubb(ubbcnt)
+       end segment
+'.
+	expectedSource := 'c@_    segment, user
+        character*40 uname
+        integer ubb(ubbcnt)
+c@_   end segment
+'.
+	self parse: actualSource rule: #segment.
+	self assert: parser output equals: expectedSource.
 ]
 
 { #category : #tests }
@@ -213,7 +268,7 @@ EsopeRewriterTest >> testSegprt [
 	sourcecode := 'segprt,rlist
 '.
 	self parse: sixSpaces , sourcecode rule: #segprt.
-	self assert: parser output equals: 'c@_   ' , sourcecode
+	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
 { #category : #tests }
@@ -223,7 +278,7 @@ EsopeRewriterTest >> testSegsup [
 	sourcecode := 'segsup,rlist
 '.
 	self parse: sixSpaces , sourcecode rule: #segsup.
-	self assert: parser output equals: 'c@_   ' , sourcecode
+	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
 { #category : #tests }
@@ -254,7 +309,6 @@ EsopeRewriterTest >> testTranslateEsopeArrayAsFunctionStatement [
 EsopeRewriterTest >> testTranslateEsopeArrayDotInsidePar [
 
 	self skip.
-	self flag: #TODO. "Rethink the transformer (dot and slash) to handle correctly what is inside the parentheses"
 	self
 		assert: (parser applyTransformation: 'rlist.elist(rlist.ilist)=ms')
 		equals: 'D__(rlist,elist(D__(rlist,ilist)))=ms'

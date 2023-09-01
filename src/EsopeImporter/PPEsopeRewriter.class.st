@@ -14,21 +14,9 @@ PPEsopeRewriter class >> ignoredNames [
 
 { #category : #utilities }
 PPEsopeRewriter class >> rewriteFrom: esopeFile to: annotatedFile [
-
-	| rewriter |
-	rewriter := self new.
-	rewriter parse: esopeFile contents.
-	annotatedFile asFileReference writeStreamDo: [ :stream | 
-		stream truncate.
-		stream << (rewriter output
-			 replaceAll: Character cr
-			 with: Character lf) ]
-]
-
-{ #category : #rules }
-PPEsopeRewriter >> addLineSeparator [
-
-	stream << Character cr
+	self new
+		rewriteFrom: esopeFile to: annotatedFile
+	
 ]
 
 { #category : #transformations }
@@ -118,7 +106,7 @@ PPEsopeRewriter >> endSegment [
 	  , segmentToken , optionalBlanks , endOfLine"
 
 	^ super endSegment ==> [ :nodes | 
-	  nodes allButFirst ]
+	  	nodes allButFirst ]
 ]
 
 { #category : #rules }
@@ -162,6 +150,11 @@ PPEsopeRewriter >> fortranOperator: esopeAtIdentifier from: start to: end [
 			  uppercaseIdentifier endsWith: operator ] ]
 ]
 
+{ #category : #'private - for tests' }
+PPEsopeRewriter >> generatedCode [
+	^stream contents
+]
+
 { #category : #initialization }
 PPEsopeRewriter >> include [
 
@@ -199,18 +192,6 @@ PPEsopeRewriter >> optionalBlanks [
 
 	^ super optionalBlanks
 	  ==> [ :nodes | nodes ifNil: [ '' token ] ifNotNil: [ :tk | tk ] ]
-]
-
-{ #category : #accessing }
-PPEsopeRewriter >> output [
-
-	^ stream contents
-]
-
-{ #category : #accessing }
-PPEsopeRewriter >> outputForSegment [
-
-	^ stream contents replaceAll: Character tab  with: Character cr
 ]
 
 { #category : #rules }
@@ -253,6 +234,19 @@ PPEsopeRewriter >> processNodes: nodes [
 
 	stream << self commentAnnotation.
 	^ self copyTokens: nodes from: 2 to: nodes size
+]
+
+{ #category : #utilities }
+PPEsopeRewriter >> rewriteFrom: esopeFile to: annotatedFile [
+
+	self parse: esopeFile contents.
+
+	annotatedFile writeStreamDo: [ :fileStream | 
+		fileStream truncate.
+		fileStream << (stream contents
+			 replaceAll: Character cr
+			 with: Character lf)
+	]
 ]
 
 { #category : #rules }
