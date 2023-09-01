@@ -531,7 +531,7 @@ FortranAbstractJsonVisitor >> visitFunctionStatement: aFunctionStatementNode [
 	"'name' is an object, not a string so, cannot call #visitName: on it"
 	^{ self visitSpan: (aFunctionStatementNode at: 'span') .
  	 self visitJsonElement: (aFunctionStatementNode at: 'name') .
-	 self visitJsonElement: (aFunctionStatementNode at: 'arguments') .
+	 self visitFunctionParameters: (aFunctionStatementNode at: 'arguments') .
 	 self visitFunctionStatementBody: (aFunctionStatementNode at: 'body') }
 ]
 
@@ -545,7 +545,7 @@ FortranAbstractJsonVisitor >> visitFunctionStatementBody: aNode [
 FortranAbstractJsonVisitor >> visitFunctionWithBlocks: aFunctionNode [
 	^(self visitJsonMap: aFunctionNode keys: #(span name type))
 	, { self visitFunctionParameters: (aFunctionNode at: 'arguments') }
-	, { self visitJsonArray: (aFunctionNode at: 'blocks') } 
+	, { self visitBlocks: (aFunctionNode at: 'blocks') } 
 	"need to deal with keys: result, subprograms"
 	
 ]
