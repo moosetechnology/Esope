@@ -476,7 +476,8 @@ FortranAbstractJsonVisitor >> visitExternalStatement: anExternalStatementNode [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitFalseLiteralValue: aString [
-	^aString
+	"Camfort puts 'false' so we return the normal Fortran value instead"
+	^'.false.'
 ]
 
 { #category : #'visiting statement' }
@@ -547,7 +548,7 @@ FortranAbstractJsonVisitor >> visitFunctionWithBlocks: aFunctionNode [
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitFunction_call: aFunctionCallNode [
 
-	^self visitCallStatement: aFunctionCallNode
+	^self visitJsonMap: aFunctionCallNode keys: #(span function arguments)
 ]
 
 { #category : #'visiting expression' }
@@ -781,11 +782,11 @@ FortranAbstractJsonVisitor >> visitLogicalBaseType: aString [
 ]
 
 { #category : #'visiting expression' }
-FortranAbstractJsonVisitor >> visitLogicalLiteralValue: aString [
+FortranAbstractJsonVisitor >> visitLogicalLiteralValue: aLogicalLiteralValue [
 	"to be more explicit, we create #visitTrueLiteralValue: and #visitFalseLiteralValue:"
-	^(aString = 'true')
-		ifTrue: [ self visitTrueLiteralValue: aString ]
-		ifFalse: [ self visitFalseLiteralValue: aString ]
+	^aLogicalLiteralValue first
+		ifTrue: [ self visitTrueLiteralValue: aLogicalLiteralValue ]
+		ifFalse: [ self visitFalseLiteralValue: aLogicalLiteralValue ]
 ]
 
 { #category : #'visiting expression' }
@@ -1032,7 +1033,8 @@ FortranAbstractJsonVisitor >> visitTo: aString [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitTrueLiteralValue: aString [
-	^aString
+	"Camfort puts 'true' so we return the normal Fortran value instead"
+	^'.true.'
 ]
 
 { #category : #visiting }

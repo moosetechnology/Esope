@@ -407,6 +407,22 @@ JsonToIASTVisitor >> visitFunctionWithBlocks: aFunctionNode [
 ]
 
 { #category : #'visiting statement' }
+JsonToIASTVisitor >> visitFunction_call: aFunctionCallNode [
+
+	| astNode data |
+	data := super visitFunction_call: aFunctionCallNode.
+
+	astNode := IASTInvocation new
+		entityName: data second;
+		yourself.
+
+	^ astNode
+		  sourceAnchor: (self makeIndexedAnchor: data first);
+		  arguments: data third;
+		  yourself
+]
+
+{ #category : #'visiting statement' }
 JsonToIASTVisitor >> visitIf: aIfNode [
 
 	| data |
