@@ -525,7 +525,7 @@ JsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 	| data entity |
 	data := super visitSubroutine: aSubroutineNode.
 
-	entity := data second = EsopeUitils dummySubroutineName
+	entity := data second = '__$__'
 		          ifTrue: [ IASTIncludedFile new ]
 		          ifFalse: [ 
 			          IASTSubroutine new
