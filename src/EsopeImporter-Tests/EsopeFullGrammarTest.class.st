@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'parser'
 	],
-	#category : #'Esope-Rewriter-Tests'
+	#category : #'EsopeImporter-Tests-Rewriter'
 }
 
 { #category : #tests }

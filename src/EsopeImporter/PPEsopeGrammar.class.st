@@ -38,7 +38,7 @@ Class {
 		'segment',
 		'segprt'
 	],
-	#category : #'Esope-Rewriter-Parser'
+	#category : #'EsopeImporter-Rewriter'
 }
 
 { #category : #utility }
