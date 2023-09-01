@@ -54,7 +54,7 @@ FamixEsopeTest >> defaultSegmentComand: commandName on: varPointer [
 
 	^ (self newEntity: FamixEsopeSegini)
 		  sourceAnchor: (self defaultAnchorFrom: 2 @ 7 to: 2 @ 19);
-		  target: (self defaultVariable: varPointer withType: 'pointeur');
+		  variable: (self defaultVariable: varPointer withType: 'pointeur');
 		  yourself
 ]
 
