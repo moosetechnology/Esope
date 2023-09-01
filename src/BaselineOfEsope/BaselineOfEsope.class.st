@@ -25,30 +25,27 @@ BaselineOfEsope >> defineDependencies: spec [
 		with: [ spec repository: 'github://kursjan/petitparser2' ];
 		
 		baseline: 'FamixFortran'
-		with: [ spec repository: 'github://moosetechnology/Famix-Fortran' ];
-		
-		baseline: 'FASTFortran'
-		with: [ spec repository: 'github://moosetechnology/FAST-Fortran' ]
+		with: [ spec repository: 'github://moosetechnology/Famix-Fortran' ] ;
+
+		baseline: 'NeoJSON'
+			with: [ spec repository: 'github://svenvc/NeoJSON' ]
+
 ]
 
 { #category : #baselines }
 BaselineOfEsope >> defineGroups: spec [
 
 	spec
-		group: 'rewriter'
-		with: #( 'Esope-Rewriter' 'Esope-Rewriter-Tests' );
-		
 		group: 'famix'
-		with: #( 'Famix-Esope-Entities' 'Famix-Esope-Generator'
-			   'Famix-Esope-Tests' )
+		with: #( 'Famix-Esope-Entities' 'Famix-Esope-Generator' 'Famix-Esope-Tests' )
 ]
 
 { #category : #baselines }
 BaselineOfEsope >> definePackages: spec [
 	spec
 		repository: 'github://moosetechnology/Esope';
-		package: 'Esope-Rewriter' with: [ spec requires: #(PetitParser2) ];
-		package: 'Esope-Rewriter-Tests' with: [ spec requires: #(PetitParser2) ];
+		package: 'EsopeImporter' with: [ spec requires: #('Famix-Esope-Entities' PetitParser2 NeoJSON) ];
+		package: 'EsopeImporter-Tests' with: [ spec requires: #(EsopeImporter) ];
 		package: 'Famix-Esope-Entities' with: [ spec requires: #(FamixFortran) ] ;
 		package: 'Famix-Esope-Generator' with: [ spec requires: #(FamixFortran) ] ;
 		package: 'Famix-Esope-Tests' with: [ spec requires: #(FamixFortran) ]

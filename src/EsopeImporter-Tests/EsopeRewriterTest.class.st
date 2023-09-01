@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'sixSpaces'
 	],
-	#category : #'Esope-Rewriter-Tests'
+	#category : #'EsopeImporter-Tests-Rewriter'
 }
 
 { #category : #accessing }
