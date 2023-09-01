@@ -159,8 +159,7 @@ FortranAbstractJsonVisitor >> visitBlock_data: aBlockDataNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitBlocks: aBlockList [
-	aBlockList ifNil: [ ^#() ].
-	^self visitJsonArray: aBlockList
+	^self visitBody: aBlockList
 ]
 
 { #category : #'visiting statement' }
@@ -1020,7 +1019,7 @@ FortranAbstractJsonVisitor >> visitTarget: aTargetNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitThenPart: aThenPartNode [
-	^self visitJsonElement: aThenPartNode
+	^self visitBody: aThenPartNode
 ]
 
 { #category : #'visiting statement' }
