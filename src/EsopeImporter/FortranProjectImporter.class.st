@@ -78,9 +78,29 @@ FortranProjectImporter >> astFolder [
 
 { #category : #private }
 FortranProjectImporter >> copyEsopeFiles [
+	self ensureEmptyFolder: self esopeFolder.
+
 	(self srcFolder allChildrenMatching: '*.E') do: [ :esopeFile |
 		esopeFile copyTo: (self fileReference: esopeFile into: self esopeFolder)
 	]
+]
+
+{ #category : #private }
+FortranProjectImporter >> ensureEmptyFolder: folderName [
+	| fileReference |
+	fileReference := folderName asFileReference.
+	fileReference exists
+		ifTrue: [ fileReference children copy do: [ :childFile | childFile delete ]  ]
+		ifFalse: [ fileReference ensureCreateDirectory ]
+]
+
+{ #category : #private }
+FortranProjectImporter >> ensureFolder: folderName [
+	| fileReference |
+	fileReference := folderName asFileReference.
+	fileReference exists
+		ifTrue: [ folderName  ]
+		ifFalse: [ fileReference ensureCreateDirectory ]
 ]
 
 { #category : #accessing }
@@ -91,9 +111,11 @@ FortranProjectImporter >> esopeFolder [
 { #category : #private }
 FortranProjectImporter >> esopeToFortran [
 
-	(self esopeFolder asFileReference allChildren) do: [ :esopeFile || fortranFile |
+	self ensureEmptyFolder: self fortranFolder.
+
+	(self esopeFolder asFileReference allFiles) do: [ :esopeFile || fortranFile |
 		fortranFile := self 
-				fileReference: (esopeFile withExtension: '.f')
+				fileReference: (esopeFile withExtension: 'f')
 				into: self fortranFolder.
 
 		PPEsopeRewriter
@@ -102,10 +124,10 @@ FortranProjectImporter >> esopeToFortran [
 		]
 ]
 
-{ #category : #'private - accessing' }
+{ #category : #accessing }
 FortranProjectImporter >> f77parser [
 
-	^ 'fortran-src-extras serialize -t json -v77l encode'
+	^ '/home/anquetil/bin/fortran-src-extras serialize -t json -v77l encode'
 ]
 
 { #category : #private }
@@ -126,6 +148,23 @@ FortranProjectImporter >> fortranFolder [
 ]
 
 { #category : #private }
+FortranProjectImporter >> fortranToJsonAST [
+
+	self ensureEmptyFolder: self astFolder.
+
+	(self fortranFolder asFileReference allFiles) do: [ :fortranFile || jsonFile |
+		jsonFile := self 
+				fileReference: (fortranFile withoutExtension)
+				into: self astFolder.
+
+	LibC runCommand: ('{1} "{2}" > "{3}.json" 2> "{3}.err"' format: { 
+				 self f77parser .
+				 fortranFile pathString .
+				 jsonFile pathString })
+	]
+]
+
+{ #category : #private }
 FortranProjectImporter >> iASTToFamix [
 
 	| visitor |
@@ -138,8 +177,10 @@ FortranProjectImporter >> iASTToFamix [
 
 { #category : #run }
 FortranProjectImporter >> import [
-
-	srcFolder exists ifFalse: [ 
+	srcFolder ifNil: [ 
+		Notification signal: 'Set source folder first'.
+		^ self ].
+	self srcFolder exists ifFalse: [ 
 		Notification signal: srcFolder pathString , ' ''No such file or directory'''.
 		^ self ].
 
