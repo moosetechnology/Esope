@@ -63,17 +63,15 @@ JsonToIASTVisitorTest >> testAssignementStatementWithEsoAt [
 	| programFile stmt |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:28)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:23)-(2:25)","tag":"value","value":{"contents":"var","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:23)-(2:25)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:27)-(2:27)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"tag":"expr"},"name":null,"span":"(2:27)-(2:27)"}],"span":"(2:23)-(2:27)"},"function":{"anno":[],"span":"(2:17)-(2:21)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:17)-(2:28)","tag":"function_call"},"span":"(2:7)-(2:28)","tag":"assign_expression","target":{"anno":[],"span":"(2:7)-(2:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
+	"first statement in body"
+	stmt := programFile progUnits first body first.
+	self assert: stmt size equals: 2.
 
-	self assert: programFile progUnits first body first size equals: 2.
+	self assert: stmt first class equals: IASTVarAccess.
+	self assert: stmt first entityName equals: 'somevar'.
 
-	stmt := programFile progUnits first body first first.
-	self assert: stmt class equals: IASTVarAccess.
-	self assert: stmt entityName equals: 'somevar'.
-
-	stmt := programFile progUnits first body first second.
-	self assert: stmt class equals: IASTVarEsoAt.
-	self deny: stmt isWrite.
-	self assert: stmt entities size equals: 1
+	self assert: stmt second class equals: IASTVarEsoAt.
+	self assert: stmt second entityName equals: 'd__'.
 
 ]
 
@@ -386,7 +384,7 @@ JsonToIASTVisitorTest >> testEsoArTwoArgs [
 { #category : #'tests-esope' }
 JsonToIASTVisitorTest >> testEsoArWithDotArg [
 
-	"      subroutine hello( )
+"      subroutine hello( )
 	     d__(p,a(d__(p,i))) = 5
       end
 "
@@ -397,28 +395,33 @@ JsonToIASTVisitorTest >> testEsoArWithDotArg [
 
 
 	self assert: programFile progUnits first body first size equals: 1.
-	d__ := programFile progUnits first body first first.
 
+	"first statement in body, first entity in statement"
+	d__ := programFile progUnits first body first first.
 	self assert: d__ class equals: IASTVarEsoAt.
-	self assert: d__ isWrite.
 	self assert: d__ entities size equals: 2.
+	self assert: d__ isWrite.
 
 	arg := d__ entities first.
 	self assert: arg class equals: IASTVarAccess.
-	self deny: arg isWrite.
 	self assert: arg entityName equals: 'p'.
+	self deny: arg isWrite.
 
 
 	arg := d__ entities second.
 	self assert: arg class equals: IASTInvocation.
 	self assert: arg entityName equals: 'a'.
 	self assert: arg arguments size equals: 1.
-	self assert: arg arguments first class equals: IASTVarEsoAt.
-	self assert: arg arguments first entities size equals: 2.
-	self assert: arg arguments first entities first class equals: IASTParameter.
-	self assert: arg arguments first entities first entityName equals: 'p'.
-	self assert: arg arguments first entities second class equals: IASTParameter.
-	self assert: arg arguments first entities second entityName equals: 'i'.
+	
+	d__ := arg arguments first.
+	self assert: d__ class equals: IASTVarEsoAt.
+
+	self assert: d__ entities size equals: 2.
+	self assert: d__ entities first class equals: IASTParameter.
+	self assert: d__ entities first entityName equals: 'p'.
+	self assert: d__ entities second class equals: IASTParameter.
+	self assert: d__ entities second entityName equals: 'i'.
+
 ]
 
 { #category : #'tests-esope' }

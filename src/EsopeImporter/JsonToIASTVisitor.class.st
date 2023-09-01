@@ -12,7 +12,7 @@ Class {
 	#category : #'EsopeImporter-Visitor'
 }
 
-{ #category : #'private - parsing' }
+{ #category : #'private - utilities' }
 JsonToIASTVisitor >> astJSON: sourceCode [
 	FortranProjectImporter new
 		astJSON: sourceCode
@@ -30,7 +30,7 @@ JsonToIASTVisitor >> f77sourcefile [
 	^f77sourcefile
 ]
 
-{ #category : #'private - parsing' }
+{ #category : #'private - utilities' }
 JsonToIASTVisitor >> fortranSrcPath [
 
 	^ 'fortran-src-extras'
@@ -48,6 +48,11 @@ JsonToIASTVisitor >> isESOPEFunction: aString [
 	aString isString ifFalse: [ ^false ].
 
 	^#(d__ s__) includes: aString
+]
+
+{ #category : #'private - utilities' }
+JsonToIASTVisitor >> isSpecialFunctionName: functionName [
+	^#(d__ s__) includes: functionName
 ]
 
 { #category : #'private - utilities' }
@@ -409,17 +414,25 @@ JsonToIASTVisitor >> visitFunctionWithBlocks: aFunctionNode [
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitFunction_call: aFunctionCallNode [
 
-	| astNode data |
+	| astNode data functionName |
 	data := super visitFunction_call: aFunctionCallNode.
 
-	astNode := IASTInvocation new
-		entityName: data second;
-		yourself.
+	functionName := data second.
+	astNode := (self isSpecialFunctionName: functionName)
+		ifTrue: [
+			(IASTVarEso newFrom: functionName)
+				entities: data third ;
+				yourself
+		]
+		ifFalse: 	[IASTInvocation new
+			arguments: data third ;
+			yourself
+	].
 
-	^ astNode
-		  sourceAnchor: (self makeIndexedAnchor: data first);
-		  arguments: data third;
-		  yourself
+	^astNode
+		entityName: functionName ;
+		sourceAnchor: (self makeIndexedAnchor: data first) ;
+		yourself
 ]
 
 { #category : #'visiting statement' }
