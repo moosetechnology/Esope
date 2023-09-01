@@ -44,7 +44,7 @@ BaselineOfEsope >> defineGroups: spec [
 BaselineOfEsope >> definePackages: spec [
 	spec
 		repository: 'github://moosetechnology/Esope';
-		package: 'EsopeImporter' with: [ spec requires: #(PetitParser2 NeoJSON) ];
+		package: 'EsopeImporter' with: [ spec requires: #('Famix-Esope-Entities' PetitParser2 NeoJSON) ];
 		package: 'EsopeImporter-Tests' with: [ spec requires: #(EsopeImporter) ];
 		package: 'Famix-Esope-Entities' with: [ spec requires: #(FamixFortran) ] ;
 		package: 'Famix-Esope-Generator' with: [ spec requires: #(FamixFortran) ] ;

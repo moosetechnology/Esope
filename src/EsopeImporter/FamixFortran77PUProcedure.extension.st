@@ -4,7 +4,7 @@ Extension { #name : #FamixFortran77PUProcedure }
 FamixFortran77PUProcedure >> allLocalVariables [
 
 	self flag: #FIXME. "Find better way to flatmap types"
-	^ self localVariables
+	^self localVariables
 	  ,
 		  (self includes collect: [ :include | 
 			   include included localVariables ]) flattened
@@ -14,7 +14,7 @@ FamixFortran77PUProcedure >> allLocalVariables [
 FamixFortran77PUProcedure >> allTypes [
 
 	self flag: #FIXME. "Find better way to flatmap types"
-	^ self types
+	^self types
 	  , (self includes collect: [ :include | include included types ])
 			  flattened
 ]
