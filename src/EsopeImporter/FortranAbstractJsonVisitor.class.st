@@ -159,8 +159,7 @@ FortranAbstractJsonVisitor >> visitBlock_data: aBlockDataNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitBlocks: aBlockList [
-	aBlockList ifNil: [ ^#() ].
-	^self visitJsonArray: aBlockList
+	^self visitBody: aBlockList
 ]
 
 { #category : #'visiting statement' }
@@ -476,7 +475,8 @@ FortranAbstractJsonVisitor >> visitExternalStatement: anExternalStatementNode [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitFalseLiteralValue: aString [
-	^aString
+	"Camfort puts 'false' so we return the normal Fortran value instead"
+	^'.false.'
 ]
 
 { #category : #'visiting statement' }
@@ -530,16 +530,22 @@ FortranAbstractJsonVisitor >> visitFunctionParameters: aParameterList [
 FortranAbstractJsonVisitor >> visitFunctionStatement: aFunctionStatementNode [
 	"'name' is an object, not a string so, cannot call #visitName: on it"
 	^{ self visitSpan: (aFunctionStatementNode at: 'span') .
-	 self visitJsonElement: (aFunctionStatementNode at: 'name') }
-	,
-	(self visitJsonMap: aFunctionStatementNode keys:  #(arguments body))
+ 	 self visitJsonElement: (aFunctionStatementNode at: 'name') .
+	 self visitFunctionParameters: (aFunctionStatementNode at: 'arguments') .
+	 self visitFunctionStatementBody: (aFunctionStatementNode at: 'body') }
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitFunctionStatementBody: aNode [
+	"a specific method for function statement body which contains only 1 statement"
+	^self visitJsonElement: aNode
 ]
 
 { #category : #'visiting prog-unit' }
 FortranAbstractJsonVisitor >> visitFunctionWithBlocks: aFunctionNode [
 	^(self visitJsonMap: aFunctionNode keys: #(span name type))
 	, { self visitFunctionParameters: (aFunctionNode at: 'arguments') }
-	, { self visitJsonArray: (aFunctionNode at: 'blocks') } 
+	, { self visitBlocks: (aFunctionNode at: 'blocks') } 
 	"need to deal with keys: result, subprograms"
 	
 ]
@@ -547,7 +553,7 @@ FortranAbstractJsonVisitor >> visitFunctionWithBlocks: aFunctionNode [
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitFunction_call: aFunctionCallNode [
 
-	^self visitCallStatement: aFunctionCallNode
+	^self visitJsonMap: aFunctionCallNode keys: #(span function arguments)
 ]
 
 { #category : #'visiting expression' }
@@ -781,11 +787,11 @@ FortranAbstractJsonVisitor >> visitLogicalBaseType: aString [
 ]
 
 { #category : #'visiting expression' }
-FortranAbstractJsonVisitor >> visitLogicalLiteralValue: aString [
+FortranAbstractJsonVisitor >> visitLogicalLiteralValue: aLogicalLiteralValue [
 	"to be more explicit, we create #visitTrueLiteralValue: and #visitFalseLiteralValue:"
-	^(aString = 'true')
-		ifTrue: [ self visitTrueLiteralValue: aString ]
-		ifFalse: [ self visitFalseLiteralValue: aString ]
+	^aLogicalLiteralValue first
+		ifTrue: [ self visitTrueLiteralValue: aLogicalLiteralValue ]
+		ifFalse: [ self visitFalseLiteralValue: aLogicalLiteralValue ]
 ]
 
 { #category : #'visiting expression' }
@@ -1019,7 +1025,7 @@ FortranAbstractJsonVisitor >> visitTarget: aTargetNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitThenPart: aThenPartNode [
-	^self visitJsonElement: aThenPartNode
+	^self visitBody: aThenPartNode
 ]
 
 { #category : #'visiting statement' }
@@ -1032,7 +1038,8 @@ FortranAbstractJsonVisitor >> visitTo: aString [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitTrueLiteralValue: aString [
-	^aString
+	"Camfort puts 'true' so we return the normal Fortran value instead"
+	^'.true.'
 ]
 
 { #category : #visiting }
