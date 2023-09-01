@@ -163,6 +163,19 @@ PPEsopeRewriter >> fortranOperator: esopeAtIdentifier from: start to: end [
 ]
 
 { #category : #initialization }
+PPEsopeRewriter >> include [
+
+	"Not Esope/Fortran, `c/c++` preprocessor directive. But used to include segment definition, ..."
+
+	"^ (self terminal: '#include') flatten , optionalBlanks , includeName
+	   , optionalBlanks , endOfLine"
+
+	^ super include ==> [ :nodes | 
+	  stream << 'c@_'.
+	  self copyTokens: nodes from: 1 to: nodes size ]
+]
+
+{ #category : #initialization }
 PPEsopeRewriter >> initStream [
 	stream := '' writeStream
 ]

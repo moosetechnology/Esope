@@ -368,7 +368,11 @@ c@_   end segment
 EsopeRewriterForBookStoreTest >> testSegmentSimpleWithMoreThanSixSpaces [
 	| actualSource expectedSource |
 	self skip.
-	self flag: #TODO. "Need to be fixed, when we have more than sixSpace, the test for segment fails"
+	self flag: #TODO. 
+	"When we have more than sixSpace, the test for segment fails:
+	- it seems related to end of the segment definition
+	- 
+	"
 	actualSource := '       segment, user
         character*40 uname
         integer ubb(ubbcnt)

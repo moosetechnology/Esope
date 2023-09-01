@@ -81,7 +81,13 @@ Class {
 		'command',
 		'access',
 		'variable',
-		'type'
+		'type',
+		'segact',
+		'segadj',
+		'segdes',
+		'segini',
+		'segprt',
+		'segsup'
 	],
 	#category : #'Famix-Esope-Generator'
 }
@@ -457,6 +463,12 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 '
 ]
 
+{ #category : #definition }
+FamixEsopeGenerator >> commentSegprt [
+
+	^ '# `segprt`: Print(PRinT) a segment'
+]
+
 { #category : #comment }
 FamixEsopeGenerator >> commentSegsup [
 
@@ -518,11 +530,15 @@ FamixEsopeGenerator >> defineClasses [
 
 	super defineClasses.
 
-	access := self remoteEntity: #Access withPrefix:  #FamixFortran77.
+	access := self remoteEntity: #Access withPrefix: #FamixFortran77.
 
 	attribute := builder
 		             newClassNamed: #Attribute
 		             comment: self commentAttribute.
+
+	command := builder
+		           newClassNamed: #Command
+		           comment: self commentCommand.
 
 	implicitPointer := builder
 		                   newClassNamed: #ImplicitPointer
@@ -532,13 +548,21 @@ FamixEsopeGenerator >> defineClasses [
 		           newClassNamed: #Segment
 		           comment: self commentSegment.
 
-	command := builder
-		           newClassNamed: #Command
-		           comment: self commentCommand.
+	segact := builder newClassNamed: #Segact comment: self commentSegact.
 
-	type := self remoteEntity: #Type withPrefix:  #FamixFortran77.
+	segadj := builder newClassNamed: #Segadj comment: self commentSegadj.
 
-	variable := self remoteEntity: #Variable withPrefix:  #FamixFortran77
+	segdes := builder newClassNamed: #Segdes comment: self commentSegdes.
+
+	segini := builder newClassNamed: #Segini comment: self commentSegini.
+
+	segprt := builder newClassNamed: #Segprt comment: self commentSegprt.
+
+	segsup := builder newClassNamed: #Segsup comment: self commentSegsup.
+
+	type := self remoteEntity: #Type withPrefix: #FamixFortran77.
+
+	variable := self remoteEntity: #Variable withPrefix: #FamixFortran77
 ]
 
 { #category : #definition }
@@ -549,13 +573,31 @@ FamixEsopeGenerator >> defineHierarchy [
 	attribute --|> #TAttribute.
 	attribute --|> variable.
 
-	command --|> #TNamedEntity.
 	command --|> access.
 
 	implicitPointer --|> variable.
 
 	segment --|> type.
 	segment --|> #TWithAttributes.
+
+	segact --|> command.
+	segadj --|> command.
+	segdes --|> command.
+	segini --|> command.
+	segprt --|> command.
+	segsup --|> command
+]
+
+{ #category : #definition }
+FamixEsopeGenerator >> defineProperties [
+
+	super defineProperties.
+
+	(command property: #commandName type: #String) comment:
+		'Carrying the actual name of the esope command.
+		
+		Instead of using a property to distinguish esope''s commands,
+		it can be a better solution to use inheritance.'
 ]
 
 { #category : #definition }
