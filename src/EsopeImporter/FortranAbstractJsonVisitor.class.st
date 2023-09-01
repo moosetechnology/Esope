@@ -530,9 +530,15 @@ FortranAbstractJsonVisitor >> visitFunctionParameters: aParameterList [
 FortranAbstractJsonVisitor >> visitFunctionStatement: aFunctionStatementNode [
 	"'name' is an object, not a string so, cannot call #visitName: on it"
 	^{ self visitSpan: (aFunctionStatementNode at: 'span') .
-	 self visitJsonElement: (aFunctionStatementNode at: 'name') }
-	,
-	(self visitJsonMap: aFunctionStatementNode keys:  #(arguments body))
+ 	 self visitJsonElement: (aFunctionStatementNode at: 'name') .
+	 self visitJsonElement: (aFunctionStatementNode at: 'arguments') .
+	 self visitFunctionStatementBody: (aFunctionStatementNode at: 'body') }
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitFunctionStatementBody: aNode [
+	"a specific method for function statement body which contains only 1 statement"
+	^self visitJsonElement: aNode
 ]
 
 { #category : #'visiting prog-unit' }
