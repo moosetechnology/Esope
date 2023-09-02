@@ -434,6 +434,12 @@ JsonToIASTVisitor >> visitFunction_call: aFunctionCallNode [
 ]
 
 { #category : #'visiting statement' }
+JsonToIASTVisitor >> visitGotoStatement: aGotoStatementNode [
+
+	^nil
+]
+
+{ #category : #'visiting statement' }
 JsonToIASTVisitor >> visitIf: anIfNode [
 	"super visit keys: #(span label conditions blocks)"
 

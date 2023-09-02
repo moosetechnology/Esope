@@ -667,6 +667,20 @@ JsonToIASTVisitorTest >> testFunctionWithFunctionInvocation [
 ]
 
 { #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testGotoStatement [
+"      PROGRAM MYPROG
+      goto 100
+      END
+"
+	
+	| programFile |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:14)","statement":{"anno":[],"span":"(2:7)-(2:14)","tag":"goto","target":{"anno":[],"span":"(2:12)-(2:14)","tag":"value","value":{"contents":["100",null],"tag":"integer"}}},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+
+
+	self assert: programFile progUnits first body isEmpty
+]
+
+{ #category : #'tests-statement' }
 JsonToIASTVisitorTest >> testImplicitNoneStatement [
 	"PROGRAM MYPROG
        implicit none
