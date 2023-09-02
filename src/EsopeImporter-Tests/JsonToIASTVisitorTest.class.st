@@ -204,6 +204,20 @@ JsonToIASTVisitorTest >> testCommentOutside [
 
 ]
 
+{ #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testContinueStatement [
+"      PROGRAM MYPROG
+      continue
+      END
+"
+	
+	| programFile |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:14)","statement":{"anno":[],"span":"(2:7)-(2:14)","tag":"continue"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+
+
+	self assert: programFile progUnits first body isEmpty
+]
+
 { #category : #'tests-progUnit' }
 JsonToIASTVisitorTest >> testEmptyBlockData [
 	"BLOCK data hello

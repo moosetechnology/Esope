@@ -174,6 +174,11 @@ JsonToIASTVisitor >> visitConditions: aConditionList [
 	^(data collect: #first) , (data collect: #second)
 ]
 
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitContinueStatement: aContinueStatementNode [
+	^nil
+]
+
 { #category : #visiting }
 JsonToIASTVisitor >> visitData: aDataNode [
 	self flag: #TODO.
