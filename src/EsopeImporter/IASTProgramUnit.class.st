@@ -12,7 +12,7 @@ Class {
 
 { #category : #accessing }
 IASTProgramUnit >> accesses [
-	^self filterBodyWith: [ :entity | entity class = IASTVarAccess ]
+	^self filterBodyWith: [ :entity | entity isVarAccess ]
 ]
 
 { #category : #accessing }
@@ -66,7 +66,7 @@ IASTProgramUnit >> filterBodyWith: aFilterBlock [
 { #category : #accessing }
 IASTProgramUnit >> implicits [
 	^implicits ifNil: [ 
-		implicits := self filterBodyWith: [ :entity | entity class = IASTImplicit ] ]
+		implicits := self filterBodyWith: [ :entity | entity isImplicit ] ]
 ]
 
 { #category : #accessing }
@@ -77,15 +77,15 @@ IASTProgramUnit >> implicits: anObject [
 
 { #category : #accessing }
 IASTProgramUnit >> invocations [
-	^self filterBodyWith: [ :entity | entity class = IASTInvocation ]
+	^self filterBodyWith: [ :entity | entity isInvocation ]
 ]
 
 { #category : #accessing }
 IASTProgramUnit >> localComments [
-	^self filterBodyWith: [ :entity | entity class = IASTComment ]
+	^self filterBodyWith: [ :entity | entity isComment ]
 ]
 
 { #category : #accessing }
 IASTProgramUnit >> localVariables [
-	^self filterBodyWith: [ :entity | entity class = IASTVariable ]
+	^self filterBodyWith: [ :entity | entity isVariable ]
 ]

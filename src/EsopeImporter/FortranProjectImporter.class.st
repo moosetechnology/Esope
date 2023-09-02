@@ -1,56 +1,22 @@
 "
 Responsible to import an Esope project into a Famix model
 
-	1. `#handleIncludedFiles` : used to create a dummy subroutine to wrap the statements defined in the included files.
+To use:
+```
+model := FortranProjectImporter new
+	srcFolder: '/path/to/Esope/source/files/' ;
+	import.
+```
 
-	To find all kind of included files use this shell command: 
-	`grep -iIhR --include=\*.{E,e} -E """"#include (\""""|\<)"""" . | cut -d'.' -f2 | sed 's/.$//' | sort | uniq`
-	
-	                       +----------------------+
-	==> *.(inc|seg|..) --> | #handleIncludedFiles | --> *.(inc|seg|...).E ==>
-	                       +----------------------+	
-	
-	2. #annotateEsopeSourcesFrom: Rewrite Esope source file by hidden """"all"""" the esope constructs
-
-	            +-----------------+
-	==> *.E --> | PPEsopeRewriter | --> *.E.f
-	            +-----------------+
-	
-	3. #parseAnnotatedFortranSources: use a traditional fortran77 parser to parse to input source and produce an AST in json format.
-	
-	           +-----------+
-	 *.E.f --> | F77Parser | --> AST (json)
-	           +-----------+
-	
-	4. #json2iast: using visitor for converting jsonAST to an intermediate representation (IASTEntity)
-	
-	                +--------------------+
-	 *.ast.json --> | JsonToIASTVisitor  | --> Model IAST
-	                +--------------------+
-	
-	5. #iast2famix: apply an visitor in AST and reproduce the original code
-	
-	                +---------------------+
-	 Model IAST --> | IASTToFamixVisitor  | --> Model Famix
-	                +---------------------+
-	
-	6. #exportToEsope: apply an visitor in AST and reproduce the original code
-	
-	                 +-------------------------+
-	 Model Famix --> | FamixFortran77Resolver  | --> Model Famix
-	                 +-------------------------+
-
-	6. #exportToEsope: apply an visitor in AST and reproduce the original code
-	
-	                      +-------------------------+
-	 Model Famix/FAST --> | Carrefour               | --> Model FAST
-	                      +-------------------------+
-	
-	7. #exportToEsope: apply an visitor in AST and reproduce the original code
-	
-	               +-----------+
-	Model FAST --> | Exporter  | --> *.E.copy
-	               +-----------+
+This will import all files with a `*.E` (or `*.e`) extension + all included files (`*.inc`)
+This is done in various steps (see `#import`):
+- copy Esope files (`*.E`) in a temporary directory (`./Esope/`)
+- create special Esope files for included files (in same directory `./Esope/`)
+- convert Esope files to Fortran files by annotating Esope instruction (in `./Fortran/`)
+- get AST of Fortran files into Json files (in `./AST/`)
+- import AST into an intermediate representation
+- convert intermediate representation to Famix
+- resolve  symbols in Famix
 
 "
 Class {
@@ -168,7 +134,7 @@ FortranProjectImporter >> fortranToJsonAST [
 FortranProjectImporter >> iASTToFamix [
 
 	| visitor |
-	visitor := IASTToFamixVisitor new.
+	visitor := IASTToFortranVisitor new.
 
 	iastmodel do: [ :iastProgramFile | iastProgramFile accept: visitor ].
 

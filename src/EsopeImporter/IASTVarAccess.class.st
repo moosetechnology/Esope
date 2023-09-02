@@ -21,6 +21,11 @@ IASTVarAccess >> isEsope [
 		  ifNil: [ false ]
 ]
 
+{ #category : #testing }
+IASTVarAccess >> isVarAccess [
+	^true
+]
+
 { #category : #accessing }
 IASTVarAccess >> isWrite [
 

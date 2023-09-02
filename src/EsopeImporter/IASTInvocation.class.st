@@ -37,3 +37,8 @@ IASTInvocation >> isIntrinsic: anObject [
 
 	isIntrinsic := anObject
 ]
+
+{ #category : #testing }
+IASTInvocation >> isInvocation [
+	^true
+]

@@ -164,6 +164,8 @@ FortranAbstractJsonVisitor >> visitBlocks: aBlockList [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitBody: aNode [
+	aNode ifNil: [ ^#() ].
+
 	^self visitJsonElement: aNode
 ]
 

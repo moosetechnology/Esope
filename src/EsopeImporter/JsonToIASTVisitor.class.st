@@ -13,9 +13,10 @@ Class {
 }
 
 { #category : #'private - utilities' }
-JsonToIASTVisitor >> astJSON: sourceCode [
-	FortranProjectImporter new
-		astJSON: sourceCode
+JsonToIASTVisitor >> asCollection: anObject [
+	anObject ifNil: [ ^#() ].
+	anObject isCollection ifTrue: [ ^anObject ].
+	^{ anObject }
 ]
 
 { #category : #accessing }
@@ -30,12 +31,6 @@ JsonToIASTVisitor >> f77sourcefile [
 	^f77sourcefile
 ]
 
-{ #category : #'private - utilities' }
-JsonToIASTVisitor >> fortranSrcPath [
-
-	^ 'fortran-src-extras'
-]
-
 { #category : #initialization }
 JsonToIASTVisitor >> initialize [
 	super initialize.
@@ -43,16 +38,11 @@ JsonToIASTVisitor >> initialize [
 	entityStack := Stack new
 ]
 
-{ #category : #testing }
-JsonToIASTVisitor >> isESOPEFunction: aString [
+{ #category : #'private - utilities' }
+JsonToIASTVisitor >> isSpecialEsopeFunctionName: aString [
 	aString isString ifFalse: [ ^false ].
 
-	^#(d__ s__) includes: aString
-]
-
-{ #category : #'private - utilities' }
-JsonToIASTVisitor >> isSpecialFunctionName: functionName [
-	^#(d__ s__) includes: functionName
+	^(aString = 'd__') or: [ aString = 's__' ]
 ]
 
 { #category : #'private - utilities' }
@@ -117,12 +107,13 @@ JsonToIASTVisitor >> visitAssign_expression: anAssignExpressionNode [
 
 ]
 
-{ #category : #'visiting expression' }
-JsonToIASTVisitor >> visitBinary: aBinaryExpressionNode [
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitBinary: anNode [
+
 	| data |
-	data := super visitBinary: aBinaryExpressionNode.
-	^{ data second . data fourth }
-		reject: #isNil
+	data := super visitBinary: anNode.
+
+	^(self asCollection: data second) , (self asCollection: data fourth)
 ]
 
 { #category : #'visiting prog-unit' }
@@ -134,6 +125,12 @@ JsonToIASTVisitor >> visitBlock_data: aBlockDataNode [
 		entityName: data second ;
 		body: data third ;
 		yourself
+]
+
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitBody: aNode [
+
+	^ super visitBody: aNode
 ]
 
 { #category : #'visiting statement' }
@@ -149,21 +146,10 @@ JsonToIASTVisitor >> visitCallStatement: aCallNode [
 				           entityName: data second;
 				           yourself ].
 
-	"^{ astNode
-			sourceAnchor: (self makeIndexedAnchor: data first) ;
-			arguments: data third ;
-			yourself }"
 	^ astNode
 		  sourceAnchor: (self makeIndexedAnchor: data first);
 		  arguments: data third;
 		  yourself
-]
-
-{ #category : #visiting }
-JsonToIASTVisitor >> visitCode: aString [
-	self astJSON: aString.
-	^'./fortran77.f.json' asFileReference readStreamDo: [ :st |
-			self visitProgramFile: (NeoJSONReader fromString: st contents) ]
 ]
 
 { #category : #'visiting statement' }
@@ -179,6 +165,13 @@ JsonToIASTVisitor >> visitCommonGroup: aCommonGroupNode [
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitCommonStatement: aCommonStatementNode [
 	^self visitCommon_groups: (aCommonStatementNode at: 'common_groups')
+]
+
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitConditions: aConditionList [
+	| data |
+	data := super visitConditions: aConditionList.
+	^(data collect: #first) , (data collect: #second)
 ]
 
 { #category : #visiting }
@@ -352,7 +345,7 @@ JsonToIASTVisitor >> visitExternalStatement: anExternalStatementNode [
 
 	| data |
 	data := super visitExternalStatement: anExternalStatementNode.
-	self flag: #FIXME. "Take an account the external statement"
+
 	^ data second
 ]
 
@@ -418,7 +411,7 @@ JsonToIASTVisitor >> visitFunction_call: aFunctionCallNode [
 	data := super visitFunction_call: aFunctionCallNode.
 
 	functionName := data second.
-	astNode := (self isSpecialFunctionName: functionName)
+	astNode := (self isSpecialEsopeFunctionName: functionName)
 		ifTrue: [
 			(IASTVarEso newFrom: functionName)
 				entities: data third ;
@@ -436,15 +429,13 @@ JsonToIASTVisitor >> visitFunction_call: aFunctionCallNode [
 ]
 
 { #category : #'visiting statement' }
-JsonToIASTVisitor >> visitIf: aIfNode [
+JsonToIASTVisitor >> visitIf: anIfNode [
+	"super visit keys: #(span label conditions blocks)"
 
 	| data |
-	data := super visitIf: aIfNode.
+	data := super visitIf: anIfNode.
 
-	self flag: #FIXME. "Filter and return only accesses and invocation"
-	"^ (data allButFirst: 2) flattened reject: #isNil"
-	^ (data allButFirst: 2) flattened select: [ :each | 
-		  each class = IASTVarAccess or: [ each class = IASTInvocation ] ]
+	^data third , data fourth
 ]
 
 { #category : #'visiting statement' }
@@ -583,7 +574,7 @@ JsonToIASTVisitor >> visitUnary: aUnaryNode [
 	| data |
 	data := super visitUnary: aUnaryNode.
 
-	^data third ifNil: [ nil ] ifNotNil: #yourself
+	^data third ifNil: [ nil ] ifNotNil: [ :entity | entity ]
 ]
 
 { #category : #'visiting expression' }

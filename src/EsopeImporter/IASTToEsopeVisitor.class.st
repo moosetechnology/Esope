@@ -1,6 +1,6 @@
 Class {
 	#name : #IASTToEsopeVisitor,
-	#superclass : #IASTAbstractVisitor,
+	#superclass : #IASTAbstractFamixVisitor,
 	#category : #'EsopeImporter-Visitor'
 }
 
@@ -56,7 +56,7 @@ IASTToEsopeVisitor >> visitIASTEsopeSegment: aSegment [
 	stack push: segment.
 	self createSymbolTableFor: segment.
 	segment attributes: (aSegment declarations collect: [ :variable | 
-			 variable accept: (self spawn: IASTToFamixVisitor) ]).
+			 variable accept: (self spawn: IASTToFortranVisitor) ]).
 
 	^ stack pop
 ]
@@ -99,7 +99,7 @@ IASTToEsopeVisitor >> visitIASTVarEsoAt: aVarEsoAt [
 	pointer := pointerAccess class = IASTParameter
 		           ifTrue: [ pointerAccess accept: self ]
 		           ifFalse: [ 
-		           pointerAccess accept: (self spawn: IASTToFamixVisitor) ].	
+		           pointerAccess accept: (self spawn: IASTToFortranVisitor) ].	
 	
 	attributes := attributeAccess accept: self.
 	attribute := attributes isArray
