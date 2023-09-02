@@ -12,12 +12,6 @@ Class {
 	#category : #'EsopeImporter-Visitor'
 }
 
-{ #category : #'private - utilities' }
-JsonToIASTVisitor >> astJSON: sourceCode [
-	FortranProjectImporter new
-		astJSON: sourceCode
-]
-
 { #category : #accessing }
 JsonToIASTVisitor >> currentEsopeSegment [
 	^entityStack top isEsopeSegment
@@ -30,12 +24,6 @@ JsonToIASTVisitor >> f77sourcefile [
 	^f77sourcefile
 ]
 
-{ #category : #'private - utilities' }
-JsonToIASTVisitor >> fortranSrcPath [
-
-	^ 'fortran-src-extras'
-]
-
 { #category : #initialization }
 JsonToIASTVisitor >> initialize [
 	super initialize.
@@ -43,16 +31,11 @@ JsonToIASTVisitor >> initialize [
 	entityStack := Stack new
 ]
 
-{ #category : #testing }
-JsonToIASTVisitor >> isESOPEFunction: aString [
+{ #category : #'private - utilities' }
+JsonToIASTVisitor >> isSpecialEsopeFunctionName: aString [
 	aString isString ifFalse: [ ^false ].
 
-	^#(d__ s__) includes: aString
-]
-
-{ #category : #'private - utilities' }
-JsonToIASTVisitor >> isSpecialFunctionName: functionName [
-	^#(d__ s__) includes: functionName
+	^(aString = 'd__') or: [ aString = 's__' ]
 ]
 
 { #category : #'private - utilities' }
@@ -149,21 +132,10 @@ JsonToIASTVisitor >> visitCallStatement: aCallNode [
 				           entityName: data second;
 				           yourself ].
 
-	"^{ astNode
-			sourceAnchor: (self makeIndexedAnchor: data first) ;
-			arguments: data third ;
-			yourself }"
 	^ astNode
 		  sourceAnchor: (self makeIndexedAnchor: data first);
 		  arguments: data third;
 		  yourself
-]
-
-{ #category : #visiting }
-JsonToIASTVisitor >> visitCode: aString [
-	self astJSON: aString.
-	^'./fortran77.f.json' asFileReference readStreamDo: [ :st |
-			self visitProgramFile: (NeoJSONReader fromString: st contents) ]
 ]
 
 { #category : #'visiting statement' }
@@ -352,7 +324,7 @@ JsonToIASTVisitor >> visitExternalStatement: anExternalStatementNode [
 
 	| data |
 	data := super visitExternalStatement: anExternalStatementNode.
-	self flag: #FIXME. "Take an account the external statement"
+
 	^ data second
 ]
 
@@ -418,7 +390,7 @@ JsonToIASTVisitor >> visitFunction_call: aFunctionCallNode [
 	data := super visitFunction_call: aFunctionCallNode.
 
 	functionName := data second.
-	astNode := (self isSpecialFunctionName: functionName)
+	astNode := (self isSpecialEsopeFunctionName: functionName)
 		ifTrue: [
 			(IASTVarEso newFrom: functionName)
 				entities: data third ;
@@ -583,7 +555,7 @@ JsonToIASTVisitor >> visitUnary: aUnaryNode [
 	| data |
 	data := super visitUnary: aUnaryNode.
 
-	^data third ifNil: [ nil ] ifNotNil: #yourself
+	^data third ifNil: [ nil ] ifNotNil: [ :entity | entity ]
 ]
 
 { #category : #'visiting expression' }
