@@ -14,7 +14,32 @@ IASTAbstractEntity >> accept: aVisitor [
 ]
 
 { #category : #testing }
+IASTAbstractEntity >> isComment [
+	^false
+]
+
+{ #category : #testing }
 IASTAbstractEntity >> isEsopeSegment [
+	^false
+]
+
+{ #category : #testing }
+IASTAbstractEntity >> isImplicit [
+	^false
+]
+
+{ #category : #testing }
+IASTAbstractEntity >> isInvocation [
+	^false
+]
+
+{ #category : #testing }
+IASTAbstractEntity >> isVarAccess [
+	^false
+]
+
+{ #category : #testing }
+IASTAbstractEntity >> isVariable [
 	^false
 ]
 

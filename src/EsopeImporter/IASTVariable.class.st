@@ -29,7 +29,7 @@ IASTVariable >> dimension: anObject [
 
 { #category : #accessing }
 IASTVariable >> initialValue [
-	self flag: 'to remove'.
+
 	^ initialValue
 ]
 
@@ -37,6 +37,11 @@ IASTVariable >> initialValue [
 IASTVariable >> initialValue: anObject [
 
 	initialValue := anObject
+]
+
+{ #category : #testing }
+IASTVariable >> isVariable [
+	^true
 ]
 
 { #category : #accessing }

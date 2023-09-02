@@ -63,3 +63,8 @@ IASTVarEso >> initialize [
 
 	entities := OrderedCollection new.
 ]
+
+{ #category : #testing }
+IASTVarEso >> isVarAccess [
+	^false
+]

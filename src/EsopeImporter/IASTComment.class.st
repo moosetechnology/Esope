@@ -21,6 +21,11 @@ IASTComment >> initialize [
 	isProgUnit := false.
 ]
 
+{ #category : #testing }
+IASTComment >> isComment [
+	^true
+]
+
 { #category : #accessing }
 IASTComment >> isEsope [
 
