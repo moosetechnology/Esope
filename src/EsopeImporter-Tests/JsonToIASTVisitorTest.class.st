@@ -315,6 +315,21 @@ JsonToIASTVisitorTest >> testEmptyProgram [
 
 ]
 
+{ #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testEmptyReturnStatement [
+"      subroutine hello
+      return
+      end
+"
+	| programFile fct |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:12)","statement":{"anno":[],"span":"(2:7)-(2:12)","tag":"return","target":null},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	self assert: programFile progUnits size equals: 1.
+	
+	fct := programFile progUnits first.
+	self assert: fct body isEmpty
+]
+
 { #category : #'tests-progUnit' }
 JsonToIASTVisitorTest >> testEmptySubroutine [
 	"subroutine hello
@@ -643,7 +658,7 @@ JsonToIASTVisitorTest >> testEsoSlWithTwoDot [
 
 { #category : #'tests-statement' }
 JsonToIASTVisitorTest >> testFunctionWithFunctionInvocation [
-	"integer function efunc()
+"      integer function efunc()
       i = ifunc (i, j)
       end
 "
@@ -1016,6 +1031,37 @@ JsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWithoutBody [
 
 	
 
+]
+
+{ #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testReturnConstantStatement [
+"      integer function hello()
+      return 42
+      end
+"
+	| programFile fct |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:15)","statement":{"anno":[],"span":"(2:7)-(2:15)","tag":"return","target":{"anno":[],"span":"(2:14)-(2:15)","tag":"value","value":{"contents":["42",null],"tag":"integer"}}},"tag":"statement"}],"name":"hello","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
+
+	self assert: programFile progUnits size equals: 1.
+	
+	fct := programFile progUnits first.
+	self assert: fct body isEmpty
+]
+
+{ #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testReturnStatement [
+"      integer function hello()
+      return someVar
+      end
+"
+	| programFile fct |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:20)","statement":{"anno":[],"span":"(2:7)-(2:20)","tag":"return","target":{"anno":[],"span":"(2:14)-(2:20)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
+
+	self assert: programFile progUnits size equals: 1.
+	
+	fct := programFile progUnits first.
+	self assert: fct body first class equals: IASTVarAccess.
+	self assert: fct body first entityName equals: 'somevar'.
 ]
 
 { #category : #'tests-esope' }

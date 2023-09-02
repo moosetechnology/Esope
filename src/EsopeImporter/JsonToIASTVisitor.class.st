@@ -536,6 +536,14 @@ JsonToIASTVisitor >> visitReal: aRealNode [
 	^nil
 ]
 
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitReturnStatement: aReturnStatementNode [
+	| data |
+	data := super visitReturnStatement: aReturnStatementNode.
+
+	^data second
+]
+
 { #category : #visiting }
 JsonToIASTVisitor >> visitSpanOf: aNode [
 	^self makeIndexedAnchor: (self visitSpan: (aNode at: 'span'))
