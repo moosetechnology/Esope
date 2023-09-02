@@ -236,6 +236,20 @@ JsonToIASTVisitorTest >> testEmptyBlockData [
 	self assert: block comments isEmpty.
 ]
 
+{ #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testEmptyExitStatement [
+"      PROGRAM MYPROG
+      exit
+      END
+"
+	
+	| programFile |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:11)","statement":{"anno":[],"span":"(2:8)-(2:11)","tag":"exit","var":null},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+
+	self assert: programFile progUnits first body isEmpty
+]
+
 { #category : #'tests-progUnit' }
 JsonToIASTVisitorTest >> testEmptyFunction [
 	"integer function hello()

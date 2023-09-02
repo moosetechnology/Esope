@@ -345,6 +345,12 @@ JsonToIASTVisitor >> visitEsopeSegsupComment: anEsopeCommentNode [
 		yourself
 ]
 
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitExitStatement: anExitNode [
+
+	^(super visitExitStatement: anExitNode) second
+]
+
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitExternalStatement: anExternalStatementNode [
 
