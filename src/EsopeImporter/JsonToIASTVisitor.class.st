@@ -12,6 +12,13 @@ Class {
 	#category : #'EsopeImporter-Visitor'
 }
 
+{ #category : #'private - utilities' }
+JsonToIASTVisitor >> asCollection: anObject [
+	anObject ifNil: [ ^#() ].
+	anObject isCollection ifTrue: [ ^anObject ].
+	^{ anObject }
+]
+
 { #category : #accessing }
 JsonToIASTVisitor >> currentEsopeSegment [
 	^entityStack top isEsopeSegment
@@ -100,12 +107,13 @@ JsonToIASTVisitor >> visitAssign_expression: anAssignExpressionNode [
 
 ]
 
-{ #category : #'visiting expression' }
-JsonToIASTVisitor >> visitBinary: aBinaryExpressionNode [
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitBinary: anNode [
+
 	| data |
-	data := super visitBinary: aBinaryExpressionNode.
-	^{ data second . data fourth }
-		reject: #isNil
+	data := super visitBinary: anNode.
+
+	^(self asCollection: data second) , (self asCollection: data fourth)
 ]
 
 { #category : #'visiting prog-unit' }
@@ -117,6 +125,12 @@ JsonToIASTVisitor >> visitBlock_data: aBlockDataNode [
 		entityName: data second ;
 		body: data third ;
 		yourself
+]
+
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitBody: aNode [
+
+	^ super visitBody: aNode
 ]
 
 { #category : #'visiting statement' }
@@ -151,6 +165,13 @@ JsonToIASTVisitor >> visitCommonGroup: aCommonGroupNode [
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitCommonStatement: aCommonStatementNode [
 	^self visitCommon_groups: (aCommonStatementNode at: 'common_groups')
+]
+
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitConditions: aConditionList [
+	| data |
+	data := super visitConditions: aConditionList.
+	^(data collect: #first) , (data collect: #second)
 ]
 
 { #category : #visiting }
@@ -408,15 +429,13 @@ JsonToIASTVisitor >> visitFunction_call: aFunctionCallNode [
 ]
 
 { #category : #'visiting statement' }
-JsonToIASTVisitor >> visitIf: aIfNode [
+JsonToIASTVisitor >> visitIf: anIfNode [
+	"super visit keys: #(span label conditions blocks)"
 
 	| data |
-	data := super visitIf: aIfNode.
+	data := super visitIf: anIfNode.
 
-	self flag: #FIXME. "Filter and return only accesses and invocation"
-	"^ (data allButFirst: 2) flattened reject: #isNil"
-	^ (data allButFirst: 2) flattened select: [ :each | 
-		  each class = IASTVarAccess or: [ each class = IASTInvocation ] ]
+	^data third , data fourth
 ]
 
 { #category : #'visiting statement' }
