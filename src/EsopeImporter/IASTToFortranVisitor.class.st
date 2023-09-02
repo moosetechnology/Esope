@@ -299,26 +299,8 @@ IASTToFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixFortra
 	self createSymbolTableFor: progUnit.
 
 	aProgramUnit body ifNotNil: [ :body | 
-		body do: [ :node | 
-			node isArray
-				ifTrue: [ 
-					self flag: #FIXME. "1 halt."
-					node flattened
-						reject: [ :each | each isPoint ]
-						thenDo: [ :stmt | stmt accept: self ] ]
-				ifFalse: [ node accept: self ] ] ].
-
-	"aProgramUnit localVariables do: [ :localVariable | 
-		progUnit addLocalVariable: (localVariable accept: self) ].
-
-	aProgramUnit accesses do: [ :access | 
-		progUnit addAccess: (access accept: self) ].
-	
-	aProgramUnit invocations do: [ :invocation | 
-		progUnit addOutgoingInvocation: (invocation accept: self) ].
-	
-	aProgramUnit localComments do: [ :comment | 
-		progUnit addComment: (comment accept: self) ]."
+			body deepFlatten do: [ :expr | expr accept: self ]
+	].
 
 	progUnit attributeAt: #implicits put: aProgramUnit implicits.
 

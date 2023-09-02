@@ -174,6 +174,11 @@ JsonToIASTVisitor >> visitConditions: aConditionList [
 	^(data collect: #first) , (data collect: #second)
 ]
 
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitContinueStatement: aContinueStatementNode [
+	^nil
+]
+
 { #category : #visiting }
 JsonToIASTVisitor >> visitData: aDataNode [
 	self flag: #TODO.
@@ -340,6 +345,12 @@ JsonToIASTVisitor >> visitEsopeSegsupComment: anEsopeCommentNode [
 		yourself
 ]
 
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitExitStatement: anExitNode [
+
+	^(super visitExitStatement: anExitNode) second
+]
+
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitExternalStatement: anExternalStatementNode [
 
@@ -426,6 +437,12 @@ JsonToIASTVisitor >> visitFunction_call: aFunctionCallNode [
 		entityName: functionName ;
 		sourceAnchor: (self makeIndexedAnchor: data first) ;
 		yourself
+]
+
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitGotoStatement: aGotoStatementNode [
+
+	^nil
 ]
 
 { #category : #'visiting statement' }
@@ -523,6 +540,14 @@ JsonToIASTVisitor >> visitProgramFile: aProgramFileNode [
 { #category : #'visiting expression' }
 JsonToIASTVisitor >> visitReal: aRealNode [
 	^nil
+]
+
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitReturnStatement: aReturnStatementNode [
+	| data |
+	data := super visitReturnStatement: aReturnStatementNode.
+
+	^data second
 ]
 
 { #category : #visiting }
