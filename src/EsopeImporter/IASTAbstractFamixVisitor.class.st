@@ -67,7 +67,7 @@ IASTAbstractFamixVisitor >> newEntity: aClass [
 		  yourself
 ]
 
-{ #category : #visiting }
+{ #category : #'as yet unclassified' }
 IASTAbstractFamixVisitor >> spawn: aVisitorClass [
 	^aVisitorClass new
 		model: self model ;
@@ -87,23 +87,18 @@ IASTAbstractFamixVisitor >> stack: anObject [
 	stack := anObject
 ]
 
-{ #category : #visiting }
+{ #category : #'as yet unclassified' }
 IASTAbstractFamixVisitor >> symbolTable: anEntity at: key [
 
 	^ anEntity attributeAt: key asSymbol ifAbsent: [  ]
 ]
 
-{ #category : #visiting }
+{ #category : #'as yet unclassified' }
 IASTAbstractFamixVisitor >> symbolTable: anEntity at: key put: value [
 
 	(self symbolTable: anEntity at: #symbolTable)
 		at: key asSymbol
 		put: value
-]
-
-{ #category : #visiting }
-IASTAbstractFamixVisitor >> visitIASTCollection: iastCollection [
-	^iastCollection entities collect: [ :iastEntity | iastEntity accept: self ]
 ]
 
 { #category : #visiting }
