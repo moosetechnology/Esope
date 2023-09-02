@@ -1,5 +1,5 @@
 Class {
-	#name : #IASTAbstractVisitor,
+	#name : #IASTAbstractFamixVisitor,
 	#superclass : #Object,
 	#instVars : [
 		'model',
@@ -9,7 +9,7 @@ Class {
 }
 
 { #category : #'private-creation' }
-IASTAbstractVisitor >> createFamixF77Access: anIastObject [
+IASTAbstractFamixVisitor >> createFamixF77Access: anIastObject [
 
 	^ (self newEntity: FamixFortran77Access)
 		  sourceAnchor:
@@ -20,19 +20,19 @@ IASTAbstractVisitor >> createFamixF77Access: anIastObject [
 ]
 
 { #category : #'private-creation' }
-IASTAbstractVisitor >> createImplicitsDictionaryFor: anEntity [
+IASTAbstractFamixVisitor >> createImplicitsDictionaryFor: anEntity [
 
 	anEntity attributeAt: #dicImplicit put: self defaultImplicit
 ]
 
 { #category : #'private-creation' }
-IASTAbstractVisitor >> createSymbolTableFor: anEntity [
+IASTAbstractFamixVisitor >> createSymbolTableFor: anEntity [
 
 	anEntity attributeAt: #symbolTable put: Dictionary new
 ]
 
 { #category : #'private-creation' }
-IASTAbstractVisitor >> defaultImplicit [
+IASTAbstractFamixVisitor >> defaultImplicit [
 
 	^ (($a to: $z) collect: [ :char | 
 		   ('ijklmn' includes: char)
@@ -41,26 +41,26 @@ IASTAbstractVisitor >> defaultImplicit [
 ]
 
 { #category : #accessing }
-IASTAbstractVisitor >> initialize [
+IASTAbstractFamixVisitor >> initialize [
 
 	super initialize.
 	stack := Stack new.
 ]
 
 { #category : #accessing }
-IASTAbstractVisitor >> model [
+IASTAbstractFamixVisitor >> model [
 
 	^ model
 ]
 
 { #category : #accessing }
-IASTAbstractVisitor >> model: anObject [
+IASTAbstractFamixVisitor >> model: anObject [
 
 	model := anObject
 ]
 
 { #category : #'private-creation' }
-IASTAbstractVisitor >> newEntity: aClass [
+IASTAbstractFamixVisitor >> newEntity: aClass [
 
 	^ aClass new
 		  mooseModel: model;
@@ -68,7 +68,7 @@ IASTAbstractVisitor >> newEntity: aClass [
 ]
 
 { #category : #visiting }
-IASTAbstractVisitor >> spawn: aVisitorClass [
+IASTAbstractFamixVisitor >> spawn: aVisitorClass [
 	^aVisitorClass new
 		model: self model ;
 		stack: self stack ;
@@ -76,25 +76,25 @@ IASTAbstractVisitor >> spawn: aVisitorClass [
 ]
 
 { #category : #accessing }
-IASTAbstractVisitor >> stack [
+IASTAbstractFamixVisitor >> stack [
 
 	^ stack
 ]
 
 { #category : #accessing }
-IASTAbstractVisitor >> stack: anObject [
+IASTAbstractFamixVisitor >> stack: anObject [
 
 	stack := anObject
 ]
 
 { #category : #visiting }
-IASTAbstractVisitor >> symbolTable: anEntity at: key [
+IASTAbstractFamixVisitor >> symbolTable: anEntity at: key [
 
 	^ anEntity attributeAt: key asSymbol ifAbsent: [  ]
 ]
 
 { #category : #visiting }
-IASTAbstractVisitor >> symbolTable: anEntity at: key put: value [
+IASTAbstractFamixVisitor >> symbolTable: anEntity at: key put: value [
 
 	(self symbolTable: anEntity at: #symbolTable)
 		at: key asSymbol
@@ -102,7 +102,12 @@ IASTAbstractVisitor >> symbolTable: anEntity at: key put: value [
 ]
 
 { #category : #visiting }
-IASTAbstractVisitor >> visitIASTParameter: aParameter [
+IASTAbstractFamixVisitor >> visitIASTCollection: iastCollection [
+	^iastCollection entities collect: [ :iastEntity | iastEntity accept: self ]
+]
+
+{ #category : #visiting }
+IASTAbstractFamixVisitor >> visitIASTParameter: aParameter [
 
 	^ (self newEntity: FamixFortran77Parameter)
 		  sourceAnchor:
@@ -112,7 +117,7 @@ IASTAbstractVisitor >> visitIASTParameter: aParameter [
 ]
 
 { #category : #visiting }
-IASTAbstractVisitor >> visitIASTTypeRef: aType [
+IASTAbstractFamixVisitor >> visitIASTTypeRef: aType [
 
 	self flag: #TODO. "How to deal with length and kind for example character*20 name produce aType object like:
 	- sourceAnchor: ...
@@ -127,13 +132,13 @@ IASTAbstractVisitor >> visitIASTTypeRef: aType [
 ]
 
 { #category : #visiting }
-IASTAbstractVisitor >> visitIASTVarAccess: aVarAccess [
+IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
 
 	^ (self createFamixF77Access: aVarAccess) isWrite: aVarAccess isWrite
 ]
 
 { #category : #visiting }
-IASTAbstractVisitor >> visitIndexedFileAnchor: aSourceAnchor [
+IASTAbstractFamixVisitor >> visitIndexedFileAnchor: aSourceAnchor [
 
 	^ aSourceAnchor 
 		ifNil: [ nil ]

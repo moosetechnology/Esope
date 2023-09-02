@@ -1,6 +1,6 @@
 Class {
-	#name : #IASTToFamixVisitor,
-	#superclass : #IASTAbstractVisitor,
+	#name : #IASTToFortranVisitor,
+	#superclass : #IASTAbstractFamixVisitor,
 	#instVars : [
 		'f77sourcefile'
 	],
@@ -8,19 +8,19 @@ Class {
 }
 
 { #category : #'private-helper' }
-IASTToFamixVisitor class >> getBasename: filename [
+IASTToFortranVisitor class >> getBasename: filename [
 
 	^ filename asFileReference basename
 ]
 
 { #category : #'private-helper' }
-IASTToFamixVisitor class >> getLines: filename [
+IASTToFortranVisitor class >> getLines: filename [
 
 	^ filename asFileReference contents lines
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> defaultImplicitTyping: firstLetter [
+IASTToFortranVisitor >> defaultImplicitTyping: firstLetter [
 
 	"God is real . . . unless declared integer"
 
@@ -38,7 +38,7 @@ IASTToFamixVisitor >> defaultImplicitTyping: firstLetter [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> ensureInclude: name [
+IASTToFortranVisitor >> ensureInclude: name [
 
 	^ (self model allWithType: FamixFortran77Include)
 		  detect: [ :each | each name = name ]
@@ -47,7 +47,7 @@ IASTToFamixVisitor >> ensureInclude: name [
 ]
 
 { #category : #initialization }
-IASTToFamixVisitor >> f77InstrinsicTypes [
+IASTToFortranVisitor >> f77InstrinsicTypes [
 
 	^ { 
 		  (#integer -> (FamixFortran77Type new
@@ -77,19 +77,19 @@ IASTToFamixVisitor >> f77InstrinsicTypes [
 ]
 
 { #category : #accessing }
-IASTToFamixVisitor >> f77sourcefile [
+IASTToFortranVisitor >> f77sourcefile [
 
 	^ f77sourcefile
 ]
 
 { #category : #accessing }
-IASTToFamixVisitor >> f77sourcefile: anObject [
+IASTToFortranVisitor >> f77sourcefile: anObject [
 
 	f77sourcefile := anObject
 ]
 
 { #category : #initialization }
-IASTToFamixVisitor >> initialize [
+IASTToFortranVisitor >> initialize [
 
 	super initialize.
 	self initializeModel.
@@ -97,7 +97,7 @@ IASTToFamixVisitor >> initialize [
 ]
 
 { #category : #initialization }
-IASTToFamixVisitor >> initializeModel [
+IASTToFortranVisitor >> initializeModel [
 
 	model := FamixEsopeModel new name: 'mooseModelF77'.
 	"model
@@ -106,13 +106,13 @@ IASTToFamixVisitor >> initializeModel [
 ]
 
 { #category : #testing }
-IASTToFamixVisitor >> isDummySubroutine: name [
+IASTToFortranVisitor >> isDummySubroutine: name [
 
 	^ name sameAs: '__$__'
 ]
 
 { #category : #'private-creation' }
-IASTToFamixVisitor >> newIndexedFileAnchor: filename [
+IASTToFortranVisitor >> newIndexedFileAnchor: filename [
 	| file |
 	file := filename asFileReference.
 	^ (self newEntity: FamixFortran77IndexedFileAnchor)
@@ -129,13 +129,13 @@ IASTToFamixVisitor >> newIndexedFileAnchor: filename [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visit: anIASTModel [
+IASTToFortranVisitor >> visit: anIASTModel [
 
 	^ anIASTModel accept: self
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTBlockData: aBlockData [
+IASTToFortranVisitor >> visitIASTBlockData: aBlockData [
 
 	| blockdata |
 
@@ -158,7 +158,7 @@ IASTToFamixVisitor >> visitIASTBlockData: aBlockData [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTComment: aComment [
+IASTToFortranVisitor >> visitIASTComment: aComment [
 
 	| comment |
 	comment := aComment isProgUnit
@@ -174,7 +174,7 @@ IASTToFamixVisitor >> visitIASTComment: aComment [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTEsopePointer: aPointerVarDeclaration [
+IASTToFortranVisitor >> visitIASTEsopePointer: aPointerVarDeclaration [
 
 	| varPointer |
 	varPointer := aPointerVarDeclaration accept:
@@ -185,13 +185,13 @@ IASTToFamixVisitor >> visitIASTEsopePointer: aPointerVarDeclaration [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
+IASTToFortranVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 
 	^ aSegmentCommand accept: (self spawn: IASTToEsopeVisitor)
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTEsopeSegment: aSegment [
+IASTToFortranVisitor >> visitIASTEsopeSegment: aSegment [
 
 	| segment |
 	segment := aSegment accept: (self spawn: IASTToEsopeVisitor).
@@ -203,7 +203,7 @@ IASTToFamixVisitor >> visitIASTEsopeSegment: aSegment [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTFunction: aFunction [
+IASTToFortranVisitor >> visitIASTFunction: aFunction [
 
 	| function |
 	function := self
@@ -216,14 +216,14 @@ IASTToFamixVisitor >> visitIASTFunction: aFunction [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTImplicit: anImplicit [
+IASTToFortranVisitor >> visitIASTImplicit: anImplicit [
 
 	self flag: #TODO.
 	"put implicit info into the FamixFortranProgramFile"
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTInclude: anInclude [
+IASTToFortranVisitor >> visitIASTInclude: anInclude [
 
 	self flag: #FIXME.
 	"how to set the source ?"
@@ -236,7 +236,7 @@ IASTToFamixVisitor >> visitIASTInclude: anInclude [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTIncludedFile: anIncludedFile [
+IASTToFortranVisitor >> visitIASTIncludedFile: anIncludedFile [
 
 	anIncludedFile sourceAnchor
 		startLine: anIncludedFile sourceAnchor startLine + 1;
@@ -248,7 +248,7 @@ IASTToFamixVisitor >> visitIASTIncludedFile: anIncludedFile [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTInvocation: anInvocation [
+IASTToFortranVisitor >> visitIASTInvocation: anInvocation [
 
 	^ (self newEntity: FamixFortran77Invocation)
 		  sourceAnchor:
@@ -259,7 +259,7 @@ IASTToFamixVisitor >> visitIASTInvocation: anInvocation [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTMainProgram: aMainProgram [
+IASTToFortranVisitor >> visitIASTMainProgram: aMainProgram [
 
 	^ self
 		  visitIASTProgramUnit: aMainProgram
@@ -267,7 +267,7 @@ IASTToFamixVisitor >> visitIASTMainProgram: aMainProgram [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTProgramFile: aProgramFile [
+IASTToFortranVisitor >> visitIASTProgramFile: aProgramFile [
 
 	| progFile |
 	self f77sourcefile: aProgramFile filename.
@@ -286,7 +286,7 @@ IASTToFamixVisitor >> visitIASTProgramFile: aProgramFile [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixFortranClass [
+IASTToFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixFortranClass [
 
 	| progUnit |
 	progUnit := (self newEntity: aFamixFortranClass)
@@ -327,7 +327,7 @@ IASTToFamixVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixFortranC
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTSubroutine: aSubroutine [
+IASTToFortranVisitor >> visitIASTSubroutine: aSubroutine [
 
 	| subroutine |
 	subroutine := self
@@ -340,7 +340,7 @@ IASTToFamixVisitor >> visitIASTSubroutine: aSubroutine [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTVarEso: aVarEso [
+IASTToFortranVisitor >> visitIASTVarEso: aVarEso [
 
 	| varsAccesses |
 	varsAccesses := aVarEso accept: (self spawn: IASTToEsopeVisitor).
@@ -351,19 +351,19 @@ IASTToFamixVisitor >> visitIASTVarEso: aVarEso [
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTVarEsoAt: aVarEso [
+IASTToFortranVisitor >> visitIASTVarEsoAt: aVarEso [
 
 	^ self visitIASTVarEso: aVarEso
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTVarEsoSl: aVarEso [
+IASTToFortranVisitor >> visitIASTVarEsoSl: aVarEso [
 
 	^ self visitIASTVarEso: aVarEso
 ]
 
 { #category : #visiting }
-IASTToFamixVisitor >> visitIASTVariable: aVariable [
+IASTToFortranVisitor >> visitIASTVariable: aVariable [
 
 	| var |
 	var := (self newEntity: stack top localVariableClass)

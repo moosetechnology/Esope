@@ -176,7 +176,7 @@ IASTToFamixVisitorTest >> setUp [
 	super setUp.
 	
 	programFile := IASTProgramFile new filename: 'fortran77.f' ; yourself.
-	visitor := IASTToFamixVisitor new.
+	visitor := IASTToFortranVisitor new.
 ]
 
 { #category : #'tests-esope' }
