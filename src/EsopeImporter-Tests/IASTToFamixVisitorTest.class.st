@@ -128,7 +128,7 @@ IASTToFamixVisitorTest >> defaultVarAccess: name isWrite: boolean [
 		  yourself
 ]
 
-{ #category : #'tests-esope' }
+{ #category : #'default values' }
 IASTToFamixVisitorTest >> defaultVarEsoAt: entities [
 
 	^ IASTVarEsoAt new
@@ -138,7 +138,7 @@ IASTToFamixVisitorTest >> defaultVarEsoAt: entities [
 		  yourself
 ]
 
-{ #category : #'tests-esope' }
+{ #category : #'default values' }
 IASTToFamixVisitorTest >> defaultVarEsoSl: entities [
 
 	^ IASTVarEsoSl new
@@ -169,6 +169,13 @@ IASTToFamixVisitorTest >> defaultVariable: varName withType: typeName [
 		  entityName: varName;
 		  typeSpec: (self defaultType: typeName);
 		  yourself
+]
+
+{ #category : #running }
+IASTToFamixVisitorTest >> jsonToIAST: jsonCode [
+	| jsonVisitor |
+	jsonVisitor := JsonToIASTVisitor new.
+	^jsonVisitor visitProgramFile: (NeoJSONReader fromString: jsonCode)
 ]
 
 { #category : #running }
@@ -554,32 +561,27 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeCommandSegini [
 
 { #category : #'tests-esope' }
 IASTToFamixVisitorTest >> testCreateFamixEsopePointerDeclaration [
+"      program main
+      segment, pers
+      end segment
+      pointeur p1.pers
+      end
+"
 
-	"	
-      pointeur ptr.seg
-	"
-
-	| var entity |
-	var := IASTEsopePointer new
-		       sourceAnchor: (self anchorFrom: 2 @ 1 to: 2 @ 23 );
-		       entityName: 'ptr.seg';
-		       yourself.
-
-	programFile progUnits: { (IASTSubroutine new
-			 entityName: 'sub';
-			 body: { var };
-			 yourself) }.
-
+	| entity |
+	programFile := self jsonToIAST: '{"meta":{"miVersion":"fortran77","miFilename":"/home/anquetil/Pharo/images/carrefourFortran-0901/Fortran/fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"comment":"@_   segment, pers","span":"(2:1)-(2:19)","tag":"comment"},{"anno":[],"comment":"@_   end segment","span":"(3:1)-(3:17)","tag":"comment"},{"anno":[],"comment":"@_   pointeur p1.pers","span":"(4:1)-(4:22)","tag":"comment"}],"name":"main","span":"(1:7)-(5:9)","subprograms":null,"tag":"main"}]}'.
 	entity := programFile accept: visitor.
 
 	self assert: entity programUnits size equals: 1.
 
 	self
 		assert: (visitor model allWithType: FamixFortran77Variable) size
-		equals: 1.
+		equals: 1. "p1"
+
 	entity := (visitor model allWithType: FamixFortran77Variable) first.
-	self assert: entity name equals: 'ptr'.
-	self assert: entity declaredType name equals: 'seg'.
+	self assert: entity name equals: 'p1'.
+	self assert: entity declaredType class equals: FamixFortran77Type.
+	self assert: entity declaredType name equals: 'pers'.
 ]
 
 { #category : #'tests-esope' }
@@ -676,7 +678,7 @@ c  lb.bref(/1)
 		equals: 'ptr'
 ]
 
-{ #category : #running }
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77 [
 
 	| entity |
@@ -698,7 +700,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77 [
 
 ]
 
-{ #category : #running }
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77Comment [
 
 	| entity comment |
@@ -723,7 +725,25 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77Comment [
 	self assert: comment commentedEntity equals: entity programUnits first.
 ]
 
-{ #category : #running }
+{ #category : #'tests-esope' }
+IASTToFamixVisitorTest >> testCreateFamixFortran77ESOAtWithArrayArgument [
+"Special case of a D__ function call with an array as argument
+
+      subroutine hello
+        integer arr(10)
+> > >   x = D__(y,arr(z))  < < <
+      end
+"
+
+	programFile := self jsonToIAST: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:23)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:21)-(2:22)","upper":{"anno":[],"span":"(2:21)-(2:22)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}}],"span":"(2:21)-(2:22)"},"initial":null,"length":null,"span":"(2:17)-(2:23)","type":"array","variable":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"arr","tag":"variable"}}}],"span":"(2:17)-(2:23)"},"span":"(2:9)-(2:23)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:9)-(2:15)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:9)-(3:25)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(3:17)-(3:17)","tag":"value","value":{"contents":"y","tag":"variable"}},"tag":"expr"},"name":null,"span":"(3:17)-(3:17)"},{"anno":[],"expr":{"contents":{"anno":[],"expression":{"anno":[],"span":"(3:19)-(3:21)","tag":"value","value":{"contents":"arr","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:23)-(3:23)","tag":"value","value":{"contents":"z","tag":"variable"}},"name":null,"span":"(3:23)-(3:23)","tag":"single"}],"span":"(3:23)-(3:23)"},"span":"(3:19)-(3:24)","tag":"subscript"},"tag":"expr"},"name":null,"span":"(3:19)-(3:24)"}],"span":"(3:17)-(3:24)"},"function":{"anno":[],"span":"(3:13)-(3:15)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(3:13)-(3:25)","tag":"function_call"},"span":"(3:9)-(3:25)","tag":"assign_expression","target":{"anno":[],"span":"(3:9)-(3:9)","tag":"value","value":{"contents":"x","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile accept: visitor.
+
+	self assert: (visitor model allWithType: FamixFortran77Variable) size equals: 5. "x, y, y.arr, arr, z"
+	self assert: (visitor model allWithType: FamixFortran77Access) size equals: 4. "x, y, y.arr, z"
+
+]
+
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77Invocation [
 	| entity invocation caller callee |
 
@@ -751,7 +771,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77Invocation [
 	self assert: (invocation attributeAt: #entity ifAbsent: [ nil ] ) isNotNil
 ]
 
-{ #category : #running }
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77LocalVariable [
 
 	| entity var |
@@ -776,7 +796,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77LocalVariable [
 		equals: entity programUnits first
 ]
 
-{ #category : #running }
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77PUBlockdata [
 
 	| entity |
@@ -795,7 +815,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUBlockdata [
 	self assert: entity programFile isNotNil.
 ]
 
-{ #category : #running }
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77PUComment [
 	| entity |
 	programFile progUnits: { IASTComment new
@@ -814,7 +834,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUComment [
 	self assert: entity programFile isNotNil.
 ]
 
-{ #category : #running }
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77PUFunction [
 
 	| entity |
@@ -832,7 +852,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUFunction [
 	self assert: entity programFile isNotNil.
 ]
 
-{ #category : #running }
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77PUFunctionWithParameter [
 
 	| entity param |
@@ -857,7 +877,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUFunctionWithParameter [
 	self assert: param parentBehaviouralEntity equals: entity.
 ]
 
-{ #category : #running }
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77PUMain [
 
 	| entity |
@@ -875,7 +895,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUMain [
 	self assert: entity programFile isNotNil.
 ]
 
-{ #category : #running }
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77ProgramFile [
 	| entity |
 	programFile accept: visitor.
@@ -888,7 +908,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77ProgramFile [
 	self assert: entity programUnits size equals: 0
 ]
 
-{ #category : #running }
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77SourceAnchor [
 	| entity |
 	entity := self defaultAnchor accept: visitor.
@@ -901,7 +921,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77SourceAnchor [
 	self assert: entity endColumn equals: 10.
 ]
 
-{ #category : #running }
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77Subroutine [
 
 	| entity |
@@ -920,7 +940,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77Subroutine [
 	self assert: entity parameters size equals: 0
 ]
 
-{ #category : #running }
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77SubroutineWithSimpleImplicit [
 
 	| entity sub |
