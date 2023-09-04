@@ -57,6 +57,37 @@ JsonToIASTVisitorTest >> testAccessArrayWithIndicesLiteral [
 ]
 
 { #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testAccessArrayWithSeveralIndices [
+	"subroutine hello
+	  integer arr(10, 10, 10)
+      someVar = arr(x, 2, y)
+      end
+"
+	| programFile var |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:29)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:19)-(2:20)","upper":{"anno":[],"span":"(2:19)-(2:20)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}},{"anno":[],"lower":null,"span":"(2:23)-(2:24)","upper":{"anno":[],"span":"(2:23)-(2:24)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}},{"anno":[],"lower":null,"span":"(2:27)-(2:28)","upper":{"anno":[],"span":"(2:27)-(2:28)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}}],"span":"(2:19)-(2:28)"},"initial":null,"length":null,"span":"(2:15)-(2:29)","type":"array","variable":{"anno":[],"span":"(2:15)-(2:17)","tag":"value","value":{"contents":"arr","tag":"variable"}}}],"span":"(2:15)-(2:29)"},"span":"(2:7)-(2:29)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:7)-(3:28)","statement":{"anno":[],"expression":{"anno":[],"expression":{"anno":[],"span":"(3:17)-(3:19)","tag":"value","value":{"contents":"arr","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:21)-(3:21)","tag":"value","value":{"contents":"x","tag":"variable"}},"name":null,"span":"(3:21)-(3:21)","tag":"single"},{"anno":[],"index":{"anno":[],"span":"(3:24)-(3:24)","tag":"value","value":{"contents":["2",null],"tag":"integer"}},"name":null,"span":"(3:24)-(3:24)","tag":"single"},{"anno":[],"index":{"anno":[],"span":"(3:27)-(3:27)","tag":"value","value":{"contents":"y","tag":"variable"}},"name":null,"span":"(3:27)-(3:27)","tag":"single"}],"span":"(3:21)-(3:27)"},"span":"(3:17)-(3:28)","tag":"subscript"},"span":"(3:7)-(3:28)","tag":"assign_expression","target":{"anno":[],"span":"(3:7)-(3:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	"body of 1st program-unit has 2 statements"
+	self assert: programFile progUnits first body size equals: 2.
+	"2nd statement has 2 expressions"
+	self assert: programFile progUnits first body second size equals: 2.
+
+	"array access is 2nd expression of 2nd statement"
+	var := programFile progUnits first body second second.
+	self assert: var class equals: IASTVarAccess.
+	self assert: var entityName equals: 'arr'.
+	self assert: var indices size equals: 3.
+
+	self assert: var indices first class equals: IASTVarAccess.
+	self assert: var indices first entityName equals: 'x'.
+
+	self assert: var indices second isNil.
+
+	self assert: var indices third class equals: IASTVarAccess.
+	self assert: var indices third entityName equals: 'y'.
+
+]
+
+{ #category : #'tests-statement' }
 JsonToIASTVisitorTest >> testAssignementStatement [
 	"subroutine hello
       someVar = otherVar
