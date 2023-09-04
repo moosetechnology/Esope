@@ -42,7 +42,7 @@ FortranProjectImporter >> astFolder [
 	^'Json'
 ]
 
-{ #category : #private }
+{ #category : #'private - import' }
 FortranProjectImporter >> copyEsopeFiles [
 	self ensureEmptyFolder: self esopeFolder.
 
@@ -51,22 +51,29 @@ FortranProjectImporter >> copyEsopeFiles [
 	]
 ]
 
-{ #category : #private }
+{ #category : #'private - files' }
+FortranProjectImporter >> defaultFASTSource [
+	^(self ensureFolder: self fastSrcFolder) / 'tmpFASTSource.f'
+]
+
+{ #category : #'private - files' }
 FortranProjectImporter >> ensureEmptyFolder: folderName [
 	| fileReference |
 	fileReference := folderName asFileReference.
 	fileReference exists
 		ifTrue: [ fileReference children copy do: [ :childFile | childFile delete ]  ]
-		ifFalse: [ fileReference ensureCreateDirectory ]
+		ifFalse: [ fileReference ensureCreateDirectory ].
+	^fileReference
 ]
 
-{ #category : #private }
+{ #category : #'private - files' }
 FortranProjectImporter >> ensureFolder: folderName [
 	| fileReference |
 	fileReference := folderName asFileReference.
 	fileReference exists
 		ifTrue: [ folderName  ]
-		ifFalse: [ fileReference ensureCreateDirectory ]
+		ifFalse: [ fileReference ensureCreateDirectory ].
+	^fileReference
 ]
 
 { #category : #accessing }
@@ -74,7 +81,7 @@ FortranProjectImporter >> esopeFolder [
 	^'Esope'
 ]
 
-{ #category : #private }
+{ #category : #'private - import' }
 FortranProjectImporter >> esopeToFortran [
 
 	self ensureEmptyFolder: self fortranFolder.
@@ -96,16 +103,35 @@ FortranProjectImporter >> f77parser [
 	^ '/home/anquetil/bin/fortran-src-extras serialize -t json -v77l encode'
 ]
 
-{ #category : #private }
+{ #category : #'private - import' }
 FortranProjectImporter >> famixResolve [
 
 	(FamixFortran77Resolver on: famixModel)
 		resolve
 ]
 
-{ #category : #private }
+{ #category : #accessing }
+FortranProjectImporter >> fastSrcFolder [
+	^'FastTmp'
+]
+
+{ #category : #'private - files' }
 FortranProjectImporter >> fileReference: aFileReference into: aFolderName [
 	^aFolderName asFileReference / aFileReference basename
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> fortran: fortranFile toJsonASTFolder: astFolder [
+
+	| jsonFile |
+	jsonFile := self
+		            fileReference: fortranFile withoutExtension
+		            into: astFolder.
+
+	^ LibC runCommand: ('{1} "{2}" > "{3}.json" 2> "{3}.err"' format: {
+				   self f77parser.
+				   fortranFile pathString.
+				   jsonFile pathString })
 ]
 
 { #category : #accessing }
@@ -113,24 +139,32 @@ FortranProjectImporter >> fortranFolder [
 	^'Fortran'
 ]
 
-{ #category : #private }
+{ #category : #'private - import' }
 FortranProjectImporter >> fortranToJsonAST [
 
 	self ensureEmptyFolder: self astFolder.
 
-	(self fortranFolder asFileReference allFiles) do: [ :fortranFile || jsonFile |
-		jsonFile := self 
-				fileReference: (fortranFile withoutExtension)
-				into: self astFolder.
-
-	LibC runCommand: ('{1} "{2}" > "{3}.json" 2> "{3}.err"' format: { 
-				 self f77parser .
-				 fortranFile pathString .
-				 jsonFile pathString })
-	]
+	self fortranFolder asFileReference allFiles do: [ :fortranFile |
+		self fortran: fortranFile toJsonASTFolder: self astFolder  ]
 ]
 
-{ #category : #private }
+{ #category : #run }
+FortranProjectImporter >> getFASTFor: sourceCode [
+
+	| fastSrcFile |
+	fastSrcFile := self defaultFASTSource.
+	fastSrcFile writeStreamDo: [:st |
+		st truncate.
+		st
+			<< sourceCode ;
+			cr
+	].
+	
+	self fortran: fastSrcFile toJsonASTFolder: self fastSrcFolder.
+	^self jsonASTToFAST 
+]
+
+{ #category : #'private - import' }
 FortranProjectImporter >> iASTToFamix [
 
 	| visitor |
@@ -163,7 +197,7 @@ FortranProjectImporter >> import [
 
 ]
 
-{ #category : #private }
+{ #category : #'private - import' }
 FortranProjectImporter >> includedFilesToEsope [
 
 	(self srcFolder allChildrenMatching: '*.inc') do: [ :includedFile | 
@@ -180,7 +214,17 @@ FortranProjectImporter >> includedFilesToEsope [
 		]
 ]
 
-{ #category : #private }
+{ #category : #'private - import' }
+FortranProjectImporter >> jsonASTToFAST [
+
+	| jsonAST |
+	jsonAST := self defaultFASTSource withExtension: 'json'.
+	^FASTFortranJsonVisitor new visitProgramFile:
+		  (jsonAST readStreamDo: [ :str | 
+			   NeoJSONReader fromString: str contents ])
+]
+
+{ #category : #'private - import' }
 FortranProjectImporter >> jsonASTToIAST [
 
 	| visitor |
