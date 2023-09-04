@@ -78,12 +78,6 @@ JsonToIASTVisitor >> visitArgument: anArgumentNode [
 	arg := (data size = 1) ifTrue: [ data first ] ifFalse: [ data second ].
 	arg ifNil: [ ^nil ].
 
-	(arg class = IASTVarAccess)
-		ifTrue: [ arg := IASTParameter new
-			entityName: arg entityName ;
-			sourceAnchor: arg sourceAnchor ;
-			yourself ].
-
 	^arg
 ]
 
@@ -579,11 +573,11 @@ JsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 			          IASTSubroutine new
 				          parameters: data third;
 				          yourself ].
-	^ entity
-		  sourceAnchor: (self makeIndexedAnchor: data first);
-		  entityName: data second;
-		  entityName: data second;
-		  body: data fourth
+	^entity
+		sourceAnchor: (self makeIndexedAnchor: data first) ;
+		entityName: data second ;
+		body: data fourth ;
+		yourself
 ]
 
 { #category : #'visiting expression' }

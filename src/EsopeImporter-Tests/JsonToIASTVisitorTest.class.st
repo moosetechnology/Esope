@@ -302,37 +302,38 @@ JsonToIASTVisitorTest >> testContinueStatement [
 ]
 
 { #category : #'tests-esope' }
-JsonToIASTVisitorTest >> testCreateFamixFortran77ESOAtWithArrayArgument [
+JsonToIASTVisitorTest >> testESOAtWithArrayArgument [
 "Special case of a D__ function call with an array as argument
 
-     subroutine hello
-        integer ubb(ubbcnt)
-***->     x = D__(ur,ubb(ir)) <-***
+      subroutine hello
+        integer arr(10)
+        x = D__(y,arr(z))
       end
 "
 
 	| programFile d__ arg |
 	self skip.
 
-	programFile := self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"/home/anquetil/Pharo/images/carrefourFortran-0901/Fortran/fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:27)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:21)-(2:26)","upper":{"anno":[],"span":"(2:21)-(2:26)","tag":"value","value":{"contents":"ubbcnt","tag":"variable"}}}],"span":"(2:21)-(2:26)"},"initial":null,"length":null,"span":"(2:17)-(2:27)","type":"array","variable":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"ubb","tag":"variable"}}}],"span":"(2:17)-(2:27)"},"span":"(2:9)-(2:27)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:9)-(2:15)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:9)-(3:27)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(3:17)-(3:18)","tag":"value","value":{"contents":"ur","tag":"variable"}},"tag":"expr"},"name":null,"span":"(3:17)-(3:18)"},{"anno":[],"expr":{"contents":{"anno":[],"expression":{"anno":[],"span":"(3:20)-(3:22)","tag":"value","value":{"contents":"ubb","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:24)-(3:25)","tag":"value","value":{"contents":"ir","tag":"variable"}},"name":null,"span":"(3:24)-(3:25)","tag":"single"}],"span":"(3:24)-(3:25)"},"span":"(3:20)-(3:26)","tag":"subscript"},"tag":"expr"},"name":null,"span":"(3:20)-(3:26)"}],"span":"(3:17)-(3:26)"},"function":{"anno":[],"span":"(3:13)-(3:15)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(3:13)-(3:27)","tag":"function_call"},"span":"(3:9)-(3:27)","tag":"assign_expression","target":{"anno":[],"span":"(3:9)-(3:9)","tag":"value","value":{"contents":"x","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:23)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:21)-(2:22)","upper":{"anno":[],"span":"(2:21)-(2:22)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}}],"span":"(2:21)-(2:22)"},"initial":null,"length":null,"span":"(2:17)-(2:23)","type":"array","variable":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"arr","tag":"variable"}}}],"span":"(2:17)-(2:23)"},"span":"(2:9)-(2:23)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:9)-(2:15)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:9)-(3:25)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(3:17)-(3:17)","tag":"value","value":{"contents":"y","tag":"variable"}},"tag":"expr"},"name":null,"span":"(3:17)-(3:17)"},{"anno":[],"expr":{"contents":{"anno":[],"expression":{"anno":[],"span":"(3:19)-(3:21)","tag":"value","value":{"contents":"arr","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:23)-(3:23)","tag":"value","value":{"contents":"z","tag":"variable"}},"name":null,"span":"(3:23)-(3:23)","tag":"single"}],"span":"(3:23)-(3:23)"},"span":"(3:19)-(3:24)","tag":"subscript"},"tag":"expr"},"name":null,"span":"(3:19)-(3:24)"}],"span":"(3:17)-(3:24)"},"function":{"anno":[],"span":"(3:13)-(3:15)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(3:13)-(3:25)","tag":"function_call"},"span":"(3:9)-(3:25)","tag":"assign_expression","target":{"anno":[],"span":"(3:9)-(3:9)","tag":"value","value":{"contents":"x","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
 
-	"body of 1st program-unit, then second instruction"
+	"body of 1st program-unit, then second statement"
 	self assert: programFile progUnits first body second size equals: 2.
+	"2nd expression of the 2nd statement"
 	d__ := programFile progUnits first body second second.
 
 	self assert: d__ class equals: IASTVarEsoAt.
 	self assert: d__ entities size equals: 2.
 
 	arg := d__ entities first.
-	self assert: arg class equals: IASTParameter.
-	self assert: arg entityName equals: 'ur'.
+	self assert: arg class equals: IASTVarAccess.
+	self assert: arg entityName equals: 'y'.
 
 
 	arg := d__ entities second.
 	self assert: arg class equals: IASTVarAccess.
-	self assert: arg entityName equals: 'ubb'.
-	self assert: arg arguments size equals: 1.
-	self assert: arg arguments first entityName equals: 'ir'.
+	self assert: arg entityName equals: 'arr'.
+	self assert: arg indices size equals: 1.
+	self assert: arg indices first entityName equals: 'z'.
 
 ]
 
@@ -578,9 +579,9 @@ JsonToIASTVisitorTest >> testEsoArWithDotArg [
 	self assert: d__ class equals: IASTVarEsoAt.
 
 	self assert: d__ entities size equals: 2.
-	self assert: d__ entities first class equals: IASTParameter.
+	self assert: d__ entities first class equals: IASTVarAccess.
 	self assert: d__ entities first entityName equals: 'p'.
-	self assert: d__ entities second class equals: IASTParameter.
+	self assert: d__ entities second class equals: IASTVarAccess.
 	self assert: d__ entities second entityName equals: 'i'.
 
 ]
@@ -686,7 +687,7 @@ JsonToIASTVisitorTest >> testEsoAtTwoArgs [
 	stmt entities do: [ :ent |
 		self assert: ent class equals: IASTVarAccess.
 		self assert: (#(baz bar) includes: ent entityName asSymbol).
-		self deny:ent isWrite
+		self deny: ent isWrite
 	]
 ]
 
@@ -726,10 +727,10 @@ JsonToIASTVisitorTest >> testEsoSl [
 	self assert: stmt class equals: IASTVarEsoSl.
 	self assert: stmt entities size equals: 2.
 	
-	self assert: stmt entities first class equals: IASTParameter.
+	self assert: stmt entities first class equals: IASTVarAccess.
 	self assert: stmt entities first entityName equals: 'a'.
 	
-	self assert: stmt entities second class equals: IASTParameter.
+	self assert: stmt entities second class equals: IASTVarAccess.
 	self assert: stmt entities second entityName equals: 'i'
 ]
 
@@ -750,12 +751,12 @@ JsonToIASTVisitorTest >> testEsoSlWithDot [
 	
 	self assert: stmt entities first class equals: IASTVarEsoAt.
 	self assert: stmt entities first entities size equals: 2.
-	self assert: stmt entities first entities first class equals: IASTParameter.
+	self assert: stmt entities first entities first class equals: IASTVarAccess.
 	self assert: stmt entities first entities first entityName equals: 'p'.
-	self assert: stmt entities first entities second class equals: IASTParameter.
+	self assert: stmt entities first entities second class equals: IASTVarAccess.
 	self assert: stmt entities first entities second entityName equals: 'a'.
 	
-	self assert: stmt entities second class equals: IASTParameter.
+	self assert: stmt entities second class equals: IASTVarAccess.
 	self assert: stmt entities second entityName equals: 'i'
 ]
 
@@ -775,16 +776,16 @@ JsonToIASTVisitorTest >> testEsoSlWithTwoDot [
 	self assert: stmt entities size equals: 2.
 	self assert: stmt entities first class equals: IASTVarEsoAt.
 	self assert: stmt entities first entities size equals: 2.
-	self assert: stmt entities first entities first class equals: IASTParameter.
+	self assert: stmt entities first entities first class equals: IASTVarAccess.
 	self assert: stmt entities first entities first entityName equals: 'p'.
-	self assert: stmt entities first entities second class equals: IASTParameter.
+	self assert: stmt entities first entities second class equals: IASTVarAccess.
 	self assert: stmt entities first entities second entityName equals: 'a'.
 	
 	self assert: stmt entities second class equals: IASTVarEsoAt.
 	self assert: stmt entities second entities size equals: 2.
-	self assert: stmt entities second entities first class equals: IASTParameter.
+	self assert: stmt entities second entities first class equals: IASTVarAccess.
 	self assert: stmt entities second entities first entityName equals: 'p'.
-	self assert: stmt entities second entities second class equals: IASTParameter.
+	self assert: stmt entities second entities second class equals: IASTVarAccess.
 	self assert: stmt entities second entities second entityName equals: 'i'.
 ]
 
@@ -1467,11 +1468,11 @@ JsonToIASTVisitorTest >> testSubroutineInvocationWithArguments [
 	self assert: stmt arguments size equals: 2.
 
 	arg := stmt arguments first.
-	self assert: arg class equals: IASTParameter.
+	self assert: arg class equals: IASTVarAccess.
 	self assert: arg entityName equals: 'bar'.
 
 	arg := stmt arguments second.
-	self assert: arg class equals: IASTParameter.
+	self assert: arg class equals: IASTVarAccess.
 	self assert: arg entityName equals: 'baz'.
 ]
 
