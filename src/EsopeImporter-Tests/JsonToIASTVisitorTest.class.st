@@ -33,6 +33,30 @@ JsonToIASTVisitorTest >> testAccessArrayWithIndices [
 ]
 
 { #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testAccessArrayWithIndicesLiteral [
+	"subroutine hello
+	  integer arr(10)
+      someVar = arr(5)
+      end
+"
+	| programFile var |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:21)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:19)-(2:20)","upper":{"anno":[],"span":"(2:19)-(2:20)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}}],"span":"(2:19)-(2:20)"},"initial":null,"length":null,"span":"(2:15)-(2:21)","type":"array","variable":{"anno":[],"span":"(2:15)-(2:17)","tag":"value","value":{"contents":"arr","tag":"variable"}}}],"span":"(2:15)-(2:21)"},"span":"(2:7)-(2:21)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:7)-(3:22)","statement":{"anno":[],"expression":{"anno":[],"expression":{"anno":[],"span":"(3:17)-(3:19)","tag":"value","value":{"contents":"arr","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:21)-(3:21)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"name":null,"span":"(3:21)-(3:21)","tag":"single"}],"span":"(3:21)-(3:21)"},"span":"(3:17)-(3:22)","tag":"subscript"},"span":"(3:7)-(3:22)","tag":"assign_expression","target":{"anno":[],"span":"(3:7)-(3:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	"body of 1st program-unit has 2 statements"
+	self assert: programFile progUnits first body size equals: 2.
+	"2nd statement has 2 expressions"
+	self assert: programFile progUnits first body second size equals: 2.
+
+	"array access is seond expression of second statement"
+	var := programFile progUnits first body second second.
+	self assert: var class equals: IASTVarAccess.
+	self assert: var entityName equals: 'arr'.
+	self assert: var indices size equals: 1.
+	"note: keep 'nil' indice to indicate that this is an array"
+	self assert: var indices first isNil.
+]
+
+{ #category : #'tests-statement' }
 JsonToIASTVisitorTest >> testAssignementStatement [
 	"subroutine hello
       someVar = otherVar
@@ -244,6 +268,41 @@ JsonToIASTVisitorTest >> testContinueStatement [
 
 
 	self assert: programFile progUnits first body isEmpty
+]
+
+{ #category : #'tests-esope' }
+JsonToIASTVisitorTest >> testCreateFamixFortran77ESOAtWithArrayArgument [
+"Special case of a D__ function call with an array as argument
+
+     subroutine hello
+        integer ubb(ubbcnt)
+***->     x = D__(ur,ubb(ir)) <-***
+      end
+"
+
+	| programFile d__ arg |
+	self skip.
+
+	programFile := self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"/home/anquetil/Pharo/images/carrefourFortran-0901/Fortran/fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:27)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:21)-(2:26)","upper":{"anno":[],"span":"(2:21)-(2:26)","tag":"value","value":{"contents":"ubbcnt","tag":"variable"}}}],"span":"(2:21)-(2:26)"},"initial":null,"length":null,"span":"(2:17)-(2:27)","type":"array","variable":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"ubb","tag":"variable"}}}],"span":"(2:17)-(2:27)"},"span":"(2:9)-(2:27)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:9)-(2:15)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:9)-(3:27)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(3:17)-(3:18)","tag":"value","value":{"contents":"ur","tag":"variable"}},"tag":"expr"},"name":null,"span":"(3:17)-(3:18)"},{"anno":[],"expr":{"contents":{"anno":[],"expression":{"anno":[],"span":"(3:20)-(3:22)","tag":"value","value":{"contents":"ubb","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:24)-(3:25)","tag":"value","value":{"contents":"ir","tag":"variable"}},"name":null,"span":"(3:24)-(3:25)","tag":"single"}],"span":"(3:24)-(3:25)"},"span":"(3:20)-(3:26)","tag":"subscript"},"tag":"expr"},"name":null,"span":"(3:20)-(3:26)"}],"span":"(3:17)-(3:26)"},"function":{"anno":[],"span":"(3:13)-(3:15)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(3:13)-(3:27)","tag":"function_call"},"span":"(3:9)-(3:27)","tag":"assign_expression","target":{"anno":[],"span":"(3:9)-(3:9)","tag":"value","value":{"contents":"x","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	"body of 1st program-unit, then second instruction"
+	self assert: programFile progUnits first body second size equals: 2.
+	d__ := programFile progUnits first body second second.
+
+	self assert: d__ class equals: IASTVarEsoAt.
+	self assert: d__ entities size equals: 2.
+
+	arg := d__ entities first.
+	self assert: arg class equals: IASTParameter.
+	self assert: arg entityName equals: 'ur'.
+
+
+	arg := d__ entities second.
+	self assert: arg class equals: IASTVarAccess.
+	self assert: arg entityName equals: 'ubb'.
+	self assert: arg arguments size equals: 1.
+	self assert: arg arguments first entityName equals: 'ir'.
+
 ]
 
 { #category : #'tests-progUnit' }

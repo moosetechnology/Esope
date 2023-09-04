@@ -130,7 +130,8 @@ JsonToIASTVisitor >> visitBlock_data: aBlockDataNode [
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitBody: aNode [
 
-	^ super visitBody: aNode
+	^(super visitBody: aNode)
+		reject: #isNil
 ]
 
 { #category : #'visiting statement' }
@@ -497,12 +498,6 @@ JsonToIASTVisitor >> visitIncludeComment: anEsopeIncludeCommentNode [
 { #category : #'visiting expression' }
 JsonToIASTVisitor >> visitInteger: anIntegerNode [
 	^nil
-]
-
-{ #category : #'visiting reflectivity' }
-JsonToIASTVisitor >> visitJsonArray: aNode [
-	^(super visitJsonArray: aNode)
-		reject: #isNil
 ]
 
 { #category : #'visiting prog-unit' }
