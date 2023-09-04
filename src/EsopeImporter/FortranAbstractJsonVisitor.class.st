@@ -41,7 +41,7 @@ FortranAbstractJsonVisitor >> findWordBoundaries: anEsopeCommentString [
 	inWord := false.
 
 	(anEsopeCommentString allButFirst: 5) do: [ :char | "for now, treat . as a letter: lb.pstr"
-		(char isLetter or: [ char = $. ])
+		(char isLetter or: [ char isDigit or: [ char = $. ]])
 			ifTrue: [ 
 				inWord ifFalse: [ "begining of a word"
 					wordBoundaries add: i + 5.
