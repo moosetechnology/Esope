@@ -78,12 +78,6 @@ JsonToIASTVisitor >> visitArgument: anArgumentNode [
 	arg := (data size = 1) ifTrue: [ data first ] ifFalse: [ data second ].
 	arg ifNil: [ ^nil ].
 
-	(arg class = IASTVarAccess)
-		ifTrue: [ arg := IASTParameter new
-			entityName: arg entityName ;
-			sourceAnchor: arg sourceAnchor ;
-			yourself ].
-
 	^arg
 ]
 
@@ -130,7 +124,8 @@ JsonToIASTVisitor >> visitBlock_data: aBlockDataNode [
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitBody: aNode [
 
-	^ super visitBody: aNode
+	^(super visitBody: aNode)
+		reject: #isNil
 ]
 
 { #category : #'visiting statement' }
@@ -499,12 +494,6 @@ JsonToIASTVisitor >> visitInteger: anIntegerNode [
 	^nil
 ]
 
-{ #category : #'visiting reflectivity' }
-JsonToIASTVisitor >> visitJsonArray: aNode [
-	^(super visitJsonArray: aNode)
-		reject: #isNil
-]
-
 { #category : #'visiting prog-unit' }
 JsonToIASTVisitor >> visitMain: aMainProgramNode [
  	| data |
@@ -550,6 +539,14 @@ JsonToIASTVisitor >> visitReturnStatement: aReturnStatementNode [
 	^data second
 ]
 
+{ #category : #'visiting expression' }
+JsonToIASTVisitor >> visitSingle: anArraySingleIndexNode [
+	| data |
+	data := super visitSingle: anArraySingleIndexNode.
+	^data second
+
+]
+
 { #category : #visiting }
 JsonToIASTVisitor >> visitSpanOf: aNode [
 	^self makeIndexedAnchor: (self visitSpan: (aNode at: 'span'))
@@ -576,11 +573,22 @@ JsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 			          IASTSubroutine new
 				          parameters: data third;
 				          yourself ].
-	^ entity
-		  sourceAnchor: (self makeIndexedAnchor: data first);
-		  entityName: data second;
-		  entityName: data second;
-		  body: data fourth
+	^entity
+		sourceAnchor: (self makeIndexedAnchor: data first) ;
+		entityName: data second ;
+		body: data fourth ;
+		yourself
+]
+
+{ #category : #'visiting expression' }
+JsonToIASTVisitor >> visitSubscript: aSubscriptNode [
+
+	| data |
+	data := super visitSubscript: aSubscriptNode.
+	^data second
+		indices: data third ;
+		yourself
+
 ]
 
 { #category : #visiting }

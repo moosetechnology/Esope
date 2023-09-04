@@ -2,7 +2,8 @@ Class {
 	#name : #IASTVarAccess,
 	#superclass : #IASTEntityRef,
 	#instVars : [
-		'isWrite'
+		'isWrite',
+		'indices'
 	],
 	#category : #'EsopeImporter-AST-IR'
 }
@@ -11,6 +12,25 @@ Class {
 IASTVarAccess >> accept: aVisitor [
 
 	^ aVisitor visitIASTVarAccess: self.
+]
+
+{ #category : #accessing }
+IASTVarAccess >> indices [
+
+	^ indices
+]
+
+{ #category : #accessing }
+IASTVarAccess >> indices: anObject [
+
+	indices := anObject
+]
+
+{ #category : #initialization }
+IASTVarAccess >> initialize [
+	super initialize.
+
+	indices := OrderedCollection new
 ]
 
 { #category : #accessing }
