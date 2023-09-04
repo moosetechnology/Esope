@@ -1002,24 +1002,24 @@ JsonToIASTVisitorTest >> testMultipleStatements [
 
 { #category : #'tests-esope' }
 JsonToIASTVisitorTest >> testPointeurDeclaration [
-	"subroutine hello
-c@_   pointeur lib.pstr
+"      subroutine hello
+c@_   pointeur p1.pstr
       end
 "
 	| programFile seg |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   pointeur lib.pstr","span":"(2:1)-(2:23)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   pointeur p1.pstr","span":"(2:1)-(2:22)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
 	seg := programFile progUnits first body first.
 
 	self assert: seg class equals: IASTEsopePointer.
-	self assert: seg entityName equals: 'lib.pstr'.
+	self assert: seg entityName equals: 'p1.pstr'.
 	self assert: seg sourceAnchor class equals: IASTIndexedFileAnchor.
 	self assert: seg sourceAnchor startLine equals: 2.
 	self assert: seg sourceAnchor startColumn equals: 1.
 	self assert: seg sourceAnchor endLine equals: 2.
-	self assert: seg sourceAnchor endColumn equals: 24
+	self assert: seg sourceAnchor endColumn equals: 23
 ]
 
 { #category : #'tests-statement' }
