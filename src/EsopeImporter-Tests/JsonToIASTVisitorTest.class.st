@@ -5,6 +5,34 @@ Class {
 }
 
 { #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testAccessArrayWithIndices [
+	"subroutine hello
+	  integer arr(10)
+      someVar = arr(i)
+      end
+"
+	| programFile var |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:21)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:19)-(2:20)","upper":{"anno":[],"span":"(2:19)-(2:20)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}}],"span":"(2:19)-(2:20)"},"initial":null,"length":null,"span":"(2:15)-(2:21)","type":"array","variable":{"anno":[],"span":"(2:15)-(2:17)","tag":"value","value":{"contents":"arr","tag":"variable"}}}],"span":"(2:15)-(2:21)"},"span":"(2:7)-(2:21)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:7)-(3:22)","statement":{"anno":[],"expression":{"anno":[],"expression":{"anno":[],"span":"(3:17)-(3:19)","tag":"value","value":{"contents":"arr","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:21)-(3:21)","tag":"value","value":{"contents":"i","tag":"variable"}},"name":null,"span":"(3:21)-(3:21)","tag":"single"}],"span":"(3:21)-(3:21)"},"span":"(3:17)-(3:22)","tag":"subscript"},"span":"(3:7)-(3:22)","tag":"assign_expression","target":{"anno":[],"span":"(3:7)-(3:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	"body of 1st program-unit has 2 statements"
+	self assert: programFile progUnits first body size equals: 2.
+	"2nd statement has 2 expressions"
+	self assert: programFile progUnits first body second size equals: 2.
+
+	"array access is seond expression of second statement"
+	var := programFile progUnits first body second second.
+	self assert: var class equals: IASTVarAccess.
+	self assert: var entityName equals: 'arr'.
+	self assert: var indices size equals: 1.
+
+	var := var indices first.
+	self assert: var class equals: IASTVarAccess.
+	self deny: var isWrite.
+	self assert: var entityName equals: 'i'.
+
+]
+
+{ #category : #'tests-statement' }
 JsonToIASTVisitorTest >> testAssignementStatement [
 	"subroutine hello
       someVar = otherVar
@@ -406,7 +434,7 @@ JsonToIASTVisitorTest >> testEmptySubroutineTwoParams [
 	self assert: sub body isEmpty.
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'tests-esope' }
 JsonToIASTVisitorTest >> testEsoArTwoArgs [
 	"subroutine hello()
         d__(baz,bar) = 5

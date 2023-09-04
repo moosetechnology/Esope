@@ -550,6 +550,14 @@ JsonToIASTVisitor >> visitReturnStatement: aReturnStatementNode [
 	^data second
 ]
 
+{ #category : #'visiting expression' }
+JsonToIASTVisitor >> visitSingle: anArraySingleIndexNode [
+	| data |
+	data := super visitSingle: anArraySingleIndexNode.
+	^data second
+
+]
+
 { #category : #visiting }
 JsonToIASTVisitor >> visitSpanOf: aNode [
 	^self makeIndexedAnchor: (self visitSpan: (aNode at: 'span'))
@@ -581,6 +589,17 @@ JsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 		  entityName: data second;
 		  entityName: data second;
 		  body: data fourth
+]
+
+{ #category : #'visiting expression' }
+JsonToIASTVisitor >> visitSubscript: aSubscriptNode [
+
+	| data |
+	data := super visitSubscript: aSubscriptNode.
+	^data second
+		indices: data third ;
+		yourself
+
 ]
 
 { #category : #visiting }
