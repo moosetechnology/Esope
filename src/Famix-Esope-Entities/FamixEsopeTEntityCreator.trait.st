@@ -17,20 +17,6 @@ FamixEsopeTEntityCreator classSide >> annotation [
 ]
 
 { #category : #'entity creation' }
-FamixEsopeTEntityCreator >> newAttribute [
-
-	<generated>
-	^ self add: FamixEsopeAttribute new
-]
-
-{ #category : #'entity creation' }
-FamixEsopeTEntityCreator >> newAttributeNamed: aName [
-
-	<generated>
-	^ self add: (FamixEsopeAttribute named: aName)
-]
-
-{ #category : #'entity creation' }
 FamixEsopeTEntityCreator >> newCommand [
 
 	<generated>

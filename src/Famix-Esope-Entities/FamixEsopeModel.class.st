@@ -1,15 +1,15 @@
 Class {
 	#name : #FamixEsopeModel,
 	#superclass : #MooseModel,
-	#traits : 'FamixEsopeTEntityCreator + FamixFortran77TEntityCreator',
-	#classTraits : 'FamixEsopeTEntityCreator classTrait + FamixFortran77TEntityCreator classTrait',
+	#traits : 'FamixEsopeTEntityCreator + FamixF77TEntityCreator + FamixFortranTEntityCreator',
+	#classTraits : 'FamixEsopeTEntityCreator classTrait + FamixF77TEntityCreator classTrait + FamixFortranTEntityCreator classTrait',
 	#category : #'Famix-Esope-Entities-Model'
 }
 
 { #category : #accessing }
 FamixEsopeModel class >> allSubmetamodelsPackagesNames [
 	<generated>
-	^ #(#'Moose-Query' #'Famix-Traits' #'Famix-Fortran77-Entities')
+	^ #(#'Moose-Query' #'Famix-Traits' #'Famix-FortranUDT-Entities' #'Famix-Fortran77-Entities')
 ]
 
 { #category : #meta }

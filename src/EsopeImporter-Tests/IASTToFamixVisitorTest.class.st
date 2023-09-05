@@ -217,7 +217,7 @@ c@_   end segment
 	self assert: entity programUnits size equals: 1.
 
 	entity := entity programUnits first.
-	self assert: entity class equals: FamixFortran77IncludedFile.
+	self assert: entity class equals: FamixF77IncludedFile.
 	self assert: entity name equals: 'point.seg'.
 
 	self assert: entity programFile isNotNil.
@@ -575,12 +575,12 @@ IASTToFamixVisitorTest >> testCreateFamixEsopePointerDeclaration [
 	self assert: entity programUnits size equals: 1.
 
 	self
-		assert: (visitor model allWithType: FamixFortran77Variable) size
+		assert: (visitor model allWithType: FamixF77Variable) size
 		equals: 1. "p1"
 
-	entity := (visitor model allWithType: FamixFortran77Variable) first.
+	entity := (visitor model allWithType: FamixF77Variable) first.
 	self assert: entity name equals: 'p1'.
-	self assert: entity declaredType class equals: FamixFortran77Type.
+	self assert: entity declaredType class equals: FamixF77Type.
 	self assert: entity declaredType name equals: 'pers'.
 ]
 
@@ -618,17 +618,17 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeSegment [
 	
 	self assert: entity attributes size equals: 3.
 	attribute := entity attributes first.
-	self assert: attribute class equals: FamixEsopeAttribute.
+	self assert: attribute class equals: FamixFortranAttribute.
 	self assert: attribute name equals: 'uname'.
 	self assert: attribute declaredType name equals: 'character'.
 	
 	attribute := entity attributes second.
-	self assert: attribute class equals: FamixEsopeAttribute.
+	self assert: attribute class equals: FamixFortranAttribute.
 	self assert: attribute name equals: 'status'.
 	self assert: attribute declaredType name equals: 'logical'.
 	
 	attribute := entity attributes third.
-	self assert: attribute class equals: FamixEsopeAttribute.
+	self assert: attribute class equals: FamixFortranAttribute.
 	self assert: attribute name equals: 'age'.
 	self assert: attribute declaredType name equals: 'integer'.
 ]
@@ -691,11 +691,11 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77 [
 
 	self assert: visitor model size equals: 2.
 
-	entity := visitor model detect: [:each | each class = FamixFortran77ProgramFile ].
+	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
 	self assert: entity programUnits size equals: 1.
 
 	entity := entity programUnits first.
-	self assert: entity class equals: FamixFortran77PUSubroutine.
+	self assert: entity class equals: FamixF77PUSubroutine.
 	self assert: entity name equals: 'sub'.
 
 ]
@@ -718,7 +718,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77Comment [
 	self assert: entity programUnits first comments size equals: 1.
 
 	comment := entity programUnits first comments first.
-	self assert: comment class equals: FamixFortran77Comment.
+	self assert: comment class equals: FamixF77Comment.
 	self assert: comment content equals: 'a normal comment'.
 	self deny: comment isEsope.
 	
@@ -739,8 +739,8 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77ESOAtWithArrayArgument [
 	programFile := self jsonToIAST: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:23)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:21)-(2:22)","upper":{"anno":[],"span":"(2:21)-(2:22)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}}],"span":"(2:21)-(2:22)"},"initial":null,"length":null,"span":"(2:17)-(2:23)","type":"array","variable":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"arr","tag":"variable"}}}],"span":"(2:17)-(2:23)"},"span":"(2:9)-(2:23)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:9)-(2:15)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:9)-(3:25)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(3:17)-(3:17)","tag":"value","value":{"contents":"y","tag":"variable"}},"tag":"expr"},"name":null,"span":"(3:17)-(3:17)"},{"anno":[],"expr":{"contents":{"anno":[],"expression":{"anno":[],"span":"(3:19)-(3:21)","tag":"value","value":{"contents":"arr","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:23)-(3:23)","tag":"value","value":{"contents":"z","tag":"variable"}},"name":null,"span":"(3:23)-(3:23)","tag":"single"}],"span":"(3:23)-(3:23)"},"span":"(3:19)-(3:24)","tag":"subscript"},"tag":"expr"},"name":null,"span":"(3:19)-(3:24)"}],"span":"(3:17)-(3:24)"},"function":{"anno":[],"span":"(3:13)-(3:15)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(3:13)-(3:25)","tag":"function_call"},"span":"(3:9)-(3:25)","tag":"assign_expression","target":{"anno":[],"span":"(3:9)-(3:9)","tag":"value","value":{"contents":"x","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
 	programFile accept: visitor.
 
-	self assert: (visitor model allWithType: FamixFortran77Variable) size equals: 5. "x, y, y.arr, arr, z"
-	self assert: (visitor model allWithType: FamixFortran77Access) size equals: 4. "x, y, y.arr, z"
+	self assert: (visitor model allWithType: FamixF77Variable) size equals: 5. "x, y, y.arr, arr, z"
+	self assert: (visitor model allWithType: FamixF77Access) size equals: 4. "x, y, y.arr, z"
 
 ]
 
@@ -759,15 +759,15 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77Invocation [
 	programFile progUnits: { callee . caller }.
 
 	programFile accept: visitor.
-	entity := visitor model detect: [:each | each class = FamixFortran77ProgramFile ].
+	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
 
-	self assert: entity programUnits first class equals: FamixFortran77PUSubroutine.
-	self assert: entity programUnits second class equals: FamixFortran77PUMain.
+	self assert: entity programUnits first class equals: FamixF77PUSubroutine.
+	self assert: entity programUnits second class equals: FamixF77PUMain.
 
 	self assert: entity programUnits second outgoingInvocations size equals: 1.
 	invocation := entity programUnits second outgoingInvocations first.
 	
-	self assert: invocation class equals: FamixFortran77Invocation.
+	self assert: invocation class equals: FamixF77Invocation.
 	self assert: invocation sender equals: entity programUnits second.
 	self assert: (invocation attributeAt: #entity ifAbsent: [ nil ] ) isNotNil
 ]
@@ -782,14 +782,14 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77LocalVariable [
 			 yourself }.
 	programFile accept: visitor.
 
-	entity := visitor model detect: [:each | each class = FamixFortran77ProgramFile ].
+	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
 
 	self assert: entity programUnits first localVariables size equals: 1.
 
 	var := entity programUnits first localVariables first.
-	self assert: var class equals: FamixFortran77Variable.
+	self assert: var class equals: FamixF77Variable.
 	self assert: var name equals: 'aVar'.
-	self assert: var declaredType class equals: FamixFortran77Type.
+	self assert: var declaredType class equals: FamixF77Type.
 	self assert: var declaredType name equals: 'integer'.
 	self assert: var parentBehaviouralEntity isNotNil.
 	self
@@ -811,7 +811,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUBlockdata [
 	self assert: entity programUnits size equals: 1.
 
 	entity := entity programUnits first.
-	self assert: entity class equals: FamixFortran77PUBlockdata.
+	self assert: entity class equals: FamixF77PUBlockdata.
 	self assert: entity name equals: 'bdata'.
 	self assert: entity programFile isNotNil.
 ]
@@ -830,7 +830,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUComment [
 	self assert: entity programUnits size equals: 1.
 
 	entity := entity programUnits first.
-	self assert: entity class equals: FamixFortran77PUComment.
+	self assert: entity class equals: FamixF77PUComment.
 	self assert: entity content equals: ' a comment'.
 	self assert: entity programFile isNotNil.
 ]
@@ -848,7 +848,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUFunction [
 	self assert: entity programUnits size equals: 1.
 
 	entity := entity programUnits first.
-	self assert: entity class equals: FamixFortran77PUFunction.
+	self assert: entity class equals: FamixF77PUFunction.
 	self assert: entity name equals: 'fct'.
 	self assert: entity programFile isNotNil.
 ]
@@ -867,13 +867,13 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUFunctionWithParameter [
 	self assert: entity programUnits size equals: 1.
 
 	entity := entity programUnits first.
-	self assert: entity class equals: FamixFortran77PUFunction.
+	self assert: entity class equals: FamixF77PUFunction.
 	self assert: entity name equals: 'fct'.
 	self assert: entity programFile isNotNil.
 
 	self assert: entity parameters size equals: 1.
 	param := entity parameters first.
-	self assert: param class equals: FamixFortran77Parameter.
+	self assert: param class equals: FamixF77Parameter.
 	self assert: param name equals: 'var'.
 	self assert: param parentBehaviouralEntity equals: entity.
 ]
@@ -891,7 +891,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUMain [
 	self assert: entity programUnits size equals: 1.
 
 	entity := entity programUnits first.
-	self assert: entity class equals: FamixFortran77PUMain.
+	self assert: entity class equals: FamixF77PUMain.
 	self assert: entity name equals: 'main'.
 	self assert: entity programFile isNotNil.
 ]
@@ -904,7 +904,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77ProgramFile [
 	self assert: visitor model size equals: 1.
 
 	entity := visitor model first.
-	self assert: entity class equals: FamixFortran77ProgramFile.
+	self assert: entity class equals: FamixF77ProgramFile.
 	self assert: entity filename equals: 'fortran77.f'.
 	self assert: entity programUnits size equals: 0
 ]
@@ -914,7 +914,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77SourceAnchor [
 	| entity |
 	entity := self defaultAnchor accept: visitor.
 	
-	self assert: entity class equals: FamixFortran77IndexedFileAnchor.
+	self assert: entity class equals: FamixF77IndexedFileAnchor.
 	self assert: entity fileName equals: 'fortran77.f'.
 	self assert: entity startLine equals: 1.
 	self assert: entity startColumn equals: 7.
@@ -935,7 +935,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77Subroutine [
 	self assert: entity programUnits size equals: 1.
 
 	entity := entity programUnits first.
-	self assert: entity class equals: FamixFortran77PUSubroutine.
+	self assert: entity class equals: FamixF77PUSubroutine.
 	self assert: entity name equals: 'sub'.
 	self assert: entity programFile isNotNil.
 	self assert: entity parameters size equals: 0
@@ -958,7 +958,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77SubroutineWithSimpleImplicit [
 	self assert: entity programUnits size equals: 1.
 
 	sub := entity programUnits first.
-	self assert: sub class equals: FamixFortran77PUSubroutine.
+	self assert: sub class equals: FamixF77PUSubroutine.
 	self assert: sub name equals: 'sub'.
 	self assert: sub programFile isNotNil.
 
@@ -992,11 +992,11 @@ c@_#include ""point.seg""
 	self assert: pf programUnits size equals: 1.
 
 	sub := pf programUnits first.
-	self assert: sub class equals: FamixFortran77PUSubroutine.
+	self assert: sub class equals: FamixF77PUSubroutine.
 	self assert: sub includes size equals: 1.
 
 	include := sub includes first.
-	self assert: include class equals: FamixFortran77Include.
+	self assert: include class equals: FamixF77Include.
 	self assert: include filename equals: 'point.seg'.
 	self assert: include includedBy equals: sub "
 	self assert: include source equals: programFile."

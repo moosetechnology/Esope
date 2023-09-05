@@ -40,7 +40,7 @@ IASTToFortranVisitor >> defaultImplicitTyping: firstLetter [
 { #category : #visiting }
 IASTToFortranVisitor >> ensureInclude: name [
 
-	^ (self model allWithType: FamixFortran77Include)
+	^ (self model allWithType: FamixF77Include)
 		  detect: [ :each | each name = name ]
 		  ifFound: [ :each | each ]
 		  ifNone: [ nil ]
@@ -50,27 +50,27 @@ IASTToFortranVisitor >> ensureInclude: name [
 IASTToFortranVisitor >> f77InstrinsicTypes [
 
 	^ { 
-		  (#integer -> (FamixFortran77Type new
+		  (#integer -> (FamixF77Type new
 			    name: 'integer';
 			    mooseModel: model;
 			    yourself)).
-		  (#real -> (FamixFortran77Type new
+		  (#real -> (FamixF77Type new
 			    name: 'real';
 			    mooseModel: model;
 			    yourself)).
-		  (#complex -> (FamixFortran77Type new
+		  (#complex -> (FamixF77Type new
 			    name: 'complex';
 			    mooseModel: model;
 			    yourself)).
-		  (#logical -> (FamixFortran77Type new
+		  (#logical -> (FamixF77Type new
 			    name: 'logical';
 			    mooseModel: model;
 			    yourself)).
-		  (#character -> (FamixFortran77Type new
+		  (#character -> (FamixF77Type new
 			    name: 'character';
 			    mooseModel: model;
 			    yourself)).
-		  (#doublePrecision -> (FamixFortran77Type new
+		  (#doublePrecision -> (FamixF77Type new
 			    name: 'double precision';
 			    mooseModel: model;
 			    yourself)) } asDictionary
@@ -115,7 +115,7 @@ IASTToFortranVisitor >> isDummySubroutine: name [
 IASTToFortranVisitor >> newIndexedFileAnchor: filename [
 	| file |
 	file := filename asFileReference.
-	^ (self newEntity: FamixFortran77IndexedFileAnchor)
+	^ (self newEntity: FamixF77IndexedFileAnchor)
 		  startLine: 1;
 		  endLine: (file
 				   ifExists: [ (self class getLines: filename) size ]
@@ -139,7 +139,7 @@ IASTToFortranVisitor >> visitIASTBlockData: aBlockData [
 
 	| blockdata |
 
-	blockdata := (self newEntity: FamixFortran77PUBlockdata)
+	blockdata := (self newEntity: FamixF77PUBlockdata)
 						sourceAnchor: (self visitIndexedFileAnchor: aBlockData sourceAnchor);
 						name: aBlockData entityName;
 						yourself.
@@ -162,9 +162,9 @@ IASTToFortranVisitor >> visitIASTComment: aComment [
 
 	| comment |
 	comment := aComment isProgUnit
-		           ifTrue: [ self newEntity: FamixFortran77PUComment ]
+		           ifTrue: [ self newEntity: FamixF77PUComment ]
 		           ifFalse: [ 
-			           (self newEntity: FamixFortran77Comment)
+			           (self newEntity: FamixF77Comment)
 				           isEsope: aComment isEsope;
 				           commentedEntity: stack top ].
 	^ comment
@@ -208,7 +208,7 @@ IASTToFortranVisitor >> visitIASTFunction: aFunction [
 	| function |
 	function := self
 		            visitIASTProgramUnit: aFunction
-		            toFamix: FamixFortran77PUFunction.
+		            toFamix: FamixF77PUFunction.
 	aFunction parameters do: [ :parameter | 
 		function addParameter: (parameter accept: self) ].
 
@@ -227,7 +227,7 @@ IASTToFortranVisitor >> visitIASTInclude: anInclude [
 
 	self flag: #FIXME.
 	"how to set the source ?"
-	^ (self newEntity: FamixFortran77Include)
+	^ (self newEntity: FamixF77Include)
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: anInclude sourceAnchor);
 		  filename: anInclude entityName;
@@ -244,13 +244,13 @@ IASTToFortranVisitor >> visitIASTIncludedFile: anIncludedFile [
 
 	^ self
 		  visitIASTProgramUnit: anIncludedFile
-		  toFamix: FamixFortran77IncludedFile
+		  toFamix: FamixF77IncludedFile
 ]
 
 { #category : #visiting }
 IASTToFortranVisitor >> visitIASTInvocation: anInvocation [
 
-	^ (self newEntity: FamixFortran77Invocation)
+	^ (self newEntity: FamixF77Invocation)
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: anInvocation sourceAnchor);
 		  attributeAt: #entity put: anInvocation;
@@ -263,7 +263,7 @@ IASTToFortranVisitor >> visitIASTMainProgram: aMainProgram [
 
 	^ self
 		  visitIASTProgramUnit: aMainProgram
-		  toFamix: FamixFortran77PUMain
+		  toFamix: FamixF77PUMain
 ]
 
 { #category : #visiting }
@@ -271,7 +271,7 @@ IASTToFortranVisitor >> visitIASTProgramFile: aProgramFile [
 
 	| progFile |
 	self f77sourcefile: aProgramFile filename.
-	progFile := (self newEntity: FamixFortran77ProgramFile)
+	progFile := (self newEntity: FamixF77ProgramFile)
 		filename: aProgramFile filename;
 		name: aProgramFile filename;
 		yourself.
@@ -314,7 +314,7 @@ IASTToFortranVisitor >> visitIASTSubroutine: aSubroutine [
 	| subroutine |
 	subroutine := self
 		              visitIASTProgramUnit: aSubroutine
-		              toFamix: FamixFortran77PUSubroutine.
+		              toFamix: FamixF77PUSubroutine.
 	aSubroutine parameters do: [ :parameter | 
 		subroutine addParameter: (parameter accept: self) ].
 

@@ -16,13 +16,6 @@ FamixEsopeImportingContext class >> importedMetamodel [
 ]
 
 { #category : #importing }
-FamixEsopeImportingContext >> importAttribute [
-
-	<generated>
-	^ self importConcreteEntity: (self class fm3ClassNamed: #Attribute)
-]
-
-{ #category : #importing }
 FamixEsopeImportingContext >> importCommand [
 
 	<generated>
@@ -83,13 +76,6 @@ FamixEsopeImportingContext >> importSegsup [
 
 	<generated>
 	^ self importConcreteEntity: (self class fm3ClassNamed: #Segsup)
-]
-
-{ #category : #testing }
-FamixEsopeImportingContext >> shouldImportAttribute [
-
-	<generated>
-	^ self shouldImport: #Attribute
 ]
 
 { #category : #testing }

@@ -23,7 +23,7 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 "
 Class {
 	#name : #FamixEsopeSegment,
-	#superclass : #FamixFortran77Type,
+	#superclass : #FamixF77Type,
 	#traits : 'FamixTWithAttributes',
 	#classTraits : 'FamixTWithAttributes classTrait',
 	#category : #'Famix-Esope-Entities-Entities'
@@ -32,7 +32,7 @@ Class {
 { #category : #meta }
 FamixEsopeSegment class >> annotation [
 
-	<FMClass: #Segment super: #FamixFortran77Type>
+	<FMClass: #Segment super: #FamixF77Type>
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 	^ self

@@ -8,7 +8,7 @@ Class {
 IASTToEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
 
 	sourceAnchor startColumn: sourceAnchor endColumn - typeName size.
-	^ (self newEntity: FamixFortran77Type)
+	^ (self newEntity: FamixF77Type)
 		  sourceAnchor: (self visitIndexedFileAnchor: sourceAnchor);
 		  name: typeName;
 		  yourself
@@ -21,7 +21,7 @@ IASTToEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
 	varsNames := aPointerVar entityName substrings: '.'.
 	varsNames size < 2 ifTrue: [ ^ self ].
 
-	^ (self newEntity: FamixFortran77Variable)
+	^ (self newEntity: FamixF77Variable)
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: aPointerVar sourceAnchor);
 		  name: varsNames first;

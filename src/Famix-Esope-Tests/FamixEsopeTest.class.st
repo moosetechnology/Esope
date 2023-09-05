@@ -10,7 +10,7 @@ Class {
 { #category : #running }
 FamixEsopeTest >> defaultAnchorFrom: startPoint to: endPoint [
 
-	^ (self newEntity: FamixFortran77IndexedFileAnchor)
+	^ (self newEntity: FamixF77IndexedFileAnchor)
 		  startLine: startPoint x;
 		  startColumn: startPoint y;
 		  endLine: endPoint x;
@@ -22,7 +22,7 @@ FamixEsopeTest >> defaultAnchorFrom: startPoint to: endPoint [
 { #category : #running }
 FamixEsopeTest >> defaultAttribute: varName withType: typeName [
 
-	^ (self newEntity: FamixEsopeAttribute)
+	^ (self newEntity: FamixFortranAttribute)
 		  sourceAnchor: (self defaultAnchorFrom: 2 @ 7 to: 2 @ 19);
 		  name: varName;
 		  declaredType: (self defaultType: typeName)
@@ -61,7 +61,7 @@ FamixEsopeTest >> defaultSegmentComand: commandName on: varPointer [
 { #category : #running }
 FamixEsopeTest >> defaultType: typeName [
 
-	^ (self newEntity: FamixFortran77Type)
+	^ (self newEntity: FamixF77Type)
 		  sourceAnchor: (self defaultAnchorFrom: 2 @ 7 to: 2 @ 19);
 		  name: typeName
 ]
@@ -69,7 +69,7 @@ FamixEsopeTest >> defaultType: typeName [
 { #category : #running }
 FamixEsopeTest >> defaultVariable: varName withType: typeName [
 
-	^ (self newEntity: FamixFortran77Variable)
+	^ (self newEntity: FamixF77Variable)
 		  sourceAnchor: (self defaultAnchorFrom: 2 @ 7 to: 2 @ 19);
 		  name: varName;
 		  declaredType: (self defaultType: typeName)
@@ -103,7 +103,7 @@ FamixEsopeTest >> testCreateSegmentCommandSegini [
 
 	self assert: segini class equals: FamixEsopeSegini.
 
-	self assert: segini variable class equals: FamixFortran77Variable.
+	self assert: segini variable class equals: FamixF77Variable.
 	self assert: segini variable name equals: 'ptr'.
 	self assert: segini variable declaredType name equals: 'pointeur'
 ]
@@ -126,9 +126,9 @@ FamixEsopeTest >> testCreateSegmentWithMultipleAttributes [
 	
 	self assert: segment name equals: 'myseg'.
 	self assert: segment attributes size equals: 3.
-	self assert: segment attributes first class equals: FamixEsopeAttribute.
+	self assert: segment attributes first class equals: FamixFortranAttribute.
 	self assert: segment attributes first name equals: 'uname'.
-	self assert: segment attributes first declaredType class equals: FamixFortran77Type.
+	self assert: segment attributes first declaredType class equals: FamixF77Type.
 	self assert: segment attributes first declaredType name equals: 'character'.
 ]
 
@@ -142,7 +142,7 @@ FamixEsopeTest >> testCreateVariablePointeur [
 	| pointeur |
 	pointeur := self defaultVariable: 'ptr' withType:  'book'.
 
-	self assert: pointeur class equals: FamixFortran77Variable.
+	self assert: pointeur class equals: FamixF77Variable.
 	self assert: pointeur name equals: 'ptr'.
 	self assert: pointeur declaredType name equals: 'book'
 ]

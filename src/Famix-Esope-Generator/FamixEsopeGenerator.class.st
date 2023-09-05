@@ -92,22 +92,24 @@ Class {
 	#category : #'Famix-Esope-Generator'
 }
 
-{ #category : #generating }
+{ #category : #accessing }
 FamixEsopeGenerator class >> packageName [
 
 	^ #'Famix-Esope-Entities'
 ]
 
-{ #category : #generating }
+{ #category : #accessing }
 FamixEsopeGenerator class >> prefix [
 
 	^ #FamixEsope
 ]
 
-{ #category : #generating }
+{ #category : #accessing }
 FamixEsopeGenerator class >> submetamodels [
 
-	^ { FamixFortran77Generator }
+	^ {
+		  FamixFortran77Generator.
+		  FamixFortranUDTGenerator }
 ]
 
 { #category : #comment }
@@ -530,11 +532,9 @@ FamixEsopeGenerator >> defineClasses [
 
 	super defineClasses.
 
-	access := self remoteEntity: #Access withPrefix: #FamixFortran77.
+	access := self remoteEntity: #Access withPrefix: #FamixF77.
 
-	attribute := builder
-		             newClassNamed: #Attribute
-		             comment: self commentAttribute.
+	attribute := self remoteEntity: #Attribute withPrefix: #FamixFortran.
 
 	command := builder
 		           newClassNamed: #Command
@@ -560,9 +560,9 @@ FamixEsopeGenerator >> defineClasses [
 
 	segsup := builder newClassNamed: #Segsup comment: self commentSegsup.
 
-	type := self remoteEntity: #Type withPrefix: #FamixFortran77.
+	type := self remoteEntity: #Type withPrefix: #FamixF77.
 
-	variable := self remoteEntity: #Variable withPrefix: #FamixFortran77
+	variable := self remoteEntity: #Variable withPrefix: #FamixF77
 ]
 
 { #category : #definition }
