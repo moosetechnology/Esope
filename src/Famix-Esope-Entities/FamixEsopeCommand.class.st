@@ -14,7 +14,7 @@ As in Fortran, we are led to have a declarative instruction of the SEGMENT and t
 "
 Class {
 	#name : #FamixEsopeCommand,
-	#superclass : #FamixFortran77Access,
+	#superclass : #FamixF77Access,
 	#instVars : [
 		'#commandName => FMProperty'
 	],
@@ -24,7 +24,7 @@ Class {
 { #category : #meta }
 FamixEsopeCommand class >> annotation [
 
-	<FMClass: #Command super: #FamixFortran77Access>
+	<FMClass: #Command super: #FamixF77Access>
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 	^ self

@@ -1,7 +1,7 @@
-Extension { #name : #FamixFortran77PUProcedure }
+Extension { #name : #FamixF77PUProcedure }
 
 { #category : #'*EsopeImporter' }
-FamixFortran77PUProcedure >> allLocalVariables [
+FamixF77PUProcedure >> allLocalVariables [
 
 	self flag: #FIXME. "Find better way to flatmap types"
 	^self localVariables
@@ -11,7 +11,7 @@ FamixFortran77PUProcedure >> allLocalVariables [
 ]
 
 { #category : #'*EsopeImporter' }
-FamixFortran77PUProcedure >> allTypes [
+FamixF77PUProcedure >> allTypes [
 
 	self flag: #FIXME. "Find better way to flatmap types"
 	^self types

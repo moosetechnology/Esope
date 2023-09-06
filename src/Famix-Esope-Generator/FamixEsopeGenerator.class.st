@@ -87,27 +87,30 @@ Class {
 		'segdes',
 		'segini',
 		'segprt',
-		'segsup'
+		'segsup',
+		'dimentionalInteger'
 	],
 	#category : #'Famix-Esope-Generator'
 }
 
-{ #category : #generating }
+{ #category : #accessing }
 FamixEsopeGenerator class >> packageName [
 
 	^ #'Famix-Esope-Entities'
 ]
 
-{ #category : #generating }
+{ #category : #accessing }
 FamixEsopeGenerator class >> prefix [
 
 	^ #FamixEsope
 ]
 
-{ #category : #generating }
+{ #category : #accessing }
 FamixEsopeGenerator class >> submetamodels [
 
-	^ { FamixFortran77Generator }
+	^ {
+		  FamixFortran77Generator.
+		  FamixFortranUDTGenerator }
 ]
 
 { #category : #comment }
@@ -530,15 +533,17 @@ FamixEsopeGenerator >> defineClasses [
 
 	super defineClasses.
 
-	access := self remoteEntity: #Access withPrefix: #FamixFortran77.
+	access := self remoteEntity: #Access withPrefix: #FamixF77.
 
-	attribute := builder
-		             newClassNamed: #Attribute
-		             comment: self commentAttribute.
+	attribute := self remoteEntity: #Attribute withPrefix: #FamixFortran.
 
 	command := builder
 		           newClassNamed: #Command
 		           comment: self commentCommand.
+
+	dimentionalInteger := builder
+		                      newClassNamed: #DimentionalInteger
+		                      comment: self dimentionalIntegerComment.
 
 	implicitPointer := builder
 		                   newClassNamed: #ImplicitPointer
@@ -560,9 +565,9 @@ FamixEsopeGenerator >> defineClasses [
 
 	segsup := builder newClassNamed: #Segsup comment: self commentSegsup.
 
-	type := self remoteEntity: #Type withPrefix: #FamixFortran77.
+	type := self remoteEntity: #Type withPrefix: #FamixF77.
 
-	variable := self remoteEntity: #Variable withPrefix: #FamixFortran77
+	variable := self remoteEntity: #Variable withPrefix: #FamixF77
 ]
 
 { #category : #definition }
@@ -585,7 +590,9 @@ FamixEsopeGenerator >> defineHierarchy [
 	segdes --|> command.
 	segini --|> command.
 	segprt --|> command.
-	segsup --|> command
+	segsup --|> command.
+
+	dimentionalInteger --|> variable
 ]
 
 { #category : #definition }
@@ -598,6 +605,20 @@ FamixEsopeGenerator >> defineProperties [
 		
 		Instead of using a property to distinguish esope''s commands,
 		it can be a better solution to use inheritance.'
+]
+
+{ #category : #definition }
+FamixEsopeGenerator >> defineRelations [
+
+	super defineRelations.
+
+	segment <>-* dimentionalInteger
+]
+
+{ #category : #definition }
+FamixEsopeGenerator >> dimentionalIntegerComment [
+
+	^ 'Im an ''Entier Dimentionnel'''
 ]
 
 { #category : #definition }

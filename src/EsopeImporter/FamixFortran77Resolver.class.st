@@ -71,7 +71,7 @@ FamixFortran77Resolver >> requalifyFunction: function [
 		        defaultImplicitTyping: function name
 		        fromProgramUnit: function.
 	name ifNotNil: [ 
-		type := (self newEntity: FamixFortran77Type) name: name.
+		type := (self newEntity: FamixF77Type) name: name.
 		function declaredType: type ]
 ]
 
@@ -89,7 +89,7 @@ FamixFortran77Resolver >> requalifyParameter: parameter [
 		        defaultImplicitTyping: parameter name
 		        fromProgramUnit: parameter parentBehaviouralEntity.
 	name ifNotNil: [ 
-		type := (self newEntity: FamixFortran77Type) name: name.
+		type := (self newEntity: FamixF77Type) name: name.
 		parameter declaredType: type ]
 ]
 
@@ -145,19 +145,19 @@ FamixFortran77Resolver >> requalifyVariableDeclarations: variableDeclarations [
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolve [
 
-	self resolveIncludes: (self model allWithType: FamixFortran77Include).
+	self resolveIncludes: (self model allWithType: FamixF77Include).
 	self resolveImplicitsDeclarations:
-		(self model allWithSubTypesOf: FamixFortran77ProgramUnit).
+		(self model allWithSubTypesOf: FamixF77ProgramUnit).
 	self requalifyParameters:
-		(self model allWithType: FamixFortran77Parameter).
+		(self model allWithType: FamixF77Parameter).
 	self requalifyFunctions:
-		(self model allWithType: FamixFortran77PUFunction).
+		(self model allWithType: FamixF77PUFunction).
 	self requalifyVariableDeclarations:
-		(self model allWithType: FamixFortran77Variable).
+		(self model allWithType: FamixF77Variable).
 	self resolveAccesses:
-		(self model allWithSubTypesOf: FamixFortran77Access).
+		(self model allWithSubTypesOf: FamixF77Access).
 	self resolveInvocations:
-		(self model allWithType: FamixFortran77Invocation)
+		(self model allWithType: FamixF77Invocation)
 ]
 
 { #category : #'symbols resolution' }
@@ -200,7 +200,7 @@ FamixFortran77Resolver >> resolveAsImplicit: anImplicitVariable fromProgramUnit:
 
 	type := progUnit types
 		        ifEmpty: [ 
-			        (self newEntity: FamixFortran77Type)
+			        (self newEntity: FamixF77Type)
 				        name: (self
 						         defaultImplicitTyping: anImplicitVariable entityName
 						         fromProgramUnit: progUnit);
@@ -210,7 +210,7 @@ FamixFortran77Resolver >> resolveAsImplicit: anImplicitVariable fromProgramUnit:
 				        retrieveEntity: anImplicitVariable entityName
 				        fromList: progUnit types ].
 
-	^ (self newEntity: FamixFortran77Variable)
+	^ (self newEntity: FamixF77Variable)
 		  name: anImplicitVariable entityName;
 		  declaredType: type;
 		  yourself
@@ -247,7 +247,7 @@ FamixFortran77Resolver >> resolveImplicitsFor: programUnit [
 FamixFortran77Resolver >> resolveIncludes: includes [
 
 	| includedFiles |
-	includedFiles := self model allWithType: FamixFortran77IncludedFile.
+	includedFiles := self model allWithType: FamixF77IncludedFile.
 	includes do: [ :include | 
 		includedFiles
 			detect: [ :includedFile | includedFile name = include filename ]
@@ -287,7 +287,7 @@ FamixFortran77Resolver >> retrieveInvocables: name [
 
 	^ self
 		  retrieveEntity: name
-		  fromList: (model allWithSubTypesOf: FamixFortran77PUProcedure)
+		  fromList: (model allWithSubTypesOf: FamixF77PUProcedure)
 ]
 
 { #category : #'symbols resolution' }

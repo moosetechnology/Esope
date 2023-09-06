@@ -11,7 +11,7 @@ Class {
 { #category : #'private-creation' }
 IASTAbstractFamixVisitor >> createFamixF77Access: anIastObject [
 
-	^ (self newEntity: FamixFortran77Access)
+	^ (self newEntity: FamixF77Access)
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: anIastObject sourceAnchor);
 		  attributeAt: #entity put: anIastObject;
@@ -104,7 +104,7 @@ IASTAbstractFamixVisitor >> symbolTable: anEntity at: key put: value [
 { #category : #visiting }
 IASTAbstractFamixVisitor >> visitIASTParameter: aParameter [
 
-	^ (self newEntity: FamixFortran77Parameter)
+	^ (self newEntity: FamixF77Parameter)
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: aParameter sourceAnchor);
 		  name: aParameter entityName;
@@ -118,7 +118,7 @@ IASTAbstractFamixVisitor >> visitIASTTypeRef: aType [
 	- sourceAnchor: ...
 	- entityName: TypeCharacter
 	- kind: nil"
-	^(self newEntity: FamixFortran77Type)
+	^(self newEntity: FamixF77Type)
 		sourceAnchor: (self visitIndexedFileAnchor: aType sourceAnchor);
 		name: aType entityName;
 		length: aType length;
@@ -138,7 +138,7 @@ IASTAbstractFamixVisitor >> visitIndexedFileAnchor: aSourceAnchor [
 	^ aSourceAnchor 
 		ifNil: [ nil ]
 		ifNotNil: [ 
-		  (self newEntity: FamixFortran77IndexedFileAnchor)
+		  (self newEntity: FamixF77IndexedFileAnchor)
 			  startLine: aSourceAnchor startLine;
 			  endLine: aSourceAnchor endLine;
 			  startColumn: aSourceAnchor startColumn;

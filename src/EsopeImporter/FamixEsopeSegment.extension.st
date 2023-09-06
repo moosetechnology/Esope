@@ -7,5 +7,5 @@ FamixEsopeSegment >> addLocalVariable: aVariable [
 
 { #category : #'*EsopeImporter' }
 FamixEsopeSegment >> localVariableClass [
-	^FamixEsopeAttribute
+	^FamixFortranAttribute
 ]

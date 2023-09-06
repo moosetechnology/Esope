@@ -12,7 +12,7 @@ Class {
 { #category : #'default values' }
 FamixFortran77ResolverTest >> anchorFrom: startPoint to: endPoint [
 
-	^ FamixFortran77IndexedFileAnchor new
+	^ FamixF77IndexedFileAnchor new
 		  mooseModel: mooseModel;
 		  startLine: startPoint x;
 		  startColumn: startPoint y;
@@ -25,7 +25,7 @@ FamixFortran77ResolverTest >> anchorFrom: startPoint to: endPoint [
 { #category : #'default values' }
 FamixFortran77ResolverTest >> defaultAccess: varName isWrite: boolean [
 
-	^ FamixFortran77Access new
+	^ FamixF77Access new
 		  mooseModel: mooseModel;
 		  attributeAt: #entity
 		  put: (self defaultIASTVarAccess: varName isWrite: boolean);
@@ -42,7 +42,7 @@ FamixFortran77ResolverTest >> defaultAnchor [
 { #category : #running }
 FamixFortran77ResolverTest >> defaultAttribute: varName withType: typeName [
 
-	^ (self newEntity: FamixEsopeAttribute)
+	^ (self newEntity: FamixFortranAttribute)
 		  sourceAnchor: (self anchorFrom: 2 @ 7 to: 2 @ 19);
 		  name: varName;
 		  declaredType: (self defaultType: typeName)
@@ -51,7 +51,7 @@ FamixFortran77ResolverTest >> defaultAttribute: varName withType: typeName [
 { #category : #'default values' }
 FamixFortran77ResolverTest >> defaultFunction: name [
 
-	^ (self newNamedEntity: name toFamix: FamixFortran77PUFunction) 
+	^ (self newNamedEntity: name toFamix: FamixF77PUFunction) 
 		  programFile: famixProgFile
 ]
 
@@ -100,7 +100,7 @@ FamixFortran77ResolverTest >> defaultImplicitNone [
 { #category : #'default values' }
 FamixFortran77ResolverTest >> defaultInvocation: name [
 
-	^ FamixFortran77Invocation new
+	^ FamixF77Invocation new
 		  mooseModel: mooseModel;
 		  attributeAt: #entity put: (self defaultIASTInvocation: name);
 		  sourceAnchor: self defaultAnchor;
@@ -110,20 +110,20 @@ FamixFortran77ResolverTest >> defaultInvocation: name [
 { #category : #'default values' }
 FamixFortran77ResolverTest >> defaultMain: name [
 
-	^ (self newNamedEntity: name toFamix: FamixFortran77PUMain) 
+	^ (self newNamedEntity: name toFamix: FamixF77PUMain) 
 		  programFile: famixProgFile
 ]
 
 { #category : #'default values' }
 FamixFortran77ResolverTest >> defaultParameter: name [
 
-	^ self newNamedEntity: name toFamix: FamixFortran77Parameter
+	^ self newNamedEntity: name toFamix: FamixF77Parameter
 ]
 
 { #category : #'default values' }
 FamixFortran77ResolverTest >> defaultProgramFile: aFilename [
 
-	^ (self newNamedEntity: aFilename toFamix: FamixFortran77ProgramFile)
+	^ (self newNamedEntity: aFilename toFamix: FamixF77ProgramFile)
 		  filename: aFilename;
 		  yourself
 ]
@@ -149,21 +149,21 @@ FamixFortran77ResolverTest >> defaultSegment: segmentName with: dictDeclarations
 { #category : #'default values' }
 FamixFortran77ResolverTest >> defaultSubroutine: name [
 
-	^ (self newNamedEntity: name toFamix: FamixFortran77PUSubroutine) 
+	^ (self newNamedEntity: name toFamix: FamixF77PUSubroutine) 
 		  programFile: famixProgFile
 ]
 
 { #category : #'default values' }
 FamixFortran77ResolverTest >> defaultSubroutine: name belongsTo: aFamixProgramFile [
 
-	^ (self newNamedEntity: name toFamix: FamixFortran77PUSubroutine) 
+	^ (self newNamedEntity: name toFamix: FamixF77PUSubroutine) 
 		  programFile: aFamixProgramFile
 ]
 
 { #category : #'default values' }
 FamixFortran77ResolverTest >> defaultType: anIntrinsicFortranType [
 
-	^ FamixFortran77Type new
+	^ FamixF77Type new
 		  name: anIntrinsicFortranType;
 		  sourceAnchor: self defaultAnchor;
 		  yourself
@@ -172,7 +172,7 @@ FamixFortran77ResolverTest >> defaultType: anIntrinsicFortranType [
 { #category : #'default values' }
 FamixFortran77ResolverTest >> defaultVariable: name withType: type [
 
-	^ (self newNamedEntity: name toFamix: FamixFortran77Variable) 
+	^ (self newNamedEntity: name toFamix: FamixF77Variable) 
 		  declaredType: (self defaultType: type)
 ]
 
@@ -211,7 +211,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77Access [
 		addAccess: (self defaultAccess: 'var' isWrite: false);
 		yourself.
 		
-	main := (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit) first.
+	main := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first.
 
  	resolver resolve.
 
@@ -234,7 +234,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77AccessNonDeclaredVariable 
 		addAccess: (self defaultAccess: 'var' isWrite: false);
 		yourself.
 
-	main := (resolver model allWithType: FamixFortran77PUMain) first.
+	main := (resolver model allWithType: FamixF77PUMain) first.
 
 	self assert: main localVariables size equals: 0.
 
@@ -261,13 +261,13 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationCalleeBeforeCall
 
  	resolver resolve.
 
-	main := (resolver model allWithType: FamixFortran77PUMain) first.
-	sub := (resolver model allWithType: FamixFortran77PUSubroutine) first.
+	main := (resolver model allWithType: FamixF77PUMain) first.
+	sub := (resolver model allWithType: FamixF77PUSubroutine) first.
 
 	self assert: main outgoingInvocations size equals: 1.
 	invocation := main outgoingInvocations first.
 	
-	self assert: invocation class equals: FamixFortran77Invocation.
+	self assert: invocation class equals: FamixF77Invocation.
 	self assert: invocation sender equals: main.
 	
 	self assert: invocation candidates size equals: 1.
@@ -285,13 +285,13 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationCallerBeforeCall
 
  	resolver resolve.
 
-	main := (resolver model allWithType: FamixFortran77PUMain) first.
-	sub := (resolver model allWithType: FamixFortran77PUSubroutine) first.
+	main := (resolver model allWithType: FamixF77PUMain) first.
+	sub := (resolver model allWithType: FamixF77PUSubroutine) first.
 
 	self assert: main outgoingInvocations size equals: 1.
 	invocation := main outgoingInvocations first.
 	
-	self assert: invocation class equals: FamixFortran77Invocation.
+	self assert: invocation class equals: FamixF77Invocation.
 	self assert: invocation sender equals: main.
 	
 	self assert: invocation candidates size equals: 1.
@@ -313,13 +313,13 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationInDifferentFiles
 	
 	resolver resolve.
 	
-	main := (resolver model allWithType: FamixFortran77PUMain) anyOne.
-	sub := (resolver model allWithType: FamixFortran77PUSubroutine) anyOne.
+	main := (resolver model allWithType: FamixF77PUMain) anyOne.
+	sub := (resolver model allWithType: FamixF77PUSubroutine) anyOne.
 
 	self assert: main outgoingInvocations size equals: 1.
 	invocation := main outgoingInvocations first.
 	
-	self assert: invocation class equals: FamixFortran77Invocation.
+	self assert: invocation class equals: FamixF77Invocation.
 	self assert: invocation sender equals: main.
 	
 	self assert: invocation candidates size equals: 1.
@@ -339,14 +339,14 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationMultipleCalleeBe
 	
 	resolver resolve.
 
-	main := (resolver model allWithType: FamixFortran77PUMain) first.
-	fct := (resolver model allWithType: FamixFortran77PUFunction) first.
-	sub := (resolver model allWithType: FamixFortran77PUSubroutine) first.
+	main := (resolver model allWithType: FamixF77PUMain) first.
+	fct := (resolver model allWithType: FamixF77PUFunction) first.
+	sub := (resolver model allWithType: FamixF77PUSubroutine) first.
 
 	self assert: main outgoingInvocations size equals: 2.
 	invocation := main outgoingInvocations first.
 	
-	self assert: invocation class equals: FamixFortran77Invocation.
+	self assert: invocation class equals: FamixF77Invocation.
 	self assert: invocation sender equals: main.
 	
 	self assert: invocation candidates size equals: 1.
@@ -354,7 +354,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationMultipleCalleeBe
 	
 	invocation := main outgoingInvocations second.
 	
-	self assert: invocation class equals: FamixFortran77Invocation.
+	self assert: invocation class equals: FamixF77Invocation.
 	self assert: invocation sender equals: main.
 	
 	self assert: invocation candidates size equals: 1.
@@ -376,8 +376,8 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77LocalVariableAsFunction [
 		
 	self defaultFunction: 'f'.
 	
-	famixMain := (resolver model allWithType: FamixFortran77PUMain) first.
-	famixFunction := (resolver model allWithType: FamixFortran77PUFunction) first.
+	famixMain := (resolver model allWithType: FamixF77PUMain) first.
+	famixFunction := (resolver model allWithType: FamixF77PUFunction) first.
 
 	self assert: famixFunction declaredType isNil.
 	self assert: famixMain localVariables size equals: 1.
@@ -385,7 +385,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77LocalVariableAsFunction [
  	resolver resolve.
 
 	self assert: famixMain localVariables isEmpty.
-	self assert: famixFunction declaredType class equals: FamixFortran77Type.
+	self assert: famixFunction declaredType class equals: FamixF77Type.
 	self assert: famixFunction declaredType name equals: 'real'.
 ]
 
@@ -399,7 +399,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77LocalVariableAsParameter [
 		addAccess: (self defaultAccess: 'var' isWrite: false);
 		addAccess: (self defaultAccess: 'var' isWrite: false).
 	
-	subroutine := (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit) first.
+	subroutine := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first.
 
 	self assert: subroutine localVariables size equals: 1.
 
@@ -410,12 +410,12 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77LocalVariableAsParameter [
 	self assert: subroutine accesses size equals: 2.
 	access := subroutine accesses first.
 	
-	self assert: access class equals: FamixFortran77Access.
+	self assert: access class equals: FamixF77Access.
 	self assert: access variable equals: subroutine parameters first.
 	
 	access := subroutine accesses second.
 	
-	self assert: access class equals: FamixFortran77Access.
+	self assert: access class equals: FamixF77Access.
 	self assert: access variable equals: subroutine parameters first.
 ]
 
@@ -429,7 +429,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77ParameterWithLocalVariable
 		addAccess: (self defaultAccess: 'var' isWrite: false);
 		yourself.
 	
-	subroutine := (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit) first.
+	subroutine := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first.
 	self assert: subroutine localVariables size equals: 1.
 
  	resolver resolve.
@@ -438,7 +438,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77ParameterWithLocalVariable
 	self assert: subroutine accesses size equals: 1.
 	access := subroutine accesses first.
 	
-	self assert: access class equals: FamixFortran77Access.
+	self assert: access class equals: FamixF77Access.
 	self assert: access variable equals: subroutine parameters first.
 ]
 
@@ -454,9 +454,9 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveImplicitNone [
 
  	resolver resolve.
 
-	self assert: (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit) size equals: 1.
+	self assert: (resolver model allWithSubTypesOf: FamixF77ProgramUnit) size equals: 1.
 	
-	famixSubroutine := (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit) first.
+	famixSubroutine := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first.
 
 	self assert: famixSubroutine dicImplicit size equals: 26.
 	
@@ -478,9 +478,9 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveImplicits [
 
  	resolver resolve.
 
-	self assert: (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit) size equals: 1.
+	self assert: (resolver model allWithSubTypesOf: FamixF77ProgramUnit) size equals: 1.
 	
-	famixSubroutine := (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit) first.
+	famixSubroutine := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first.
 
 	self assert: famixSubroutine dicImplicit size equals: 26.
 	
@@ -512,19 +512,19 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveParametersType [
 
  	resolver resolve.
 
-	self assert: (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit) size equals: 1.
+	self assert: (resolver model allWithSubTypesOf: FamixF77ProgramUnit) size equals: 1.
 	
-	entity := (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit) first.
+	entity := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first.
 
 	self assert: entity accesses size equals: 2.
 	access := entity accesses first.
 	
-	self assert: access class equals: FamixFortran77Access.
+	self assert: access class equals: FamixF77Access.
 	self assert: access variable equals: entity parameters first.
 	
 	access := entity accesses second.
 	
-	self assert: access class equals: FamixFortran77Access.
+	self assert: access class equals: FamixF77Access.
 	self assert: access variable equals: entity parameters first.
 ]
 
@@ -541,19 +541,19 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveParametersTypeWithD
 
  	resolver resolve.
 
-	self assert: (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit) size equals: 1.
+	self assert: (resolver model allWithSubTypesOf: FamixF77ProgramUnit) size equals: 1.
 	
-	entity := (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit) first.
+	entity := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first.
 
 	self assert: entity accesses size equals: 2.
 	access := entity accesses first.
 	
-	self assert: access class equals: FamixFortran77Access.
+	self assert: access class equals: FamixF77Access.
 	self assert: access variable equals: entity parameters first.
 	
 	access := entity accesses second.
 	
-	self assert: access class equals: FamixFortran77Access.
+	self assert: access class equals: FamixF77Access.
 	self assert: access variable equals: entity parameters first.
 ]
 
@@ -707,7 +707,7 @@ FamixFortran77ResolverTest >> testResolveIncludeDirective [
 
 	dummySub := (self
 		             defaultProgramUnit: 'point.seg'
-		             forType: FamixFortran77IncludedFile
+		             forType: FamixF77IncludedFile
 		             belongsTo: includedFile)
 		            types: { (self defaultSegment: 'point' with: { 
 						             (#x -> #real).
@@ -718,42 +718,42 @@ FamixFortran77ResolverTest >> testResolveIncludeDirective [
 
 	main := (self
 		         defaultProgramUnit: 'main'
-		         forType: FamixFortran77PUMain
+		         forType: FamixF77PUMain
 		         belongsTo: mainFile)
-		        includes: { ((self newEntity: FamixFortran77Include)
+		        includes: { ((self newEntity: FamixF77Include)
 				         filename: 'point.seg';
 				         yourself) };
 		        yourself.
 
 	initSub := (self
 		            defaultProgramUnit: 'init'
-		            forType: FamixFortran77PUSubroutine
+		            forType: FamixF77PUSubroutine
 		            belongsTo: mpointFile)
-		           includes: { ((self newEntity: FamixFortran77Include)
+		           includes: { ((self newEntity: FamixF77Include)
 				            filename: 'point.seg';
 				            yourself) };
 		           yourself.
 	printSub := (self
 		             defaultProgramUnit: 'print'
-		             forType: FamixFortran77PUSubroutine
+		             forType: FamixF77PUSubroutine
 		             belongsTo: mpointFile)
-		            includes: { ((self newEntity: FamixFortran77Include)
+		            includes: { ((self newEntity: FamixF77Include)
 				             filename: 'point.seg';
 				             yourself) };
 		            yourself.
 
 	resolver resolve.
 
-	pUnits := resolver model allWithSubTypesOf: FamixFortran77ProgramUnit.
+	pUnits := resolver model allWithSubTypesOf: FamixF77ProgramUnit.
 	self assert: pUnits size equals: 4.
 
-	puIncFile := resolver model allWithType: FamixFortran77IncludedFile.
+	puIncFile := resolver model allWithType: FamixF77IncludedFile.
 	self assert: puIncFile size equals: 1.
 
-	puSubs := resolver model allWithType: FamixFortran77PUSubroutine.
+	puSubs := resolver model allWithType: FamixF77PUSubroutine.
 	self assert: puSubs size equals: 2.
 
-	puMain := resolver model allWithType: FamixFortran77PUMain.
+	puMain := resolver model allWithType: FamixF77PUMain.
 	self assert: puMain size equals: 1.
 
 	self assert: puMain first includes size equals: 1.
@@ -796,7 +796,7 @@ FamixFortran77ResolverTest >> testResolveSegment [
 	"
 	accessor := (self
 		             newNamedEntity: 'demo'
-		             toFamix: FamixFortran77PUSubroutine)
+		             toFamix: FamixF77PUSubroutine)
 		            programFile: famixProgFile;
 		            addType:
 			            ((self
@@ -804,60 +804,60 @@ FamixFortran77ResolverTest >> testResolveSegment [
 				              toFamix: FamixEsopeSegment) attributes: { 
 						             ((self
 							               newNamedEntity: 'x'
-							               toFamix: FamixEsopeAttribute)
+							               toFamix: FamixFortranAttribute)
 							              declaredType:
 								              (self
 									               newNamedEntity: 'integer'
-									               toFamix: FamixFortran77Type);
+									               toFamix: FamixF77Type);
 							              isEsope: true;
 							              yourself).
 						             ((self
 							               newNamedEntity: 'y'
-							               toFamix: FamixEsopeAttribute)
+							               toFamix: FamixFortranAttribute)
 							              declaredType:
 								              (self
 									               newNamedEntity: 'integer'
-									               toFamix: FamixFortran77Type);
+									               toFamix: FamixF77Type);
 							              isEsope: true;
 							              yourself) });
 		            addLocalVariable:
 			            ((self
 				              newNamedEntity: 'p'
-				              toFamix: FamixFortran77Variable) declaredType:
+				              toFamix: FamixF77Variable) declaredType:
 				             (self
 					              newNamedEntity: 'point'
-					              toFamix: FamixFortran77Type));
+					              toFamix: FamixF77Type));
 		            accesses: { 
 				            ((self newEntity: FamixEsopeSegini)
 					             attributeAt: #entity
 					             put:
 						             (self defaultIASTEsopeCommand: 'segini' name: 'p');
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put: (self defaultIASTVarAccess: 'p' isWrite: true);
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put: (self defaultIASTVarAccess: 'x' isWrite: true);
 					             attributeAt: #pointer
 					             put: (self defaultIASTVarAccess: 'p' isWrite: true);
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put: (self defaultIASTVarAccess: 'p' isWrite: true);
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put: (self defaultIASTVarAccess: 'y' isWrite: true);
 					             attributeAt: #pointer
 					             put: (self defaultIASTVarAccess: 'p' isWrite: true);
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put: (self defaultIASTVarAccess: 'p' isWrite: true);
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put: (self defaultIASTVarAccess: 'x' isWrite: true);
 					             attributeAt: #pointer
@@ -865,7 +865,7 @@ FamixFortran77ResolverTest >> testResolveSegment [
 					             yourself) }.
 
 
-	sub := (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit)
+	sub := (resolver model allWithSubTypesOf: FamixF77ProgramUnit)
 		       first.
 
 	resolver resolve.
@@ -912,7 +912,7 @@ FamixFortran77ResolverTest >> testResolveSegmentWithImplicitPointer [
 	"
 	accessor := (self
 		             newNamedEntity: 'demo'
-		             toFamix: FamixFortran77PUSubroutine)
+		             toFamix: FamixF77PUSubroutine)
 		            programFile: famixProgFile;
 		            addType:
 			            ((self
@@ -920,20 +920,20 @@ FamixFortran77ResolverTest >> testResolveSegmentWithImplicitPointer [
 				              toFamix: FamixEsopeSegment) attributes: { 
 						             ((self
 							               newNamedEntity: 'x'
-							               toFamix: FamixEsopeAttribute)
+							               toFamix: FamixFortranAttribute)
 							              declaredType:
 								              (self
 									               newNamedEntity: 'integer'
-									               toFamix: FamixFortran77Type);
+									               toFamix: FamixF77Type);
 							              isEsope: true;
 							              yourself).
 						             ((self
 							               newNamedEntity: 'y'
-							               toFamix: FamixEsopeAttribute)
+							               toFamix: FamixFortranAttribute)
 							              declaredType:
 								              (self
 									               newNamedEntity: 'integer'
-									               toFamix: FamixFortran77Type);
+									               toFamix: FamixF77Type);
 							              isEsope: true;
 							              yourself) });
 		            accesses: { 
@@ -944,36 +944,36 @@ FamixFortran77ResolverTest >> testResolveSegmentWithImplicitPointer [
 							              defaultIASTEsopeCommand: 'segini'
 							              name: 'point');
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put:
 						             (self defaultIASTVarAccess: 'point' isWrite: true);
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put: (self defaultIASTVarAccess: 'x' isWrite: true);
 					             attributeAt: #pointer
 					             put:
 						             (self defaultIASTVarAccess: 'point' isWrite: true);
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put:
 						             (self defaultIASTVarAccess: 'point' isWrite: true);
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put: (self defaultIASTVarAccess: 'y' isWrite: true);
 					             attributeAt: #pointer
 					             put:
 						             (self defaultIASTVarAccess: 'point' isWrite: true);
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put:
 						             (self defaultIASTVarAccess: 'point' isWrite: true);
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put: (self defaultIASTVarAccess: 'x' isWrite: true);
 					             attributeAt: #pointer
@@ -982,7 +982,7 @@ FamixFortran77ResolverTest >> testResolveSegmentWithImplicitPointer [
 					             yourself) }.
 
 
-	sub := (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit)
+	sub := (resolver model allWithSubTypesOf: FamixF77ProgramUnit)
 		       first.
 
 	self assert: sub localVariables size equals: 0.
@@ -1039,7 +1039,7 @@ FamixFortran77ResolverTest >> testResolveSegmentWithImplicitPointerAndNoPrefix [
 	"
 	accessor := (self
 		             newNamedEntity: 'demo'
-		             toFamix: FamixFortran77PUSubroutine)
+		             toFamix: FamixF77PUSubroutine)
 		            programFile: famixProgFile;
 		            addType:
 			            ((self
@@ -1047,20 +1047,20 @@ FamixFortran77ResolverTest >> testResolveSegmentWithImplicitPointerAndNoPrefix [
 				              toFamix: FamixEsopeSegment) attributes: { 
 						             ((self
 							               newNamedEntity: 'x'
-							               toFamix: FamixEsopeAttribute)
+							               toFamix: FamixFortranAttribute)
 							              declaredType:
 								              (self
 									               newNamedEntity: 'integer'
-									               toFamix: FamixFortran77Type);
+									               toFamix: FamixF77Type);
 							              isEsope: true;
 							              yourself).
 						             ((self
 							               newNamedEntity: 'y'
-							               toFamix: FamixEsopeAttribute)
+							               toFamix: FamixFortranAttribute)
 							              declaredType:
 								              (self
 									               newNamedEntity: 'integer'
-									               toFamix: FamixFortran77Type);
+									               toFamix: FamixF77Type);
 							              isEsope: true;
 							              yourself) });
 		            accesses: { 
@@ -1071,21 +1071,21 @@ FamixFortran77ResolverTest >> testResolveSegmentWithImplicitPointerAndNoPrefix [
 							              defaultIASTEsopeCommand: 'segini'
 							              name: 'point');
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put: (self defaultIASTVarAccess: 'x' isWrite: true);
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put: (self defaultIASTVarAccess: 'y' isWrite: true);
 					             yourself).
-				            ((self newEntity: FamixFortran77Access)
+				            ((self newEntity: FamixF77Access)
 					             attributeAt: #entity
 					             put: (self defaultIASTVarAccess: 'x' isWrite: true);
 					             yourself) }.
 
 
-	sub := (resolver model allWithSubTypesOf: FamixFortran77ProgramUnit)
+	sub := (resolver model allWithSubTypesOf: FamixF77ProgramUnit)
 		       first.
 
 	self assert: sub localVariables size equals: 0.
