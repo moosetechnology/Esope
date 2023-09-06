@@ -87,7 +87,8 @@ Class {
 		'segdes',
 		'segini',
 		'segprt',
-		'segsup'
+		'segsup',
+		'dimentionalInteger'
 	],
 	#category : #'Famix-Esope-Generator'
 }
@@ -540,6 +541,10 @@ FamixEsopeGenerator >> defineClasses [
 		           newClassNamed: #Command
 		           comment: self commentCommand.
 
+	dimentionalInteger := builder
+		                      newClassNamed: #DimentionalInteger
+		                      comment: self dimentionalIntegerComment.
+
 	implicitPointer := builder
 		                   newClassNamed: #ImplicitPointer
 		                   comment: self commentImplicitPointer.
@@ -585,7 +590,9 @@ FamixEsopeGenerator >> defineHierarchy [
 	segdes --|> command.
 	segini --|> command.
 	segprt --|> command.
-	segsup --|> command
+	segsup --|> command.
+
+	dimentionalInteger --|> variable
 ]
 
 { #category : #definition }
@@ -598,6 +605,20 @@ FamixEsopeGenerator >> defineProperties [
 		
 		Instead of using a property to distinguish esope''s commands,
 		it can be a better solution to use inheritance.'
+]
+
+{ #category : #definition }
+FamixEsopeGenerator >> defineRelations [
+
+	super defineRelations.
+
+	segment <>-* dimentionalInteger
+]
+
+{ #category : #definition }
+FamixEsopeGenerator >> dimentionalIntegerComment [
+
+	^ 'Im an ''Entier Dimentionnel'''
 ]
 
 { #category : #definition }

@@ -23,6 +23,13 @@ FamixEsopeImportingContext >> importCommand [
 ]
 
 { #category : #importing }
+FamixEsopeImportingContext >> importDimentionalInteger [
+
+	<generated>
+	^ self importConcreteEntity: (self class fm3ClassNamed: #DimentionalInteger)
+]
+
+{ #category : #importing }
 FamixEsopeImportingContext >> importImplicitPointer [
 
 	<generated>
@@ -83,6 +90,13 @@ FamixEsopeImportingContext >> shouldImportCommand [
 
 	<generated>
 	^ self shouldImport: #Command
+]
+
+{ #category : #testing }
+FamixEsopeImportingContext >> shouldImportDimentionalInteger [
+
+	<generated>
+	^ self shouldImport: #DimentionalInteger
 ]
 
 { #category : #testing }

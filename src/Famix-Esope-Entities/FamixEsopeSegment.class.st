@@ -26,6 +26,9 @@ Class {
 	#superclass : #FamixF77Type,
 	#traits : 'FamixTWithAttributes',
 	#classTraits : 'FamixTWithAttributes classTrait',
+	#instVars : [
+		'#dimentionalIntegers => FMMany type: #FamixEsopeDimentionalInteger opposite: #segment'
+	],
 	#category : #'Famix-Esope-Entities-Entities'
 }
 
@@ -36,4 +39,33 @@ FamixEsopeSegment class >> annotation [
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 	^ self
+]
+
+{ #category : #adding }
+FamixEsopeSegment >> addDimentionalInteger: anObject [
+	<generated>
+	^ self dimentionalIntegers add: anObject
+]
+
+{ #category : #accessing }
+FamixEsopeSegment >> dimentionalIntegers [
+	"Relation named: #dimentionalIntegers type: #FamixEsopeDimentionalInteger opposite: #segment"
+
+	<generated>
+	<derived>
+	^ dimentionalIntegers
+]
+
+{ #category : #accessing }
+FamixEsopeSegment >> dimentionalIntegers: anObject [
+
+	<generated>
+	dimentionalIntegers value: anObject
+]
+
+{ #category : #navigation }
+FamixEsopeSegment >> dimentionalIntegersGroup [
+	<generated>
+	<navigation: 'DimentionalIntegers'>
+	^ MooseSpecializedGroup withAll: self dimentionalIntegers asSet
 ]

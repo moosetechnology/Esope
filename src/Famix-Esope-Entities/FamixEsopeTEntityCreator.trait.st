@@ -24,6 +24,13 @@ FamixEsopeTEntityCreator >> newCommand [
 ]
 
 { #category : #'entity creation' }
+FamixEsopeTEntityCreator >> newDimentionalInteger [
+
+	<generated>
+	^ self add: FamixEsopeDimentionalInteger new
+]
+
+{ #category : #'entity creation' }
 FamixEsopeTEntityCreator >> newImplicitPointer [
 
 	<generated>
