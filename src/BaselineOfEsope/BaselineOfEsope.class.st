@@ -21,14 +21,9 @@ BaselineOfEsope >> baseline: spec [
 { #category : #baselines }
 BaselineOfEsope >> defineDependencies: spec [
 	spec
-		baseline: 'PetitParser2'
-		with: [ spec repository: 'github://kursjan/petitparser2' ];
-		
-		baseline: 'FamixFortran'
-		with: [ spec repository: 'github://moosetechnology/Famix-Fortran' ] ;
-
-		baseline: 'NeoJSON'
-			with: [ spec repository: 'github://svenvc/NeoJSON' ]
+		baseline: 'PetitParser2' with: [ spec repository: 'github://kursjan/petitparser2' ];
+		baseline: 'FamixFortran' with: [ spec repository: 'github://moosetechnology/Famix-Fortran' ];
+		baseline: 'NeoJSON' with: [ spec repository: 'github://svenvc/NeoJSON' ]
 
 ]
 
@@ -46,7 +41,7 @@ BaselineOfEsope >> definePackages: spec [
 		repository: 'github://moosetechnology/Esope';
 		package: 'EsopeImporter' with: [ spec requires: #('Famix-Esope-Entities' PetitParser2 NeoJSON) ];
 		package: 'EsopeImporter-Tests' with: [ spec requires: #(EsopeImporter) ];
-		package: 'Famix-Esope-Entities' with: [ spec requires: #(FamixFortran) ] ;
+		package: 'Famix-Esope-Entities' with: [ spec requires: #('Famix-Fortran77-Entities' FamixFortran) ] ;
 		package: 'Famix-Esope-Generator' with: [ spec requires: #(FamixFortran) ] ;
 		package: 'Famix-Esope-Tests' with: [ spec requires: #(FamixFortran) ]
 ]
