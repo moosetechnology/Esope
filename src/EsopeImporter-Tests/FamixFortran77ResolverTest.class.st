@@ -42,7 +42,7 @@ FamixFortran77ResolverTest >> defaultAnchor [
 { #category : #running }
 FamixFortran77ResolverTest >> defaultAttribute: varName withType: typeName [
 
-	^ (self newEntity: FamixEsopeAttribute)
+	^ (self newEntity: FamixFortranAttribute)
 		  sourceAnchor: (self anchorFrom: 2 @ 7 to: 2 @ 19);
 		  name: varName;
 		  declaredType: (self defaultType: typeName)
