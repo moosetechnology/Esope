@@ -1215,7 +1215,7 @@ c@_   segact, lb
 	self assert: seg esopeCommand equals: 'segact'.
 	self assert: seg sourceAnchor class equals: IASTIndexedFileAnchor.
 	self assert: seg sourceAnchor startLine equals: 2.
-	self assert: seg sourceAnchor startColumn equals: 1.
+	self assert: seg sourceAnchor startColumn equals: 7.
 	self assert: seg sourceAnchor endLine equals: 2.
 	self assert: seg sourceAnchor endColumn equals: 17
 ]
@@ -1238,32 +1238,9 @@ c@_   segadj,lb
 	self assert: seg esopeCommand equals: 'segadj'.
 	self assert: seg sourceAnchor class equals: IASTIndexedFileAnchor.
 	self assert: seg sourceAnchor startLine equals: 2.
-	self assert: seg sourceAnchor startColumn equals: 1.
+	self assert: seg sourceAnchor startColumn equals: 7.
 	self assert: seg sourceAnchor endLine equals: 2.
 	self assert: seg sourceAnchor endColumn equals: 16
-]
-
-{ #category : #'tests-esope' }
-JsonToIASTVisitorTest >> testSegdefCommand [
-	"subroutine hello
-c@_   segdef, lb
-      end
-"
-	| programFile seg |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segdef, lb","span":"(2:1)-(2:16)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
-
-
-	self assert: programFile progUnits first body size equals: 1.
-	seg := programFile progUnits first body first.
-
-	self assert: seg class equals: IASTEsopeSegCommand.
-	self assert: seg entityName equals: 'lb'.
-	self assert: seg esopeCommand equals: 'segdef'.
-	self assert: seg sourceAnchor class equals: IASTIndexedFileAnchor.
-	self assert: seg sourceAnchor startLine equals: 2.
-	self assert: seg sourceAnchor startColumn equals: 1.
-	self assert: seg sourceAnchor endLine equals: 2.
-	self assert: seg sourceAnchor endColumn equals: 17
 ]
 
 { #category : #'tests-esope' }
@@ -1284,7 +1261,7 @@ c@_   segini,lb
 	self assert: seg esopeCommand equals: 'segini'.
 	self assert: seg sourceAnchor class equals: IASTIndexedFileAnchor.
 	self assert: seg sourceAnchor startLine equals: 2.
-	self assert: seg sourceAnchor startColumn equals: 1.
+	self assert: seg sourceAnchor startColumn equals: 7.
 	self assert: seg sourceAnchor endLine equals: 2.
 	self assert: seg sourceAnchor endColumn equals: 16
 ]
@@ -1359,7 +1336,7 @@ c@_   segsup, lb
 	self assert: seg esopeCommand equals: 'segsup'.
 	self assert: seg sourceAnchor class equals: IASTIndexedFileAnchor.
 	self assert: seg sourceAnchor startLine equals: 2.
-	self assert: seg sourceAnchor startColumn equals: 1.
+	self assert: seg sourceAnchor startColumn equals: 7.
 	self assert: seg sourceAnchor endLine equals: 2.
 	self assert: seg sourceAnchor endColumn equals: 17
 ]

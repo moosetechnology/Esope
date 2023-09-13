@@ -19,6 +19,18 @@ JsonToIASTVisitor >> asCollection: anObject [
 	^{ anObject }
 ]
 
+{ #category : #'visiting esope' }
+JsonToIASTVisitor >> createEsopeCommand: anEsopeCommentNode [
+
+	| data |
+	data := self parseEsopeCommand: anEsopeCommentNode.
+	^ IASTEsopeSegCommand new
+		  sourceAnchor: (self makeIndexedAnchor: data second);
+		  esopeCommand: data third;
+		  entityName: data fourth;
+		  yourself
+]
+
 { #category : #accessing }
 JsonToIASTVisitor >> currentEsopeSegment [
 	^entityStack top isEsopeSegment
@@ -260,57 +272,25 @@ JsonToIASTVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegactComment: anEsopeCommentNode [
 
-	| data |
-	data := super visitEsopeSegactComment: anEsopeCommentNode.
-	^ IASTEsopeSegCommand new
-		  sourceAnchor: (self makeIndexedAnchor: data first);
-		  esopeCommand: data second;
-		  entityName: data third;
-		  yourself
+	^ self createEsopeCommand: anEsopeCommentNode
 ]
 
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegadjComment: anEsopeCommentNode [
-	| data |
-	data := super visitEsopeSegadjComment: anEsopeCommentNode.
-	^IASTEsopeSegCommand new
-		sourceAnchor: (self makeIndexedAnchor: data first) ;
-		esopeCommand: data second ;
-		entityName: data third ;
-		yourself
-]
 
-{ #category : #'visiting esope' }
-JsonToIASTVisitor >> visitEsopeSegdefComment: anEsopeCommentNode [
-	| data |
-	data := super visitEsopeSegdefComment: anEsopeCommentNode.
-	^IASTEsopeSegCommand new
-		sourceAnchor: (self makeIndexedAnchor: data first) ;
-		esopeCommand: data second ;
-		entityName: data third ;
-		yourself
+	^ self createEsopeCommand: anEsopeCommentNode
 ]
 
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegdesComment: anEsopeCommentNode [
-	| data |
-	data := super visitEsopeSegdesComment: anEsopeCommentNode.
-	^IASTEsopeSegCommand new
-		sourceAnchor: (self makeIndexedAnchor: data first) ;
-		esopeCommand: data second ;
-		entityName: data third ;
-		yourself
+
+	^ self createEsopeCommand: anEsopeCommentNode
 ]
 
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSeginiComment: anEsopeCommentNode [
-	| data |
-	data := super visitEsopeSeginiComment: anEsopeCommentNode.
-	^IASTEsopeSegCommand new
-		sourceAnchor: (self makeIndexedAnchor: data first) ;
-		esopeCommand: data second ;
-		entityName: data third ;
-		yourself
+
+	^ self createEsopeCommand: anEsopeCommentNode
 ]
 
 { #category : #'visiting esope' }
@@ -331,13 +311,8 @@ JsonToIASTVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
 
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegsupComment: anEsopeCommentNode [
-	| data |
-	data := super visitEsopeSegsupComment: anEsopeCommentNode.
-	^IASTEsopeSegCommand new
-		sourceAnchor: (self makeIndexedAnchor: data first) ;
-		esopeCommand: data second ;
-		entityName: data third ;
-		yourself
+
+	^ self createEsopeCommand: anEsopeCommentNode
 ]
 
 { #category : #'visiting statement' }
