@@ -1287,7 +1287,7 @@ c@_   end segment
 	self assert: seg sourceAnchor isNotNil.
 	self assert: seg sourceAnchor class equals: IASTIndexedFileAnchor.
 	self assert: seg sourceAnchor startLine equals: 2.
-	self assert: seg sourceAnchor startColumn equals: 1.
+	self assert: seg sourceAnchor startColumn equals: 7.
 	self assert: seg sourceAnchor endLine equals: 3.
 	self assert: seg sourceAnchor endColumn equals: 18
 ]
