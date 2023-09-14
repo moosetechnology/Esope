@@ -114,9 +114,9 @@ FortranAbstractJsonVisitor >> processEsopeComment: anEsopeCommentNode [
 		self
 			esopeExtraSpan: commentSpan
 			comment: (anEsopeCommentNode at: 'comment')
-			command: esopeCommand.
-		esopeCommand first .
-		esopeCommand second }
+			command: esopeCommand
+	}
+	, esopeCommand
 ]
 
 { #category : #'visiting expression' }
@@ -382,21 +382,16 @@ FortranAbstractJsonVisitor >> visitEsopeEndComment: anEsopeCommentNode [
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeEndSegmentComment: anEsopeCommentNode [
-	| esopeCommand |
-	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
-	^{ self visitSpan: (anEsopeCommentNode at: 'span') .
-	  esopeCommand first } 
+
+	^self processEsopeComment: anEsopeCommentNode
 
 ]
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
 
-	| key esopeCommand |
-	esopeCommand := self esopeCommand:
-		                (anEsopeIncludeCommentNode at: 'comment').
-	key := esopeCommand first asLowercase capitalized , 'Comment'.
-	^ self visitJsonNode: key value: anEsopeIncludeCommentNode
+	^self processEsopeComment: anEsopeIncludeCommentNode
+
 ]
 
 { #category : #'visiting esope' }
@@ -615,19 +610,6 @@ FortranAbstractJsonVisitor >> visitImplicitStatement: anImplicitStatementNode [
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitImplicitStatementRange: anImplicitStatementRangeNode [
 	^self visitJsonMap: anImplicitStatementRangeNode keys: #(span from to)
-]
-
-{ #category : #'visiting esope' }
-FortranAbstractJsonVisitor >> visitIncludeComment: anEsopeIncludeCommentNode [
-
-	| esopeCommand |
-
-	esopeCommand := self esopeCommand:
-		                (anEsopeIncludeCommentNode at: 'comment').
-	^ { 
-		  (self visitSpan: (anEsopeIncludeCommentNode at: 'span')).
-		  esopeCommand first.
-		  esopeCommand second }
 ]
 
 { #category : #'visiting statement' }

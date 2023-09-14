@@ -260,6 +260,18 @@ JsonToIASTVisitor >> visitEsopeEndSegmentComment: anEsopeCommentNode [
 ]
 
 { #category : #'visiting esope' }
+JsonToIASTVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
+
+	| data |
+	data := super visitEsopeIncludeComment: anEsopeIncludeCommentNode.
+	^ IASTInclude new
+		  sourceAnchor: (self makeIndexedAnchor: data second);
+		  entityName: data fourth;
+		  includeCommand: data third;
+		  yourself
+]
+
+{ #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
 	| data |
 	data := super visitEsopePointeurComment: anEsopeCommentNode.
@@ -456,18 +468,6 @@ JsonToIASTVisitor >> visitImplicitStatementRange: anImplicitStatementRangeNode [
 	^data third
 		ifNil: [ { data second . data second } ]
 		ifNotNil: [ { data second . data third } ]
-]
-
-{ #category : #'visiting esope' }
-JsonToIASTVisitor >> visitIncludeComment: anEsopeIncludeCommentNode [
-
-	| data |
-	data := super visitIncludeComment: anEsopeIncludeCommentNode.
-	^ IASTInclude new
-		  sourceAnchor: (self makeIndexedAnchor: data first);
-		  entityName: data third;
-		  includeCommand: data second;
-		  yourself
 ]
 
 { #category : #'visiting expression' }
