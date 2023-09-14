@@ -451,6 +451,14 @@ JsonToIASTVisitor >> visitIf: anIfNode [
 ]
 
 { #category : #'visiting statement' }
+JsonToIASTVisitor >> visitIf_logicalStatement: anIfNode [
+
+	| data |
+	data := super visitIf_logicalStatement: anIfNode.
+	^data allButFirst
+]
+
+{ #category : #'visiting statement' }
 JsonToIASTVisitor >> visitImplicitStatement: anImplicitStatementNode [
 
 	| data implicit |

@@ -8,10 +8,8 @@ Class {
 IASTToEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
 
 	sourceAnchor startColumn: sourceAnchor endColumn - typeName size.
-	^ (self newEntity: FamixF77Type)
-		  sourceAnchor: (self visitIndexedFileAnchor: sourceAnchor);
-		  name: typeName;
-		  yourself
+	^ (self retrieveTypeFrom: typeName) name: typeName
+	"sourceAnchor: (self visitIndexedFileAnchor: sourceAnchor);"
 ]
 
 { #category : #visiting }
@@ -20,22 +18,22 @@ IASTToEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
 	| varsNames |
 	varsNames := aPointerVar entityName substrings: '.'.
 	varsNames size < 2 ifTrue: [ ^ self ].
-
-	^ (self newEntity: FamixF77Variable)
-		  sourceAnchor:
-			  (self visitIndexedFileAnchor: aPointerVar sourceAnchor);
-		  name: varsNames first;
-		  declaredType:
+	"declaredType:
 			  (self
 				   newType: varsNames second
-				   sourceAnchor: aPointerVar sourceAnchor);
+				   sourceAnchor: aPointerVar sourceAnchor);"
+	^ (self model newVariableNamed: varsNames first)
+		  sourceAnchor:
+			  (self visitIndexedFileAnchor: aPointerVar sourceAnchor);
+		  isEsope: true;
+		  segment: varsNames second;
 		  yourself
 ]
 
 { #category : #visiting }
 IASTToEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 
-	^ (self newEntity: FamixEsopeCommand)
+	^ (self model newCommand)
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: aSegmentCommand sourceAnchor);
 		  attributeAt: #entity put: aSegmentCommand;
@@ -48,14 +46,14 @@ IASTToEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 IASTToEsopeVisitor >> visitIASTEsopeSegment: aSegment [
 
 	| segment |
-	segment := (self newEntity: FamixEsopeSegment)
+	segment := self model newSegment
 		           sourceAnchor:
 			           (self visitIndexedFileAnchor: aSegment sourceAnchor);
 		           name: aSegment entityName;
 		           yourself.
 	stack push: segment.
 	self createSymbolTableFor: segment.
-	segment attributes: (aSegment declarations collect: [ :variable | 
+	segment attributes: (aSegment declarations collect: [ :variable |
 			 variable accept: (self spawn: IASTToFortranVisitor) ]).
 
 	^ stack pop
@@ -123,7 +121,7 @@ IASTToEsopeVisitor >> visitIASTVarEsoSl: aVarEsoSl [
 { #category : #visiting }
 IASTToEsopeVisitor >> visitIASTVariable: aVariable [
 
-	^ (self newEntity: FamixEsopeAttribute)
+	^ (self newEntity: FamixFortranAttribute)
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: aVariable sourceAnchor);
 		  name: aVariable entityName;

@@ -19,63 +19,6 @@ IASTToFortranVisitor class >> getLines: filename [
 	^ filename asFileReference contents lines
 ]
 
-{ #category : #visiting }
-IASTToFortranVisitor >> defaultImplicitTyping: firstLetter [
-
-	"God is real . . . unless declared integer"
-
-	"{ 
-		($i -> #TypeInteger).
-		($j -> #TypeInteger).
-		($k -> #TypeInteger).
-		($l -> #TypeInteger).
-		($m -> #TypeInteger).
-		($n -> #TypeInteger) } asDictionary at: $b ifAbsent: [ #TypeReal ]"
-
-	^ ('ijklmn' includes: firstLetter)
-		  ifTrue: [ #TypeInteger ]
-		  ifFalse: [ #TypeReal ]
-]
-
-{ #category : #visiting }
-IASTToFortranVisitor >> ensureInclude: name [
-
-	^ (self model allWithType: FamixF77Include)
-		  detect: [ :each | each name = name ]
-		  ifFound: [ :each | each ]
-		  ifNone: [ nil ]
-]
-
-{ #category : #initialization }
-IASTToFortranVisitor >> f77InstrinsicTypes [
-
-	^ { 
-		  (#integer -> (FamixF77Type new
-			    name: 'integer';
-			    mooseModel: model;
-			    yourself)).
-		  (#real -> (FamixF77Type new
-			    name: 'real';
-			    mooseModel: model;
-			    yourself)).
-		  (#complex -> (FamixF77Type new
-			    name: 'complex';
-			    mooseModel: model;
-			    yourself)).
-		  (#logical -> (FamixF77Type new
-			    name: 'logical';
-			    mooseModel: model;
-			    yourself)).
-		  (#character -> (FamixF77Type new
-			    name: 'character';
-			    mooseModel: model;
-			    yourself)).
-		  (#doublePrecision -> (FamixF77Type new
-			    name: 'double precision';
-			    mooseModel: model;
-			    yourself)) } asDictionary
-]
-
 { #category : #accessing }
 IASTToFortranVisitor >> f77sourcefile [
 
@@ -92,40 +35,14 @@ IASTToFortranVisitor >> f77sourcefile: anObject [
 IASTToFortranVisitor >> initialize [
 
 	super initialize.
-	self initializeModel.
+	model := FamixEsopeModel new.
 	f77sourcefile := ''
-]
-
-{ #category : #initialization }
-IASTToFortranVisitor >> initializeModel [
-
-	model := FamixEsopeModel new name: 'mooseModelF77'.
-	"model
-		attributeAt: #intrinsicTypes put: self f77InstrinsicTypes;
-		attributeAt: #includes put: Dictionary new"
 ]
 
 { #category : #testing }
 IASTToFortranVisitor >> isDummySubroutine: name [
 
 	^ name sameAs: '__$__'
-]
-
-{ #category : #'private-creation' }
-IASTToFortranVisitor >> newIndexedFileAnchor: filename [
-	| file |
-	file := filename asFileReference.
-	^ (self newEntity: FamixF77IndexedFileAnchor)
-		  startLine: 1;
-		  endLine: (file
-				   ifExists: [ (self class getLines: filename) size ]
-				   ifAbsent: [ 1 ]);
-		  startColumn: 1;
-		  endColumn: (file
-				   ifExists: [ (self class getLines: filename) last size + 1]
-				   ifAbsent: [ 1 ]);
-		  fileName: file basename;
-		  yourself
 ]
 
 { #category : #visiting }
@@ -138,19 +55,19 @@ IASTToFortranVisitor >> visit: anIASTModel [
 IASTToFortranVisitor >> visitIASTBlockData: aBlockData [
 
 	| blockdata |
-
-	blockdata := (self newEntity: FamixF77PUBlockdata)
-						sourceAnchor: (self visitIndexedFileAnchor: aBlockData sourceAnchor);
-						name: aBlockData entityName;
-						yourself.
+	blockdata := self model newPUBlockdata
+		             sourceAnchor:
+			             (self visitIndexedFileAnchor: aBlockData sourceAnchor);
+		             name: aBlockData entityName;
+		             yourself.
 	stack push: blockdata.
-	
+
 	"prossess accesses"
-	aBlockData accesses do: [ :access | 
+	aBlockData accesses do: [ :access |
 		blockdata addAccess: (access accept: self) ].
 
 	"prossess the comments inside this progUnit"
-	aBlockData localComments do: [ :comment | 
+	aBlockData localComments do: [ :comment |
 		blockdata addComment: (comment accept: self) ].
 
 	stack pop.
@@ -227,12 +144,12 @@ IASTToFortranVisitor >> visitIASTInclude: anInclude [
 
 	self flag: #FIXME.
 	"how to set the source ?"
-	^ (self newEntity: FamixF77Include)
+	^ self model newInclude
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: anInclude sourceAnchor);
 		  filename: anInclude entityName;
 		  includedBy: stack top;
-		  "source: stack top programFile;"yourself
+		  yourself
 ]
 
 { #category : #visiting }
@@ -250,7 +167,7 @@ IASTToFortranVisitor >> visitIASTIncludedFile: anIncludedFile [
 { #category : #visiting }
 IASTToFortranVisitor >> visitIASTInvocation: anInvocation [
 
-	^ (self newEntity: FamixF77Invocation)
+	^ self model newInvocation
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: anInvocation sourceAnchor);
 		  attributeAt: #entity put: anInvocation;
@@ -271,18 +188,18 @@ IASTToFortranVisitor >> visitIASTProgramFile: aProgramFile [
 
 	| progFile |
 	self f77sourcefile: aProgramFile filename.
-	progFile := (self newEntity: FamixF77ProgramFile)
-		filename: aProgramFile filename;
-		name: aProgramFile filename;
-		yourself.
+	progFile := self model newProgramFile
+		            filename: aProgramFile filename;
+		            name: aProgramFile filename;
+		            yourself.
 
 	stack push: progFile.
 
-	aProgramFile progUnits do: [ :progUnit | 
+	aProgramFile progUnits do: [ :progUnit |
 		progFile addProgramUnit: (progUnit accept: self) ].
 
 	stack pop.
-	^progFile
+	^ progFile
 ]
 
 { #category : #visiting }
