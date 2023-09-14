@@ -114,9 +114,9 @@ FortranAbstractJsonVisitor >> processEsopeComment: anEsopeCommentNode [
 		self
 			esopeExtraSpan: commentSpan
 			comment: (anEsopeCommentNode at: 'comment')
-			command: esopeCommand.
-		esopeCommand first .
-		esopeCommand second }
+			command: esopeCommand
+	}
+	, esopeCommand
 ]
 
 { #category : #'visiting expression' }
@@ -377,35 +377,30 @@ FortranAbstractJsonVisitor >> visitEsopeComment: anEsopeCommentNode [
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeEndComment: anEsopeCommentNode [
-	^self visitEsopeEndsegmentComment: anEsopeCommentNode 
+	"delegate to a method with a more explicit name
+		subclasses should override #visitEsopeEndSegmentComment: not this method"
+
+	^self visitEsopeEndSegmentComment: anEsopeCommentNode 
 ]
 
 { #category : #'visiting esope' }
-FortranAbstractJsonVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
-	| esopeCommand |
-	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
-	^{ self visitSpan: (anEsopeCommentNode at: 'span') .
-	  esopeCommand first } 
+FortranAbstractJsonVisitor >> visitEsopeEndSegmentComment: anEsopeCommentNode [
+
+	^self processEsopeComment: anEsopeCommentNode
 
 ]
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
 
-	| key esopeCommand |
-	esopeCommand := self esopeCommand:
-		                (anEsopeIncludeCommentNode at: 'comment').
-	key := esopeCommand first asLowercase capitalized , 'Comment'.
-	^ self visitJsonNode: key value: anEsopeIncludeCommentNode
+	^self processEsopeComment: anEsopeIncludeCommentNode
+
 ]
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
-	| esopeCommand |
-	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
-	^{ self visitSpan: (anEsopeCommentNode at: 'span') .
-	  esopeCommand first .
-	  esopeCommand second } 
+
+	^self processEsopeComment: anEsopeCommentNode
 
 ]
 
@@ -618,19 +613,6 @@ FortranAbstractJsonVisitor >> visitImplicitStatement: anImplicitStatementNode [
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitImplicitStatementRange: anImplicitStatementRangeNode [
 	^self visitJsonMap: anImplicitStatementRangeNode keys: #(span from to)
-]
-
-{ #category : #'visiting esope' }
-FortranAbstractJsonVisitor >> visitIncludeComment: anEsopeIncludeCommentNode [
-
-	| esopeCommand |
-
-	esopeCommand := self esopeCommand:
-		                (anEsopeIncludeCommentNode at: 'comment').
-	^ { 
-		  (self visitSpan: (anEsopeIncludeCommentNode at: 'span')).
-		  esopeCommand first.
-		  esopeCommand second }
 ]
 
 { #category : #'visiting statement' }

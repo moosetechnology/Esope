@@ -248,10 +248,10 @@ JsonToIASTVisitor >> visitDo_spec: aDoSpecNode [
 ]
 
 { #category : #'visiting esope' }
-JsonToIASTVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
+JsonToIASTVisitor >> visitEsopeEndSegmentComment: anEsopeCommentNode [
 	"updates end of current Esope segment"
 	| span |
-	span := (super visitEsopeEndsegmentComment: anEsopeCommentNode) first.
+	span := (super visitEsopeEndSegmentComment: anEsopeCommentNode) first.
 
 	entityStack pop sourceAnchor
 		endLine: (span second x) ;
@@ -260,13 +260,26 @@ JsonToIASTVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
 ]
 
 { #category : #'visiting esope' }
+JsonToIASTVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
+
+	| data |
+	data := super visitEsopeIncludeComment: anEsopeIncludeCommentNode.
+	^ IASTInclude new
+		  sourceAnchor: (self makeIndexedAnchor: data second);
+		  entityName: data fourth;
+		  includeCommand: data third;
+		  yourself
+]
+
+{ #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
 	| data |
 	data := super visitEsopePointeurComment: anEsopeCommentNode.
 	^IASTEsopePointer new
-		sourceAnchor: (self makeIndexedAnchor: data first) ;
-		entityName: data third ;
-		yourself
+		sourceAnchor: (self makeIndexedAnchor: data second) ;
+		entityName: data fourth ;
+		yourself.
+
 ]
 
 { #category : #'visiting esope' }
@@ -301,6 +314,7 @@ JsonToIASTVisitor >> visitEsopeSeginiComment: anEsopeCommentNode [
 JsonToIASTVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
 	"Source anchor for the segment is wrong,
 	 endLine/endColumn will be updated in #visitEsopeEndsegmentComment:"
+
 	| data seg |
 	data := super visitEsopeSegmentComment: anEsopeCommentNode.
 	seg := IASTEsopeSegment new
@@ -462,18 +476,6 @@ JsonToIASTVisitor >> visitImplicitStatementRange: anImplicitStatementRangeNode [
 	^data third
 		ifNil: [ { data second . data second } ]
 		ifNotNil: [ { data second . data third } ]
-]
-
-{ #category : #'visiting esope' }
-JsonToIASTVisitor >> visitIncludeComment: anEsopeIncludeCommentNode [
-
-	| data |
-	data := super visitIncludeComment: anEsopeIncludeCommentNode.
-	^ IASTInclude new
-		  sourceAnchor: (self makeIndexedAnchor: data first);
-		  entityName: data third;
-		  includeCommand: data second;
-		  yourself
 ]
 
 { #category : #'visiting expression' }
