@@ -23,7 +23,7 @@ JsonToIASTVisitor >> asCollection: anObject [
 JsonToIASTVisitor >> createEsopeCommand: anEsopeCommentNode [
 
 	| data |
-	data := self parseEsopeCommand: anEsopeCommentNode.
+	data := self processEsopeComment: anEsopeCommentNode.
 	^ IASTEsopeSegCommand new
 		  sourceAnchor: (self makeIndexedAnchor: data second);
 		  esopeCommand: data third;
@@ -272,25 +272,29 @@ JsonToIASTVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegactComment: anEsopeCommentNode [
 
-	^ self createEsopeCommand: anEsopeCommentNode
+	^self createEsopeCommand: anEsopeCommentNode
+
 ]
 
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegadjComment: anEsopeCommentNode [
 
-	^ self createEsopeCommand: anEsopeCommentNode
+	^self createEsopeCommand: anEsopeCommentNode
+
 ]
 
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegdesComment: anEsopeCommentNode [
 
-	^ self createEsopeCommand: anEsopeCommentNode
+	^self createEsopeCommand: anEsopeCommentNode
+
 ]
 
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSeginiComment: anEsopeCommentNode [
 
-	^ self createEsopeCommand: anEsopeCommentNode
+	^self createEsopeCommand: anEsopeCommentNode
+
 ]
 
 { #category : #'visiting esope' }
@@ -300,11 +304,10 @@ JsonToIASTVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
 	| data seg |
 	data := super visitEsopeSegmentComment: anEsopeCommentNode.
 	seg := IASTEsopeSegment new
-		sourceAnchor: (self makeIndexedAnchor: data first) ;
-		entityName: data third ;
+		sourceAnchor: (self makeIndexedAnchor: data second) ;
+		entityName: data fourth ;
 		declarations: (OrderedCollection new: 5) ;
 		yourself.
-
 	entityStack push: seg.
 	^seg
 ]
@@ -312,7 +315,8 @@ JsonToIASTVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegsupComment: anEsopeCommentNode [
 
-	^ self createEsopeCommand: anEsopeCommentNode
+	^self createEsopeCommand: anEsopeCommentNode
+
 ]
 
 { #category : #'visiting statement' }

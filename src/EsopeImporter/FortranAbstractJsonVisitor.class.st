@@ -25,6 +25,21 @@ FortranAbstractJsonVisitor >> esopeCommand: anEsopeCommentString [
 		ifFalse: [ { anEsopeCommentString copyFrom: wordBoundaries first to: wordBoundaries second } ]
 ]
 
+{ #category : #'visiting esope' }
+FortranAbstractJsonVisitor >> esopeExtraSpan: commentSpan comment: commentText command: esopeCommand [
+	"Compute the span of just the Esope command (without 'C@_  ')
+	 - same start line
+	 - start column must ignore 'C@_  '
+	 - same end point"
+
+	| commandStart |
+	commandStart := (commentText indexOfSubCollection: (esopeCommand first)).
+
+	^{ (commentSpan first x @ (commentSpan first y + commandStart))
+		. commentSpan second }.
+
+]
+
 { #category : #'private - helpers' }
 FortranAbstractJsonVisitor >> findWordBoundaries: anEsopeCommentString [
 
@@ -85,26 +100,23 @@ FortranAbstractJsonVisitor >> isTaggedStatement: aStatementNode [
 ]
 
 { #category : #'visiting esope' }
-FortranAbstractJsonVisitor >> parseEsopeCommand: anEsopeCommentNode [
-	"For Esope commands we return 2 spans:
+FortranAbstractJsonVisitor >> processEsopeComment: anEsopeCommentNode [
+	"For Esope comments the treatment is similar for most of them
+	 We also return 2 spans:
 	- the usual one which is the span of the entire comment
-	- the span of just the Esope command (without 'C@_  ')"
+	- the span of just the Esope statement (without 'C@_  ')"
 
-	| esopeCommand commandStart commentSpan commandSpan |
+	| esopeCommand commentSpan |
 	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
-	
-	commandStart := ((anEsopeCommentNode at: 'comment')
-		indexOfSubCollection: (esopeCommand first)).
-
 	commentSpan := self visitSpan: (anEsopeCommentNode at: 'span').
-	commandSpan := { (commentSpan first x @ (commentSpan first y + commandStart))
-		. commentSpan second }.
 
 	^{ commentSpan .
-	   commandSpan .
-	  esopeCommand first .
-	  esopeCommand second } 
-
+		self
+			esopeExtraSpan: commentSpan
+			comment: (anEsopeCommentNode at: 'comment')
+			command: esopeCommand.
+		esopeCommand first .
+		esopeCommand second }
 ]
 
 { #category : #'visiting expression' }
@@ -349,12 +361,18 @@ FortranAbstractJsonVisitor >> visitEqv: aEqvtoOperatorNode [
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeComment: anEsopeCommentNode [
+	"we separate each Esope command in a different visit methdo to give opportunity to
+	 concrete visitors (subclasses) to treat them differently.
+	 But here, they are pretty much all the same, so they come down to the same treatment"
+
 	| key esopeCommand |
 	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
 	key := 'Esope' ,
 		(esopeCommand first asLowercase capitalized) ,
 		'Comment'.
-	^self visitJsonNode: key value: anEsopeCommentNode
+
+	^self visitJsonNode: key value: anEsopeCommentNode.
+
 ]
 
 { #category : #'visiting esope' }
@@ -394,45 +412,42 @@ FortranAbstractJsonVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeSegactComment: anEsopeCommentNode [
 
-	^self parseEsopeCommand: anEsopeCommentNode
+	^self processEsopeComment: anEsopeCommentNode
 
 ]
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeSegadjComment: anEsopeCommentNode [
 
-	^self parseEsopeCommand: anEsopeCommentNode
+	^self processEsopeComment: anEsopeCommentNode
 
 ]
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeSegdesComment: anEsopeCommentNode [
 
-	^self parseEsopeCommand: anEsopeCommentNode
+	^self processEsopeComment: anEsopeCommentNode
 
 ]
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeSeginiComment: anEsopeCommentNode [
 
-	^self parseEsopeCommand: anEsopeCommentNode
+	^self processEsopeComment: anEsopeCommentNode
 
 ]
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
-	| esopeCommand |
-	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
-	^{ self visitSpan: (anEsopeCommentNode at: 'span') .
-	  esopeCommand first .
-	  esopeCommand second } 
+
+	^self processEsopeComment: anEsopeCommentNode
 
 ]
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeSegsupComment: anEsopeCommentNode [
 
-	^self parseEsopeCommand: anEsopeCommentNode
+	^self processEsopeComment: anEsopeCommentNode
 
 ]
 
