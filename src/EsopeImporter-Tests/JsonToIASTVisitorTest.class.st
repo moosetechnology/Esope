@@ -1017,7 +1017,7 @@ c@_   pointeur p1.pstr
 	self assert: seg entityName equals: 'p1.pstr'.
 	self assert: seg sourceAnchor class equals: IASTIndexedFileAnchor.
 	self assert: seg sourceAnchor startLine equals: 2.
-	self assert: seg sourceAnchor startColumn equals: 1.
+	self assert: seg sourceAnchor startColumn equals: 7.
 	self assert: seg sourceAnchor endLine equals: 2.
 	self assert: seg sourceAnchor endColumn equals: 23
 ]

@@ -264,9 +264,10 @@ JsonToIASTVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
 	| data |
 	data := super visitEsopePointeurComment: anEsopeCommentNode.
 	^IASTEsopePointer new
-		sourceAnchor: (self makeIndexedAnchor: data first) ;
-		entityName: data third ;
-		yourself
+		sourceAnchor: (self makeIndexedAnchor: data second) ;
+		entityName: data fourth ;
+		yourself.
+
 ]
 
 { #category : #'visiting esope' }
@@ -301,6 +302,7 @@ JsonToIASTVisitor >> visitEsopeSeginiComment: anEsopeCommentNode [
 JsonToIASTVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
 	"Source anchor for the segment is wrong,
 	 endLine/endColumn will be updated in #visitEsopeEndsegmentComment:"
+
 	| data seg |
 	data := super visitEsopeSegmentComment: anEsopeCommentNode.
 	seg := IASTEsopeSegment new

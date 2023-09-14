@@ -401,11 +401,8 @@ FortranAbstractJsonVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNod
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
-	| esopeCommand |
-	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
-	^{ self visitSpan: (anEsopeCommentNode at: 'span') .
-	  esopeCommand first .
-	  esopeCommand second } 
+
+	^self processEsopeComment: anEsopeCommentNode
 
 ]
 
