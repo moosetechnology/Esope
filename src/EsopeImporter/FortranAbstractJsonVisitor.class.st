@@ -377,6 +377,9 @@ FortranAbstractJsonVisitor >> visitEsopeComment: anEsopeCommentNode [
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeEndComment: anEsopeCommentNode [
+	"delegate to a method with a more explicit name
+		subclasses should override #visitEsopeEndSegmentComment: not this method"
+
 	^self visitEsopeEndSegmentComment: anEsopeCommentNode 
 ]
 
