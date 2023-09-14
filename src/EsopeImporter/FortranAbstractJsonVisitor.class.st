@@ -377,11 +377,11 @@ FortranAbstractJsonVisitor >> visitEsopeComment: anEsopeCommentNode [
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeEndComment: anEsopeCommentNode [
-	^self visitEsopeEndsegmentComment: anEsopeCommentNode 
+	^self visitEsopeEndSegmentComment: anEsopeCommentNode 
 ]
 
 { #category : #'visiting esope' }
-FortranAbstractJsonVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
+FortranAbstractJsonVisitor >> visitEsopeEndSegmentComment: anEsopeCommentNode [
 	| esopeCommand |
 	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
 	^{ self visitSpan: (anEsopeCommentNode at: 'span') .
