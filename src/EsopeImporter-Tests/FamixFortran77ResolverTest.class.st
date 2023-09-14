@@ -197,7 +197,7 @@ FamixFortran77ResolverTest >> setUp [
 
 	super setUp.
 
-	mooseModel := FamixEsopeModel new name: 'mooseModel-tests'; yourself.
+	mooseModel := FamixEsopeModel new.
 	resolver := FamixFortran77Resolver on: mooseModel.
 	famixProgFile  := self defaultProgramFile: './main.f'.
 ]

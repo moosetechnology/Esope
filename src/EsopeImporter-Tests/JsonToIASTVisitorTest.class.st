@@ -829,6 +829,24 @@ JsonToIASTVisitorTest >> testGotoStatement [
 ]
 
 { #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testIfStatement [
+"      integer function hello()
+      if(a) a=1
+      end
+"
+	| programFile fct |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"tmp.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:15)","statement":{"anno":[],"condition":{"anno":[],"span":"(2:10)-(2:10)","tag":"value","value":{"contents":"a","tag":"variable"}},"span":"(2:7)-(2:15)","statement":{"anno":[],"expression":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"span":"(2:13)-(2:15)","tag":"assign_expression","target":{"anno":[],"span":"(2:13)-(2:13)","tag":"value","value":{"contents":"a","tag":"variable"}}},"tag":"if_logical"},"tag":"statement"}],"name":"hello","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
+
+	self assert: programFile progUnits size equals: 1.
+	
+	fct := programFile progUnits first.
+	self assert: fct body first first class equals: IASTVarAccess.
+	self assert: fct body first first entityName equals: 'a'.
+	self assert: fct body first second first class equals: IASTVarAccess.
+	self assert: fct body first second first entityName equals: 'a'.
+]
+
+{ #category : #'tests-statement' }
 JsonToIASTVisitorTest >> testImplicitNoneStatement [
 	"PROGRAM MYPROG
        implicit none

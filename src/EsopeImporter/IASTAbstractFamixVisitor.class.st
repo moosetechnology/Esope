@@ -11,7 +11,7 @@ Class {
 { #category : #'private-creation' }
 IASTAbstractFamixVisitor >> createFamixF77Access: anIastObject [
 
-	^ (self newEntity: FamixF77Access)
+	^ self model newAccess
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: anIastObject sourceAnchor);
 		  attributeAt: #entity put: anIastObject;
@@ -40,11 +40,22 @@ IASTAbstractFamixVisitor >> defaultImplicit [
 			   ifFalse: [ char -> #real ] ]) asDictionary
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 IASTAbstractFamixVisitor >> initialize [
 
 	super initialize.
 	stack := Stack new.
+]
+
+{ #category : #initialization }
+IASTAbstractFamixVisitor >> intrinsicTypes [
+	^ {
+		  #integer -> ((self newEntity: FamixF77TypeIntrinsic) name: #integer).
+		  #real -> ((self newEntity: FamixF77TypeIntrinsic) name: #real).
+		  #complex -> ((self newEntity: FamixF77TypeIntrinsic) name: #complex).
+		  #logical -> ((self newEntity: FamixF77TypeIntrinsic) name: #logical).
+		  #character -> ((self newEntity: FamixF77TypeIntrinsic) name: #character) 
+		} asDictionary
 ]
 
 { #category : #accessing }
@@ -65,6 +76,32 @@ IASTAbstractFamixVisitor >> newEntity: aClass [
 	^ aClass new
 		  mooseModel: model;
 		  yourself
+]
+
+{ #category : #initialization }
+IASTAbstractFamixVisitor >> retrieveType: aTypeName from: aMooseModel [
+
+	^ (aMooseModel
+		attributeAt: #instrinsicTypes
+		ifAbsent: [
+		   aMooseModel
+			   attributeAt: #unknownType
+			   ifAbsent: self typeNotFoundBlock.
+		]
+	 ) at: aTypeName ifAbsent: self typeNotFoundBlock.
+]
+
+{ #category : #initialization }
+IASTAbstractFamixVisitor >> retrieveTypeFrom: aName [
+
+	^ (self model 
+		attributeAt: #instrinsicTypes
+		ifAbsent: [
+		   self model
+			   attributeAt: #unknownType
+			   ifAbsent: self typeNotFoundBlock.
+		]
+	 ) at: aName ifAbsent: self typeNotFoundBlock.
 ]
 
 { #category : #'as yet unclassified' }
@@ -101,6 +138,12 @@ IASTAbstractFamixVisitor >> symbolTable: anEntity at: key put: value [
 		put: value
 ]
 
+{ #category : #initialization }
+IASTAbstractFamixVisitor >> typeNotFoundBlock [
+
+	^ [ self newEntity: FamixF77TypeUnknown ]
+]
+
 { #category : #visiting }
 IASTAbstractFamixVisitor >> visitIASTParameter: aParameter [
 
@@ -118,9 +161,8 @@ IASTAbstractFamixVisitor >> visitIASTTypeRef: aType [
 	- sourceAnchor: ...
 	- entityName: TypeCharacter
 	- kind: nil"
-	^(self newEntity: FamixF77Type)
-		sourceAnchor: (self visitIndexedFileAnchor: aType sourceAnchor);
-		name: aType entityName;
+	^(self retrieveTypeFrom: aType entityName)
+		"sourceAnchor: (self visitIndexedFileAnchor: aType sourceAnchor);"
 		length: aType length;
 		kind: aType kind;
 		yourself
@@ -135,10 +177,8 @@ IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
 { #category : #visiting }
 IASTAbstractFamixVisitor >> visitIndexedFileAnchor: aSourceAnchor [
 
-	^ aSourceAnchor 
-		ifNil: [ nil ]
-		ifNotNil: [ 
-		  (self newEntity: FamixF77IndexedFileAnchor)
+	^ aSourceAnchor ifNil: [ nil ] ifNotNil: [
+		  self model newIndexedFileAnchor
 			  startLine: aSourceAnchor startLine;
 			  endLine: aSourceAnchor endLine;
 			  startColumn: aSourceAnchor startColumn;
