@@ -579,9 +579,10 @@ IASTToFamixVisitorTest >> testCreateFamixEsopePointerDeclaration [
 		equals: 1. "p1"
 
 	entity := (visitor model allWithType: FamixF77Variable) first.
+	self assert: entity isEsope.
 	self assert: entity name equals: 'p1'.
-	self assert: entity declaredType class equals: FamixF77Type.
-	self assert: entity declaredType name equals: 'pers'.
+	self assert: entity segment equals: 'pers'.
+
 ]
 
 { #category : #'tests-esope' }
@@ -637,7 +638,7 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeSegment [
 IASTToFamixVisitorTest >> testCreateFamixEsopeSlashWithLitteralDim [
 
 	"
-c  lb.bref(/1)
+c  ptr.attr(/1)
 	s__(d__(ptr,attr),1)
 	"
 
@@ -689,7 +690,10 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77 [
 	}.
 	programFile accept: visitor.
 
-	self assert: visitor model size equals: 2.
+	self assert: visitor model size equals: 7.
+	
+	entity := visitor model allWithType: FamixF77ProgramFile.
+	self assert: entity size equals: 1.
 
 	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
 	self assert: entity programUnits size equals: 1.
@@ -736,11 +740,11 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77ESOAtWithArrayArgument [
 "
 	self skip.
 
-	programFile := self jsonToIAST: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:23)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:21)-(2:22)","upper":{"anno":[],"span":"(2:21)-(2:22)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}}],"span":"(2:21)-(2:22)"},"initial":null,"length":null,"span":"(2:17)-(2:23)","type":"array","variable":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"arr","tag":"variable"}}}],"span":"(2:17)-(2:23)"},"span":"(2:9)-(2:23)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:9)-(2:15)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:9)-(3:25)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(3:17)-(3:17)","tag":"value","value":{"contents":"y","tag":"variable"}},"tag":"expr"},"name":null,"span":"(3:17)-(3:17)"},{"anno":[],"expr":{"contents":{"anno":[],"expression":{"anno":[],"span":"(3:19)-(3:21)","tag":"value","value":{"contents":"arr","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:23)-(3:23)","tag":"value","value":{"contents":"z","tag":"variable"}},"name":null,"span":"(3:23)-(3:23)","tag":"single"}],"span":"(3:23)-(3:23)"},"span":"(3:19)-(3:24)","tag":"subscript"},"tag":"expr"},"name":null,"span":"(3:19)-(3:24)"}],"span":"(3:17)-(3:24)"},"function":{"anno":[],"span":"(3:13)-(3:15)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(3:13)-(3:25)","tag":"function_call"},"span":"(3:9)-(3:25)","tag":"assign_expression","target":{"anno":[],"span":"(3:9)-(3:9)","tag":"value","value":{"contents":"x","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self jsonToIAST: '{"meta":{"miVersion":"fortran77","miFilename":"/tmp/tmp.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:23)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:21)-(2:22)","upper":{"anno":[],"span":"(2:21)-(2:22)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}}],"span":"(2:21)-(2:22)"},"initial":null,"length":null,"span":"(2:17)-(2:23)","type":"array","variable":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"arr","tag":"variable"}}}],"span":"(2:17)-(2:23)"},"span":"(2:9)-(2:23)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:9)-(2:15)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:9)-(3:25)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(3:17)-(3:17)","tag":"value","value":{"contents":"y","tag":"variable"}},"tag":"expr"},"name":null,"span":"(3:17)-(3:17)"},{"anno":[],"expr":{"contents":{"anno":[],"expression":{"anno":[],"span":"(3:19)-(3:21)","tag":"value","value":{"contents":"arr","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:23)-(3:23)","tag":"value","value":{"contents":"z","tag":"variable"}},"name":null,"span":"(3:23)-(3:23)","tag":"single"}],"span":"(3:23)-(3:23)"},"span":"(3:19)-(3:24)","tag":"subscript"},"tag":"expr"},"name":null,"span":"(3:19)-(3:24)"}],"span":"(3:17)-(3:24)"},"function":{"anno":[],"span":"(3:13)-(3:15)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(3:13)-(3:25)","tag":"function_call"},"span":"(3:9)-(3:25)","tag":"assign_expression","target":{"anno":[],"span":"(3:9)-(3:9)","tag":"value","value":{"contents":"x","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
 	programFile accept: visitor.
 
-	self assert: (visitor model allWithType: FamixF77Variable) size equals: 5. "x, y, y.arr, arr, z"
-	self assert: (visitor model allWithType: FamixF77Access) size equals: 4. "x, y, y.arr, z"
+	self assert: (visitor model allWithType: FamixF77Variable) size equals: 1. "arr"
+	self assert: (visitor model allWithType: FamixF77Access) size equals: 4. "x, y, arr, z"
 
 ]
 
@@ -789,7 +793,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77LocalVariable [
 	var := entity programUnits first localVariables first.
 	self assert: var class equals: FamixF77Variable.
 	self assert: var name equals: 'aVar'.
-	self assert: var declaredType class equals: FamixF77Type.
+	self assert: var declaredType class equals: FamixF77TypeIntrinsic.
 	self assert: var declaredType name equals: 'integer'.
 	self assert: var parentBehaviouralEntity isNotNil.
 	self
@@ -901,9 +905,12 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77ProgramFile [
 	| entity |
 	programFile accept: visitor.
 
-	self assert: visitor model size equals: 1.
+	self assert: visitor model size equals: 6.
 
-	entity := visitor model first.
+	entity := visitor model allWithType: FamixF77ProgramFile.
+	self assert: entity size equals: 1.
+	
+	entity := entity first.
 	self assert: entity class equals: FamixF77ProgramFile.
 	self assert: entity filename equals: 'fortran77.f'.
 	self assert: entity programUnits size equals: 0

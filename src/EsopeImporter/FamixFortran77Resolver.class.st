@@ -1,10 +1,13 @@
+"
+For symbol resolution
+"
 Class {
 	#name : #FamixFortran77Resolver,
 	#superclass : #Object,
 	#instVars : [
 		'model'
 	],
-	#category : #'EsopeImporter-Importer'
+	#category : #'EsopeImporter-Resolver'
 }
 
 { #category : #'private-helper' }
@@ -70,8 +73,8 @@ FamixFortran77Resolver >> requalifyFunction: function [
 	name := self
 		        defaultImplicitTyping: function name
 		        fromProgramUnit: function.
-	name ifNotNil: [ 
-		type := (self newEntity: FamixF77Type) name: name.
+	name ifNotNil: [
+		type := self retrieveTypeFrom: name.
 		function declaredType: type ]
 ]
 
@@ -84,12 +87,17 @@ FamixFortran77Resolver >> requalifyFunctions: functions [
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> requalifyParameter: parameter [
 
-	| type name |
+	| type name progUnit |
+	progUnit := parameter parentBehaviouralEntity.
+	"p := (self model allWithType: FamixF77Variable)
+		     detect: [ :var | var name = parameter name ]
+		     ifFound: [ :var | parameter declaredType: var declaredType ]."
+
 	name := self
 		        defaultImplicitTyping: parameter name
-		        fromProgramUnit: parameter parentBehaviouralEntity.
-	name ifNotNil: [ 
-		type := (self newEntity: FamixF77Type) name: name.
+		        fromProgramUnit: progUnit.
+	name ifNotNil: [
+		type := self retrieveTypeFrom: name.
 		parameter declaredType: type ]
 ]
 
@@ -148,16 +156,15 @@ FamixFortran77Resolver >> resolve [
 	self resolveIncludes: (self model allWithType: FamixF77Include).
 	self resolveImplicitsDeclarations:
 		(self model allWithSubTypesOf: FamixF77ProgramUnit).
-	self requalifyParameters:
-		(self model allWithType: FamixF77Parameter).
-	self requalifyFunctions:
-		(self model allWithType: FamixF77PUFunction).
+	self requalifyParameters: (self model allWithType: FamixF77Parameter).
+	self requalifyFunctions: (self model allWithType: FamixF77PUFunction).
+	self resolveEsopeVariables:
+		((self model allWithSubTypesOf: FamixF77Variable) select: [ :var |
+			 var isEsope ]).
 	self requalifyVariableDeclarations:
 		(self model allWithType: FamixF77Variable).
-	self resolveAccesses:
-		(self model allWithSubTypesOf: FamixF77Access).
-	self resolveInvocations:
-		(self model allWithType: FamixF77Invocation)
+	self resolveAccesses: (self model allWithSubTypesOf: FamixF77Access).
+	self resolveInvocations: (self model allWithType: FamixF77Invocation)
 ]
 
 { #category : #'symbols resolution' }
@@ -199,13 +206,11 @@ FamixFortran77Resolver >> resolveAsImplicit: anImplicitVariable fromProgramUnit:
 	self flag: #FIXME. "how to build sourceAnchor for newly created var?"
 
 	type := progUnit types
-		        ifEmpty: [ 
-			        (self newEntity: FamixF77Type)
-				        name: (self
-						         defaultImplicitTyping: anImplicitVariable entityName
-						         fromProgramUnit: progUnit);
-				        yourself ]
-		        ifNotEmpty: [ 
+		        ifEmpty: [
+			        self retrieveTypeFrom: (self
+					         defaultImplicitTyping: anImplicitVariable entityName
+					         fromProgramUnit: progUnit) ]
+		        ifNotEmpty: [
 			        self
 				        retrieveEntity: anImplicitVariable entityName
 				        fromList: progUnit types ].
@@ -214,6 +219,23 @@ FamixFortran77Resolver >> resolveAsImplicit: anImplicitVariable fromProgramUnit:
 		  name: anImplicitVariable entityName;
 		  declaredType: type;
 		  yourself
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveEsopeVariable: esopeVariable [
+
+	| segments |
+	segments := self model allWithType: FamixEsopeSegment.
+	segments
+		detect: [ :segment | segment name = esopeVariable segment ]
+		ifOne: [ :segment | esopeVariable declaredType: segment ]
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveEsopeVariables: esopeVariables [
+
+	esopeVariables do: [ :esopeVariable |
+		self resolveEsopeVariable: esopeVariable ]
 ]
 
 { #category : #'symbols resolution' }
@@ -250,7 +272,8 @@ FamixFortran77Resolver >> resolveIncludes: includes [
 	includedFiles := self model allWithType: FamixF77IncludedFile.
 	includes do: [ :include | 
 		includedFiles
-			detect: [ :includedFile | includedFile name = include filename ]
+			detect: [ :includedFile | 
+					includedFile programFile filename includesSubstring: include filename ]
 			ifFound: [ :includedFile | include included: includedFile ]
 			ifNone: [ 
 			Notification signal: 'IncludedFile: No such file or directory' ] ]
@@ -312,6 +335,17 @@ FamixFortran77Resolver >> retrieveStoredIast: anEntity forSymbol: aSymbol [
 		ifAbsent: [ Notification signal: 'problem with generated entity' ].
 	anEntity attributeAt: aSymbol put: nil.
 	^entity
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> retrieveTypeFrom: aName [
+
+	^ (self model attributeAt: #instrinsicTypes ifAbsent: [
+		   self model
+			   attributeAt: #unknownType
+			   ifAbsent: [ ^ self newEntity: FamixF77TypeUnknown ] ])
+		  at: aName
+		  ifAbsent: [ self newEntity: FamixF77TypeUnknown ]
 ]
 
 { #category : #'private-creation' }
