@@ -181,20 +181,32 @@ FortranProjectImporter >> import [
 		Notification signal: 'Set source folder first'.
 		^ self ].
 	self srcFolder exists ifFalse: [ 
-		Notification signal: srcFolder pathString , ' ''No such file or directory'''.
+		Notification signal: self srcFolder pathString , ' ''No such file or directory'''.
 		^ self ].
 
-	self copyEsopeFiles.
-	self includedFilesToEsope.
-	self esopeToFortran.
-	self fortranToJsonAST.
-	self jsonASTToIAST.
-	self iASTToFamix.
-
-	self famixResolve.
-	
+	UIManager default displayProgress: ''
+		from: 0 to: (self importSteps size - 1)
+		during: [:bar |
+			self importSteps withIndexDo: [ :step :i |
+				bar label: step key.
+				bar current: i.
+				self perform: step value
+			] 
+		].	
 	^famixModel 
 
+]
+
+{ #category : #run }
+FortranProjectImporter >> importSteps [
+	^{ 'Copying Esope Files' -> #copyEsopeFiles .
+		'Converting included files to Esope' -> #includedFilesToEsope .
+		'De-Esopifying files' -> #esopeToFortran .
+		'Fortran to JSon AST' -> #fortranToJsonAST .
+		'JSon AST to Intermediary AST' -> #jsonASTToIAST .
+		'Intermediary AST to Famix' -> #iASTToFamix .
+		'Famix symbol resolution' -> #famixResolve
+	}
 ]
 
 { #category : #'private - import' }

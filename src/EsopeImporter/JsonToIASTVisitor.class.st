@@ -248,10 +248,10 @@ JsonToIASTVisitor >> visitDo_spec: aDoSpecNode [
 ]
 
 { #category : #'visiting esope' }
-JsonToIASTVisitor >> visitEsopeEndSegmentComment: anEsopeCommentNode [
+JsonToIASTVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
 	"updates end of current Esope segment"
 	| span |
-	span := (super visitEsopeEndSegmentComment: anEsopeCommentNode) first.
+	span := (super visitEsopeEndsegmentComment: anEsopeCommentNode) first.
 
 	entityStack pop sourceAnchor
 		endLine: (span second x) ;
