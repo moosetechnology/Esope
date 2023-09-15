@@ -44,11 +44,17 @@ FortranProjectImporter >> astFolder [
 
 { #category : #'private - import' }
 FortranProjectImporter >> copyEsopeFiles [
-	self ensureEmptyFolder: self esopeFolder.
 
-	(self srcFolder allChildrenMatching: '*.E') do: [ :esopeFile |
-		esopeFile copyTo: (self fileReference: esopeFile into: self esopeFolder)
-	]
+	self ensureEmptyFolder: self esopeFolder.
+	self copyFilesIn: self srcFolder with: '*.E'.
+	self copyFilesIn: self srcFolder with: '*.inc'
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> copyFilesIn: folder with: aPattern [
+
+	(folder allChildrenMatching: aPattern) do: [ :file |
+		file copyTo: (self fileReference: file into: self esopeFolder) ]
 ]
 
 { #category : #'private - files' }
@@ -86,21 +92,21 @@ FortranProjectImporter >> esopeToFortran [
 
 	self ensureEmptyFolder: self fortranFolder.
 
-	(self esopeFolder asFileReference allFiles) do: [ :esopeFile || fortranFile |
-		fortranFile := self 
-				fileReference: (esopeFile withExtension: 'f')
-				into: self fortranFolder.
+	"self esopeFolder asFileReference allFiles"
+	(self esopeFolder asFileReference allChildrenMatching: '*.E') do: [
+		:esopeFile |
+		| fortranFile |
+		fortranFile := self
+			               fileReference: (esopeFile withExtension: 'f')
+			               into: self fortranFolder.
 
-		PPEsopeRewriter
-			rewriteFrom: esopeFile
-			to: fortranFile
-		]
+		PPEsopeRewriter rewriteFrom: esopeFile to: fortranFile ]
 ]
 
 { #category : #accessing }
 FortranProjectImporter >> f77parser [
 
-	^ '/home/anquetil/bin/fortran-src-extras serialize -t json -v77l encode'
+	^ 'fortran-src-extras serialize -t json -v77l encode'
 ]
 
 { #category : #'private - import' }
@@ -177,12 +183,11 @@ FortranProjectImporter >> iASTToFamix [
 
 { #category : #run }
 FortranProjectImporter >> import [
+
 	srcFolder ifNil: [ 
-		Notification signal: 'Set source folder first'.
-		^ self ].
+		Warning signal: 'Set source folder first' ].
 	self srcFolder exists ifFalse: [ 
-		Notification signal: self srcFolder pathString , ' ''No such file or directory'''.
-		^ self ].
+		Warning signal: self srcFolder pathString , ' ''No such file or directory''' ].
 
 	UIManager default displayProgress: ''
 		from: 0 to: (self importSteps size - 1)
@@ -192,9 +197,9 @@ FortranProjectImporter >> import [
 				bar current: i.
 				self perform: step value
 			] 
-		].	
-	^famixModel 
+		].
 
+	^ famixModel
 ]
 
 { #category : #run }
