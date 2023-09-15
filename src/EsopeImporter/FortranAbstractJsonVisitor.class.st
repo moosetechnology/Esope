@@ -368,7 +368,7 @@ FortranAbstractJsonVisitor >> visitEsopeComment: anEsopeCommentNode [
 	| key esopeCommand |
 	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
 	key := 'Esope' ,
-		(esopeCommand first asLowercase capitalized) ,
+		(esopeCommand first capitalized) ,
 		'Comment'.
 
 	^self visitJsonNode: key value: anEsopeCommentNode.
@@ -380,11 +380,11 @@ FortranAbstractJsonVisitor >> visitEsopeEndComment: anEsopeCommentNode [
 	"delegate to a method with a more explicit name
 		subclasses should override #visitEsopeEndSegmentComment: not this method"
 
-	^self visitEsopeEndSegmentComment: anEsopeCommentNode 
+	^self visitEsopeEndsegmentComment: anEsopeCommentNode 
 ]
 
 { #category : #'visiting esope' }
-FortranAbstractJsonVisitor >> visitEsopeEndSegmentComment: anEsopeCommentNode [
+FortranAbstractJsonVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
 
 	^self processEsopeComment: anEsopeCommentNode
 
