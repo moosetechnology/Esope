@@ -58,6 +58,32 @@ FamixFortran77Resolver >> newEntity: aFamixClass [
 ]
 
 { #category : #'symbols resolution' }
+FamixFortran77Resolver >> registerImplicitForPU: programUnit range: aRange forType: iASTTypeRef [
+
+	(aRange size = 1)
+	ifTrue: [ programUnit dicImplicit at: aRange first put: iASTTypeRef name asSymbol ]
+	ifFalse: [ 
+		(aRange first to: aRange second) do: [ :letter |
+			programUnit dicImplicit at: letter put: iASTTypeRef name asSymbol
+		]
+	]
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> registerImplicitsForPU: programUnit [
+
+	(programUnit attributeAt: #implicits ifAbsent: [ #() ])
+	do: [ :implicitDeclaration | 
+		implicitDeclaration ranges
+			ifNotNil: [ 
+				implicitDeclaration ranges do: [ :aRange | 
+					self registerImplicitForPU: programUnit range: aRange forType: implicitDeclaration forType] ]
+			ifNil: [ "implicit none"
+				programUnit dicImplicit removeAll ]
+	]
+]
+
+{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> removeFromModel: entity [
 	"Set all pointers in the entity to nil beforehand, to make the work of the GarbageCollector easier."
 	entity declaredType: nil.
@@ -289,30 +315,14 @@ FamixFortran77Resolver >> resolveEsopeVariables: esopeVariables [
 FamixFortran77Resolver >> resolveImplicitsDeclarations [
 
 	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :programUnit | 
-		self resolveImplicitsFor: programUnit ]
+		self registerImplicitsForPU: programUnit ]
 ]
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveImplicitsDeclarations: programUnits [
 
 	programUnits do: [ :programUnit | 
-		self resolveImplicitsFor: programUnit ]
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicitsFor: programUnit [
-
-	(programUnit attributeAt: #implicits ifAbsent: [ #() ])
-	do: [ :implicitDeclaration | 
-		implicitDeclaration ranges
-			ifNotNil: [ 
-				implicitDeclaration ranges flattened do: [ :letter | 
-					programUnit dicImplicit
-						at: letter
-						put: implicitDeclaration forType name asSymbol ] ]
-			ifNil: [ 
-				Character alphabet do: [ :letter | 
-					programUnit dicImplicit at: letter put: nil ] ] ]
+		self registerImplicitsForPU: programUnit ]
 ]
 
 { #category : #'symbols resolution' }

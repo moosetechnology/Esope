@@ -39,7 +39,7 @@ FamixFortran77ResolverTest >> defaultAnchor [
 	^ self anchorFrom: 1 @ 7 to: 2 @ 10
 ]
 
-{ #category : #running }
+{ #category : #'default values' }
 FamixFortran77ResolverTest >> defaultAttribute: varName withType: typeName [
 
 	^ (self newEntity: FamixFortranAttribute)
@@ -55,7 +55,7 @@ FamixFortran77ResolverTest >> defaultFunction: name [
 		  programFile: famixProgFile
 ]
 
-{ #category : #running }
+{ #category : #'default values' }
 FamixFortran77ResolverTest >> defaultIASTEsopeCommand: commandName name: entityName [
 
 	^ IASTEsopeSegCommand new
@@ -126,7 +126,7 @@ FamixFortran77ResolverTest >> defaultProgramUnit: name forType: aFamixClass belo
 		  aFamixProgramFile
 ]
 
-{ #category : #running }
+{ #category : #'default values' }
 FamixFortran77ResolverTest >> defaultSegment: segmentName with: dictDeclarations [
 
 	^ (self newEntity: FamixEsopeSegment)
@@ -202,7 +202,7 @@ FamixFortran77ResolverTest >> setUp [
 	famixProgFile  := self defaultProgramFile: './main.f'.
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77Access [
 	| main access accessor |
 
@@ -221,7 +221,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77Access [
 	self assert: access variable equals: main localVariables first.
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77AccessNonDeclaredVariable [
 	| main access accessor |
 	"
@@ -249,7 +249,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77AccessNonDeclaredVariable 
 	self assert: access variable declaredType name equals: 'real'.
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationCalleeBeforeCaller [
 	| sub main invocation callee caller |
 	
@@ -274,7 +274,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationCalleeBeforeCall
 	self assert: invocation candidates first equals: sub.
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationCallerBeforeCallee [
 	| main sub invocation callee caller |
 	caller := (self defaultMain: 'main')
@@ -298,7 +298,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationCallerBeforeCall
 	self assert: invocation candidates first equals: sub.
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationInDifferentFiles [
 	| invocation callee caller famixProgFile1 main sub |
 
@@ -326,7 +326,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationInDifferentFiles
 	self assert: invocation candidates first equals: sub.
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationMultipleCalleeBeforeCaller [
 	| main sub fct invocation calleeSub calleeFct caller |
 	caller := (self defaultMain: 'main')
@@ -361,7 +361,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77InvocationMultipleCalleeBe
 	self assert: invocation candidates first equals: fct.
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77LocalVariableAsFunction [
 	| famixMain famixFunction |
 	"
@@ -389,7 +389,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77LocalVariableAsFunction [
 	self assert: famixFunction declaredType name equals: 'real'.
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77LocalVariableAsParameter [
 	| subroutine access |
 
@@ -419,7 +419,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77LocalVariableAsParameter [
 	self assert: access variable equals: subroutine parameters first.
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77ParameterWithLocalVariable [
 	| subroutine access accessor |
 
@@ -442,7 +442,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77ParameterWithLocalVariable
 	self assert: access variable equals: subroutine parameters first.
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveImplicitNone [
 	| famixSubroutine types subroutine |
 
@@ -466,7 +466,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveImplicitNone [
 	self assert: types asSet anyOne isNil
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveImplicits [
 	| famixSubroutine subroutine types |
 
@@ -500,7 +500,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveImplicits [
 	self assert: types asSet anyOne equals: 'real'
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveParametersType [
 	| entity access accessor |
 
@@ -528,7 +528,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveParametersType [
 	self assert: access variable equals: entity parameters first.
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveParametersTypeWithDeclaration [
 	| entity access accessor |
 
@@ -557,36 +557,122 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveParametersTypeWithD
 	self assert: access variable equals: entity parameters first.
 ]
 
-{ #category : #running }
-FamixFortran77ResolverTest >> testResolveDeclaredImplicit [
+{ #category : #tests }
+FamixFortran77ResolverTest >> testRegisterImplicitDefault [
 
 	"
-	      function fct(param)
-	      implicit integer(a-m)
-	      fct = param + 10
+	      subroutine rtn
 	      end
 	"
 
-	| function |
+	| pu |
 
-	function := (self defaultFunction: 'fct')
-		            attributeAt: #implicits
-		            put:
-			            { (self implicitRange: { ($a to: $m) } forType: 'integer') };
-		            parameters: { (self defaultParameter: 'param') };
-		            accesses: { 
-				            (self defaultAccess: 'param' isWrite: false).
-				            (self defaultAccess: 'fct' isWrite: true) }.
-	self assert: function parameters first declaredType isNil.
-	self assert: function declaredType isNil.
-	resolver resolve.
-	self
-		assert: function parameters first declaredType name
-		equals: 'real'.
-	self assert: function declaredType name equals: 'integer'
+	pu := self defaultSubroutine: 'rtn'.
+
+	resolver registerImplicitsForPU: pu.
+
+	self assert: pu dicImplicit size equals: 26.
+	
+	"testing a few of them"
+	self assert: (pu dicImplicit at: $a) equals: 'real'.
+	self assert: (pu dicImplicit at: $i) equals: 'integer'.
 ]
 
-{ #category : #running }
+{ #category : #tests }
+FamixFortran77ResolverTest >> testRegisterImplicitMultiple [
+
+	"
+      subroutine rtn
+      implicit integer(a,d-e)
+      end
+	"
+
+	| pu |
+
+	pu := (self defaultSubroutine: 'rtn')
+		attributeAt: #implicits put: { (self implicitRange: #( #($a) #($c $d) ) forType: 'integer') };
+		yourself.
+
+	resolver registerImplicitsForPU: pu.
+
+	self assert: pu dicImplicit size equals: 26.
+
+	self assert: (pu dicImplicit at: $a) equals: 'integer'.
+	self assert: (pu dicImplicit at: $b) equals: 'real'.
+	self assert: (pu dicImplicit at: $c) equals: 'integer'.
+	self assert: (pu dicImplicit at: $d) equals: 'integer'.
+	self assert: (pu dicImplicit at: $e) equals: 'real'.
+]
+
+{ #category : #tests }
+FamixFortran77ResolverTest >> testRegisterImplicitNone [
+
+	"
+	      subroutine rtn
+	      implicit none
+	      end
+	"
+
+	| pu |
+
+	pu := (self defaultSubroutine: 'rtn')
+		attributeAt: #implicits put: { self defaultImplicitNone } ;
+		yourself.
+
+	resolver registerImplicitsForPU: pu.
+
+	self assert: pu dicImplicit isEmpty
+]
+
+{ #category : #tests }
+FamixFortran77ResolverTest >> testRegisterImplicitRange [
+
+	"
+      subroutine rtn
+      implicit integer(a-c)
+      end
+	"
+
+	| pu |
+
+	pu := (self defaultSubroutine: 'rtn')
+		attributeAt: #implicits put: { (self implicitRange: #( #($a $c) ) forType: 'integer') };
+		yourself.
+
+	resolver registerImplicitsForPU: pu.
+
+	self assert: pu dicImplicit size equals: 26.
+
+	self assert: (pu dicImplicit at: $a) equals: 'integer'.
+	self assert: (pu dicImplicit at: $b) equals: 'integer'.
+	self assert: (pu dicImplicit at: $c) equals: 'integer'.
+	self assert: (pu dicImplicit at: $d) equals: 'real'.
+]
+
+{ #category : #tests }
+FamixFortran77ResolverTest >> testRegisterImplicitSimple [
+
+	"
+      subroutine rtn
+      implicit integer (a)
+      end
+	"
+
+	| pu |
+
+	pu := (self defaultSubroutine: 'rtn')
+		attributeAt: #implicits put: { (self implicitRange: #( #($a) ) forType: 'integer') };
+		yourself.
+
+	resolver registerImplicitsForPU: pu.
+
+	self assert: pu dicImplicit size equals: 26.
+
+	self assert: (pu dicImplicit at: $a) equals: 'integer'.
+	self assert: (pu dicImplicit at: $b) equals: 'real'.
+]
+
+{ #category : #tests }
 FamixFortran77ResolverTest >> testResolveDefaultImplicit [
 
 	"
@@ -611,7 +697,7 @@ FamixFortran77ResolverTest >> testResolveDefaultImplicit [
 	self assert: function declaredType name equals: 'real'
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testResolveImplicitNone [
 
 	"
@@ -631,9 +717,6 @@ FamixFortran77ResolverTest >> testResolveImplicitNone [
 				            (self defaultAccess: 'param' isWrite: false).
 				            (self defaultAccess: 'fct' isWrite: true) }.
 
-	self assert: function parameters first declaredType isNil.
-	self assert: function declaredType isNil.
-
 	resolver resolve.
 
 	self
@@ -641,7 +724,7 @@ FamixFortran77ResolverTest >> testResolveImplicitNone [
 	self assert: function declaredType isNil
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testResolveImplicitNoneWithParameterDeclared [
 
 	"
@@ -673,7 +756,7 @@ FamixFortran77ResolverTest >> testResolveImplicitNoneWithParameterDeclared [
 	self assert: function declaredType isNil
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testResolveIncludeDirective [
 
 	"
@@ -779,7 +862,7 @@ FamixFortran77ResolverTest >> testResolveIncludeDirective [
 	self assert: puIncFile first inclusions size equals: 3
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testResolveSegment [
 
 	| sub access accessor |
@@ -896,7 +979,7 @@ FamixFortran77ResolverTest >> testResolveSegment [
 	self assert: access variable equals: sub types first attributes first
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testResolveSegmentWithImplicitPointer [
 
 	| sub access accessor |
@@ -1023,7 +1106,7 @@ FamixFortran77ResolverTest >> testResolveSegmentWithImplicitPointer [
 	self assert: access variable equals: sub types first attributes first
 ]
 
-{ #category : #running }
+{ #category : #tests }
 FamixFortran77ResolverTest >> testResolveSegmentWithImplicitPointerAndNoPrefix [
 
 	| sub access accessor |
