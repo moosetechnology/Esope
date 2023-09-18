@@ -19,16 +19,16 @@ FamixFortran77Resolver class >> on: aMooseModel [
 ]
 
 { #category : #'private - utility' }
-FamixFortran77Resolver >> defaultImplicitTyping: name fromProgramUnit: programUnit [
-
-	^ programUnit dicImplicit at: name first ifAbsent: [ nil ]
-]
-
-{ #category : #'private - utility' }
 FamixFortran77Resolver >> findEntity: anEntity forType: aType [
 	^((self model allWithType:  aType) 
 		select: [ :each | each class = aType 
 			and: [ each name = anEntity entityName ]]) first.
+]
+
+{ #category : #'private - utility' }
+FamixFortran77Resolver >> implicitTypeFor: name inProgramUnit: programUnit [
+
+	^ programUnit dicImplicit at: name first ifAbsent: [ FamixF77TypeUnknown defaultName ]
 ]
 
 { #category : #initialization }
@@ -104,47 +104,36 @@ FamixFortran77Resolver >> requalifyFunction: function [
 
 	| type name |
 	name := self
-		        defaultImplicitTyping: function name
-		        fromProgramUnit: function.
+		        implicitTypeFor: function name
+		        inProgramUnit: function.
 	name ifNotNil: [
-		type := self retrieveTypeFrom: name.
+		type := self resolveTypeName: name.
 		function declaredType: type ]
 ]
 
 { #category : #'symbols resolution' }
+FamixFortran77Resolver >> requalifyFunctionDeclaration: external [
+	"external decalration of functin followed by a VariableDeclaration of the same function
+	 we simply remove the VariableDeclaration"
+
+	external parentBehaviouralEntity localVariables
+		detect: [ :varDeclaration |
+			varDeclaration name = external name
+		]
+		ifOne: [ :varDeclaration |
+			varDeclaration parentBehaviouralEntity: nil.
+			model remove: varDeclaration.
+		]
+]
+
+{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> requalifyFunctionDeclarations [
-]
+	"VariableDeclaration that are actually functions are simply removed
+	We know it is a function because there is an 'external' declaration for that name"
 
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyFunctions [
-
-	| functions |
-	functions := (self model allWithType: FamixF77PUFunction).
-
-	functions do: [ :function | self requalifyFunction: function ]
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyFunctions: functions [
-
-	functions do: [ :function | self requalifyFunction: function ]
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyParameter: parameter [
-	"requalify a VariableDeclaration into a Parameter when appropirate
-	 + sets the declaredType of the parameter according to the declaration
-	 + removes the declaration from the model"
-
-	| name |
-	name := self
-		defaultImplicitTyping: parameter name
-		fromProgramUnit: parameter parentBehaviouralEntity.
-
-	name
-		ifNotNil: [ parameter declaredType: (self retrieveTypeFrom: name) ]
-		ifNil: [ parameter declaredType: FamixF77TypeUnknown new ].
-	
+	(model allWithType: FamixF77ExternalDeclaration) do: [ :external |
+		self requalifyFunctionDeclaration: external
+	]
 ]
 
 { #category : #'symbols resolution' }
@@ -280,9 +269,9 @@ FamixFortran77Resolver >> resolveAsImplicit: anImplicitVariable fromProgramUnit:
 
 	type := progUnit types
 		        ifEmpty: [
-			        self retrieveTypeFrom: (self
-					         defaultImplicitTyping: anImplicitVariable entityName
-					         fromProgramUnit: progUnit) ]
+			        self resolveTypeName: (self
+					         implicitTypeFor: anImplicitVariable entityName
+					         inProgramUnit: progUnit) ]
 		        ifNotEmpty: [
 			        self
 				        retrieveEntity: anImplicitVariable entityName
@@ -403,17 +392,6 @@ FamixFortran77Resolver >> retrieveStoredIast: anEntity forSymbol: aSymbol [
 		ifAbsent: [ Notification signal: 'problem with generated entity' ].
 	anEntity attributeAt: aSymbol put: nil.
 	^entity
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> retrieveTypeFrom: aName [
-
-	^ (self model attributeAt: #instrinsicTypes ifAbsent: [
-		   self model
-			   attributeAt: #unknownType
-			   ifAbsent: [ ^ self newEntity: FamixF77TypeUnknown ] ])
-		  at: aName
-		  ifAbsent: [ self newEntity: FamixF77TypeUnknown ]
 ]
 
 { #category : #'private-creation' }

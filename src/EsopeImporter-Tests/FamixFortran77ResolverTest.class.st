@@ -638,6 +638,35 @@ FamixFortran77ResolverTest >> testRequalifyParameterNoVariableDeclaration [
 ]
 
 { #category : #tests }
+FamixFortran77ResolverTest >> testRequalifyVariableDeclarationAsFunction [
+
+	"
+      subroutine sub
+       external fct
+      integer fct
+      end
+	"
+
+	| sub |
+
+	self skip: 'see issue #32'.
+
+	sub := (self defaultSubroutine: 'sub')
+		addExternalDeclaration: (self externalDeclaration: 'fct') ;
+		addLocalVariable: (self defaultVariable: 'fct' withType: #integer) ;
+		yourself.
+
+ 	resolver resolve.
+
+	self assert: sub localVariables isEmpty.
+	self assert: (resolver model allWithType: FamixF77Variable) isEmpty.
+
+	self assert: sub externalDeclarations size equals: 1.
+	self assert: (resolver model allWithType: FamixF77ExternalDeclaration) size equals: 1.
+
+]
+
+{ #category : #tests }
 FamixFortran77ResolverTest >> testRequalifyVariableDeclarationAsParameter [
 
 	"
