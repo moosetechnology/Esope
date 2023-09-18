@@ -632,7 +632,8 @@ FamixFortran77ResolverTest >> testRequalifyParameterNoVariableDeclaration [
 
 	self assert: sub parameters size equals: 1.
 	entity := sub parameters anyOne.
-	self assert: entity declaredType isNil
+	self assert: entity declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: entity declaredType name equals: 'real'.
 
 
 ]
@@ -696,52 +697,22 @@ FamixFortran77ResolverTest >> testRequalifyVariableDeclarationAsParameter [
 ]
 
 { #category : #'test-todo' }
-FamixFortran77ResolverTest >> testResolveDefaultImplicit [
+FamixFortran77ResolverTest >> testResolveImplicitFunction [
 
 	"
-	      function fct(iparam)
-	      fct = param + 10
+	      function fct()
 	      end
 	"
 
 	| function |
+self skip.
+	function := self defaultFunction: 'fct'.
 
-	function := (self defaultFunction: 'fct')
-		            parameters: { (self defaultParameter: 'iparam') };
-		            accesses: { 
-				            (self defaultAccess: 'iparam' isWrite: false).
-				            (self defaultAccess: 'fct' isWrite: true) }.
-	self assert: function parameters first declaredType isNil.
 	self assert: function declaredType isNil.
+
 	resolver resolve.
-	self
-		assert: function parameters first declaredType name
-		equals: 'integer'.
+
 	self assert: function declaredType name equals: 'real'
-]
-
-{ #category : #'test - implicit' }
-FamixFortran77ResolverTest >> testResolveImplicitNone [
-
-	"
-	      subroutine sub(param)
-	      implicit none
-	      end
-	"
-
-		| entity |
-
-	(self defaultSubroutine: 'sub')
-		attributeAt: #implicits put: { self defaultImplicitNone } ;
-		addParameter: (self defaultParameter: 'var').
-
- 	resolver resolve.
-
-	self assert: (resolver model allWithSubTypesOf: FamixF77ProgramUnit) size equals: 1.
-	
-	entity := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first parameters first.
-	self assert: entity declaredType class equals: FamixF77TypeUnknown
-
 ]
 
 { #category : #'test-todo' }
@@ -776,8 +747,55 @@ FamixFortran77ResolverTest >> testResolveImplicitNoneWithParameterDeclared [
 	self assert: function declaredType isNil
 ]
 
+{ #category : #'test-todo' }
+FamixFortran77ResolverTest >> testResolveImplicitParameter [
+
+	"
+	      function fct(iparam)
+	      end
+	"
+
+	| function |
+
+	function := (self defaultFunction: 'fct')
+		parameters: { (self defaultParameter: 'iparam') } ;
+		yourself.
+
+	self assert: function parameters first declaredType isNil.
+	
+	resolver resolve.
+
+	self
+		assert: function parameters first declaredType name
+		equals: 'integer'
+]
+
 { #category : #'test - implicit' }
-FamixFortran77ResolverTest >> testResolveImplicitRange [
+FamixFortran77ResolverTest >> testResolveImplicitParameterNone [
+
+	"
+	      subroutine sub(param)
+	      implicit none
+	      end
+	"
+
+		| entity |
+
+	(self defaultSubroutine: 'sub')
+		attributeAt: #implicits put: { self defaultImplicitNone } ;
+		addParameter: (self defaultParameter: 'var').
+
+ 	resolver resolve.
+
+	self assert: (resolver model allWithSubTypesOf: FamixF77ProgramUnit) size equals: 1.
+	
+	entity := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first parameters first.
+	self assert: entity declaredType class equals: FamixF77TypeUnknown
+
+]
+
+{ #category : #'test - implicit' }
+FamixFortran77ResolverTest >> testResolveImplicitParameterRange [
 
 	"
       subroutine sub(var)

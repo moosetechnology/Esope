@@ -212,6 +212,7 @@ FamixFortran77Resolver >> resolve [
 	self resolveIncludes.
 	self registerImplicitsDeclarations.
 	self requalifyVariableDeclarations.
+	self resolveImplicitParameters.
 	"self requalifyParameters.
 	self requalifyFunctions.
 	self resolveEsopeVariables.
@@ -312,6 +313,27 @@ FamixFortran77Resolver >> resolveEsopeVariables: esopeVariables [
 ]
 
 { #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveImplicitParameter: parameter [
+
+	parameter declaredType:
+		(self resolveTypeName:
+			(self
+				implicitTypeFor: parameter name
+				inProgramUnit: parameter parentBehaviouralEntity))
+	
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveImplicitParameters [
+
+	(model allWithType: FamixF77Parameter) do: [ :param |
+		param declaredType ifNil: [
+			self resolveImplicitParameter: param
+		]
+	] 
+]
+
+{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveIncludes [
 	"puts FamixF77IncludedFile into the FamixF77Include that include them"
 
@@ -351,6 +373,30 @@ FamixFortran77Resolver >> resolveInvocations: anInvocations [
 	anInvocations do: [ :invocation | 
 		(invocation sourceText beginsWith: 'write' caseSensitive: false) 
 			ifFalse: [ self resolveInvocation: invocation ] ]
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveTypeName: aName [
+
+	self flag: 'should test the referring PU (ex: for an included segment)'.
+
+	^(self model allWithSubTypesOf: FamixF77Type)
+		detect: [ :type | type name = aName ]
+		ifNone: [ self model newTypeUnknown ]
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveTypeName: aName inPU: aProgramUnit [
+
+	(aProgramUnit allTypes)
+		detect: [ :type | type name = aName ]
+		ifOne: [ :type | ^type ].
+
+	self model intrinsicTypes 
+		detect: [ :type | type name = aName ]
+		ifOne: [ :type | ^type ].
+
+	^self model newTypeUnknown
 ]
 
 { #category : #'private-creation' }
