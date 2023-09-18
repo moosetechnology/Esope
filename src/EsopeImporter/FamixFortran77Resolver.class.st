@@ -79,6 +79,15 @@ FamixFortran77Resolver >> requalifyFunction: function [
 ]
 
 { #category : #'symbols resolution' }
+FamixFortran77Resolver >> requalifyFunctions [
+
+	| functions |
+	functions := (self model allWithType: FamixF77PUFunction).
+
+	functions do: [ :function | self requalifyFunction: function ]
+]
+
+{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> requalifyFunctions: functions [
 
 	functions do: [ :function | self requalifyFunction: function ]
@@ -99,6 +108,15 @@ FamixFortran77Resolver >> requalifyParameter: parameter [
 	name ifNotNil: [
 		type := self retrieveTypeFrom: name.
 		parameter declaredType: type ]
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> requalifyParameters [
+
+	| parameters |
+	parameters := (self model allWithType: FamixF77Parameter).
+
+	parameters do: [ :parameter | self requalifyParameter: parameter ]
 ]
 
 { #category : #'symbols resolution' }
@@ -142,6 +160,18 @@ FamixFortran77Resolver >> requalifyVariableDeclarationAsParameter: variableDecla
 ]
 
 { #category : #'symbols resolution' }
+FamixFortran77Resolver >> requalifyVariableDeclarations [
+
+	| variableDeclarations |
+	variableDeclarations := (self model allWithType: FamixF77Variable).
+	"a LocalVariable declaration can be a:
+	- Function
+	- Parameter"
+	variableDeclarations 
+		do: [ :variableDeclaration | self requalifyVariableDeclaration: variableDeclaration ]
+]
+
+{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> requalifyVariableDeclarations: variableDeclarations [
 	"a LocalVariable declaration can be a:
 	- Function
@@ -153,24 +183,21 @@ FamixFortran77Resolver >> requalifyVariableDeclarations: variableDeclarations [
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolve [
 
-	self resolveIncludes: (self model allWithType: FamixF77Include).
-	self resolveImplicitsDeclarations:
-		(self model allWithSubTypesOf: FamixF77ProgramUnit).
-	self requalifyParameters: (self model allWithType: FamixF77Parameter).
-	self requalifyFunctions: (self model allWithType: FamixF77PUFunction).
-	self resolveEsopeVariables:
-		((self model allWithSubTypesOf: FamixF77Variable) select: [ :var |
-			 var isEsope ]).
-	self requalifyVariableDeclarations:
-		(self model allWithType: FamixF77Variable).
-	self resolveAccesses: (self model allWithSubTypesOf: FamixF77Access).
-	self resolveInvocations: (self model allWithType: FamixF77Invocation)
+	self resolveIncludes.
+	self resolveImplicitsDeclarations.
+	self requalifyParameters.
+	self requalifyFunctions.
+	self resolveEsopeVariables.
+	self requalifyVariableDeclarations.
+	self resolveAccesses.
+	self resolveInvocations
 ]
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveAccess: anAccess [
 
 	| target varAccessed var varPointer |
+
 	varAccessed := self retrieveStoredIast: anAccess forSymbol: #entity.
 	varPointer := self retrieveStoredIast: anAccess forSymbol: #pointer.
 
@@ -191,6 +218,15 @@ FamixFortran77Resolver >> resolveAccess: anAccess [
 		       fromProgramUnit: anAccess accessor.
 	anAccess accessor addLocalVariable: var.
 	^ anAccess variable: var
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveAccesses [
+
+	| anAccesses |
+	anAccesses := (self model allWithSubTypesOf: FamixF77Access).
+
+	anAccesses do: [ :access | self resolveAccess: access ]
 ]
 
 { #category : #'symbols resolution' }
@@ -232,10 +268,30 @@ FamixFortran77Resolver >> resolveEsopeVariable: esopeVariable [
 ]
 
 { #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveEsopeVariables [
+
+	| esopeVariables |
+	esopeVariables := ((self model allWithSubTypesOf: FamixF77Variable) select: [ :var |
+			 var isEsope ]).
+
+	esopeVariables do: [ :esopeVariable |
+		self resolveEsopeVariable: esopeVariable ]
+]
+
+{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveEsopeVariables: esopeVariables [
 
 	esopeVariables do: [ :esopeVariable |
 		self resolveEsopeVariable: esopeVariable ]
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveImplicitsDeclarations [
+
+	| programUnits |
+	programUnits := (self model allWithSubTypesOf: FamixF77ProgramUnit).
+	programUnits do: [ :programUnit | 
+		self resolveImplicitsFor: programUnit ]
 ]
 
 { #category : #'symbols resolution' }
@@ -266,6 +322,21 @@ FamixFortran77Resolver >> resolveImplicitsFor: programUnit [
 ]
 
 { #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveIncludes [
+
+	| includedFiles includes |
+	includes := (self model allWithType: FamixF77Include).
+	includedFiles := self model allWithType: FamixF77IncludedFile.
+	includes do: [ :include | 
+		includedFiles
+			detect: [ :includedFile | 1halt.
+					includedFile programFile filename endsWith: (include filename , '.f')]
+			ifFound: [ :includedFile | include included: includedFile ]
+			ifNone: [ 
+			Notification signal: 'IncludedFile: No such file or directory' ] ]
+]
+
+{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveIncludes: includes [
 
 	| includedFiles |
@@ -286,6 +357,16 @@ FamixFortran77Resolver >> resolveInvocation: anInvocation [
 	invocated := self retrieveStoredIast: anInvocation.
 	(self retrieveInvocables: invocated entityName) ifNotNil: [ 
 		:invocatedFound | anInvocation addCandidate: invocatedFound ]
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveInvocations [
+
+	| anInvocations |
+	anInvocations := (self model allWithType: FamixF77Invocation).
+	anInvocations do: [ :invocation | 
+		(invocation sourceText beginsWith: 'write' caseSensitive: false) 
+			ifFalse: [ self resolveInvocation: invocation ] ]
 ]
 
 { #category : #'symbols resolution' }

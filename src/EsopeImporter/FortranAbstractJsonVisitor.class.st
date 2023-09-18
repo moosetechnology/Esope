@@ -368,7 +368,7 @@ FortranAbstractJsonVisitor >> visitEsopeComment: anEsopeCommentNode [
 	| key esopeCommand |
 	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
 	key := 'Esope' ,
-		(esopeCommand first capitalized) ,
+		(esopeCommand first asLowercase capitalized) ,
 		'Comment'.
 
 	^self visitJsonNode: key value: anEsopeCommentNode.
