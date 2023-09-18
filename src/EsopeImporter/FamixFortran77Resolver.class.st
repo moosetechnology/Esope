@@ -21,7 +21,7 @@ FamixFortran77Resolver class >> on: aMooseModel [
 { #category : #'private - utility' }
 FamixFortran77Resolver >> defaultImplicitTyping: name fromProgramUnit: programUnit [
 
-	^ programUnit dicImplicit at: name first
+	^ programUnit dicImplicit at: name first ifAbsent: [ nil ]
 ]
 
 { #category : #'private - utility' }
@@ -70,6 +70,13 @@ FamixFortran77Resolver >> registerImplicitForPU: programUnit range: aRange forTy
 ]
 
 { #category : #'symbols resolution' }
+FamixFortran77Resolver >> registerImplicitsDeclarations [
+
+	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :programUnit | 
+		self registerImplicitsForPU: programUnit ]
+]
+
+{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> registerImplicitsForPU: programUnit [
 
 	(programUnit attributeAt: #implicits ifAbsent: [ #() ])
@@ -105,6 +112,10 @@ FamixFortran77Resolver >> requalifyFunction: function [
 ]
 
 { #category : #'symbols resolution' }
+FamixFortran77Resolver >> requalifyFunctionDeclarations [
+]
+
+{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> requalifyFunctions [
 
 	| functions |
@@ -121,34 +132,44 @@ FamixFortran77Resolver >> requalifyFunctions: functions [
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> requalifyParameter: parameter [
+	"requalify a VariableDeclaration into a Parameter when appropirate
+	 + sets the declaredType of the parameter according to the declaration
+	 + removes the declaration from the model"
 
-	| type name progUnit |
-	progUnit := parameter parentBehaviouralEntity.
-	"p := (self model allWithType: FamixF77Variable)
-		     detect: [ :var | var name = parameter name ]
-		     ifFound: [ :var | parameter declaredType: var declaredType ]."
-
+	| name |
 	name := self
-		        defaultImplicitTyping: parameter name
-		        fromProgramUnit: progUnit.
-	name ifNotNil: [
-		type := self retrieveTypeFrom: name.
-		parameter declaredType: type ]
+		defaultImplicitTyping: parameter name
+		fromProgramUnit: parameter parentBehaviouralEntity.
+
+	name
+		ifNotNil: [ parameter declaredType: (self retrieveTypeFrom: name) ]
+		ifNil: [ parameter declaredType: FamixF77TypeUnknown new ].
+	
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyParameters [
+FamixFortran77Resolver >> requalifyParameterDeclaration: param [
+	"looks for a VariableDeclaration in the same program unit with the same name"
 
-	| parameters |
-	parameters := (self model allWithType: FamixF77Parameter).
-
-	parameters do: [ :parameter | self requalifyParameter: parameter ]
+	
+	param parentBehaviouralEntity localVariables
+		detect: [ :varDeclaration |
+			varDeclaration name = param name
+		]
+		ifOne: [ :varDeclaration |
+			param declaredType: varDeclaration declaredType.
+			varDeclaration parentBehaviouralEntity: nil.
+			model remove: varDeclaration
+		]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyParameters: parameters [
+FamixFortran77Resolver >> requalifyParameterDeclarations [
+	"For each parameter, try to find a matching VariableDeclaration"
 
-	parameters do: [ :parameter | self requalifyParameter: parameter ]
+	(model allWithType: FamixF77Parameter) do: [ :param |
+		self requalifyParameterDeclaration: param
+	]
 ]
 
 { #category : #'symbols resolution' }
@@ -187,36 +208,26 @@ FamixFortran77Resolver >> requalifyVariableDeclarationAsParameter: variableDecla
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> requalifyVariableDeclarations [
-
-	| variableDeclarations |
-	variableDeclarations := (self model allWithType: FamixF77Variable).
 	"a LocalVariable declaration can be a:
 	- Function
-	- Parameter"
-	variableDeclarations 
-		do: [ :variableDeclaration | self requalifyVariableDeclaration: variableDeclaration ]
-]
+	- Parameter
+	- LocalVariable"
 
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyVariableDeclarations: variableDeclarations [
-	"a LocalVariable declaration can be a:
-	- Function
-	- Parameter"
-	variableDeclarations 
-		do: [ :variableDeclaration | self requalifyVariableDeclaration: variableDeclaration ]
+	self requalifyParameterDeclarations.
+	self requalifyFunctionDeclarations.
 ]
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolve [
 
 	self resolveIncludes.
-	self resolveImplicitsDeclarations.
-	self requalifyParameters.
+	self registerImplicitsDeclarations.
+	self requalifyVariableDeclarations.
+	"self requalifyParameters.
 	self requalifyFunctions.
 	self resolveEsopeVariables.
-	self requalifyVariableDeclarations.
 	self resolveAccesses.
-	self resolveInvocations
+	self resolveInvocations"
 ]
 
 { #category : #'symbols resolution' }
@@ -312,20 +323,6 @@ FamixFortran77Resolver >> resolveEsopeVariables: esopeVariables [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicitsDeclarations [
-
-	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :programUnit | 
-		self registerImplicitsForPU: programUnit ]
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicitsDeclarations: programUnits [
-
-	programUnits do: [ :programUnit | 
-		self registerImplicitsForPU: programUnit ]
-]
-
-{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveIncludes [
 	"puts FamixF77IncludedFile into the FamixF77Include that include them"
 
@@ -338,20 +335,6 @@ FamixFortran77Resolver >> resolveIncludes [
 			ifFound: [ :includedFile | include included: includedFile ]
 			ifNone: [ Notification signal: 'IncludedFile: No such file or directory' ]
 	]
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveIncludes: includes [
-
-	| includedFiles |
-	includedFiles := self model allWithType: FamixF77IncludedFile.
-	includes do: [ :include | 
-		includedFiles
-			detect: [ :includedFile | 
-					includedFile programFile filename includesSubstring: include filename ]
-			ifFound: [ :includedFile | include included: includedFile ]
-			ifNone: [ 
-			Notification signal: 'IncludedFile: No such file or directory' ] ]
 ]
 
 { #category : #'symbols resolution' }

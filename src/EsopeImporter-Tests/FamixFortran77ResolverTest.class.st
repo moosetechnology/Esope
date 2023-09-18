@@ -614,6 +614,58 @@ FamixFortran77ResolverTest >> testRegisterImplicitSimple [
 	self assert: (pu dicImplicit at: $b) equals: 'real'.
 ]
 
+{ #category : #tests }
+FamixFortran77ResolverTest >> testRequalifyParameterNoVariableDeclaration [
+
+	"
+      subroutine sub(var)
+      end
+	"
+
+	| sub entity |
+
+	sub := (self defaultSubroutine: 'sub')
+		addParameter: (self defaultParameter: 'var') ;
+		yourself.
+
+ 	resolver resolve.
+
+	self assert: sub parameters size equals: 1.
+	entity := sub parameters anyOne.
+	self assert: entity declaredType isNil
+
+
+]
+
+{ #category : #tests }
+FamixFortran77ResolverTest >> testRequalifyVariableDeclarationAsParameter [
+
+	"
+      subroutine sub(var)
+      integer var
+      end
+	"
+
+	| sub entity |
+
+	sub := (self defaultSubroutine: 'sub')
+		addParameter: (self defaultParameter: 'var') ;
+		addLocalVariable: (self defaultVariable: 'var' withType: #integer) ;
+		yourself.
+
+ 	resolver resolve.
+
+	self assert: sub localVariables isEmpty.
+	self assert: (resolver model allWithType: FamixF77Variable) isEmpty.
+
+	self assert: sub parameters size equals: 1.
+	entity := sub parameters anyOne.
+	self assert: entity declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: entity declaredType name equals: 'integer'.
+
+
+]
+
 { #category : #'test-todo' }
 FamixFortran77ResolverTest >> testResolveDefaultImplicit [
 
