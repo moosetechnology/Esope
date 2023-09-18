@@ -288,9 +288,7 @@ FamixFortran77Resolver >> resolveEsopeVariables: esopeVariables [
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveImplicitsDeclarations [
 
-	| programUnits |
-	programUnits := (self model allWithSubTypesOf: FamixF77ProgramUnit).
-	programUnits do: [ :programUnit | 
+	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :programUnit | 
 		self resolveImplicitsFor: programUnit ]
 ]
 
@@ -304,36 +302,32 @@ FamixFortran77Resolver >> resolveImplicitsDeclarations: programUnits [
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveImplicitsFor: programUnit [
 
-	| implicits |
-	implicits := programUnit
-		             attributeAt: #implicits
-		             ifAbsent: [ "Nothing" ].
-	implicits ifNotNil: [ 
-		implicits do: [ :each | 
-			each ranges
-				ifNotNil: [ 
-					each ranges flattened do: [ :letter | 
-						programUnit dicImplicit
-							at: letter
-							put: each forType name asSymbol ] ]
-				ifNil: [ 
-					Character alphabet do: [ :letter | 
-						programUnit dicImplicit at: letter put: nil ] ] ] ]
+	(programUnit attributeAt: #implicits ifAbsent: [ #() ])
+	do: [ :implicitDeclaration | 
+		implicitDeclaration ranges
+			ifNotNil: [ 
+				implicitDeclaration ranges flattened do: [ :letter | 
+					programUnit dicImplicit
+						at: letter
+						put: implicitDeclaration forType name asSymbol ] ]
+			ifNil: [ 
+				Character alphabet do: [ :letter | 
+					programUnit dicImplicit at: letter put: nil ] ] ]
 ]
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveIncludes [
+	"puts FamixF77IncludedFile into the FamixF77Include that include them"
 
-	| includedFiles includes |
-	includes := (self model allWithType: FamixF77Include).
-	includedFiles := self model allWithType: FamixF77IncludedFile.
-	includes do: [ :include | 
-		includedFiles
-			detect: [ :includedFile | 1halt.
-					includedFile programFile filename endsWith: (include filename , '.f')]
+	(self model allWithType: FamixF77Include) do: [ :include | | includedFilename |
+		includedFilename := include filename , '.f'.
+		
+		(self model allWithType: FamixF77IncludedFile)
+			detect: [ :includedFile |
+					includedFile programFile filename endsWith: includedFilename]
 			ifFound: [ :includedFile | include included: includedFile ]
-			ifNone: [ 
-			Notification signal: 'IncludedFile: No such file or directory' ] ]
+			ifNone: [ Notification signal: 'IncludedFile: No such file or directory' ]
+	]
 ]
 
 { #category : #'symbols resolution' }

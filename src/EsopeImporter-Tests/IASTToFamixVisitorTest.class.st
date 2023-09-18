@@ -40,15 +40,6 @@ IASTToFamixVisitorTest >> defaultEmptySegment: segmentName [
 ]
 
 { #category : #running }
-IASTToFamixVisitorTest >> defaultImplicit: ranges for: typeName [
-
-	^ IASTImplicit new
-		  forType: (self defaultType: typeName);
-		  ranges: ranges;
-		  yourself
-]
-
-{ #category : #running }
 IASTToFamixVisitorTest >> defaultImplicitNone [
 
 	^ IASTImplicit new
@@ -172,6 +163,15 @@ IASTToFamixVisitorTest >> defaultVariable: varName withType: typeName [
 ]
 
 { #category : #running }
+IASTToFamixVisitorTest >> implicitRange: ranges forType: typeName [
+
+	^ IASTImplicit new
+		  forType: (self defaultType: typeName);
+		  ranges: ranges;
+		  yourself
+]
+
+{ #category : #running }
 IASTToFamixVisitorTest >> jsonToIAST: jsonCode [
 	| jsonVisitor |
 	jsonVisitor := JsonToIASTVisitor new.
@@ -184,6 +184,31 @@ IASTToFamixVisitorTest >> setUp [
 	
 	programFile := IASTProgramFile new filename: 'fortran77.f' ; yourself.
 	visitor := IASTToFortranVisitor new.
+]
+
+{ #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testComment [
+
+	| entity comment |
+
+	programFile progUnits: { IASTMainProgram new
+			 entityName: 'main';
+			 body: { IASTComment new
+		           text: 'a normal comment';
+		           yourself. };
+			 yourself }.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 1.
+	self assert: entity programUnits first comments size equals: 1.
+
+	comment := entity programUnits first comments first.
+	self assert: comment class equals: FamixF77Comment.
+	self assert: comment content equals: 'a normal comment'.
+	self deny: comment isEsope.
+	
+	self assert: comment commentedEntity equals: entity programUnits first.
 ]
 
 { #category : #'tests-esope' }
@@ -704,31 +729,6 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77 [
 
 ]
 
-{ #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77Comment [
-
-	| entity comment |
-
-	programFile progUnits: { IASTMainProgram new
-			 entityName: 'main';
-			 body: { IASTComment new
-		           text: 'a normal comment';
-		           yourself. };
-			 yourself }.
-
-	entity := programFile accept: visitor.
-
-	self assert: entity programUnits size equals: 1.
-	self assert: entity programUnits first comments size equals: 1.
-
-	comment := entity programUnits first comments first.
-	self assert: comment class equals: FamixF77Comment.
-	self assert: comment content equals: 'a normal comment'.
-	self deny: comment isEsope.
-	
-	self assert: comment commentedEntity equals: entity programUnits first.
-]
-
 { #category : #'tests-esope' }
 IASTToFamixVisitorTest >> testCreateFamixFortran77ESOAtWithArrayArgument [
 "Special case of a D__ function call with an array as argument
@@ -948,33 +948,6 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77Subroutine [
 	self assert: entity parameters size equals: 0
 ]
 
-{ #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77SubroutineWithSimpleImplicit [
-
-	| entity sub |
-	programFile progUnits: { IASTSubroutine new
-			 entityName: 'sub';
-			 body: {
-			 	self defaultImplicit: { #($c $s) } for: 'character' .
-				self defaultImplicit: { #($i $j $k) } for: 'integer' .
-			 };
-			 yourself }.
-
-	entity := programFile accept: visitor.
-
-	self assert: entity programUnits size equals: 1.
-
-	sub := entity programUnits first.
-	self assert: sub class equals: FamixF77PUSubroutine.
-	self assert: sub name equals: 'sub'.
-	self assert: sub programFile isNotNil.
-
-	self assert: sub implicits size equals: 2.
-	self assert: sub implicits first class equals: IASTImplicit.
-	self assert: sub implicits second class equals: IASTImplicit.
-	
-]
-
 { #category : #'tests-esope' }
 IASTToFamixVisitorTest >> testCreateIncludeFamixFortran77Subroutine [
 
@@ -1007,4 +980,101 @@ c@_#include ""point.seg""
 	self assert: include filename equals: 'point.seg'.
 	self assert: include includedBy equals: sub "
 	self assert: include source equals: programFile."
+]
+
+{ #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testImplicitWithRange [
+
+	| entity sub |
+	programFile progUnits: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: {
+			 	self implicitRange: { #($c $f) } forType: 'character' .
+			 };
+			 yourself }.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 1.
+
+	sub := entity programUnits first.
+
+	self assert: sub implicits size equals: 1.
+
+	entity := sub implicits anyOne.
+	self assert: entity class equals: IASTImplicit.
+	self assert: entity ranges size equals: 1.
+	
+	entity := entity ranges anyOne.
+	self assert: entity size equals: 2.
+	self assert: entity first equals: $c.
+	self assert: entity second equals: $f.
+
+]
+
+{ #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testMultipleImplicit [
+
+	| entity sub |
+	programFile progUnits: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: {
+			 	self implicitRange: #( #($c) #($d $f) ) forType: 'character' .
+			 };
+			 yourself }.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 1.
+
+	sub := entity programUnits first.
+
+	self assert: sub implicits size equals: 1.
+
+	entity := sub implicits anyOne.
+	self assert: entity class equals: IASTImplicit.
+	self assert: entity ranges size equals: 2.
+	
+	entity := entity ranges first.
+	self assert: entity size equals: 1.
+	self assert: entity anyOne equals: $c.
+
+	entity := sub implicits anyOne ranges second.
+	self assert: entity size equals: 2.
+	self assert: entity first equals: $d.
+	self assert: entity second equals: $f.
+
+]
+
+{ #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testSimpleImplicit [
+
+	| entity sub |
+	programFile progUnits: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: {
+			 	self implicitRange: { #($c) } forType: 'character' .
+			 };
+			 yourself }.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 1.
+
+	sub := entity programUnits first.
+
+	self assert: sub implicits size equals: 1.
+
+	entity := sub implicits anyOne.
+	self assert: entity class equals: IASTImplicit.
+	self assert: entity ranges size equals: 1.
+	
+	entity := entity ranges anyOne.
+	self assert: entity size equals: 1.
+	self assert: entity anyOne equals: $c.
+
+	entity := sub implicits anyOne.
+	self assert: entity forType class equals: IASTTypeRef.
+	self assert: entity forType entityName equals:'character'
+	
 ]

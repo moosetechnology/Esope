@@ -83,15 +83,6 @@ FamixFortran77ResolverTest >> defaultIASTVarAccess: name isWrite: boolean [
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultImplicit: ranges for: typeName [
-
-	^ IASTImplicit new
-		  forType: (self defaultType: typeName);
-		  ranges: ranges;
-		  yourself
-]
-
-{ #category : #'default values' }
 FamixFortran77ResolverTest >> defaultImplicitNone [
 
 	^ IASTImplicit new
@@ -174,6 +165,15 @@ FamixFortran77ResolverTest >> defaultVariable: name withType: type [
 
 	^ (self newNamedEntity: name toFamix: FamixF77Variable) 
 		  declaredType: (self defaultType: type)
+]
+
+{ #category : #'default values' }
+FamixFortran77ResolverTest >> implicitRange: ranges forType: typeName [
+
+	^ IASTImplicit new
+		  forType: (self defaultType: typeName);
+		  ranges: ranges;
+		  yourself
 ]
 
 { #category : #running }
@@ -471,7 +471,7 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveImplicits [
 	| famixSubroutine subroutine types |
 
 	subroutine := (self defaultSubroutine: 'sub')
-		attributeAt: #implicits put: { self defaultImplicit: { #($c $s) . #($v $m) } for: 'character' };
+		attributeAt: #implicits put: { self implicitRange: { #($c $s) . #($v $m) } forType: 'character' };
 		addParameter: (self defaultParameter: 'var');
 		addAccess: (self defaultAccess: 'var' isWrite: false);
 		yourself.
@@ -572,7 +572,7 @@ FamixFortran77ResolverTest >> testResolveDeclaredImplicit [
 	function := (self defaultFunction: 'fct')
 		            attributeAt: #implicits
 		            put:
-			            { (self defaultImplicit: { ($a to: $m) } for: 'integer') };
+			            { (self implicitRange: { ($a to: $m) } forType: 'integer') };
 		            parameters: { (self defaultParameter: 'param') };
 		            accesses: { 
 				            (self defaultAccess: 'param' isWrite: false).
