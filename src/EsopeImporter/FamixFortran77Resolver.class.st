@@ -298,12 +298,9 @@ FamixFortran77Resolver >> resolveEsopeVariable: esopeVariable [
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveEsopeVariables [
 
-	| esopeVariables |
-	esopeVariables := ((self model allWithSubTypesOf: FamixF77Variable) select: [ :var |
-			 var isEsope ]).
-
-	esopeVariables do: [ :esopeVariable |
-		self resolveEsopeVariable: esopeVariable ]
+	(self model allWithSubTypesOf: FamixF77Variable) do: [ :var |
+			var isEsope
+				ifTrue: [ self resolveEsopeVariable: var ] ]
 ]
 
 { #category : #'symbols resolution' }
