@@ -275,14 +275,25 @@ FamixFortran77Resolver >> resolveEsopeVariables: esopeVariables [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicit: parameter [
+FamixFortran77Resolver >> resolveImplicitFunction: function [
+
+	function declaredType:
+		(self resolveTypeName:
+			(self
+				implicitTypeFor: function name
+				inProgramUnit: function)).
+
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveImplicitParameter: parameter [
 
 	parameter declaredType:
 		(self resolveTypeName:
 			(self
 				implicitTypeFor: parameter name
-				inProgramUnit: parameter parentBehaviouralEntity))
-	
+				inProgramUnit: parameter parentBehaviouralEntity)).
+
 ]
 
 { #category : #'symbols resolution' }
@@ -290,14 +301,14 @@ FamixFortran77Resolver >> resolveImplicits [
 
 	(model allWithType: FamixF77Parameter) do: [ :param |
 		param declaredType ifNil: [
-			self resolveImplicit: param
+			self resolveImplicitParameter: param
 		]
 	].
 
 
 	(model allWithType: FamixF77PUFunction) do: [ :func |
 		func declaredType ifNil: [
-			self resolveImplicit: func
+			self resolveImplicitFunction: func
 		]
 	] 
 ]

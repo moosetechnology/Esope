@@ -734,6 +734,29 @@ FamixFortran77ResolverTest >> testResolveEsopeVariables [
 	self assert: entity declaredType equals: type
 ]
 
+{ #category : #tests }
+FamixFortran77ResolverTest >> testResolveFunctionImplicit [
+
+	"
+      function fct()
+      implicit charcater(f)
+      end
+	"
+
+	| sub |
+
+	sub := (self defaultFunction: 'fct')
+		attributeAt: #implicits put: { (self implicitRange: #( #($f) ) forType: 'character') };
+		yourself.
+
+ 	resolver resolve.
+
+	self assert: sub declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: sub declaredType name equals: 'character'.
+
+
+]
+
 { #category : #'test-todo' }
 FamixFortran77ResolverTest >> testResolveImplicitFunction [
 
