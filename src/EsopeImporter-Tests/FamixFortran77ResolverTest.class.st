@@ -193,6 +193,13 @@ FamixFortran77ResolverTest >> newNamedEntity: aName toFamix: aFamixClass [
 ]
 
 { #category : #running }
+FamixFortran77ResolverTest >> newPU: aName [
+	^(self newNamedEntity: aName toFamix: FamixF77PUSubroutine)
+		programFile: famixProgFile ;
+		yourself
+]
+
+{ #category : #running }
 FamixFortran77ResolverTest >> setUp [
 
 	super setUp.
@@ -624,7 +631,7 @@ FamixFortran77ResolverTest >> testRequalifyParameterNoVariableDeclaration [
 
 	| sub entity |
 
-	sub := (self defaultSubroutine: 'sub')
+	sub := (self newPU: 'sub')
 		addParameter: (self defaultParameter: 'var') ;
 		yourself.
 
@@ -678,7 +685,7 @@ FamixFortran77ResolverTest >> testRequalifyVariableDeclarationAsParameter [
 
 	| sub entity |
 
-	sub := (self defaultSubroutine: 'sub')
+	sub := (self newPU: 'sub')
 		addParameter: (self defaultParameter: 'var') ;
 		addLocalVariable: (self defaultVariable: 'var' withType: #integer) ;
 		yourself.
@@ -694,6 +701,37 @@ FamixFortran77ResolverTest >> testRequalifyVariableDeclarationAsParameter [
 	self assert: entity declaredType name equals: 'integer'.
 
 
+]
+
+{ #category : #tests }
+FamixFortran77ResolverTest >> testResolveEsopeVariables [
+
+	| sub entity type var |
+	"
+      subroutine demo
+      segment point
+      end segment
+      pointeur p.point
+      end
+	"
+	type := self newNamedEntity: 'point' toFamix: FamixEsopeSegment.
+	type attributes: #(  ).
+
+	var := self newNamedEntity: 'p' toFamix: FamixF77Variable.
+	var segment: 'point'.
+	var isEsope: true.
+
+	sub := (self newPU: 'demo')
+		       addType: type;
+		       addLocalVariable: var;
+		       yourself.
+
+	resolver resolve.
+
+	self assert: sub localVariables size equals: 1.
+
+	entity := sub localVariables anyOne.
+	self assert: entity declaredType equals: type
 ]
 
 { #category : #'test-todo' }

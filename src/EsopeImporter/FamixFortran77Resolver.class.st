@@ -213,9 +213,10 @@ FamixFortran77Resolver >> resolve [
 	self registerImplicitsDeclarations.
 	self requalifyVariableDeclarations.
 	self resolveImplicitParameters.
+	self resolveEsopeVariables.
+
 	"self requalifyParameters.
 	self requalifyFunctions.
-	self resolveEsopeVariables.
 	self resolveAccesses.
 	self resolveInvocations"
 ]
