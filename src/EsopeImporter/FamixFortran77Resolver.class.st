@@ -18,11 +18,13 @@ FamixFortran77Resolver class >> on: aMooseModel [
 		  yourself
 ]
 
-{ #category : #'private - utility' }
-FamixFortran77Resolver >> findEntity: anEntity forType: aType [
-	^((self model allWithType:  aType) 
-		select: [ :each | each class = aType 
-			and: [ each name = anEntity entityName ]]) first.
+{ #category : #'private-creation' }
+FamixFortran77Resolver >> findEntity: entityName fromList: famixEntities [
+
+	^ famixEntities
+		  detect: [ :entity | entity name = entityName ]
+		  ifFound: [ :entity | entity ]
+		  ifNone: [ nil ]
 ]
 
 { #category : #'private - utility' }
@@ -97,6 +99,24 @@ FamixFortran77Resolver >> removeFromModel: entity [
 	entity parentBehaviouralEntity: nil.
 	entity sourceAnchor: nil.
 	self model remove: entity.
+]
+
+{ #category : #'private - utility' }
+FamixFortran77Resolver >> removeStoredIAST: anEntity [
+	^self removeStoredIAST: anEntity forSymbol: #entity
+]
+
+{ #category : #'private - utility' }
+FamixFortran77Resolver >> removeStoredIAST: anEntity forSymbol: aSymbol [
+
+	| entity |
+	entity := anEntity 
+		attributeAt: aSymbol 
+		ifAbsent: [ Notification signal: 'problem with generated entity' ].
+
+	anEntity attributeAt: aSymbol put: nil.
+
+	^entity
 ]
 
 { #category : #'symbols resolution' }
@@ -180,9 +200,9 @@ FamixFortran77Resolver >> resolve [
 	self requalifyVariableDeclarations.
 	self resolveImplicits.
 	self resolveEsopeVariables.
+	self resolveInvocations.
 
-	"self resolveAccesses.
-	self resolveInvocations"
+	"self resolveAccesses."
 ]
 
 { #category : #'symbols resolution' }
@@ -190,8 +210,8 @@ FamixFortran77Resolver >> resolveAccess: anAccess [
 
 	| target varAccessed var varPointer |
 
-	varAccessed := self retrieveStoredIast: anAccess forSymbol: #entity.
-	varPointer := self retrieveStoredIast: anAccess forSymbol: #pointer.
+	varAccessed := self removeStoredIAST: anAccess forSymbol: #entity.
+	varPointer := self removeStoredIAST: anAccess forSymbol: #pointer.
 
 	target := varPointer
 		          ifNotNil: [ 
@@ -240,7 +260,7 @@ FamixFortran77Resolver >> resolveAsImplicit: anImplicitVariable fromProgramUnit:
 					         inProgramUnit: progUnit) ]
 		        ifNotEmpty: [
 			        self
-				        retrieveEntity: anImplicitVariable entityName
+				        findEntity: anImplicitVariable entityName
 				        fromList: progUnit types ].
 
 	^ (self newEntity: FamixF77Variable)
@@ -279,9 +299,7 @@ FamixFortran77Resolver >> resolveImplicitFunction: function [
 
 	function declaredType:
 		(self resolveTypeName:
-			(self
-				implicitTypeFor: function name
-				inProgramUnit: function)).
+			(self implicitTypeFor: function name inProgramUnit: function)).
 
 ]
 
@@ -328,23 +346,35 @@ FamixFortran77Resolver >> resolveIncludes [
 	]
 ]
 
+{ #category : #'private-creation' }
+FamixFortran77Resolver >> resolveInvocables: invocable [
+
+	(model allWithSubTypesOf: FamixF77PUProcedure)
+		do: [ :entity |
+			((entity name = invocable entityName) and: [ entity parameters size = (invocable arguments ifNil: [ #() ]) size ])
+				ifTrue: [ ^ entity ]
+		].
+
+	^nil
+]
+
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveInvocation: anInvocation [
 
 	| invocated |
-	invocated := self retrieveStoredIast: anInvocation.
-	(self retrieveInvocables: invocated entityName) ifNotNil: [ 
-		:invocatedFound | anInvocation addCandidate: invocatedFound ]
+
+	invocated := self removeStoredIAST: anInvocation.
+
+	(self resolveInvocables: invocated)
+		ifNotNil: [ :invocatedFound |
+			anInvocation addCandidate: invocatedFound ]
 ]
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveInvocations [
 
-	| anInvocations |
-	anInvocations := (self model allWithType: FamixF77Invocation).
-	anInvocations do: [ :invocation | 
-		(invocation sourceText beginsWith: 'write' caseSensitive: false) 
-			ifFalse: [ self resolveInvocation: invocation ] ]
+	(self model allWithType: FamixF77Invocation) do: [ :invocation |
+		self resolveInvocation: invocation ]
 ]
 
 { #category : #'symbols resolution' }
@@ -379,23 +409,6 @@ FamixFortran77Resolver >> resolveTypeName: aName inPU: aProgramUnit [
 	^self model newTypeUnknown
 ]
 
-{ #category : #'private-creation' }
-FamixFortran77Resolver >> retrieveEntity: entityName fromList: famixEntities [
-
-	^ famixEntities
-		  detect: [ :entity | entity name = entityName ]
-		  ifFound: [ :entity | entity ]
-		  ifNone: [ nil ]
-]
-
-{ #category : #'private-creation' }
-FamixFortran77Resolver >> retrieveInvocables: name [
-
-	^ self
-		  retrieveEntity: name
-		  fromList: (model allWithSubTypesOf: FamixF77PUProcedure)
-]
-
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> retrieveParameters: aProgramUnit [
 	^aProgramUnit isInvocable
@@ -405,25 +418,10 @@ FamixFortran77Resolver >> retrieveParameters: aProgramUnit [
 		
 ]
 
-{ #category : #'private - utility' }
-FamixFortran77Resolver >> retrieveStoredIast: anEntity [
-	^self retrieveStoredIast: anEntity forSymbol: #entity
-]
-
-{ #category : #'private - utility' }
-FamixFortran77Resolver >> retrieveStoredIast: anEntity forSymbol: aSymbol [
-	| entity |
-	entity := anEntity 
-		attributeAt: aSymbol 
-		ifAbsent: [ Notification signal: 'problem with generated entity' ].
-	anEntity attributeAt: aSymbol put: nil.
-	^entity
-]
-
 { #category : #'private-creation' }
 FamixFortran77Resolver >> retrieveVariable: variableName fromList: variables [
 
-	^ self retrieveEntity: variableName fromList: variables
+	^ self findEntity: variableName fromList: variables
 ]
 
 { #category : #'private-creation' }
@@ -435,7 +433,7 @@ FamixFortran77Resolver >> retrieveVariable: aVariable fromProgramUnit: programUn
 
 	| target localVariables |
 	target := self
-		          retrieveEntity: aVariable entityName
+		          findEntity: aVariable entityName
 		          fromList:
 		          (programUnit types collect: [ :type | type attributes ])
 			          flattened.
