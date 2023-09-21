@@ -162,40 +162,6 @@ FamixFortran77Resolver >> requalifyParameterDeclarations [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyVariableDeclaration: variableDeclaration [
-
-	(self requalifyVariableDeclarationAsParameter: variableDeclaration) 
-		ifTrue: [ ^ self ].
-
-	self requalifyVariableDeclarationAsFunction: variableDeclaration
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyVariableDeclarationAsFunction: variableDeclaration [
-	| function |
-	function := self retrieveInvocables: variableDeclaration name.
-	function ifNil: [ ^false ].
-	function declaredType: variableDeclaration declaredType.
-	self removeFromModel: variableDeclaration.
-	^true
-		
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyVariableDeclarationAsParameter: variableDeclaration [
-	| param |
-	param := self 
-		retrieveVariable: variableDeclaration name 
-		fromList: (self retrieveParameters: variableDeclaration parentBehaviouralEntity).
-
-	param ifNil: [ ^false ].
-	param declaredType: variableDeclaration declaredType.
-	self removeFromModel: variableDeclaration.
-	^true
-		
-]
-
-{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> requalifyVariableDeclarations [
 	"a LocalVariable declaration can be a:
 	- Function
@@ -212,12 +178,10 @@ FamixFortran77Resolver >> resolve [
 	self resolveIncludes.
 	self registerImplicitsDeclarations.
 	self requalifyVariableDeclarations.
-	self resolveImplicitParameters.
+	self resolveImplicits.
 	self resolveEsopeVariables.
 
-	"self requalifyParameters.
-	self requalifyFunctions.
-	self resolveAccesses.
+	"self resolveAccesses.
 	self resolveInvocations"
 ]
 
@@ -311,7 +275,7 @@ FamixFortran77Resolver >> resolveEsopeVariables: esopeVariables [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicitParameter: parameter [
+FamixFortran77Resolver >> resolveImplicit: parameter [
 
 	parameter declaredType:
 		(self resolveTypeName:
@@ -322,11 +286,18 @@ FamixFortran77Resolver >> resolveImplicitParameter: parameter [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicitParameters [
+FamixFortran77Resolver >> resolveImplicits [
 
 	(model allWithType: FamixF77Parameter) do: [ :param |
 		param declaredType ifNil: [
-			self resolveImplicitParameter: param
+			self resolveImplicit: param
+		]
+	].
+
+
+	(model allWithType: FamixF77PUFunction) do: [ :func |
+		func declaredType ifNil: [
+			self resolveImplicit: func
 		]
 	] 
 ]
