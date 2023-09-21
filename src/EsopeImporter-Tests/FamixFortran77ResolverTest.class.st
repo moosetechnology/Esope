@@ -256,144 +256,6 @@ FamixFortran77ResolverTest >> testCreateFamixFortran77AccessNonDeclaredVariable 
 	self assert: access variable declaredType name equals: 'real'.
 ]
 
-{ #category : #'test-todo' }
-FamixFortran77ResolverTest >> testCreateFamixFortran77LocalVariableAsFunction [
-	| famixMain famixFunction |
-	"
-      program main
-      real f
-      end
-      function f()
-      end
-	"
-	(self defaultMain: 'main')
-		addLocalVariable: (self defaultVariable: 'f' withType: #real).
-		
-	self defaultFunction: 'f'.
-	
-	famixMain := (resolver model allWithType: FamixF77PUMain) first.
-	famixFunction := (resolver model allWithType: FamixF77PUFunction) first.
-
-	self assert: famixFunction declaredType isNil.
-	self assert: famixMain localVariables size equals: 1.
-	
- 	resolver resolve.
-
-	self assert: famixMain localVariables isEmpty.
-	self assert: famixFunction declaredType class equals: FamixF77Type.
-	self assert: famixFunction declaredType name equals: 'real'.
-]
-
-{ #category : #'test-todo' }
-FamixFortran77ResolverTest >> testCreateFamixFortran77LocalVariableAsParameter [
-	| subroutine access |
-
-	(self defaultSubroutine: 'sub')
-		addParameter: (self defaultParameter: 'var');
-		addLocalVariable: (self defaultVariable: 'var' withType: #integer);
-		addAccess: (self defaultAccess: 'var');
-		addAccess: (self defaultAccess: 'var').
-	
-	subroutine := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first.
-
-	self assert: subroutine localVariables size equals: 1.
-
- 	resolver resolve.
-	
-	self assert: subroutine localVariables size equals: 0.
-
-	self assert: subroutine accesses size equals: 2.
-	access := subroutine accesses first.
-	
-	self assert: access class equals: FamixF77Access.
-	self assert: access variable equals: subroutine parameters first.
-	
-	access := subroutine accesses second.
-	
-	self assert: access class equals: FamixF77Access.
-	self assert: access variable equals: subroutine parameters first.
-]
-
-{ #category : #'test-todo' }
-FamixFortran77ResolverTest >> testCreateFamixFortran77ParameterWithLocalVariable [
-	| subroutine access accessor |
-
-	accessor := (self defaultSubroutine: 'sub')
-		addParameter: (self defaultParameter: 'var');
-		addLocalVariable: (self defaultVariable: 'var' withType: 'integer');
-		addAccess: (self defaultAccess: 'var');
-		yourself.
-	
-	subroutine := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first.
-	self assert: subroutine localVariables size equals: 1.
-
- 	resolver resolve.
-
-	self assert: subroutine localVariables size equals: 0.
-	self assert: subroutine accesses size equals: 1.
-	access := subroutine accesses first.
-	
-	self assert: access class equals: FamixF77Access.
-	self assert: access variable equals: subroutine parameters first.
-]
-
-{ #category : #'test-todo' }
-FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveParametersType [
-	| entity access accessor |
-
-	accessor := (self defaultSubroutine: 'sub')
-		addParameter: (self defaultParameter: 'var');
-		addAccess: (self defaultAccess: 'var');
-		addAccess: (self defaultAccess: 'var');
-		yourself.
-
- 	resolver resolve.
-
-	self assert: (resolver model allWithSubTypesOf: FamixF77ProgramUnit) size equals: 1.
-	
-	entity := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first.
-
-	self assert: entity accesses size equals: 2.
-	access := entity accesses first.
-	
-	self assert: access class equals: FamixF77Access.
-	self assert: access variable equals: entity parameters first.
-	
-	access := entity accesses second.
-	
-	self assert: access class equals: FamixF77Access.
-	self assert: access variable equals: entity parameters first.
-]
-
-{ #category : #'test-todo' }
-FamixFortran77ResolverTest >> testCreateFamixFortran77ResolveParametersTypeWithDeclaration [
-	| entity access accessor |
-
-	accessor := (self defaultSubroutine: 'sub')
-		addParameter: (self defaultParameter: 'var');
-		addLocalVariable: (self defaultVariable: 'var' withType: #integer);
-		addAccess: (self defaultAccess: 'var');
-		addAccess: (self defaultAccess: 'var');
-		yourself.
-
- 	resolver resolve.
-
-	self assert: (resolver model allWithSubTypesOf: FamixF77ProgramUnit) size equals: 1.
-	
-	entity := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first.
-
-	self assert: entity accesses size equals: 2.
-	access := entity accesses first.
-	
-	self assert: access class equals: FamixF77Access.
-	self assert: access variable equals: entity parameters first.
-	
-	access := entity accesses second.
-	
-	self assert: access class equals: FamixF77Access.
-	self assert: access variable equals: entity parameters first.
-]
-
 { #category : #'test - implicit' }
 FamixFortran77ResolverTest >> testRegisterImplicitDefault [
 
@@ -491,7 +353,7 @@ FamixFortran77ResolverTest >> testRegisterImplicitSimple [
 
 	"
       subroutine rtn
-      implicit integer (a)
+      implicit integer(a)
       end
 	"
 
@@ -668,58 +530,7 @@ FamixFortran77ResolverTest >> testResolveFunctionImplicitWrongParameters [
 
 ]
 
-{ #category : #'test-todo' }
-FamixFortran77ResolverTest >> testResolveImplicitFunction [
-
-	"
-	      function fct()
-	      end
-	"
-
-	| function |
-self skip.
-	function := self defaultFunction: 'fct'.
-
-	self assert: function declaredType isNil.
-
-	resolver resolve.
-
-	self assert: function declaredType name equals: 'real'
-]
-
-{ #category : #'test-todo' }
-FamixFortran77ResolverTest >> testResolveImplicitNoneWithParameterDeclared [
-
-	"
-	      function fct(param)
-	      implicit none
-	      integer param
-	      fct = param + 10
-	      end
-	"
-
-	| function |
-
-	function := (self defaultFunction: 'fct')
-		            attributeAt: #implicits
-		            put: { self defaultImplicitNone };
-		            parameters: { (self defaultParameter: 'param') };
-		            localVariables:
-			            { (self defaultVariable: 'param' withType: 'integer') };
-		            accesses: { 
-				            (self defaultAccess: 'param').
-				            ((self defaultAccess: 'fct') isWrite: true ; yourself) }.
-
-	self assert: function parameters first declaredType isNil.
-	self assert: function declaredType isNil.
-
-	resolver resolve.
-
-	self assert: function parameters first declaredType name equals: 'integer'.
-	self assert: function declaredType isNil
-]
-
-{ #category : #'test-todo' }
+{ #category : #'test - implicit' }
 FamixFortran77ResolverTest >> testResolveImplicitParameter [
 
 	"
