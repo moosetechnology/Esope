@@ -112,7 +112,7 @@ FamixFortran77Resolver >> removeStoredIAST: anEntity forSymbol: aSymbol [
 	| entity |
 	entity := anEntity 
 		attributeAt: aSymbol 
-		ifAbsent: [ Notification signal: 'problem with generated entity' ].
+		ifAbsent: [ nil ].
 
 	anEntity attributeAt: aSymbol put: nil.
 
@@ -201,50 +201,74 @@ FamixFortran77Resolver >> resolve [
 	self resolveImplicits.
 	self resolveEsopeVariables.
 	self resolveInvocations.
-
-	"self resolveAccesses."
+	self resolveAccesses.
 ]
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveAccess: anAccess [
 
-	| target varAccessed var varPointer |
+	| variableAccessed |
 
-	varAccessed := self removeStoredIAST: anAccess forSymbol: #entity.
-	varPointer := self removeStoredIAST: anAccess forSymbol: #pointer.
+	anAccess variable ifNotNil: [ ^self ].
+	(anAccess attributeAt: #parentAccess ifAbsent: [ nil])
+		ifNotNil: [ ^self ].
 
-	target := varPointer
-		          ifNotNil: [ 
-			          self
-				          retrieveVariable: varAccessed
-				          fromSegments: "anAccess accessor types" anAccess accessor allTypes ]
-		          ifNil: [ 
-			          self
-				          retrieveVariable: varAccessed
-				          fromProgramUnit: anAccess accessor ].
+	variableAccessed := self removeStoredIAST: anAccess forSymbol: #entity.
 
-	target ifNotNil: [ ^ anAccess variable: target ].
+	(self resolveAccess: anAccess asLocalVariable: variableAccessed)
+		ifFalse: [ self resolveAccess: anAccess asImplicitVariable: variableAccessed ].
 
-	var := self
-		       resolveAsImplicit: varAccessed
-		       fromProgramUnit: anAccess accessor.
-	anAccess accessor addLocalVariable: var.
-	^ anAccess variable: var
+	(self removeStoredIAST: anAccess forSymbol: #attributeAccess)
+		ifNotNil: [ :attributeAccess |
+			self resolveAccess: attributeAccess fromPointer: anAccess variable ]
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveAccess: anAccess asImplicitVariable: variableAccessed [
+	"if we are here, we know that the variable was not declared locally
+	 so we create it"
+
+	anAccess accessor
+		addLocalVariable: (self
+			resolveAsImplicit: variableAccessed
+		   fromProgramUnit: anAccess accessor).
+
+	^ true
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveAccess: anAccess asLocalVariable: accessedVariable [
+
+	^(self
+		retrieveVariable: accessedVariable
+		fromProgramUnit: anAccess accessor)
+		ifNotNil: [ :localVar |
+			anAccess variable: localVar.
+			true ]
+		ifNil: [ false ]
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveAccess: anAccess fromPointer: aPointerVariable [
+
+	| variableAccessed |
+	variableAccessed := self
+		                    removeStoredIAST: anAccess
+		                    forSymbol: #entity.
+	self assert: variableAccessed isNotNil.
+
+	aPointerVariable declaredType entityAttributes
+		detect: [ :att | att name = variableAccessed entityName ]
+		ifFound: [ :att | anAccess variable: att ].
+
+	self removeStoredIAST: anAccess forSymbol: #parentAccess
 ]
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveAccesses [
 
-	| anAccesses |
-	anAccesses := (self model allWithSubTypesOf: FamixF77Access).
-
-	anAccesses do: [ :access | self resolveAccess: access ]
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveAccesses: anAccesses [
-
-	anAccesses do: [ :access | self resolveAccess: access ]
+	(self model allWithSubTypesOf: FamixF77Access) do: [ :access |
+		self resolveAccess: access ]
 ]
 
 { #category : #'symbols resolution' }
