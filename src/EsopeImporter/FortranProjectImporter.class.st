@@ -174,7 +174,7 @@ FortranProjectImporter >> getFASTFor: sourceCode [
 FortranProjectImporter >> iASTToFamix [
 
 	| visitor |
-	visitor := IASTToFortranVisitor new.
+	visitor := IASTToFamixFortranVisitor new.
 
 	iastmodel do: [ :iastProgramFile | iastProgramFile accept: visitor ].
 

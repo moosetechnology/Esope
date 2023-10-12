@@ -211,14 +211,18 @@ FamixFortran77ResolverTest >> setUp [
 
 { #category : #'test-todo' }
 FamixFortran77ResolverTest >> testCreateFamixFortran77Access [
-	| main access accessor |
+	"program main
+	 integer var
+	 var
+	 end
+	"
 
-	accessor := (self defaultMain: 'main')
+	| main access  |
+
+	main := (self defaultMain: 'main')
 		addLocalVariable: (self defaultVariable: 'var' withType: #integer);
 		addAccess: (self defaultAccess: 'var');
 		yourself.
-		
-	main := (resolver model allWithSubTypesOf: FamixF77ProgramUnit) first.
 
  	resolver resolve.
 

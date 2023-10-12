@@ -1,5 +1,5 @@
 Class {
-	#name : #IASTToFortranVisitor,
+	#name : #IASTToFamixFortranVisitor,
 	#superclass : #IASTAbstractFamixVisitor,
 	#instVars : [
 		'f77sourcefile'
@@ -8,31 +8,31 @@ Class {
 }
 
 { #category : #'private-helper' }
-IASTToFortranVisitor class >> getBasename: filename [
+IASTToFamixFortranVisitor class >> getBasename: filename [
 
 	^ filename asFileReference basename
 ]
 
 { #category : #'private-helper' }
-IASTToFortranVisitor class >> getLines: filename [
+IASTToFamixFortranVisitor class >> getLines: filename [
 
 	^ filename asFileReference contents lines
 ]
 
 { #category : #accessing }
-IASTToFortranVisitor >> f77sourcefile [
+IASTToFamixFortranVisitor >> f77sourcefile [
 
 	^ f77sourcefile
 ]
 
 { #category : #accessing }
-IASTToFortranVisitor >> f77sourcefile: anObject [
+IASTToFamixFortranVisitor >> f77sourcefile: anObject [
 
 	f77sourcefile := anObject
 ]
 
 { #category : #initialization }
-IASTToFortranVisitor >> initialize [
+IASTToFamixFortranVisitor >> initialize [
 
 	super initialize.
 	model := FamixEsopeModel new.
@@ -40,19 +40,19 @@ IASTToFortranVisitor >> initialize [
 ]
 
 { #category : #testing }
-IASTToFortranVisitor >> isDummySubroutine: name [
+IASTToFamixFortranVisitor >> isDummySubroutine: name [
 
 	^ name sameAs: '__$__'
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visit: anIASTModel [
+IASTToFamixFortranVisitor >> visit: anIASTModel [
 
 	^ anIASTModel accept: self
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTBlockData: aBlockData [
+IASTToFamixFortranVisitor >> visitIASTBlockData: aBlockData [
 
 	| blockdata |
 	blockdata := self model newPUBlockdata
@@ -75,7 +75,7 @@ IASTToFortranVisitor >> visitIASTBlockData: aBlockData [
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTComment: aComment [
+IASTToFamixFortranVisitor >> visitIASTComment: aComment [
 
 	| comment |
 	comment := aComment isProgUnit
@@ -91,27 +91,27 @@ IASTToFortranVisitor >> visitIASTComment: aComment [
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTEsopePointer: aPointerVarDeclaration [
+IASTToFamixFortranVisitor >> visitIASTEsopePointer: aPointerVarDeclaration [
 
 	| varPointer |
 	varPointer := aPointerVarDeclaration accept:
-		              (self spawn: IASTToEsopeVisitor).
+		              (self spawn: IASTToFamixEsopeVisitor).
 	stack top addLocalVariable: varPointer.
 	stack top symbolTable at: varPointer name put: varPointer.
 	^ varPointer
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
+IASTToFamixFortranVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 
-	^ aSegmentCommand accept: (self spawn: IASTToEsopeVisitor)
+	^ aSegmentCommand accept: (self spawn: IASTToFamixEsopeVisitor)
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTEsopeSegment: aSegment [
+IASTToFamixFortranVisitor >> visitIASTEsopeSegment: aSegment [
 
 	| segment |
-	segment := aSegment accept: (self spawn: IASTToEsopeVisitor).
+	segment := aSegment accept: (self spawn: IASTToFamixEsopeVisitor).
 
 	self flag: #FIXME. "link the segment to the prograUnit in which its defined"
 	stack top addType: segment.
@@ -120,7 +120,7 @@ IASTToFortranVisitor >> visitIASTEsopeSegment: aSegment [
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTFunction: aFunction [
+IASTToFamixFortranVisitor >> visitIASTFunction: aFunction [
 
 	| function |
 	function := self
@@ -133,14 +133,14 @@ IASTToFortranVisitor >> visitIASTFunction: aFunction [
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTImplicit: anImplicit [
+IASTToFamixFortranVisitor >> visitIASTImplicit: anImplicit [
 
 	self flag: #TODO.
 	"put implicit info into the FamixFortranProgramFile"
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTInclude: anInclude [
+IASTToFamixFortranVisitor >> visitIASTInclude: anInclude [
 
 	self flag: #FIXME.
 	"how to set the source ?"
@@ -153,7 +153,7 @@ IASTToFortranVisitor >> visitIASTInclude: anInclude [
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTIncludedFile: anIncludedFile [
+IASTToFamixFortranVisitor >> visitIASTIncludedFile: anIncludedFile [
 
 	anIncludedFile sourceAnchor
 		startLine: anIncludedFile sourceAnchor startLine + 1;
@@ -165,7 +165,7 @@ IASTToFortranVisitor >> visitIASTIncludedFile: anIncludedFile [
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTInvocation: anInvocation [
+IASTToFamixFortranVisitor >> visitIASTInvocation: anInvocation [
 
 	^ self model newInvocation
 		  sourceAnchor:
@@ -176,7 +176,7 @@ IASTToFortranVisitor >> visitIASTInvocation: anInvocation [
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTMainProgram: aMainProgram [
+IASTToFamixFortranVisitor >> visitIASTMainProgram: aMainProgram [
 
 	^ self
 		  visitIASTProgramUnit: aMainProgram
@@ -184,7 +184,7 @@ IASTToFortranVisitor >> visitIASTMainProgram: aMainProgram [
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTProgramFile: aProgramFile [
+IASTToFamixFortranVisitor >> visitIASTProgramFile: aProgramFile [
 
 	| progFile |
 	self f77sourcefile: aProgramFile filename.
@@ -203,7 +203,7 @@ IASTToFortranVisitor >> visitIASTProgramFile: aProgramFile [
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixFortranClass [
+IASTToFamixFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixFortranClass [
 
 	| progUnit |
 	progUnit := (self newEntity: aFamixFortranClass)
@@ -226,7 +226,7 @@ IASTToFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixFortra
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTSubroutine: aSubroutine [
+IASTToFamixFortranVisitor >> visitIASTSubroutine: aSubroutine [
 
 	| subroutine |
 	subroutine := self
@@ -239,10 +239,10 @@ IASTToFortranVisitor >> visitIASTSubroutine: aSubroutine [
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTVarEso: aVarEso [
+IASTToFamixFortranVisitor >> visitIASTVarEso: aVarEso [
 
 	| varsAccesses |
-	varsAccesses := aVarEso accept: (self spawn: IASTToEsopeVisitor).
+	varsAccesses := aVarEso accept: (self spawn: IASTToFamixEsopeVisitor).
 	"varsAccesses accesses:
 		(aVarEso entities collect: [ :entity | entity accept: self ])."
 	self flag: #FIXME. "Add this to the current programUnit"
@@ -250,19 +250,19 @@ IASTToFortranVisitor >> visitIASTVarEso: aVarEso [
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTVarEsoAt: aVarEso [
+IASTToFamixFortranVisitor >> visitIASTVarEsoAt: aVarEso [
 
 	^ self visitIASTVarEso: aVarEso
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTVarEsoSl: aVarEso [
+IASTToFamixFortranVisitor >> visitIASTVarEsoSl: aVarEso [
 
 	^ self visitIASTVarEso: aVarEso
 ]
 
 { #category : #visiting }
-IASTToFortranVisitor >> visitIASTVariable: aVariable [
+IASTToFamixFortranVisitor >> visitIASTVariable: aVariable [
 
 	| var |
 	var := (self newEntity: stack top localVariableClass)
