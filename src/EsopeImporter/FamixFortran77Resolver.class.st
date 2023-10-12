@@ -29,6 +29,7 @@ FamixFortran77Resolver >> findEntity: entityName fromList: famixEntities [
 
 { #category : #'private - utility' }
 FamixFortran77Resolver >> implicitTypeFor: name inProgramUnit: programUnit [
+	"find a type according to the first letter of the variable's name"
 
 	^ programUnit dicImplicit at: name first ifAbsent: [ FamixF77TypeUnknown defaultName ]
 ]
@@ -207,6 +208,12 @@ FamixFortran77Resolver >> resolve [
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveAccess: anAccess [
 
+	"- ignore access already resolved (may happen in case of attribute access)
+	 - try to find a matching local variable declaration
+	 - if not, try to resolve as an implict pointer 
+	 - if not, resolve as an implicit variable
+	 - then (if was a pointer access) resolve attribute access"
+
 	| variableAccessed |
 
 	anAccess variable ifNotNil: [ ^self ].
@@ -216,7 +223,8 @@ FamixFortran77Resolver >> resolveAccess: anAccess [
 	variableAccessed := self removeStoredIAST: anAccess forSymbol: #entity.
 
 	(self resolveAccess: anAccess asLocalVariable: variableAccessed)
-		ifFalse: [ self resolveAccess: anAccess asImplicitVariable: variableAccessed ].
+		or: [ (self resolveAccess: anAccess asImplicitPointer: variableAccessed)
+			or: [ self resolveAccess: anAccess asImplicitVariable: variableAccessed ] ].
 
 	(self removeStoredIAST: anAccess forSymbol: #attributeAccess)
 		ifNotNil: [ :attributeAccess |
@@ -224,14 +232,44 @@ FamixFortran77Resolver >> resolveAccess: anAccess [
 ]
 
 { #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveAccess: anAccess asImplicitPointer: variableAccessed [
+	"try to find a segment with the same name as the accessed variable"
+
+	| famixVariable segment |
+
+	anAccess accessor types
+		detect: [ :type |
+			(type class = FamixEsopeSegment) and: 
+			[ type name = variableAccessed entityName ]
+		]
+		ifOne: [ :type | segment := type ]
+		ifNone: [ ^false ].
+	
+	famixVariable := self newEntity: FamixF77Variable.
+	famixVariable name: variableAccessed entityName.
+	famixVariable declaredType: segment.
+	anAccess accessor	addLocalVariable: famixVariable.
+
+	anAccess variable: famixVariable.
+
+	^ true
+]
+
+{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveAccess: anAccess asImplicitVariable: variableAccessed [
 	"if we are here, we know that the variable was not declared locally
 	 so we create it"
 
+	| famixVariable |
+	famixVariable := self newEntity: FamixF77Variable.
+	famixVariable name: variableAccessed entityName.
+
 	anAccess accessor
-		addLocalVariable: (self
-			resolveAsImplicit: variableAccessed
-		   fromProgramUnit: anAccess accessor).
+		addLocalVariable: famixVariable.
+
+	self resolveImplicitVariableType: famixVariable.
+
+	anAccess variable: famixVariable.
 
 	^ true
 ]
@@ -257,7 +295,7 @@ FamixFortran77Resolver >> resolveAccess: anAccess fromPointer: aPointerVariable 
 		                    forSymbol: #entity.
 	self assert: variableAccessed isNotNil.
 
-	aPointerVariable declaredType entityAttributes
+	aPointerVariable declaredType attributes
 		detect: [ :att | att name = variableAccessed entityName ]
 		ifFound: [ :att | anAccess variable: att ].
 
@@ -269,28 +307,6 @@ FamixFortran77Resolver >> resolveAccesses [
 
 	(self model allWithSubTypesOf: FamixF77Access) do: [ :access |
 		self resolveAccess: access ]
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveAsImplicit: anImplicitVariable fromProgramUnit: progUnit [
-
-	| type |
-	self flag: #FIXME. "how to build sourceAnchor for newly created var?"
-
-	type := progUnit types
-		        ifEmpty: [
-			        self resolveTypeName: (self
-					         implicitTypeFor: anImplicitVariable entityName
-					         inProgramUnit: progUnit) ]
-		        ifNotEmpty: [
-			        self
-				        findEntity: anImplicitVariable entityName
-				        fromList: progUnit types ].
-
-	^ (self newEntity: FamixF77Variable)
-		  name: anImplicitVariable entityName;
-		  declaredType: type;
-		  yourself
 ]
 
 { #category : #'symbols resolution' }
@@ -328,13 +344,23 @@ FamixFortran77Resolver >> resolveImplicitFunction: function [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicitParameter: parameter [
+FamixFortran77Resolver >> resolveImplicitPointerType: aVariable inProgramUnit: aProgramUnit [
 
-	parameter declaredType:
+	aVariable declaredType:
 		(self resolveTypeName:
 			(self
-				implicitTypeFor: parameter name
-				inProgramUnit: parameter parentBehaviouralEntity)).
+				implicitTypeFor: aVariable name
+				inProgramUnit: aVariable parentBehaviouralEntity)).
+
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveImplicitVariableType: aVariable [
+	aVariable declaredType:
+		(self resolveTypeName:
+			(self
+				implicitTypeFor: aVariable name
+				inProgramUnit: aVariable parentBehaviouralEntity)).
 
 ]
 
@@ -343,10 +369,9 @@ FamixFortran77Resolver >> resolveImplicits [
 
 	(model allWithType: FamixF77Parameter) do: [ :param |
 		param declaredType ifNil: [
-			self resolveImplicitParameter: param
+			self resolveImplicitVariableType: param
 		]
 	].
-
 
 	(model allWithType: FamixF77PUFunction) do: [ :func |
 		func declaredType ifNil: [
@@ -370,7 +395,7 @@ FamixFortran77Resolver >> resolveIncludes [
 	]
 ]
 
-{ #category : #'private-creation' }
+{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveInvocables: invocable [
 
 	(model allWithSubTypesOf: FamixF77PUProcedure)
@@ -479,25 +504,4 @@ FamixFortran77Resolver >> retrieveVariable: aVariable fromProgramUnit: programUn
 	^ self
 		  retrieveVariable: aVariable entityName
 		  fromList: localVariables
-]
-
-{ #category : #'private-creation' }
-FamixFortran77Resolver >> retrieveVariable: aVariable fromSegments: segments [
-
-	"- Search in the known segments one whose containing the aVariable name"
-
-	"- compare their type also ?"
-
-	| target attributes |
-	attributes := segments collect: [ :segment | segment attributes ].
-
-	target := self
-		          retrieveVariable: aVariable entityName
-		          fromList: attributes flattened.
-
-	target ifNotNil: [ ^ target ].
-
-	^ self
-		  retrieveVariable: (self model allWithType: FamixEsopeSegment)
-		  fromList: attributes flattened
 ]

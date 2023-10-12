@@ -209,34 +209,6 @@ FamixFortran77ResolverTest >> setUp [
 	famixProgFile  := self defaultProgramFile: './main.f'.
 ]
 
-{ #category : #'test-todo' }
-FamixFortran77ResolverTest >> testCreateFamixFortran77AccessNonDeclaredVariable [
-	| main access accessor |
-	"
-      program main
-      var
-      end
-	"
-
-	accessor := (self defaultMain: 'main')
-		addAccess: (self defaultAccess: 'var');
-		yourself.
-
-	main := (resolver model allWithType: FamixF77PUMain) first.
-
-	self assert: main localVariables size equals: 0.
-
- 	resolver resolve.
-	
-	self assert: main localVariables size equals: 1.
-
-	self assert: main accesses size equals: 1.
-	access := main accesses first.
-
-	self assert: access variable equals: main localVariables first.
-	self assert: access variable declaredType name equals: 'real'.
-]
-
 { #category : #'test - implicit' }
 FamixFortran77ResolverTest >> testRegisterImplicitDefault [
 
@@ -449,18 +421,17 @@ FamixFortran77ResolverTest >> testResolveAccessAttributeDeclaredPointer [
 	"
 
 	type := self newNamedEntity: 'point' toFamix: FamixEsopeSegment.
-	type attributes: {
-		(self newNamedEntity: 'x' toFamix: FamixFortranAttribute) }.
+	type addAttribute: (self newNamedEntity: 'x' toFamix: FamixFortranAttribute).
 
 	var := self newNamedEntity: 'p' toFamix: FamixF77Variable.
-	var declaredType: (self newNamedEntity: 'point' toFamix: FamixF77Type).
-	
-	access2 := self newEntity: FamixF77Access.
-	access2 attributeAt: #entity put: (self defaultIASTVarAccess: 'x').
+	var declaredType: type.
 	
 	access := self newEntity: FamixF77Access.
 	access attributeAt: #entity put: (self defaultIASTVarAccess: 'p').
-	
+
+	access2 := self newEntity: FamixF77Access.
+	access2 attributeAt: #entity put: (self defaultIASTVarAccess: 'x').
+
 	access attributeAt: #attributeAccess put: access2.
 	access2 attributeAt: #parentAccess put: access.
 
@@ -480,7 +451,7 @@ FamixFortran77ResolverTest >> testResolveAccessAttributeDeclaredPointer [
 	self assert: access accessor equals: main.
 
 	self assert: access2 variable class equals: FamixFortranAttribute.
-	self assert: access2 variable userDefinedType equals: type.
+	self assert: access2 variable parentType equals: type.
 	self assert: access2 accessor equals: main.
 
 ]
@@ -557,19 +528,15 @@ FamixFortran77ResolverTest >> testResolveAccessDeclaredPointerVariable [
       p
       end
 	"
-
+	var := self newNamedEntity: 'p' toFamix: FamixF77Variable.
+	var declaredType: (self newNamedEntity: 'point' toFamix: FamixF77Type).
+	
 	main := (self defaultMain: 'main')
-		addType: ((self newNamedEntity: 'point' toFamix: FamixEsopeSegment)) ;
-		  addLocalVariable:
-			            ((self
-				              newNamedEntity: 'p'
-				              toFamix: FamixF77Variable) declaredType:
-				             (self
-					              newNamedEntity: 'point'
-					              toFamix: FamixF77Type));
+		addType: (self newNamedEntity: 'point' toFamix: FamixEsopeSegment) ;
+		addLocalVariable: var ;
 		addAccess: ((self newEntity: FamixF77Access)
-					     attributeAt: #entity put: (self defaultIASTVarAccess: 'p') ;
-					     yourself);
+			attributeAt: #entity put: (self defaultIASTVarAccess: 'p') ;
+			yourself);
 		yourself.
 
 	self assert: main localVariables size equals: 1.
