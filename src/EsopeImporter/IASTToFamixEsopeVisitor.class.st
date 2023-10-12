@@ -82,13 +82,6 @@ IASTToFamixEsopeVisitor >> visitIASTParameter: aParameter [
 ]
 
 { #category : #visiting }
-IASTToFamixEsopeVisitor >> visitIASTVarEsoAr: aVarEsoAr [
-
-	self flag: #TODO.
-	1halt.
-]
-
-{ #category : #visiting }
 IASTToFamixEsopeVisitor >> visitIASTVarEsoAt: aVarEsoAt [
 
 	| famixAccess attributeAccess  |
