@@ -33,13 +33,6 @@ FamixFortran77Resolver >> implicitTypeFor: name inProgramUnit: programUnit [
 	^ programUnit dicImplicit at: name first ifAbsent: [ FamixF77TypeUnknown defaultName ]
 ]
 
-{ #category : #initialization }
-FamixFortran77Resolver >> initialize [
-
-	super initialize
-	
-]
-
 { #category : #accessing }
 FamixFortran77Resolver >> model [
 
@@ -92,15 +85,6 @@ FamixFortran77Resolver >> registerImplicitsForPU: programUnit [
 	]
 ]
 
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> removeFromModel: entity [
-	"Set all pointers in the entity to nil beforehand, to make the work of the GarbageCollector easier."
-	entity declaredType: nil.
-	entity parentBehaviouralEntity: nil.
-	entity sourceAnchor: nil.
-	self model remove: entity.
-]
-
 { #category : #'private - utility' }
 FamixFortran77Resolver >> removeStoredIAST: anEntity [
 	^self removeStoredIAST: anEntity forSymbol: #entity
@@ -117,18 +101,6 @@ FamixFortran77Resolver >> removeStoredIAST: anEntity forSymbol: aSymbol [
 	anEntity attributeAt: aSymbol put: nil.
 
 	^entity
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyFunction: function [
-
-	| type name |
-	name := self
-		        implicitTypeFor: function name
-		        inProgramUnit: function.
-	name ifNotNil: [
-		type := self resolveTypeName: name.
-		function declaredType: type ]
 ]
 
 { #category : #'symbols resolution' }
@@ -336,29 +308,11 @@ FamixFortran77Resolver >> resolveEsopeVariables [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveEsopeVariables: esopeVariables [
-
-	esopeVariables do: [ :esopeVariable |
-		self resolveEsopeVariable: esopeVariable ]
-]
-
-{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveImplicitFunction: function [
 
 	function declaredType:
 		(self resolveTypeName:
 			(self implicitTypeFor: function name inProgramUnit: function)).
-
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicitPointerType: aVariable inProgramUnit: aProgramUnit [
-
-	aVariable declaredType:
-		(self resolveTypeName:
-			(self
-				implicitTypeFor: aVariable name
-				inProgramUnit: aVariable parentBehaviouralEntity)).
 
 ]
 
@@ -432,14 +386,6 @@ FamixFortran77Resolver >> resolveInvocations [
 
 	(self model allWithType: FamixF77Invocation) do: [ :invocation |
 		self resolveInvocation: invocation ]
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveInvocations: anInvocations [
-
-	anInvocations do: [ :invocation | 
-		(invocation sourceText beginsWith: 'write' caseSensitive: false) 
-			ifFalse: [ self resolveInvocation: invocation ] ]
 ]
 
 { #category : #'symbols resolution' }
