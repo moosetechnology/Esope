@@ -409,7 +409,7 @@ FamixFortran77ResolverTest >> testRequalifyVariableDeclarationAsParameter [
 { #category : #'test-todo' }
 FamixFortran77ResolverTest >> testResolveAccessAttributeDeclaredPointer [
 
-	| main access access2 var type |
+	| main access access2 varP typePoint |
 	"
       subroutine demo
       segment point
@@ -420,11 +420,11 @@ FamixFortran77ResolverTest >> testResolveAccessAttributeDeclaredPointer [
       end
 	"
 
-	type := self newNamedEntity: 'point' toFamix: FamixEsopeSegment.
-	type addAttribute: (self newNamedEntity: 'x' toFamix: FamixFortranAttribute).
+	typePoint := self newNamedEntity: 'point' toFamix: FamixEsopeSegment.
+	typePoint addAttribute: (self newNamedEntity: 'x' toFamix: FamixFortranAttribute).
 
-	var := self newNamedEntity: 'p' toFamix: FamixF77Variable.
-	var declaredType: type.
+	varP := self newNamedEntity: 'p' toFamix: FamixF77Variable.
+	varP declaredType: typePoint.
 	
 	access := self newEntity: FamixF77Access.
 	access attributeAt: #entity put: (self defaultIASTVarAccess: 'p').
@@ -436,8 +436,8 @@ FamixFortran77ResolverTest >> testResolveAccessAttributeDeclaredPointer [
 	access2 attributeAt: #parentAccess put: access.
 
 	main := (self defaultMain: 'main')
-		addType: type ;
-		addLocalVariable: var ;
+		addType: typePoint ;
+		addLocalVariable: varP ;
 		accesses: {access . access2} ;
 		yourself.
 
@@ -447,11 +447,11 @@ FamixFortran77ResolverTest >> testResolveAccessAttributeDeclaredPointer [
 
 	self assert: main accesses size equals: 2.
 
-	self assert: access variable equals: var.
+	self assert: access variable equals: varP.
 	self assert: access accessor equals: main.
 
 	self assert: access2 variable class equals: FamixFortranAttribute.
-	self assert: access2 variable parentType equals: type.
+	self assert: access2 variable parentType equals: typePoint.
 	self assert: access2 accessor equals: main.
 
 ]
@@ -459,7 +459,7 @@ FamixFortran77ResolverTest >> testResolveAccessAttributeDeclaredPointer [
 { #category : #'test-todo' }
 FamixFortran77ResolverTest >> testResolveAccessAttributeNoPointer [
 
-	| main access type |
+	| subrtn access type |
 	"
       subroutine demo
       segment point
@@ -476,20 +476,18 @@ FamixFortran77ResolverTest >> testResolveAccessAttributeNoPointer [
 	access := self newEntity: FamixF77Access.
 	access attributeAt: #entity put: (self defaultIASTVarAccess: 'x').
 	
-	main := (self defaultMain: 'main')
+	subrtn := (self defaultSubroutine: 'demo')
 		addType: type ;
 		addAccess: access ;
 		yourself.
 
-	self assert: main localVariables size equals: 0.
-
 	resolver resolve.
 
-	self assert: main accesses size equals: 1.
+	self assert: subrtn accesses size equals: 1.
 
 	self assert: access variable class equals: FamixFortranAttribute.
-	self assert: access variable userDefinedType equals: type.
-	self assert: access accessor equals: main.
+	self assert: access variable parentType equals: type.
+	self assert: access accessor equals: subrtn.
 
 ]
 
@@ -587,7 +585,7 @@ FamixFortran77ResolverTest >> testResolveAccessImplicitLocalVariable [
 { #category : #'test-todo' }
 FamixFortran77ResolverTest >> testResolveAccessImplicitPointerVariable [
 
-	| main access var |
+	| subrtn access var |
 	"
       subroutine demo
       segment point
@@ -596,28 +594,56 @@ FamixFortran77ResolverTest >> testResolveAccessImplicitPointerVariable [
       end
 	"
 
-	main := (self defaultMain: 'main')
+	subrtn := (self defaultSubroutine: 'demo')
 		addType: ((self newNamedEntity: 'point' toFamix: FamixEsopeSegment)) ;
 		addAccess: ((self newEntity: FamixF77Access)
 					     attributeAt: #entity put: (self defaultIASTVarAccess: 'point') ;
 					     yourself);
 		yourself.
 
-	self assert: main localVariables size equals: 0.
+	self assert: subrtn localVariables size equals: 0.
 
 	resolver resolve.
 
-	self assert: main localVariables size equals: 1.
-	var := main localVariables anyOne.
+	self assert: subrtn localVariables size equals: 1.
+	var := subrtn localVariables anyOne.
 	self assert: var name equals: 'point'.
 	self assert: var declaredType class equals: FamixEsopeSegment.
 	self assert: var declaredType name equals: 'point'.
 
-	self assert: main accesses size equals: 1.
+	self assert: subrtn accesses size equals: 1.
 
-	access := main accesses anyOne.
+	access := subrtn accesses anyOne.
 	self assert: access variable equals: var.
-	self assert: access accessor equals: main.
+	self assert: access accessor equals: subrtn.
+
+]
+
+{ #category : #'test-todo' }
+FamixFortran77ResolverTest >> testResolveAccessToParameter [
+
+	| subrtn access |
+	"
+      subroutine demo(x)
+        integer x
+      x
+      end
+	"
+
+	access := self newEntity: FamixF77Access.
+	access attributeAt: #entity put: (self defaultIASTVarAccess: 'x').
+	
+	subrtn := (self defaultSubroutine: 'demo')
+		addParameter: (self newNamedEntity: 'x' toFamix: FamixF77Parameter) ;
+		addAccess: access ;
+		yourself.
+
+	resolver resolve.
+
+	self assert: subrtn accesses size equals: 1.
+
+	self assert: access variable class equals: FamixF77Parameter.
+	self assert: access accessor equals: subrtn.
 
 ]
 

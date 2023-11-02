@@ -18,12 +18,11 @@ FamixFortran77Resolver class >> on: aMooseModel [
 		  yourself
 ]
 
-{ #category : #'private-creation' }
-FamixFortran77Resolver >> findEntity: entityName fromList: famixEntities [
+{ #category : #'private - utility' }
+FamixFortran77Resolver >> findEntity: entityName inList: famixEntities [
 
 	^ famixEntities
 		  detect: [ :entity | entity name = entityName ]
-		  ifFound: [ :entity | entity ]
 		  ifNone: [ nil ]
 ]
 
@@ -209,22 +208,35 @@ FamixFortran77Resolver >> resolve [
 FamixFortran77Resolver >> resolveAccess: anAccess [
 
 	"- ignore access already resolved (may happen in case of attribute access)
-	 - try to find a matching local variable declaration
+	 - try to find a matching local variable declaration (including parameters)
 	 - if not, try to resolve as an implict pointer 
+	 - try to find a segment with that attribute (implicitAttribute)
 	 - if not, resolve as an implicit variable
-	 - then (if was a pointer access) resolve attribute access"
+	 
+	After that, if the variable resolved to a pointer, resolve its attribute access"
 
 	| variableAccessed |
 
 	anAccess variable ifNotNil: [ ^self ].
 	(anAccess attributeAt: #parentAccess ifAbsent: [ nil])
-		ifNotNil: [ ^self ].
+		ifNotNil: [ "there is a #parentAccess" ^self ].
 
 	variableAccessed := self removeStoredIAST: anAccess forSymbol: #entity.
 
 	(self resolveAccess: anAccess asLocalVariable: variableAccessed)
-		or: [ (self resolveAccess: anAccess asImplicitPointer: variableAccessed)
-			or: [ self resolveAccess: anAccess asImplicitVariable: variableAccessed ] ].
+	ifNotNil: [ :localVar | anAccess variable: localVar ]
+	ifNil: [
+		(self resolveAccess: anAccess asImplicitPointer: variableAccessed)
+		ifNotNil: [ :pointer | anAccess variable: pointer ]
+		ifNil: [
+			(self resolveAccess: anAccess asImplicitAttribute: variableAccessed)
+			ifNotNil: [ :attribute | anAccess variable: attribute ]
+			ifNil: [
+				anAccess variable: 
+					(self resolveAccess: anAccess asImplicitVariable: variableAccessed)
+			]
+		]
+	].
 
 	(self removeStoredIAST: anAccess forSymbol: #attributeAccess)
 		ifNotNil: [ :attributeAccess |
@@ -232,27 +244,31 @@ FamixFortran77Resolver >> resolveAccess: anAccess [
 ]
 
 { #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveAccess: anAccess asImplicitAttribute: accessedVariable [
+
+	^self
+		findEntity: accessedVariable entityName
+		inList: (anAccess accessor types flatCollect: [ :type | type attributes ])
+]
+
+{ #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveAccess: anAccess asImplicitPointer: variableAccessed [
 	"try to find a segment with the same name as the accessed variable"
 
-	| famixVariable segment |
-
-	anAccess accessor types
+	^anAccess accessor types
 		detect: [ :type |
 			(type class = FamixEsopeSegment) and: 
 			[ type name = variableAccessed entityName ]
 		]
-		ifOne: [ :type | segment := type ]
-		ifNone: [ ^false ].
-	
-	famixVariable := self newEntity: FamixF77Variable.
-	famixVariable name: variableAccessed entityName.
-	famixVariable declaredType: segment.
-	anAccess accessor	addLocalVariable: famixVariable.
+		ifOne: [ :type |
+			(self newEntity: FamixF77Variable)
+				name: variableAccessed entityName ;
+				parentBehaviouralEntity: anAccess accessor ;
+				declaredType: type ;
+				yourself
+		]
+		ifNone: [ nil ].
 
-	anAccess variable: famixVariable.
-
-	^ true
 ]
 
 { #category : #'symbols resolution' }
@@ -260,30 +276,22 @@ FamixFortran77Resolver >> resolveAccess: anAccess asImplicitVariable: variableAc
 	"if we are here, we know that the variable was not declared locally
 	 so we create it"
 
-	| famixVariable |
-	famixVariable := self newEntity: FamixF77Variable.
-	famixVariable name: variableAccessed entityName.
+	| implicitVariable |
+	implicitVariable := self newEntity: FamixF77Variable.
+	implicitVariable name: variableAccessed entityName.
+	implicitVariable parentBehaviouralEntity: anAccess accessor.
+	implicitVariable declaredType: (self resolveImplicitVariableType: implicitVariable).
 
-	anAccess accessor
-		addLocalVariable: famixVariable.
+	^implicitVariable
 
-	self resolveImplicitVariableType: famixVariable.
-
-	anAccess variable: famixVariable.
-
-	^ true
 ]
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveAccess: anAccess asLocalVariable: accessedVariable [
 
-	^(self
-		retrieveVariable: accessedVariable
-		fromProgramUnit: anAccess accessor)
-		ifNotNil: [ :localVar |
-			anAccess variable: localVar.
-			true ]
-		ifNil: [ false ]
+	^self
+		findEntity: accessedVariable entityName
+		inList: anAccess accessor allLocalVariables
 ]
 
 { #category : #'symbols resolution' }
@@ -356,11 +364,11 @@ FamixFortran77Resolver >> resolveImplicitPointerType: aVariable inProgramUnit: a
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveImplicitVariableType: aVariable [
-	aVariable declaredType:
-		(self resolveTypeName:
-			(self
-				implicitTypeFor: aVariable name
-				inProgramUnit: aVariable parentBehaviouralEntity)).
+
+	^self resolveTypeName:
+		(self
+			implicitTypeFor: aVariable name
+			inProgramUnit: aVariable parentBehaviouralEntity)
 
 ]
 
@@ -369,7 +377,7 @@ FamixFortran77Resolver >> resolveImplicits [
 
 	(model allWithType: FamixF77Parameter) do: [ :param |
 		param declaredType ifNil: [
-			self resolveImplicitVariableType: param
+			param 	declaredType: (self resolveImplicitVariableType: param)
 		]
 	].
 
@@ -442,66 +450,4 @@ FamixFortran77Resolver >> resolveTypeName: aName [
 	^(self model allWithSubTypesOf: FamixF77Type)
 		detect: [ :type | type name = aName ]
 		ifNone: [ self model newTypeUnknown ]
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveTypeName: aName inPU: aProgramUnit [
-
-	(aProgramUnit allTypes)
-		detect: [ :type | type name = aName ]
-		ifOne: [ :type | ^type ].
-
-	self model intrinsicTypes 
-		detect: [ :type | type name = aName ]
-		ifOne: [ :type | ^type ].
-
-	^self model newTypeUnknown
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> retrieveParameters: aProgramUnit [
-	^aProgramUnit isInvocable
-		ifTrue: [ aProgramUnit parameters ]
-		ifFalse: [ #() ]
-	
-		
-]
-
-{ #category : #'private-creation' }
-FamixFortran77Resolver >> retrieveVariable: variableName fromList: variables [
-
-	^ self findEntity: variableName fromList: variables
-]
-
-{ #category : #'private-creation' }
-FamixFortran77Resolver >> retrieveVariable: aVariable fromProgramUnit: programUnit [
-
-	"- Search in the known parameters and variables for the one whose name matches the aVariable name"
-
-	"- compare their type also ?"
-
-	| target localVariables |
-	target := self
-		          findEntity: aVariable entityName
-		          fromList:
-		          (programUnit types collect: [ :type | type attributes ])
-			          flattened.
-
-	target ifNotNil: [ ^ target ].
-
-	target := programUnit isInvocable
-		          ifTrue: [ 
-			          self
-				          retrieveVariable: aVariable entityName
-				          fromList: programUnit parameters ]
-		          ifFalse: [ nil ].
-	target ifNotNil: [ ^ target ].
-
-	localVariables := programUnit isSubroutine
-		                  ifTrue: [ programUnit allLocalVariables ]
-		                  ifFalse: [ programUnit localVariables ].
-
-	^ self
-		  retrieveVariable: aVariable entityName
-		  fromList: localVariables
 ]
