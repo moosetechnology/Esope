@@ -5,17 +5,18 @@ To use:
 ```
 model := FortranProjectImporter new
 	srcFolder: '/path/to/Esope/source/files/' ;
+	includePaths: { list-of-path-containing-included-files } ;
 	import.
 ```
 
 This will import all files with a `*.E` (or `*.e`) extension + all included files (`*.inc`)
-This is done in various steps (see `#import`):
+This is done in various steps (see `#importSteps`):
 - copy Esope files (`*.E`) in a temporary directory (`./Esope/`)
-- create special Esope files for included files (in same directory `./Esope/`)
 - convert Esope files to Fortran files by annotating Esope instruction (in `./Fortran/`)
 - get AST of Fortran files into Json files (in `./AST/`)
 - import AST into an intermediate representation
 - convert intermediate representation to Famix
+- deal with included files (with all the preceedings as substeps)
 - resolve  symbols in Famix
 
 "
@@ -24,6 +25,8 @@ Class {
 	#superclass : #Object,
 	#instVars : [
 		'srcFolder',
+		'includePaths',
+		'includedFiles',
 		'famixModel',
 		'iastmodel'
 	],
@@ -47,7 +50,6 @@ FortranProjectImporter >> copyEsopeFiles [
 
 	self ensureEmptyFolder: self esopeFolder.
 	self copyFilesIn: self srcFolder with: '*.E'.
-	self copyFilesIn: self srcFolder with: '*.inc'
 ]
 
 { #category : #'private - import' }
@@ -109,6 +111,12 @@ FortranProjectImporter >> f77parser [
 	^ 'fortran-src-extras serialize -t json -v77l encode'
 ]
 
+{ #category : #accessing }
+FortranProjectImporter >> famixModel [
+
+	^ famixModel
+]
+
 { #category : #'private - import' }
 FortranProjectImporter >> famixResolve [
 
@@ -124,6 +132,17 @@ FortranProjectImporter >> fastSrcFolder [
 { #category : #'private - files' }
 FortranProjectImporter >> fileReference: aFileReference into: aFolderName [
 	^aFolderName asFileReference / aFileReference basename
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> findingIncludedFiles [
+
+	| includedFileNames |
+	includedFileNames := Set withAll:
+		((famixModel allWithType: FamixF77Include)
+			collect: #filename).
+		
+	includedFiles := includedFileNames collect: [ :filename | self findIncludedFile: filename ]
 ]
 
 { #category : #'private - import' }
@@ -205,21 +224,71 @@ FortranProjectImporter >> import [
 { #category : #run }
 FortranProjectImporter >> importSteps [
 	^{ 'Copying Esope Files' -> #copyEsopeFiles .
-		'Converting included files to Esope' -> #includedFilesToEsope .
 		'De-Esopifying files' -> #esopeToFortran .
 		'Fortran to JSon AST' -> #fortranToJsonAST .
 		'JSon AST to Intermediary AST' -> #jsonASTToIAST .
 		'Intermediary AST to Famix' -> #iASTToFamix .
-		'Famix symbol resolution' -> #famixResolve
+		'Finding included files' -> #findingIncludedFiles .
+		'Converting included files to Esope' -> #includedFilesToEsope .
+		'De-Esopifying included files' -> #includedEsopeToFortran .
+		'Included files Fortran to JSon AST' -> #includedFortranToJsonAST .
+		'Included files JSon AST to Intermediary AST' -> #includedJSonASTToIAST .
+		'Included files intermediary AST to Famix' -> #includedIASTToFamix .
+		'Famix symbol resolution' -> #famixResolve .
 	}
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> includePaths [
+
+	^ includePaths
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> includePaths: anObject [
+
+	includePaths := anObject
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> includedEsopeToFortran [
+
+	includedFiles do: [ :includedFile |
+		| esopeFile fortranFile |
+		esopeFile := self includedFileEsopeFile: includedFile.
+		fortranFile := self
+			fileReference: (esopeFile withExtension: 'f')
+			into: self fortranFolder.
+
+		PPEsopeRewriter rewriteFrom: esopeFile to: fortranFile ]
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> includedFileEsopeFile: includedFile [
+	^self
+		fileReference: (includedFile withExtension: 'incE')
+		into: srcFolder
+	 	
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> includedFiles [
+
+	^ includedFiles
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> includedFiles: anObject [
+
+	includedFiles := anObject
 ]
 
 { #category : #'private - import' }
 FortranProjectImporter >> includedFilesToEsope [
 
-	(self srcFolder allChildrenMatching: '*.inc') do: [ :includedFile | 
+	includedFiles do: [ :includedFile | 
 		(self 
-			fileReference: (((includedFile pathString) , '.E') asFileReference)
+			fileReference: (self includedFileEsopeFile: includedFile)
 			into: self esopeFolder)
 			writeStreamDo: [ :tmpStream | 
 				tmpStream
@@ -229,6 +298,55 @@ FortranProjectImporter >> includedFilesToEsope [
 					<< '      end' ;
 					cr ]
 		]
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> includedFortranToJsonAST [
+
+	includedFiles do: [ :includedFile |
+		| fortranFile |
+		fortranFile := self
+			fileReference: (includedFile withExtension: 'f')
+			into: self fortranFolder.
+
+		self fortran: fortranFile toJsonASTFolder: self astFolder
+	]
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> includedIASTToFamix [
+
+	| visitor |
+	visitor := IASTToFamixFortranVisitor new.
+	visitor model: famixModel.
+
+	iastmodel do: [ :iastProgramFile | iastProgramFile accept: visitor ].
+
+	famixModel := visitor model
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> includedJSonASTToIAST [
+
+	| visitor |
+	visitor := JsonToIASTVisitor new.
+
+	iastmodel := includedFiles
+		collect: [ :includedFile |
+			|jsonFile | 
+			jsonFile := self
+				fileReference: (includedFile withExtension: 'json')
+				into: self astFolder.
+			visitor visitProgramFile: (NeoJSONReader fromString: jsonFile contents) ].
+
+]
+
+{ #category : #initialization }
+FortranProjectImporter >> initialize [
+
+	super initialize.
+
+	includePaths := #()
 ]
 
 { #category : #'private - import' }
