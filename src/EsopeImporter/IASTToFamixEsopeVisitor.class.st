@@ -1,11 +1,11 @@
 Class {
-	#name : #IASTToEsopeVisitor,
+	#name : #IASTToFamixEsopeVisitor,
 	#superclass : #IASTAbstractFamixVisitor,
 	#category : #'EsopeImporter-Visitor'
 }
 
 { #category : #'private-creation' }
-IASTToEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
+IASTToFamixEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
 
 	sourceAnchor startColumn: sourceAnchor endColumn - typeName size.
 	^ (self retrieveTypeFrom: typeName) name: typeName
@@ -13,7 +13,7 @@ IASTToEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
 ]
 
 { #category : #visiting }
-IASTToEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
+IASTToFamixEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
 
 	| varsNames |
 	varsNames := aPointerVar entityName substrings: '.'.
@@ -31,7 +31,7 @@ IASTToEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
 ]
 
 { #category : #visiting }
-IASTToEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
+IASTToFamixEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 
 	^ (self model newCommand)
 		  sourceAnchor:
@@ -43,7 +43,7 @@ IASTToEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 ]
 
 { #category : #visiting }
-IASTToEsopeVisitor >> visitIASTEsopeSegment: aSegment [
+IASTToFamixEsopeVisitor >> visitIASTEsopeSegment: aSegment [
 
 	| segment |
 	segment := self model newSegment
@@ -54,64 +54,50 @@ IASTToEsopeVisitor >> visitIASTEsopeSegment: aSegment [
 	stack push: segment.
 	self createSymbolTableFor: segment.
 	segment attributes: (aSegment declarations collect: [ :variable |
-			 variable accept: (self spawn: IASTToFortranVisitor) ]).
+			 variable accept: (self spawn: IASTToFamixFortranVisitor) ]).
 
 	^ stack pop
 ]
 
 { #category : #visiting }
-IASTToEsopeVisitor >> visitIASTInvocation: anInvocation [
+IASTToFamixEsopeVisitor >> visitIASTInvocation: anInvocation [
+
+	"In Esope vistior, we know that an invocation is actually an access to an array
+	so we create access to each 'argument' (actually indices of the array)
+	+ we create an access to the array itself (the 'functino' invoked)"
 
 	| arguments |
 	arguments := anInvocation arguments collect: [ :arg | 
-		             arg isArray
-			             ifTrue: [ arg collect: [ :each | each accept: self ] ]
+		             arg isCollection
+			             ifTrue: [ arg do: [ :each | each accept: self ] ]
 			             ifFalse: [ arg accept: self ] ].
 
-	^ ({ (self createFamixF77Access: anInvocation) } , arguments)
-		  flattened
+	^self createFamixF77Access: anInvocation
 ]
 
 { #category : #visiting }
-IASTToEsopeVisitor >> visitIASTParameter: aParameter [
+IASTToFamixEsopeVisitor >> visitIASTParameter: aParameter [
 
 	^ self createFamixF77Access: aParameter
 ]
 
 { #category : #visiting }
-IASTToEsopeVisitor >> visitIASTVarEsoAr: aVarEsoAr [
+IASTToFamixEsopeVisitor >> visitIASTVarEsoAt: aVarEsoAt [
 
-	self flag: #TODO.
-	1halt.
-]
-
-{ #category : #visiting }
-IASTToEsopeVisitor >> visitIASTVarEsoAt: aVarEsoAt [
-
-	| pointerAccess attributeAccess pointer attributes attribute |
+	| famixAccess attributeAccess  |
 	aVarEsoAt entities size < 2 ifTrue: [ ^ self ].
 
-	pointerAccess := aVarEsoAt entities first.
-	attributeAccess := aVarEsoAt entities second.
+	famixAccess := (aVarEsoAt entities first) accept: self.
 
-	pointer := pointerAccess class = IASTParameter
-		           ifTrue: [ pointerAccess accept: self ]
-		           ifFalse: [ 
-		           pointerAccess accept: (self spawn: IASTToFortranVisitor) ].	
-	
-	attributes := attributeAccess accept: self.
-	attribute := attributes isArray
-		             ifTrue: [ attributes first ]
-		             ifFalse: [ attributes ].
-	attribute attributeAt: #pointer put: pointerAccess.
+	attributeAccess := (aVarEsoAt entities second) accept: self.
+	attributeAccess attributeAt: #parentAccess put: famixAccess.
+	famixAccess attributeAt: #attributeAccess put: attributeAccess.
 
-	^ { 
-		  pointer.
-		  attribute }
+	^famixAccess
 ]
 
 { #category : #visiting }
-IASTToEsopeVisitor >> visitIASTVarEsoSl: aVarEsoSl [
+IASTToFamixEsopeVisitor >> visitIASTVarEsoSl: aVarEsoSl [
 
 	self flag: #TODO.
 
@@ -119,7 +105,7 @@ IASTToEsopeVisitor >> visitIASTVarEsoSl: aVarEsoSl [
 ]
 
 { #category : #visiting }
-IASTToEsopeVisitor >> visitIASTVariable: aVariable [
+IASTToFamixEsopeVisitor >> visitIASTVariable: aVariable [
 
 	^ (self newEntity: FamixFortranAttribute)
 		  sourceAnchor:

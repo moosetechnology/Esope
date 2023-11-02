@@ -137,7 +137,7 @@ RunDemos class >> runner: anEsopeSourceCode [
    jsonVisitor visitCode: rewriter output.
 	iast := jsonVisitor visitCode:  rewriter output.
 
-	defVisitor := IASTToFortranVisitor new.
+	defVisitor := IASTToFamixFortranVisitor new.
 	defVisitor model
 		rootFolder: FileSystem workingDirectory;
 		name: 'mooseModelF77-' , self counter asString.

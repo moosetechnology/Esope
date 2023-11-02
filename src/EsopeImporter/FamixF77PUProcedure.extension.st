@@ -3,13 +3,14 @@ Extension { #name : #FamixF77PUProcedure }
 { #category : #'*EsopeImporter' }
 FamixF77PUProcedure >> allLocalVariables [
 
-	self flag: #FIXME. "Find better way to flatmap types"
 	^self localVariables
-	  ,
+	,
+	self parameters
+	,
 	(self includes
-		collect: [ :include | 
+		flatCollect: [ :include | 
 			   include included ifNotNil: [ :included | included localVariables ] ]
-	) flattened
+	)
 ]
 
 { #category : #'*EsopeImporter' }

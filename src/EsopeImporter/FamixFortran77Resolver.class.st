@@ -19,23 +19,18 @@ FamixFortran77Resolver class >> on: aMooseModel [
 ]
 
 { #category : #'private - utility' }
-FamixFortran77Resolver >> defaultImplicitTyping: name fromProgramUnit: programUnit [
+FamixFortran77Resolver >> findEntity: entityName inList: famixEntities [
 
-	^ programUnit dicImplicit at: name first
+	^ famixEntities
+		  detect: [ :entity | entity name = entityName ]
+		  ifNone: [ nil ]
 ]
 
 { #category : #'private - utility' }
-FamixFortran77Resolver >> findEntity: anEntity forType: aType [
-	^((self model allWithType:  aType) 
-		select: [ :each | each class = aType 
-			and: [ each name = anEntity entityName ]]) first.
-]
+FamixFortran77Resolver >> implicitTypeFor: name inProgramUnit: programUnit [
+	"find a type according to the first letter of the variable's name"
 
-{ #category : #initialization }
-FamixFortran77Resolver >> initialize [
-
-	super initialize
-	
+	^ programUnit dicImplicit at: name first ifAbsent: [ FamixF77TypeUnknown defaultName ]
 ]
 
 { #category : #accessing }
@@ -58,167 +53,240 @@ FamixFortran77Resolver >> newEntity: aFamixClass [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> removeFromModel: entity [
-	"Set all pointers in the entity to nil beforehand, to make the work of the GarbageCollector easier."
-	entity declaredType: nil.
-	entity parentBehaviouralEntity: nil.
-	entity sourceAnchor: nil.
-	self model remove: entity.
+FamixFortran77Resolver >> registerImplicitForPU: programUnit range: aRange forType: iASTTypeRef [
+
+	(aRange size = 1)
+	ifTrue: [ programUnit dicImplicit at: aRange first put: iASTTypeRef name asSymbol ]
+	ifFalse: [ 
+		(aRange first to: aRange second) do: [ :letter |
+			programUnit dicImplicit at: letter put: iASTTypeRef name asSymbol
+		]
+	]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyFunction: function [
+FamixFortran77Resolver >> registerImplicitsDeclarations [
 
-	| type name |
-	name := self
-		        defaultImplicitTyping: function name
-		        fromProgramUnit: function.
-	name ifNotNil: [
-		type := self retrieveTypeFrom: name.
-		function declaredType: type ]
+	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :programUnit | 
+		self registerImplicitsForPU: programUnit ]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyFunctions: functions [
+FamixFortran77Resolver >> registerImplicitsForPU: programUnit [
 
-	functions do: [ :function | self requalifyFunction: function ]
+	(programUnit attributeAt: #implicits ifAbsent: [ #() ])
+	do: [ :implicitDeclaration | 
+		implicitDeclaration ranges
+			ifNotNil: [ 
+				implicitDeclaration ranges do: [ :aRange | 
+					self registerImplicitForPU: programUnit range: aRange forType: implicitDeclaration forType] ]
+			ifNil: [ "implicit none"
+				programUnit dicImplicit removeAll ]
+	]
+]
+
+{ #category : #'private - utility' }
+FamixFortran77Resolver >> removeStoredIAST: anEntity [
+	^self removeStoredIAST: anEntity forSymbol: #entity
+]
+
+{ #category : #'private - utility' }
+FamixFortran77Resolver >> removeStoredIAST: anEntity forSymbol: aSymbol [
+
+	| entity |
+	entity := anEntity 
+		attributeAt: aSymbol 
+		ifAbsent: [ nil ].
+
+	anEntity attributeAt: aSymbol put: nil.
+
+	^entity
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyParameter: parameter [
+FamixFortran77Resolver >> requalifyFunctionDeclaration: external [
+	"external decalration of functin followed by a VariableDeclaration of the same function
+	 we simply remove the VariableDeclaration"
 
-	| type name progUnit |
-	progUnit := parameter parentBehaviouralEntity.
-	"p := (self model allWithType: FamixF77Variable)
-		     detect: [ :var | var name = parameter name ]
-		     ifFound: [ :var | parameter declaredType: var declaredType ]."
-
-	name := self
-		        defaultImplicitTyping: parameter name
-		        fromProgramUnit: progUnit.
-	name ifNotNil: [
-		type := self retrieveTypeFrom: name.
-		parameter declaredType: type ]
+	external parentBehaviouralEntity localVariables
+		detect: [ :varDeclaration |
+			varDeclaration name = external name
+		]
+		ifOne: [ :varDeclaration |
+			varDeclaration parentBehaviouralEntity: nil.
+			model remove: varDeclaration.
+		]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyParameters: parameters [
+FamixFortran77Resolver >> requalifyFunctionDeclarations [
+	"VariableDeclaration that are actually functions are simply removed
+	We know it is a function because there is an 'external' declaration for that name"
 
-	parameters do: [ :parameter | self requalifyParameter: parameter ]
+	(model allWithType: FamixF77ExternalDeclaration) do: [ :external |
+		self requalifyFunctionDeclaration: external
+	]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyVariableDeclaration: variableDeclaration [
+FamixFortran77Resolver >> requalifyParameterDeclaration: param [
+	"looks for a VariableDeclaration in the same program unit with the same name"
 
-	(self requalifyVariableDeclarationAsParameter: variableDeclaration) 
-		ifTrue: [ ^ self ].
-
-	self requalifyVariableDeclarationAsFunction: variableDeclaration
+	
+	param parentBehaviouralEntity localVariables
+		detect: [ :varDeclaration |
+			varDeclaration name = param name
+		]
+		ifOne: [ :varDeclaration |
+			param declaredType: varDeclaration declaredType.
+			varDeclaration parentBehaviouralEntity: nil.
+			model remove: varDeclaration
+		]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyVariableDeclarationAsFunction: variableDeclaration [
-	| function |
-	function := self retrieveInvocables: variableDeclaration name.
-	function ifNil: [ ^false ].
-	function declaredType: variableDeclaration declaredType.
-	self removeFromModel: variableDeclaration.
-	^true
-		
+FamixFortran77Resolver >> requalifyParameterDeclarations [
+	"For each parameter, try to find a matching VariableDeclaration"
+
+	(model allWithType: FamixF77Parameter) do: [ :param |
+		self requalifyParameterDeclaration: param
+	]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyVariableDeclarationAsParameter: variableDeclaration [
-	| param |
-	param := self 
-		retrieveVariable: variableDeclaration name 
-		fromList: (self retrieveParameters: variableDeclaration parentBehaviouralEntity).
-
-	param ifNil: [ ^false ].
-	param declaredType: variableDeclaration declaredType.
-	self removeFromModel: variableDeclaration.
-	^true
-		
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyVariableDeclarations: variableDeclarations [
+FamixFortran77Resolver >> requalifyVariableDeclarations [
 	"a LocalVariable declaration can be a:
 	- Function
-	- Parameter"
-	variableDeclarations 
-		do: [ :variableDeclaration | self requalifyVariableDeclaration: variableDeclaration ]
+	- Parameter
+	- LocalVariable"
+
+	self requalifyParameterDeclarations.
+	self requalifyFunctionDeclarations.
 ]
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolve [
 
-	self resolveIncludes: (self model allWithType: FamixF77Include).
-	self resolveImplicitsDeclarations:
-		(self model allWithSubTypesOf: FamixF77ProgramUnit).
-	self requalifyParameters: (self model allWithType: FamixF77Parameter).
-	self requalifyFunctions: (self model allWithType: FamixF77PUFunction).
-	self resolveEsopeVariables:
-		((self model allWithSubTypesOf: FamixF77Variable) select: [ :var |
-			 var isEsope ]).
-	self requalifyVariableDeclarations:
-		(self model allWithType: FamixF77Variable).
-	self resolveAccesses: (self model allWithSubTypesOf: FamixF77Access).
-	self resolveInvocations: (self model allWithType: FamixF77Invocation)
+	self resolveIncludes.
+	self registerImplicitsDeclarations.
+	self requalifyVariableDeclarations.
+	self resolveImplicits.
+	self resolveEsopeVariables.
+	self resolveInvocations.
+	self resolveAccesses.
 ]
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveAccess: anAccess [
 
-	| target varAccessed var varPointer |
-	varAccessed := self retrieveStoredIast: anAccess forSymbol: #entity.
-	varPointer := self retrieveStoredIast: anAccess forSymbol: #pointer.
+	"- ignore access already resolved (may happen in case of attribute access)
+	 - try to find a matching local variable declaration (including parameters)
+	 - if not, try to resolve as an implict pointer 
+	 - try to find a segment with that attribute (implicitAttribute)
+	 - if not, resolve as an implicit variable
+	 
+	After that, if the variable resolved to a pointer, resolve its attribute access"
 
-	target := varPointer
-		          ifNotNil: [ 
-			          self
-				          retrieveVariable: varAccessed
-				          fromSegments: "anAccess accessor types" anAccess accessor allTypes ]
-		          ifNil: [ 
-			          self
-				          retrieveVariable: varAccessed
-				          fromProgramUnit: anAccess accessor ].
+	| variableAccessed |
 
-	target ifNotNil: [ ^ anAccess variable: target ].
+	anAccess variable ifNotNil: [ ^self ].
+	(anAccess attributeAt: #parentAccess ifAbsent: [ nil])
+		ifNotNil: [ "there is a #parentAccess" ^self ].
 
-	var := self
-		       resolveAsImplicit: varAccessed
-		       fromProgramUnit: anAccess accessor.
-	anAccess accessor addLocalVariable: var.
-	^ anAccess variable: var
+	variableAccessed := self removeStoredIAST: anAccess forSymbol: #entity.
+
+	(self resolveAccess: anAccess asLocalVariable: variableAccessed)
+	ifNotNil: [ :localVar | anAccess variable: localVar ]
+	ifNil: [
+		(self resolveAccess: anAccess asImplicitPointer: variableAccessed)
+		ifNotNil: [ :pointer | anAccess variable: pointer ]
+		ifNil: [
+			(self resolveAccess: anAccess asImplicitAttribute: variableAccessed)
+			ifNotNil: [ :attribute | anAccess variable: attribute ]
+			ifNil: [
+				anAccess variable: 
+					(self resolveAccess: anAccess asImplicitVariable: variableAccessed)
+			]
+		]
+	].
+
+	(self removeStoredIAST: anAccess forSymbol: #attributeAccess)
+		ifNotNil: [ :attributeAccess |
+			self resolveAccess: attributeAccess fromPointer: anAccess variable ]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveAccesses: anAccesses [
+FamixFortran77Resolver >> resolveAccess: anAccess asImplicitAttribute: accessedVariable [
 
-	anAccesses do: [ :access | self resolveAccess: access ]
+	^self
+		findEntity: accessedVariable entityName
+		inList: (anAccess accessor types flatCollect: [ :type | type attributes ])
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveAsImplicit: anImplicitVariable fromProgramUnit: progUnit [
+FamixFortran77Resolver >> resolveAccess: anAccess asImplicitPointer: variableAccessed [
+	"try to find a segment with the same name as the accessed variable"
 
-	| type |
-	self flag: #FIXME. "how to build sourceAnchor for newly created var?"
+	^anAccess accessor types
+		detect: [ :type |
+			(type class = FamixEsopeSegment) and: 
+			[ type name = variableAccessed entityName ]
+		]
+		ifOne: [ :type |
+			(self newEntity: FamixF77Variable)
+				name: variableAccessed entityName ;
+				parentBehaviouralEntity: anAccess accessor ;
+				declaredType: type ;
+				yourself
+		]
+		ifNone: [ nil ].
 
-	type := progUnit types
-		        ifEmpty: [
-			        self retrieveTypeFrom: (self
-					         defaultImplicitTyping: anImplicitVariable entityName
-					         fromProgramUnit: progUnit) ]
-		        ifNotEmpty: [
-			        self
-				        retrieveEntity: anImplicitVariable entityName
-				        fromList: progUnit types ].
+]
 
-	^ (self newEntity: FamixF77Variable)
-		  name: anImplicitVariable entityName;
-		  declaredType: type;
-		  yourself
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveAccess: anAccess asImplicitVariable: variableAccessed [
+	"if we are here, we know that the variable was not declared locally
+	 so we create it"
+
+	| implicitVariable |
+	implicitVariable := self newEntity: FamixF77Variable.
+	implicitVariable name: variableAccessed entityName.
+	implicitVariable parentBehaviouralEntity: anAccess accessor.
+	implicitVariable declaredType: (self resolveImplicitVariableType: implicitVariable).
+
+	^implicitVariable
+
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveAccess: anAccess asLocalVariable: accessedVariable [
+
+	^self
+		findEntity: accessedVariable entityName
+		inList: anAccess accessor allLocalVariables
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveAccess: anAccess fromPointer: aPointerVariable [
+
+	| variableAccessed |
+	variableAccessed := self
+		                    removeStoredIAST: anAccess
+		                    forSymbol: #entity.
+	self assert: variableAccessed isNotNil.
+
+	aPointerVariable declaredType attributes
+		detect: [ :att | att name = variableAccessed entityName ]
+		ifFound: [ :att | anAccess variable: att ].
+
+	self removeStoredIAST: anAccess forSymbol: #parentAccess
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveAccesses [
+
+	(self model allWithSubTypesOf: FamixF77Access) do: [ :access |
+		self resolveAccess: access ]
 ]
 
 { #category : #'symbols resolution' }
@@ -232,178 +300,100 @@ FamixFortran77Resolver >> resolveEsopeVariable: esopeVariable [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveEsopeVariables: esopeVariables [
+FamixFortran77Resolver >> resolveEsopeVariables [
 
-	esopeVariables do: [ :esopeVariable |
-		self resolveEsopeVariable: esopeVariable ]
+	(self model allWithSubTypesOf: FamixF77Variable) do: [ :var |
+			var isEsope
+				ifTrue: [ self resolveEsopeVariable: var ] ]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicitsDeclarations: programUnits [
+FamixFortran77Resolver >> resolveImplicitFunction: function [
 
-	programUnits do: [ :programUnit | 
-		self resolveImplicitsFor: programUnit ]
+	function declaredType:
+		(self resolveTypeName:
+			(self implicitTypeFor: function name inProgramUnit: function)).
+
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicitsFor: programUnit [
+FamixFortran77Resolver >> resolveImplicitVariableType: aVariable [
 
-	| implicits |
-	implicits := programUnit
-		             attributeAt: #implicits
-		             ifAbsent: [ "Nothing" ].
-	implicits ifNotNil: [ 
-		implicits do: [ :each | 
-			each ranges
-				ifNotNil: [ 
-					each ranges flattened do: [ :letter | 
-						programUnit dicImplicit
-							at: letter
-							put: each forType name asSymbol ] ]
-				ifNil: [ 
-					Character alphabet do: [ :letter | 
-						programUnit dicImplicit at: letter put: nil ] ] ] ]
+	^self resolveTypeName:
+		(self
+			implicitTypeFor: aVariable name
+			inProgramUnit: aVariable parentBehaviouralEntity)
+
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveIncludes: includes [
+FamixFortran77Resolver >> resolveImplicits [
 
-	| includedFiles |
-	includedFiles := self model allWithType: FamixF77IncludedFile.
-	includes do: [ :include | 
-		includedFiles
-			detect: [ :includedFile | 
-					includedFile programFile filename includesSubstring: include filename ]
+	(model allWithType: FamixF77Parameter) do: [ :param |
+		param declaredType ifNil: [
+			param 	declaredType: (self resolveImplicitVariableType: param)
+		]
+	].
+
+	(model allWithType: FamixF77PUFunction) do: [ :func |
+		func declaredType ifNil: [
+			self resolveImplicitFunction: func
+		]
+	] 
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveIncludes [
+	"puts FamixF77IncludedFile into the FamixF77Include that include them"
+
+	(self model allWithType: FamixF77Include) do: [ :include | | includedFilename |
+		includedFilename := include filename , '.f'.
+		
+		(self model allWithType: FamixF77IncludedFile)
+			detect: [ :includedFile |
+					includedFile programFile filename endsWith: includedFilename]
 			ifFound: [ :includedFile | include included: includedFile ]
-			ifNone: [ 
-			Notification signal: 'IncludedFile: No such file or directory' ] ]
+			ifNone: [ Notification signal: 'IncludedFile: No such file or directory' ]
+	]
+]
+
+{ #category : #'symbols resolution' }
+FamixFortran77Resolver >> resolveInvocables: invocable [
+
+	(model allWithSubTypesOf: FamixF77PUProcedure)
+		do: [ :entity |
+			((entity name = invocable entityName) and: [ entity parameters size = (invocable arguments ifNil: [ #() ]) size ])
+				ifTrue: [ ^ entity ]
+		].
+
+	^nil
 ]
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveInvocation: anInvocation [
 
 	| invocated |
-	invocated := self retrieveStoredIast: anInvocation.
-	(self retrieveInvocables: invocated entityName) ifNotNil: [ 
-		:invocatedFound | anInvocation addCandidate: invocatedFound ]
+
+	invocated := self removeStoredIAST: anInvocation.
+
+	(self resolveInvocables: invocated)
+		ifNotNil: [ :invocatedFound |
+			anInvocation addCandidate: invocatedFound ]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveInvocations: anInvocations [
+FamixFortran77Resolver >> resolveInvocations [
 
-	anInvocations do: [ :invocation | 
-		(invocation sourceText beginsWith: 'write' caseSensitive: false) 
-			ifFalse: [ self resolveInvocation: invocation ] ]
-]
-
-{ #category : #'private-creation' }
-FamixFortran77Resolver >> retrieveEntity: entityName fromList: famixEntities [
-
-	^ famixEntities
-		  detect: [ :entity | entity name = entityName ]
-		  ifFound: [ :entity | entity ]
-		  ifNone: [ nil ]
-]
-
-{ #category : #'private-creation' }
-FamixFortran77Resolver >> retrieveInvocables: name [
-
-	^ self
-		  retrieveEntity: name
-		  fromList: (model allWithSubTypesOf: FamixF77PUProcedure)
+	(self model allWithType: FamixF77Invocation) do: [ :invocation |
+		self resolveInvocation: invocation ]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> retrieveParameters: aProgramUnit [
-	^aProgramUnit isInvocable
-		ifTrue: [ aProgramUnit parameters ]
-		ifFalse: [ #() ]
-	
-		
-]
+FamixFortran77Resolver >> resolveTypeName: aName [
 
-{ #category : #'private - utility' }
-FamixFortran77Resolver >> retrieveStoredIast: anEntity [
-	^self retrieveStoredIast: anEntity forSymbol: #entity
-]
+	self flag: 'should test the referring PU (ex: for an included segment)'.
 
-{ #category : #'private - utility' }
-FamixFortran77Resolver >> retrieveStoredIast: anEntity forSymbol: aSymbol [
-	| entity |
-	entity := anEntity 
-		attributeAt: aSymbol 
-		ifAbsent: [ Notification signal: 'problem with generated entity' ].
-	anEntity attributeAt: aSymbol put: nil.
-	^entity
-]
-
-{ #category : #'symbols resolution' }
-FamixFortran77Resolver >> retrieveTypeFrom: aName [
-
-	^ (self model attributeAt: #instrinsicTypes ifAbsent: [
-		   self model
-			   attributeAt: #unknownType
-			   ifAbsent: [ ^ self newEntity: FamixF77TypeUnknown ] ])
-		  at: aName
-		  ifAbsent: [ self newEntity: FamixF77TypeUnknown ]
-]
-
-{ #category : #'private-creation' }
-FamixFortran77Resolver >> retrieveVariable: variableName fromList: variables [
-
-	^ self retrieveEntity: variableName fromList: variables
-]
-
-{ #category : #'private-creation' }
-FamixFortran77Resolver >> retrieveVariable: aVariable fromProgramUnit: programUnit [
-
-	"- Search in the known parameters and variables for the one whose name matches the aVariable name"
-
-	"- compare their type also ?"
-
-	| target localVariables |
-	target := self
-		          retrieveEntity: aVariable entityName
-		          fromList:
-		          (programUnit types collect: [ :type | type attributes ])
-			          flattened.
-
-	target ifNotNil: [ ^ target ].
-
-	target := programUnit isInvocable
-		          ifTrue: [ 
-			          self
-				          retrieveVariable: aVariable entityName
-				          fromList: programUnit parameters ]
-		          ifFalse: [ nil ].
-	target ifNotNil: [ ^ target ].
-
-	localVariables := programUnit isSubroutine
-		                  ifTrue: [ programUnit allLocalVariables ]
-		                  ifFalse: [ programUnit localVariables ].
-
-	^ self
-		  retrieveVariable: aVariable entityName
-		  fromList: localVariables
-]
-
-{ #category : #'private-creation' }
-FamixFortran77Resolver >> retrieveVariable: aVariable fromSegments: segments [
-
-	"- Search in the known segments one whose containing the aVariable name"
-
-	"- compare their type also ?"
-
-	| target attributes |
-	attributes := segments collect: [ :segment | segment attributes ].
-
-	target := self
-		          retrieveVariable: aVariable entityName
-		          fromList: attributes flattened.
-
-	target ifNotNil: [ ^ target ].
-
-	^ self
-		  retrieveVariable: (self model allWithType: FamixEsopeSegment)
-		  fromList: attributes flattened
+	^(self model allWithSubTypesOf: FamixF77Type)
+		detect: [ :type | type name = aName ]
+		ifNone: [ self model newTypeUnknown ]
 ]

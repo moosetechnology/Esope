@@ -15,6 +15,7 @@ IASTAbstractFamixVisitor >> createFamixF77Access: anIastObject [
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: anIastObject sourceAnchor);
 		  attributeAt: #entity put: anIastObject;
+		  isWrite: false ;
 		  accessor: stack top;
 		  yourself
 ]

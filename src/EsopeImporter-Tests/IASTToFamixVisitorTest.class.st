@@ -40,15 +40,6 @@ IASTToFamixVisitorTest >> defaultEmptySegment: segmentName [
 ]
 
 { #category : #running }
-IASTToFamixVisitorTest >> defaultImplicit: ranges for: typeName [
-
-	^ IASTImplicit new
-		  forType: (self defaultType: typeName);
-		  ranges: ranges;
-		  yourself
-]
-
-{ #category : #running }
 IASTToFamixVisitorTest >> defaultImplicitNone [
 
 	^ IASTImplicit new
@@ -172,6 +163,15 @@ IASTToFamixVisitorTest >> defaultVariable: varName withType: typeName [
 ]
 
 { #category : #running }
+IASTToFamixVisitorTest >> implicitRange: ranges forType: typeName [
+
+	^ IASTImplicit new
+		  forType: (self defaultType: typeName);
+		  ranges: ranges;
+		  yourself
+]
+
+{ #category : #running }
 IASTToFamixVisitorTest >> jsonToIAST: jsonCode [
 	| jsonVisitor |
 	jsonVisitor := JsonToIASTVisitor new.
@@ -183,7 +183,32 @@ IASTToFamixVisitorTest >> setUp [
 	super setUp.
 	
 	programFile := IASTProgramFile new filename: 'fortran77.f' ; yourself.
-	visitor := IASTToFortranVisitor new.
+	visitor := IASTToFamixFortranVisitor new.
+]
+
+{ #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testComment [
+
+	| entity comment |
+
+	programFile progUnits: { IASTMainProgram new
+			 entityName: 'main';
+			 body: { IASTComment new
+		           text: 'a normal comment';
+		           yourself. };
+			 yourself }.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 1.
+	self assert: entity programUnits first comments size equals: 1.
+
+	comment := entity programUnits first comments first.
+	self assert: comment class equals: FamixF77Comment.
+	self assert: comment content equals: 'a normal comment'.
+	self deny: comment isEsope.
+	
+	self assert: comment commentedEntity equals: entity programUnits first.
 ]
 
 { #category : #'tests-esope' }
@@ -241,39 +266,28 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessors [
 	d__(ptr,attr)
 	"
 
-	| d__ entity access |
+	| d__ entity access var |
 	d__ := self defaultVarEsoAt: #( #ptr #attr ).
 
-	programFile progUnits: { (IASTSubroutine new
-			 entityName: 'sub';
-			 body: { d__ };
-			 yourself) }.
+	entity := (FamixF77PUSubroutine new).
+	visitor stack push: entity.
 
-	entity := programFile accept: visitor.
+	d__ accept: visitor.
 
-	self assert: entity programUnits size equals: 1.
+	self assert: entity accesses size equals: 2.
 
-	self assert: entity programUnits first accesses size equals: 2.
+	access := entity accesses detect: [:acc | (acc attributeAt: #parentAccess ifAbsent: [ nil ]) isNil ].
 
-	access := entity programUnits first accesses first.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'ptr'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNil.
+	var := access attributeAt: #entity ifAbsent: [ nil ].
+	self assert: var isNotNil.
+	self assert: var entityName equals: 'ptr'.
 
+	access := access attributeAt: #attributeAccess ifAbsent: [ nil ].
+	self assert: access isNotNil.
 
-	access := entity programUnits first accesses second.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'attr'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #pointer ifAbsent: [  ]) entityName
-		equals: 'ptr'
+	var := access attributeAt: #entity ifAbsent: [ nil ].
+	self assert: var isNotNil.
+	self assert: var entityName equals: 'attr'.
 ]
 
 { #category : #'tests-esope' }
@@ -283,7 +297,7 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArg [
 	d__(ptr,attr(i))
 	"
 
-	| d__ entity access |
+	| d__ entity access var |
 	d__ := (self defaultNamedEntity: 'd__' for: IASTVarEsoAt) entities:
 		       { 
 			       (self defaultNamedEntity: 'ptr' for: IASTVarAccess).
@@ -291,105 +305,32 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArg [
 				        arguments:
 				        { (self defaultNamedEntity: 'i' for: IASTParameter) }) }.
 
-	programFile progUnits: { (IASTSubroutine new
-			 entityName: 'sub';
-			 body: { d__ };
-			 yourself) }.
-	entity := programFile accept: visitor.
+	entity := (FamixF77PUSubroutine new).
+	visitor stack push: entity.
 
-	self assert: entity programUnits size equals: 1.
+	d__ accept: visitor.
 
-	self assert: entity programUnits first accesses size equals: 3.
+	self assert: entity accesses size equals: 3.
 
-	access := entity programUnits first accesses first.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'ptr'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNil.
+	access := entity accesses detect: [:acc | (acc attributeAt: #attributeAccess ifAbsent: [ nil ]) isNotNil ].
+	
+	var := access attributeAt: #entity ifAbsent: [ nil ].
+	self assert: var entityName equals: 'ptr'.
 
-	access := entity programUnits first accesses second.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'i'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNil.
+	access := access attributeAt: #attributeAccess ifAbsent: [ nil ].
+	self assert: access isNotNil.
 
+	var := access attributeAt: #entity ifAbsent: [ nil ].
+	self assert: var isNotNil.
+	self assert: var entityName equals: 'attr'.
 
-	access := entity programUnits first accesses third.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'attr'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #pointer ifAbsent: [  ]) entityName
-		equals: 'ptr'
-]
+	access := entity accesses detect: [:acc |
+		(acc attributeAt: #attributeAccess ifAbsent: [ nil ]) isNil and: 
+		[ (acc attributeAt: #parentAccess ifAbsent: [ nil ]) isNil ] ].
+	
+	var := access attributeAt: #entity ifAbsent: [ nil ].
+	self assert: var entityName equals: 'i'.
 
-{ #category : #'tests-esope' }
-IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArgs [
-
-	"
-	d__(ptr,attr(i,j))
-	"
-
-	| d__ entity access |
-	d__ := (self defaultNamedEntity: 'd__' for: IASTVarEsoAt) entities:
-		       { 
-			       (self defaultNamedEntity: 'ptr' for: IASTVarAccess).
-			       ((self defaultNamedEntity: 'attr' for: IASTInvocation) 
-				        arguments: { 
-						        (self defaultNamedEntity: 'i' for: IASTParameter).
-						        (self defaultNamedEntity: 'j' for: IASTParameter) }) }.
-
-	programFile progUnits: { (IASTSubroutine new
-			 entityName: 'sub';
-			 body: { d__ };
-			 yourself) }.
-	entity := programFile accept: visitor.
-
-	self assert: entity programUnits size equals: 1.
-
-	self assert: entity programUnits first accesses size equals: 4.
-
-	access := entity programUnits first accesses first.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'ptr'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNil.
-
-	access := entity programUnits first accesses second.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'i'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNil.
-
-	access := entity programUnits first accesses third.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'j'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNil.
-
-	access := entity programUnits first accesses at: 4.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'attr'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #pointer ifAbsent: [  ]) entityName
-		equals: 'ptr'
 ]
 
 { #category : #'tests-esope' }
@@ -399,7 +340,7 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArgsWithDot [
 	d__(ptr,attr(i,d__(p,j)))
 	"
 
-	| d__ entity access |
+	| d__ entity accesses var |
 	d__ := (self defaultNamedEntity: 'd__' for: IASTVarEsoAt) entities:
 		       { 
 			       (self defaultNamedEntity: 'ptr' for: IASTVarAccess).
@@ -411,128 +352,40 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArgsWithDot [
 									         (self defaultNamedEntity: 'p' for: IASTParameter).
 									         (self defaultNamedEntity: 'j' for: IASTParameter) }) }) }.
 
-	programFile progUnits: { (IASTSubroutine new
-			 entityName: 'sub';
-			 body: { d__ };
-			 yourself) }.
-	entity := programFile accept: visitor.
+	entity := (FamixF77PUSubroutine new).
+	visitor stack push: entity.
 
-	self assert: entity programUnits size equals: 1.
+	d__ accept: visitor.
 
-	self assert: entity programUnits first accesses size equals: 5.
+	self assert: entity accesses size equals: 5.
 
-	access := entity programUnits first accesses first.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'ptr'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNil.
+	accesses := entity accesses select: [:acc | (acc attributeAt: #attributeAccess ifAbsent: [ nil ]) isNotNil ].
 
-	access := entity programUnits first accesses second.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'i'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNil.
+	self assert: accesses size equals: 2.
+	accesses do: [ :acc |
+		var := acc attributeAt: #entity ifAbsent: [ nil ].
+		self assert: ((var entityName = 'ptr') or: (var entityName = 'p')).
+		self assert: (acc attributeAt: #parentAccess ifAbsent: [ nil ]) isNil.
+	].
 
-	access := entity programUnits first accesses third.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'p'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNil.
+	accesses := entity accesses select: [:acc | (acc attributeAt: #parentAccess ifAbsent: [ nil ]) isNotNil ].
 
-	access := entity programUnits first accesses at: 4.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'j'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #pointer ifAbsent: [  ]) entityName
-		equals: 'p'.
+	self assert: accesses size equals: 2.
+	accesses do: [ :acc |
+		var := acc attributeAt: #entity ifAbsent: [ nil ].
+		self assert: ((var entityName = 'attr') or: (var entityName = 'j')).
+		self assert: (acc attributeAt: #attributeAccess ifAbsent: [ nil ]) isNil.
+	].
 
-	access := entity programUnits first accesses at: 5.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'attr'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #pointer ifAbsent: [  ]) entityName
-		equals: 'ptr'
-]
+	accesses := entity accesses select: [:acc |
+		(acc attributeAt: #attributeAccess ifAbsent: [ nil ]) isNil and: 
+		[ (acc attributeAt: #parentAccess ifAbsent: [ nil ]) isNil ] ].
+	
+	self assert: accesses size equals: 1.
+	var := accesses anyOne attributeAt: #entity ifAbsent: [ nil ].
+	self assert: var isNotNil.
+	self assert: var entityName equals: 'i'
 
-{ #category : #'tests-esope' }
-IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithDotArg [
-
-	"
-	d__(ptr,attr(d__(p,i)))
-	"
-
-	| d__ entity access |
-	d__ := (self defaultNamedEntity: nil for: IASTVarEsoAt) entities:
-		       { 
-			       (self defaultNamedEntity: 'ptr' for: IASTVarAccess).
-			       ((self defaultNamedEntity: 'attr' for: IASTInvocation) 
-				        arguments:
-					        { ((self defaultNamedEntity: nil for: IASTVarEsoAt) 
-						         entities: { 
-								         (self defaultNamedEntity: 'p' for: IASTParameter).
-								         (self defaultNamedEntity: 'i' for: IASTParameter) }) }) }.
-
-	programFile progUnits: { (IASTSubroutine new
-			 entityName: 'sub';
-			 body: { d__ };
-			 yourself) }.
-	entity := programFile accept: visitor.
-
-	self assert: entity programUnits size equals: 1.
-
-	self assert: entity programUnits first accesses size equals: 4.
-
-	access := entity programUnits first accesses first.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'ptr'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNil.
-
-	access := entity programUnits first accesses second.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'p'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNil.
-
-	access := entity programUnits first accesses at: 3.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'i'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #pointer ifAbsent: [  ]) entityName
-		equals: 'p'.
-
-	access := entity programUnits first accesses at: 4.
-	self assert: access target isNil.
-	self assert: (access attributeAt: #entity ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #entity ifAbsent: [  ]) entityName
-		equals: 'attr'.
-	self assert: (access attributeAt: #pointer ifAbsent: [  ]) isNotNil.
-	self
-		assert: (access attributeAt: #pointer ifAbsent: [  ]) entityName
-		equals: 'ptr'
 ]
 
 { #category : #'tests-esope' }
@@ -702,31 +555,6 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77 [
 	self assert: entity class equals: FamixF77PUSubroutine.
 	self assert: entity name equals: 'sub'.
 
-]
-
-{ #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77Comment [
-
-	| entity comment |
-
-	programFile progUnits: { IASTMainProgram new
-			 entityName: 'main';
-			 body: { IASTComment new
-		           text: 'a normal comment';
-		           yourself. };
-			 yourself }.
-
-	entity := programFile accept: visitor.
-
-	self assert: entity programUnits size equals: 1.
-	self assert: entity programUnits first comments size equals: 1.
-
-	comment := entity programUnits first comments first.
-	self assert: comment class equals: FamixF77Comment.
-	self assert: comment content equals: 'a normal comment'.
-	self deny: comment isEsope.
-	
-	self assert: comment commentedEntity equals: entity programUnits first.
 ]
 
 { #category : #'tests-esope' }
@@ -948,33 +776,6 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77Subroutine [
 	self assert: entity parameters size equals: 0
 ]
 
-{ #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77SubroutineWithSimpleImplicit [
-
-	| entity sub |
-	programFile progUnits: { IASTSubroutine new
-			 entityName: 'sub';
-			 body: {
-			 	self defaultImplicit: { #($c $s) } for: 'character' .
-				self defaultImplicit: { #($i $j $k) } for: 'integer' .
-			 };
-			 yourself }.
-
-	entity := programFile accept: visitor.
-
-	self assert: entity programUnits size equals: 1.
-
-	sub := entity programUnits first.
-	self assert: sub class equals: FamixF77PUSubroutine.
-	self assert: sub name equals: 'sub'.
-	self assert: sub programFile isNotNil.
-
-	self assert: sub implicits size equals: 2.
-	self assert: sub implicits first class equals: IASTImplicit.
-	self assert: sub implicits second class equals: IASTImplicit.
-	
-]
-
 { #category : #'tests-esope' }
 IASTToFamixVisitorTest >> testCreateIncludeFamixFortran77Subroutine [
 
@@ -1007,4 +808,101 @@ c@_#include ""point.seg""
 	self assert: include filename equals: 'point.seg'.
 	self assert: include includedBy equals: sub "
 	self assert: include source equals: programFile."
+]
+
+{ #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testImplicitWithRange [
+
+	| entity sub |
+	programFile progUnits: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: {
+			 	self implicitRange: { #($c $f) } forType: 'character' .
+			 };
+			 yourself }.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 1.
+
+	sub := entity programUnits first.
+
+	self assert: sub implicits size equals: 1.
+
+	entity := sub implicits anyOne.
+	self assert: entity class equals: IASTImplicit.
+	self assert: entity ranges size equals: 1.
+	
+	entity := entity ranges anyOne.
+	self assert: entity size equals: 2.
+	self assert: entity first equals: $c.
+	self assert: entity second equals: $f.
+
+]
+
+{ #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testMultipleImplicit [
+
+	| entity sub |
+	programFile progUnits: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: {
+			 	self implicitRange: #( #($c) #($d $f) ) forType: 'character' .
+			 };
+			 yourself }.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 1.
+
+	sub := entity programUnits first.
+
+	self assert: sub implicits size equals: 1.
+
+	entity := sub implicits anyOne.
+	self assert: entity class equals: IASTImplicit.
+	self assert: entity ranges size equals: 2.
+	
+	entity := entity ranges first.
+	self assert: entity size equals: 1.
+	self assert: entity anyOne equals: $c.
+
+	entity := sub implicits anyOne ranges second.
+	self assert: entity size equals: 2.
+	self assert: entity first equals: $d.
+	self assert: entity second equals: $f.
+
+]
+
+{ #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testSimpleImplicit [
+
+	| entity sub |
+	programFile progUnits: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: {
+			 	self implicitRange: { #($c) } forType: 'character' .
+			 };
+			 yourself }.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 1.
+
+	sub := entity programUnits first.
+
+	self assert: sub implicits size equals: 1.
+
+	entity := sub implicits anyOne.
+	self assert: entity class equals: IASTImplicit.
+	self assert: entity ranges size equals: 1.
+	
+	entity := entity ranges anyOne.
+	self assert: entity size equals: 1.
+	self assert: entity anyOne equals: $c.
+
+	entity := sub implicits anyOne.
+	self assert: entity forType class equals: IASTTypeRef.
+	self assert: entity forType entityName equals:'character'
+	
 ]
