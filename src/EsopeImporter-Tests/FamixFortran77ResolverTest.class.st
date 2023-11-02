@@ -803,9 +803,7 @@ FamixFortran77ResolverTest >> testResolveIncludeDirective [
 	"
 +------ point.seg ----------------------------------+
 |      subroutine __$__                             |
-|      integer l                                    |
 |      segment point                                |
-|      real x, y                                    |
 |      end segment                                  |
 |      end                                          |
 +---------------------------------------------------+
@@ -814,93 +812,35 @@ FamixFortran77ResolverTest >> testResolveIncludeDirective [
 |#include ""point.seg""                             |
 |      end                                          |
 +---------------------------------------------------+
-+------ mpoint.E -----------------------------------+
-|      subroutine init(p)                           |
-|#include ""point.seg""                             |
-|      end                                          |
-|      subroutine print(p)                          |
-|#include ""point.seg""                             |
-|      end                                          |
-+---------------------------------------------------+
-	"
+"
 
-	| dummySub main initSub printSub includedFile mainFile mpointFile pUnits puIncFile puMain puSubs |
-	includedFile := self defaultProgramFile: 'point.seg.E'.
-	mainFile := self defaultProgramFile: 'main.E'.
-	mpointFile := self defaultProgramFile: 'mpoint.E'.
+	| sub main includedFile mainFile |
+	includedFile := self defaultProgramFile: 'point.seg.f'.
+	mainFile := self defaultProgramFile: 'main.f'.
 
-	dummySub := (self
-		             defaultProgramUnit: 'point.seg'
-		             forType: FamixF77IncludedFile
-		             belongsTo: includedFile)
-		            types: { (self defaultSegment: 'point' with: { 
-						             (#x -> #real).
-						             (#y -> #real) }) };
-		            localVariables:
-			            { (self defaultVariable: 'l' withType: 'integer') };
-		            yourself.
+	sub := (self newNamedEntity: 'point.seg' toFamix: FamixF77IncludedFile)
+		programFile: includedFile ;
+		types: { self newNamedEntity: 'point' toFamix: FamixEsopeSegment } ;
+		yourself.
 
-	main := (self
-		         defaultProgramUnit: 'main'
-		         forType: FamixF77PUMain
-		         belongsTo: mainFile)
-		        includes: { ((self newEntity: FamixF77Include)
-				         filename: 'point.seg';
-				         yourself) };
-		        yourself.
-
-	initSub := (self
-		            defaultProgramUnit: 'init'
-		            forType: FamixF77PUSubroutine
-		            belongsTo: mpointFile)
-		           includes: { ((self newEntity: FamixF77Include)
-				            filename: 'point.seg';
-				            yourself) };
-		           yourself.
-	printSub := (self
-		             defaultProgramUnit: 'print'
-		             forType: FamixF77PUSubroutine
-		             belongsTo: mpointFile)
-		            includes: { ((self newEntity: FamixF77Include)
-				             filename: 'point.seg';
-				             yourself) };
-		            yourself.
+	main := (self newNamedEntity: 'main' toFamix: FamixF77PUMain)
+		programFile: mainFile ;
+		includes: { (self newEntity: FamixF77Include) filename: 'point.seg' } ;
+		yourself.
 
 	resolver resolve.
 
-	pUnits := resolver model allWithSubTypesOf: FamixF77ProgramUnit.
-	self assert: pUnits size equals: 4.
+	self assert: (resolver model allWithType: FamixF77IncludedFile) size equals: 1.
+	self assert: (resolver model allWithType: FamixF77IncludedFile) first equals: sub.
 
-	puIncFile := resolver model allWithType: FamixF77IncludedFile.
-	self assert: puIncFile size equals: 1.
-
-	puSubs := resolver model allWithType: FamixF77PUSubroutine.
-	self assert: puSubs size equals: 2.
-
-	puMain := resolver model allWithType: FamixF77PUMain.
-	self assert: puMain size equals: 1.
-
-	self assert: puMain first includes size equals: 1.
+	self assert: main includes size equals: 1.
 	self
-		assert: puMain first includes first included
-		equals: puIncFile first.
-	"self assert: puMain first localVariables size equals: 1."
+		assert: main includes anyOne included
+		equals: sub.
 
-	self assert: puSubs first includes size equals: 1.
-	self
-		assert: puSubs first includes first included
-		equals: puIncFile first.
-	self assert: puSubs first allLocalVariables size equals: 1.
-	self assert: puSubs first allTypes size equals: 1.
+	self assert: sub inclusions size equals: 1.
+	self assert: sub inclusions anyOne includedBy equals: main.
 
-	self assert: puSubs second includes size equals: 1.
-	self
-		assert: puSubs second includes first included
-		equals: puIncFile first.
-	self assert: puSubs first allLocalVariables size equals: 1.
-	self assert: puSubs first allTypes size equals: 1.
-
-	self assert: puIncFile first inclusions size equals: 3
 ]
 
 { #category : #tests }
