@@ -566,12 +566,6 @@ FortranAbstractJsonVisitor >> visitFunction_call: aFunctionCallNode [
 	^self visitJsonMap: aFunctionCallNode keys: #(span function arguments)
 ]
 
-{ #category : #'visiting expression' }
-FortranAbstractJsonVisitor >> visitGe: aGetoOperatorNode [
-
-	^ '.ge.'
-]
-
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitGotoStatement: aGotoStatementNode [
 
@@ -582,6 +576,12 @@ FortranAbstractJsonVisitor >> visitGotoStatement: aGotoStatementNode [
 FortranAbstractJsonVisitor >> visitGt: aGreaterthanOperatorNode [
 
 	^ '.gt.'
+]
+
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitGte: anOperatorNode [
+
+	^ '.ge.'
 ]
 
 { #category : #'visiting statement' }
@@ -746,12 +746,6 @@ FortranAbstractJsonVisitor >> visitLabel: aLabelNode [
 ]
 
 { #category : #'visiting expression' }
-FortranAbstractJsonVisitor >> visitLe: aLetoOperatorNode [
-
-	^ '.le.'
-]
-
-{ #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitLeft: aLeftNode [
 	^self visitJsonElement: aLeftNode
 ]
@@ -801,6 +795,12 @@ FortranAbstractJsonVisitor >> visitLower: aLowerNode [
 FortranAbstractJsonVisitor >> visitLt: aLessthanOperatorNode [
 
 	^ '.lt.'
+]
+
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitLte: anOperatorNode [
+
+	^ '.le.'
 ]
 
 { #category : #'visiting prog-unit' }
