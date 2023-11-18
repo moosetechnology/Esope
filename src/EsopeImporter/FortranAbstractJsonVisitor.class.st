@@ -812,9 +812,11 @@ FortranAbstractJsonVisitor >> visitMain: aMainProgramNode [
 	^self visitJsonMap: aMainProgramNode keys: #(span name blocks subprograms)
 ]
 
-{ #category : #'visiting statement' }
-FortranAbstractJsonVisitor >> visitMessage: aStopMessageNode [
-	^self visitJsonElement: aStopMessageNode 
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitMessage: aMessageNode [
+	"STOP or PAUSE message"
+
+	^self visitJsonElement: aMessageNode 
 ]
 
 { #category : #'visiting prog-unit' }
@@ -871,6 +873,11 @@ FortranAbstractJsonVisitor >> visitNot: aNotToOperatorNode [
 FortranAbstractJsonVisitor >> visitOp: anOpNode [
 	"should be a dictionnary with a 'tag' key and a string for value: 'multiplication', 'addition', ..."
 	^self visitJsonTaggedElement: anOpNode
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitPauseStatement: aPauseStatementNode [
+	^self visitJsonMap: aPauseStatementNode keys: #(span message)
 ]
 
 { #category : #'visiting statement' }
