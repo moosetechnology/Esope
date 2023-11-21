@@ -285,6 +285,42 @@ FortranAbstractJsonVisitor >> visitContinueStatement: aContinueStatementNode [
 ]
 
 { #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitDataGroup: aDataGroup [
+
+	^{
+		self visitJsonNode: aDataGroup key: #span .
+		self visitDataGroupNames: (aDataGroup at: #names) .
+		self visitDataGroupInitializers: (aDataGroup at: #initializers)
+	}
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitDataGroupInitializers: initializersCollection [
+	^self visitJsonArray: (initializersCollection at: #list)
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitDataGroupNames: namesCollection [
+
+	^self visitJsonArray: (namesCollection at: #list)
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitDataStatement: aDataStatement [
+
+	^self visitJsonMap: aDataStatement keys: #(span data_groups)
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitData_groups: dataGroupCollection [
+
+	^(dataGroupCollection at: #list)
+		collect: [ :aDataGroup |
+			self visitDataGroup: aDataGroup
+		]
+]
+
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitDeclarationStatement: aDeclarationStatementNode [
 	"tagged element 'declaration'"
 
