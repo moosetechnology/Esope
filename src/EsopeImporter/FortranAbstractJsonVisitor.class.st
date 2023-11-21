@@ -860,8 +860,11 @@ FortranAbstractJsonVisitor >> visitMultiplication: aMultiplicationOperatorNode [
 ]
 
 { #category : #visiting }
-FortranAbstractJsonVisitor >> visitName: aString [
-	^aString
+FortranAbstractJsonVisitor >> visitName: aNode [
+
+	^aNode isString
+		ifTrue: [ aNode ]
+		ifFalse: [ self visitJsonElement: aNode ]
 ]
 
 { #category : #'visiting expression' }
