@@ -531,8 +531,21 @@ FortranAbstractJsonVisitor >> visitFalseLiteralValue: aString [
 ]
 
 { #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitFormat: aFormatDescription [
+	"formatDescription is a String"
+
+	^aFormatDescription
+]
+
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitFormatArgument: aFormatArgumentNode [
 	^self visitArgument: aFormatArgumentNode
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitFormatStatement: aFormatStatement [
+
+	^self visitJsonMap: aFormatStatement keys: #(span format)
 ]
 
 { #category : #'visiting statement' }
