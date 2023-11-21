@@ -367,9 +367,7 @@ JsonToIASTVisitor >> visitFunctionAsValue: aFunctionNode [
 
 { #category : #'visiting prog-unit' }
 JsonToIASTVisitor >> visitFunctionParameters: aParameterList [
-	| data |
-	data := super visitFunctionParameters: aParameterList.
-	^data ifEmpty: [ data ] ifNotEmpty: [ data second ]
+	^super visitFunctionParameters: aParameterList
 ]
 
 { #category : #'visiting statement' }

@@ -788,7 +788,8 @@ FortranAbstractJsonVisitor >> visitLimit: aLimitNode [
 
 { #category : #visiting }
 FortranAbstractJsonVisitor >> visitList: aListNode [
-	^self visitJsonElement: aListNode
+	"key 'list' used for different things should be treated upstream and never reach this point"
+	self shouldNotImplement 
 ]
 
 { #category : #'visiting expression' }
