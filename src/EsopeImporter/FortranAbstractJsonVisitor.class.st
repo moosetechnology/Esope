@@ -175,7 +175,7 @@ FortranAbstractJsonVisitor >> visitAttributes: aNode [
 FortranAbstractJsonVisitor >> visitBase_type: aString [
 	"to offer the possibility to handle each baseType differently, we create #visitXYZBaseType: methods"
 
-	^ self visitJsonNode: aString key: aString , 'BaseType'
+	^ self visitKey: aString , 'BaseType' value: aString
 ]
 
 { #category : #'visiting expression' }
@@ -285,6 +285,42 @@ FortranAbstractJsonVisitor >> visitContinueStatement: aContinueStatementNode [
 ]
 
 { #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitDataGroup: aDataGroup [
+
+	^{
+		self visitJsonNode: aDataGroup key: #span .
+		self visitDataGroupNames: (aDataGroup at: #names) .
+		self visitDataGroupInitializers: (aDataGroup at: #initializers)
+	}
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitDataGroupInitializers: initializersCollection [
+	^self visitJsonArray: (initializersCollection at: #list)
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitDataGroupNames: namesCollection [
+
+	^self visitJsonArray: (namesCollection at: #list)
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitDataStatement: aDataStatement [
+
+	^self visitJsonMap: aDataStatement keys: #(span data_groups)
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitData_groups: dataGroupCollection [
+
+	^(dataGroupCollection at: #list)
+		collect: [ :aDataGroup |
+			self visitDataGroup: aDataGroup
+		]
+]
+
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitDeclarationStatement: aDeclarationStatementNode [
 	"tagged element 'declaration'"
 
@@ -378,7 +414,7 @@ FortranAbstractJsonVisitor >> visitEsopeComment: anEsopeCommentNode [
 	key := 'Esope' , esopeCommand first asLowercase capitalized
 	       , 'Comment'.
 
-	^ self visitJsonNode: anEsopeCommentNode key: key
+	^ self visitKey: key value: anEsopeCommentNode
 ]
 
 { #category : #'visiting esope' }
@@ -537,8 +573,9 @@ FortranAbstractJsonVisitor >> visitFunctionCalledName: aString [
 
 { #category : #'visiting prog-unit' }
 FortranAbstractJsonVisitor >> visitFunctionParameters: aParameterList [
+
 	aParameterList ifNil: [ ^#() ].
-	^self visitJsonElement: aParameterList 
+	^self visitJsonArray: (aParameterList at: #list)
 ]
 
 { #category : #'visiting statement' }
@@ -560,13 +597,18 @@ FortranAbstractJsonVisitor >> visitFunctionStatementBody: aNode [
 FortranAbstractJsonVisitor >> visitFunctionWithBlocks: aFunctionNode [
 	
 	^{
-		self visitJsonNode: (aFunctionNode at: #span) key: #span .
-		self visitJsonNode: (aFunctionNode at: #name) key: #name .
+		self visitJsonNode: aFunctionNode key: #span .
+
+		self visitJsonNode: aFunctionNode key: #name .
+
 		(aFunctionNode at: #type)
 			ifNil: [ nil ]
-			ifNotNil: [ :type | self visitJsonNode: type key: #type ] .
+			ifNotNil: [ :type | self visitKey: #type value: type ] .
+
 		self visitFunctionParameters: (aFunctionNode at: 'arguments') .
-		self visitBlocks: (aFunctionNode at: 'blocks') } 
+
+		self visitBlocks: (aFunctionNode at: 'blocks')
+	} 
 	"need to deal with keys: result, subprograms"
 	
 ]
@@ -684,8 +726,8 @@ FortranAbstractJsonVisitor >> visitItems: anImplicitItemsNode [
 ]
 
 { #category : #'visiting reflectivity' }
-FortranAbstractJsonVisitor >> visitJsonArray: aNode [
-	^aNode collect: [ :each | self visitJsonElement: each ]
+FortranAbstractJsonVisitor >> visitJsonArray: aCollection [
+	^aCollection collect: [ :each | self visitJsonElement: each ]
 ]
 
 { #category : #'visiting reflectivity' }
@@ -707,7 +749,7 @@ FortranAbstractJsonVisitor >> visitJsonMap: jsonDictionary [
 		  ifTrue: [ self visitJsonTaggedElement: jsonDictionary ]
 		  ifFalse: [
 			  jsonDictionary associations collect: [ :assoc |
-				  self visitJsonNode: assoc value key: assoc key ] ]
+				  self visitKey: assoc key value: assoc value ] ]
 ]
 
 { #category : #'visiting reflectivity' }
@@ -715,15 +757,13 @@ FortranAbstractJsonVisitor >> visitJsonMap: jsonDictionary keys: aCollection [
 	"visit only the keys listed in aCollection in the jsonDictionary"
 
 	^ aCollection collect: [ :key |
-		  self visitJsonNode: (jsonDictionary at: key) key: key ]
+		  self visitJsonNode: jsonDictionary key: key
+	]
 ]
 
 { #category : #'visiting reflectivity' }
-FortranAbstractJsonVisitor >> visitJsonNode: aNode key: key [
-	| selector |
-	selector := ('visit' , key capitalized , ':') asSymbol.
-	^self perform: selector with: aNode .
-
+FortranAbstractJsonVisitor >> visitJsonNode: aJsonNode key: key [
+	^self visitKey: key value: (aJsonNode at: key)
 ]
 
 { #category : #'visiting reflectivity' }
@@ -733,7 +773,7 @@ FortranAbstractJsonVisitor >> visitJsonTaggedElement: jsonDictionary [
 
 	| key |
 	key := jsonDictionary removeKey: 'tag'.
-	^ self visitJsonNode: jsonDictionary key: key
+	^ self visitKey: key value: jsonDictionary
 ]
 
 { #category : #'visiting reflectivity' }
@@ -744,7 +784,15 @@ FortranAbstractJsonVisitor >> visitJsonTaggedStatement: aStatementNode [
 	| key value |
 	value := aStatementNode at: 'statement' ifAbsent: [ aStatementNode ].
 	key := value removeKey: 'tag'.
-	^ self visitJsonNode: value key: key , 'Statement'
+	^ self visitKey: key , 'Statement' value: value
+]
+
+{ #category : #'visiting reflectivity' }
+FortranAbstractJsonVisitor >> visitKey: key value: aNode [
+	| selector |
+	selector := ('visit' , key capitalized , ':') asSymbol.
+	^self perform: selector with: aNode
+
 ]
 
 { #category : #visiting }
@@ -776,7 +824,8 @@ FortranAbstractJsonVisitor >> visitLimit: aLimitNode [
 
 { #category : #visiting }
 FortranAbstractJsonVisitor >> visitList: aListNode [
-	^self visitJsonElement: aListNode
+	"key 'list' used for different things should be treated upstream and never reach this point"
+	self shouldNotImplement 
 ]
 
 { #category : #'visiting expression' }
