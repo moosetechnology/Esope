@@ -127,7 +127,7 @@ FortranAbstractJsonVisitor >> visitAddition: anAdditionOperatorNode [
 { #category : #'visiting prog-unit' }
 FortranAbstractJsonVisitor >> visitArgument: anArgumentNode [
 	"used for argument in subprogram calls and parameter in subprogram definition
-	 So can take many different forms :-("
+	 So can take different forms :-("
 
 	^(anArgumentNode includesKey: 'tag')
 		ifTrue: [ self visitJsonTaggedElement: anArgumentNode ]
@@ -170,8 +170,7 @@ FortranAbstractJsonVisitor >> visitAttributes: aNode [
 FortranAbstractJsonVisitor >> visitBase_type: aString [
 	"to offer the possibility to handle each baseType differently, we create #visitXYZBaseType: methods"
 
-	^self visitJsonNode: (aString , 'BaseType') value: aString
-
+	^ self visitJsonNode: aString key: aString , 'BaseType'
 ]
 
 { #category : #'visiting expression' }
@@ -367,12 +366,10 @@ FortranAbstractJsonVisitor >> visitEsopeComment: anEsopeCommentNode [
 
 	| key esopeCommand |
 	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
-	key := 'Esope' ,
-		(esopeCommand first asLowercase capitalized) ,
-		'Comment'.
+	key := 'Esope' , esopeCommand first asLowercase capitalized
+	       , 'Comment'.
 
-	^self visitJsonNode: key value: anEsopeCommentNode.
-
+	^ self visitJsonNode: anEsopeCommentNode key: key
 ]
 
 { #category : #'visiting esope' }
@@ -553,9 +550,15 @@ FortranAbstractJsonVisitor >> visitFunctionStatementBody: aNode [
 
 { #category : #'visiting prog-unit' }
 FortranAbstractJsonVisitor >> visitFunctionWithBlocks: aFunctionNode [
-	^(self visitJsonMap: aFunctionNode keys: #(span name type))
-	, { self visitFunctionParameters: (aFunctionNode at: 'arguments') }
-	, { self visitBlocks: (aFunctionNode at: 'blocks') } 
+	
+	^{
+		self visitJsonNode: (aFunctionNode at: #span) key: #span .
+		self visitJsonNode: (aFunctionNode at: #name) key: #name .
+		(aFunctionNode at: #type)
+			ifNil: [ nil ]
+			ifNotNil: [ :type | self visitJsonNode: type key: #type ] .
+		self visitFunctionParameters: (aFunctionNode at: 'arguments') .
+		self visitBlocks: (aFunctionNode at: 'blocks') } 
 	"need to deal with keys: result, subprograms"
 	
 ]
@@ -692,27 +695,26 @@ FortranAbstractJsonVisitor >> visitJsonMap: jsonDictionary [
 
 	jsonDictionary removeKey: 'anno' ifAbsent: [ "nothing" ].
 
-	^(jsonDictionary includesKey: 'tag')
-	 ifTrue: [ self visitJsonTaggedElement: jsonDictionary ]
-	 ifFalse: [ jsonDictionary associations
-		collect: [ :assoc | self visitJsonNode: assoc key value: assoc value ]
-	 ]
-
+	^ (jsonDictionary includesKey: 'tag')
+		  ifTrue: [ self visitJsonTaggedElement: jsonDictionary ]
+		  ifFalse: [
+			  jsonDictionary associations collect: [ :assoc |
+				  self visitJsonNode: assoc value key: assoc key ] ]
 ]
 
 { #category : #'visiting reflectivity' }
 FortranAbstractJsonVisitor >> visitJsonMap: jsonDictionary keys: aCollection [
 	"visit only the keys listed in aCollection in the jsonDictionary"
 
-	^aCollection collect: [ :key | self visitJsonNode: key value: (jsonDictionary at: key) ]
-
+	^ aCollection collect: [ :key |
+		  self visitJsonNode: (jsonDictionary at: key) key: key ]
 ]
 
 { #category : #'visiting reflectivity' }
-FortranAbstractJsonVisitor >> visitJsonNode: key value: aValue [
+FortranAbstractJsonVisitor >> visitJsonNode: aNode key: key [
 	| selector |
 	selector := ('visit' , key capitalized , ':') asSymbol.
-	^self perform: selector with: aValue .
+	^self perform: selector with: aNode .
 
 ]
 
@@ -720,21 +722,21 @@ FortranAbstractJsonVisitor >> visitJsonNode: key value: aValue [
 FortranAbstractJsonVisitor >> visitJsonTaggedElement: jsonDictionary [
 	"similar to #visitJsonNode: , but removes first the 'tag' key from the JsonDisctionary
 	 so that it is not visited again (not sure this is needed ...?)"
+
 	| key |
 	key := jsonDictionary removeKey: 'tag'.
-	^self visitJsonNode: key value: jsonDictionary
+	^ self visitJsonNode: jsonDictionary key: key
 ]
 
 { #category : #'visiting reflectivity' }
 FortranAbstractJsonVisitor >> visitJsonTaggedStatement: aStatementNode [
-
 	"a statementNode containing a tagged element
 	 Similar to #visitJsonTaggedElement: on the tagged element, but adds 'Statement' to the selector"
 
 	| key value |
 	value := aStatementNode at: 'statement' ifAbsent: [ aStatementNode ].
 	key := value removeKey: 'tag'.
-	^ self visitJsonNode: key , 'Statement' value: value
+	^ self visitJsonNode: value key: key , 'Statement'
 ]
 
 { #category : #visiting }
@@ -921,6 +923,14 @@ FortranAbstractJsonVisitor >> visitRealBaseType: aString [
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitRealLiteralValue: aRealLiteralValueNode [
 	^self visitJsonMap: aRealLiteralValueNode first keys: #(exponent significand)
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitReturn: anEntryReturnNode [
+
+	^anEntryReturnNode
+		ifNil: [ nil ]
+		ifNotNil: [ self shouldBeImplemented ]
 ]
 
 { #category : #'visiting statement' }
