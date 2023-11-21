@@ -124,6 +124,12 @@ FortranAbstractJsonVisitor >> visitAddition: anAdditionOperatorNode [
 	^'addition'
 ]
 
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitArgs: anEntryArgsList [
+	anEntryArgsList ifNil: [ ^#() ].
+	^(anEntryArgsList at: 'list') collect: [ :each | self visitJsonElement: each]
+]
+
 { #category : #'visiting prog-unit' }
 FortranAbstractJsonVisitor >> visitArgument: anArgumentNode [
 	"used for argument in subprogram calls and parameter in subprogram definition
@@ -344,6 +350,11 @@ FortranAbstractJsonVisitor >> visitDo_spec: aDoSpecNode [
 FortranAbstractJsonVisitor >> visitElements: anImplicitElementsNode [
 	^(anImplicitElementsNode at: 'list')
 		collect: [ :each | self visitImplicitStatementRange: each ]
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitEntryStatement: anEntryNode [
+	^self visitJsonMap: anEntryNode keys: #(span name args return)
 ]
 
 { #category : #'visiting expression' }
