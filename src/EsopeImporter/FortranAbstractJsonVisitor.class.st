@@ -121,7 +121,6 @@ FortranAbstractJsonVisitor >> processEsopeComment: anEsopeCommentNode [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitAddition: anAdditionOperatorNode [
-	^'addition'
 ]
 
 { #category : #'visiting statement' }
@@ -333,7 +332,6 @@ FortranAbstractJsonVisitor >> visitDeclarators: aDeclaratorsList [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitDivision: aDivisionOperatorNode [
-	^'division'
 ]
 
 { #category : #'visiting statement' }
@@ -467,7 +465,6 @@ FortranAbstractJsonVisitor >> visitExponent: aRealLiteralExponentNode [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitExponentiation: aExponentiationOperatorNode [
-	^'exponentiation'
 ]
 
 { #category : #'visiting expression' }
@@ -856,7 +853,6 @@ FortranAbstractJsonVisitor >> visitMinus: aMinusOperatorNode [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitMultiplication: aMultiplicationOperatorNode [
-	^'multiplication'
 ]
 
 { #category : #visiting }
@@ -1047,7 +1043,6 @@ FortranAbstractJsonVisitor >> visitSubscript: aSubscriptNode [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitSubtraction: aSubtractionOperatorNode [
-	^'subtraction'
 ]
 
 { #category : #'visiting statement' }
