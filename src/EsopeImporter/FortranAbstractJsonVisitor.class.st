@@ -399,7 +399,7 @@ FortranAbstractJsonVisitor >> visitEq: anEqualtoOperatorNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitEqualLabel: aLabelReference [
-	^self visitJsonElement: aLabelReference 
+	^self visitLabelReference: aLabelReference
 ]
 
 { #category : #'visiting expression' }
@@ -645,7 +645,7 @@ FortranAbstractJsonVisitor >> visitGotoStatement: aGotoStatementNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitGreaterLabel: aLabelReference [
-	^self visitJsonElement: aLabelReference 
+	^self visitLabelReference: aLabelReference
 ]
 
 { #category : #'visiting expression' }
@@ -841,6 +841,11 @@ FortranAbstractJsonVisitor >> visitLabel: aLabelNode [
 	^self visitJsonElement: aLabelNode
 ]
 
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitLabelReference: aLabelReference [
+	^self visitJsonElement: aLabelReference 
+]
+
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitLeft: aLeftNode [
 	^self visitJsonElement: aLeftNode
@@ -853,7 +858,7 @@ FortranAbstractJsonVisitor >> visitLength: aNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitLessLabel: aLabelReference [
-	^self visitJsonElement: aLabelReference 
+	^self visitLabelReference: aLabelReference
 ]
 
 { #category : #'visiting statement' }
