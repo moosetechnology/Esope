@@ -664,6 +664,11 @@ FortranAbstractJsonVisitor >> visitIfCondition: anIfConditionNode [
 	^self visitJsonElement: anIfConditionNode
 ]
 
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitIf_arithmeticStatement: anIfArithmeticStatement [ 
+	^self visitJsonMap: anIfArithmeticStatement keys: #(span expression less equal greater)
+]
+
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitIf_logicalStatement: anIfNode [
 	"the statement part is special, it has no 'label', so we cannot use the
