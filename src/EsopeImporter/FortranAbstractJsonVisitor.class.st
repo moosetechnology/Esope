@@ -397,6 +397,11 @@ FortranAbstractJsonVisitor >> visitEq: anEqualtoOperatorNode [
 	^ '.eq.'
 ]
 
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitEqualLabel: aLabelReference [
+	^self visitJsonElement: aLabelReference 
+]
+
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitEqv: aEqvtoOperatorNode [
 
@@ -638,6 +643,11 @@ FortranAbstractJsonVisitor >> visitGotoStatement: aGotoStatementNode [
 	^self visitJsonMap: aGotoStatementNode keys: #(span target)
 ]
 
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitGreaterLabel: aLabelReference [
+	^self visitJsonElement: aLabelReference 
+]
+
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitGt: aGreaterthanOperatorNode [
 
@@ -664,9 +674,15 @@ FortranAbstractJsonVisitor >> visitIfCondition: anIfConditionNode [
 	^self visitJsonElement: anIfConditionNode
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitIf_arithmeticStatement: anIfArithmeticStatement [ 
-	^self visitJsonMap: anIfArithmeticStatement keys: #(span expression less equal greater)
+	^(self visitJsonMap: anIfArithmeticStatement keys: #(span expression))
+	,
+	{
+		self visitKey: #lessLabel    value: (anIfArithmeticStatement at: #less) .
+		self visitKey: #equalLabel   value: (anIfArithmeticStatement at: #equal) .
+		self visitKey: #greaterLabel value: (anIfArithmeticStatement at: #greater)
+	}
 ]
 
 { #category : #'visiting statement' }
@@ -833,6 +849,11 @@ FortranAbstractJsonVisitor >> visitLeft: aLeftNode [
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitLength: aNode [
 	^nil
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitLessLabel: aLabelReference [
+	^self visitJsonElement: aLabelReference 
 ]
 
 { #category : #'visiting statement' }
