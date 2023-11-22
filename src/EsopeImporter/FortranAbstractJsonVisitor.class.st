@@ -941,7 +941,7 @@ FortranAbstractJsonVisitor >> visitMiVersion: aString [
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitMinus: aMinusOperatorNode [
 	"unary minus"
-	^'minus'
+	^'-'
 ]
 
 { #category : #'visiting expression' }
