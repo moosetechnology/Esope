@@ -332,24 +332,28 @@ FortranAbstractJsonVisitor >> visitDeclarationStatement: aDeclarationStatementNo
 FortranAbstractJsonVisitor >> visitDeclarator: aDeclaratorNode [
 	"visit method for the last two have special names
 	 - 'type' contains a string which is not compatible with #visitType:
-	 - 'variable' contains an object with a key 'variable' that would create recursive loop"
+	 - 'variable' contains an object with a key 'variable' that would create recursive loop
+	Note: 'type' is not the data type of the variable but something like 'scalar'"
 
 	^(self visitJsonMap: aDeclaratorNode keys: #(span initial length))
 	 ,
-	{ self visitDeclaratorType: (aDeclaratorNode at: 'type') .
+	{ "self visitDeclaratorType: (aDeclaratorNode at: 'type') ."
 	 self visitDeclaratorVariable: (aDeclaratorNode at: 'variable') }
 ]
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitDeclaratorType: aString [
+	"Note: this is not the data type of a declared variable but something like 'scalar'"
 	^aString 
 ]
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitDeclaratorVariable: aDeclaratorVariableNode [
-	"vist span and value content"
-	^{self visitSpan: (aDeclaratorVariableNode at: 'span') .
-	 self visitDeclaratorVariableContent: (aDeclaratorVariableNode at: 'value' at: 'contents') }
+
+	^{
+		self visitSpan: (aDeclaratorVariableNode at: 'span') .
+		self visitDeclaratorVariableContent: (aDeclaratorVariableNode at: 'value' at: 'contents')
+	}
 ]
 
 { #category : #'visiting statement' }
@@ -361,8 +365,10 @@ FortranAbstractJsonVisitor >> visitDeclaratorVariableContent: aString [
 FortranAbstractJsonVisitor >> visitDeclarators: aDeclaratorsList [
 	"visit span and list of declarators"
 
-	^{self visitSpan: (aDeclaratorsList at: 'span') .
-	 (aDeclaratorsList at: 'list') collect: [:decl | self visitDeclarator: decl ] }
+	^{
+		self visitSpan: (aDeclaratorsList at: 'span') .
+		(aDeclaratorsList at: 'list') collect: [:decl | self visitDeclarator: decl ]
+	}
 	
 ]
 
@@ -978,6 +984,11 @@ FortranAbstractJsonVisitor >> visitNot: aNotToOperatorNode [
 FortranAbstractJsonVisitor >> visitOp: anOpNode [
 	"should be a dictionnary with a 'tag' key and a string for value: 'multiplication', 'addition', ..."
 	^self visitJsonTaggedElement: anOpNode
+]
+
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitParameterStatement: aParameterStatementNode [ 
+	^self visitJsonMap: aParameterStatementNode keys: #(span declarators)
 ]
 
 { #category : #'visiting statement' }
