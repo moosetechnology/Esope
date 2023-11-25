@@ -148,7 +148,7 @@ FortranAbstractJsonVisitor >> visitArguments: anArgumentList [
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitArrayDeclarationDim: arrayDeclarationDim [
 
-	^self visitJsonMap: arrayDeclarationDim keys: #(lower upper)
+	^self visitJsonMap: arrayDeclarationDim keys: #(span lower upper)
 ]
 
 { #category : #'visiting statement' }
