@@ -145,6 +145,19 @@ FortranAbstractJsonVisitor >> visitArguments: anArgumentList [
 	^(anArgumentList at: 'list') collect: [ :each | self visitArgument: each]
 ]
 
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitArrayDeclarationDim: arrayDeclarationDim [
+
+	^self visitJsonMap: arrayDeclarationDim keys: #(lower upper)
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitArrayDeclarationDims: arrayDeclarationDimsList [
+
+	^arrayDeclarationDimsList collect: [ :each |
+		self visitArrayDeclarationDim: each ]
+]
+
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitArrayDimensionBoundary: aLimit [
 
@@ -333,11 +346,11 @@ FortranAbstractJsonVisitor >> visitDeclarator: aDeclaratorNode [
 	"visit method for the last two have special names
 	 - 'type' contains a string which is not compatible with #visitType:
 	 - 'variable' contains an object with a key 'variable' that would create recursive loop
-	Note: 'type' is not the data type of the variable but something like 'scalar'"
+	Note: 'type' is not the data type of the variable but something like 'scalar' or 'array'"
 
 	^(self visitJsonMap: aDeclaratorNode keys: #(span initial length))
 	 ,
-	{ "self visitDeclaratorType: (aDeclaratorNode at: 'type') ."
+	{ ((aDeclaratorNode at: 'type') = 'array') ifTrue: [ self visitJsonNode: aDeclaratorNode key: 'dims' ] ifFalse: [ nil ] .
 	 self visitDeclaratorVariable: (aDeclaratorNode at: 'variable') }
 ]
 
@@ -370,6 +383,12 @@ FortranAbstractJsonVisitor >> visitDeclarators: aDeclaratorsList [
 		(aDeclaratorsList at: 'list') collect: [:decl | self visitDeclarator: decl ]
 	}
 	
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitDims: anArrayDeclarationDimsNode [ 
+
+	^self visitArrayDeclarationDims: (anArrayDeclarationDimsNode at: #list)
 ]
 
 { #category : #'visiting expression' }
