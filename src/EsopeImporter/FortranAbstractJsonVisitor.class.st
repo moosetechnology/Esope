@@ -161,7 +161,7 @@ FortranAbstractJsonVisitor >> visitArrayDeclarationDims: arrayDeclarationDimsLis
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitArrayDimensionBoundary: aLimit [
 
-	^ aLimit ifNotNil: [ self visitJsonElement: (aLimit at: 'value') ]
+	^ aLimit ifNotNil: [ self visitJsonMap: aLimit ]
 ]
 
 { #category : #'visiting expression' }
