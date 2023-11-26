@@ -253,15 +253,23 @@ FortranAbstractJsonVisitor >> visitComment: aCommentNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitCommonGroup: aCommonGroupNode [
-	^{ self visitSpan: (aCommonGroupNode at: 'span') .
-	 self visitCommonGroupName: (aCommonGroupNode at: 'name') .
-	 self visitCommonGroupVars: (aCommonGroupNode at: 'vars' at: 'list') }
+	^{
+		self visitSpan: (aCommonGroupNode at: 'span') .
+		self visitCommonGroupName: (aCommonGroupNode at: 'name') .
+		self visitCommonGroupVars: (aCommonGroupNode at: 'vars' at: 'list')
+	}
 ]
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitCommonGroupName: aCommonGroupNameNode [
-	^{ self visitSpan: (aCommonGroupNameNode at: 'span') .
-	 aCommonGroupNameNode at: 'value' at: 'contents' }
+	^aCommonGroupNameNode
+		ifNil: [ nil ]
+		ifNotNil: [
+			{
+				self visitSpan: (aCommonGroupNameNode at: 'span') .
+	 			aCommonGroupNameNode at: 'value' at: 'contents'
+			}
+		]
 ]
 
 { #category : #'visiting statement' }
