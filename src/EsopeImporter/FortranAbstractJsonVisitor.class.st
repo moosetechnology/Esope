@@ -878,7 +878,9 @@ FortranAbstractJsonVisitor >> visitLeft: aLeftNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitLength: aNode [
-	^nil
+	^aNode
+		ifNil: [  nil ]
+		ifNotNil: [ self visitJsonMap: aNode ]
 ]
 
 { #category : #'visiting statement' }
@@ -1082,8 +1084,11 @@ FortranAbstractJsonVisitor >> visitRight: aRightNode [
 ]
 
 { #category : #visiting }
-FortranAbstractJsonVisitor >> visitSelector: anObject [
-	^nil
+FortranAbstractJsonVisitor >> visitSelector: aSelectorNode [
+
+	^aSelectorNode
+		ifNil: [ nil ]
+		ifNotNil: [ self visitJsonMap: aSelectorNode keys: #(span kind length) ]
 ]
 
 { #category : #'visiting expression' }
@@ -1195,8 +1200,7 @@ FortranAbstractJsonVisitor >> visitTrueLiteralValue: aString [
 { #category : #visiting }
 FortranAbstractJsonVisitor >> visitType: aTypeNode [
 
-	self flag: 'need to consider "selector", for example for lenght of character type'.
-	^self visitJsonMap: aTypeNode keys: #(span base_type)
+	^self visitJsonMap: aTypeNode keys: #(span base_type selector)
 ]
 
 { #category : #'visiting expression' }
