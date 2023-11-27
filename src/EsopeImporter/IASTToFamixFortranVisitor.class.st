@@ -226,6 +226,12 @@ IASTToFamixFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixF
 ]
 
 { #category : #visiting }
+IASTToFamixFortranVisitor >> visitIASTStFunction: aStFunctionNode [
+
+	self shouldBeImplemented 
+]
+
+{ #category : #visiting }
 IASTToFamixFortranVisitor >> visitIASTSubroutine: aSubroutine [
 
 	| subroutine |
