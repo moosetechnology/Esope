@@ -21,6 +21,20 @@ EsopeGrammarTest >> setUp [
 ]
 
 { #category : #tests }
+EsopeGrammarTest >> testCommentLine [
+
+	self
+		parse: 'c: end segment
+'
+		rule: #commentLine.
+
+	self
+		parse: '*: CNOM    Tableau des noms  des objets du fichier 1
+'
+		rule: #commentLine
+]
+
+{ #category : #tests }
 EsopeGrammarTest >> testEmptyLine [
 
 	self
@@ -127,6 +141,16 @@ EsopeGrammarTest >> testPointerExtraSpaces [
 ]
 
 { #category : #tests }
+EsopeGrammarTest >> testPointers [
+
+	self
+		parse: sixSpaces , 'pointeur splist.list,p.q, q.r
+'
+		rule: #pointer.
+	self fail: 'pointeur splist.list' rule: #pointer
+]
+
+{ #category : #tests }
 EsopeGrammarTest >> testSegact [
 
 	self parse: sixSpaces , 'segact,splist' , String cr rule: #segact.
@@ -200,6 +224,18 @@ EsopeGrammarTest >> testSegment [
 	self parse: segment rule: #segment.
 
 	self fail: '      segment,values' rule: #segment
+]
+
+{ #category : #tests }
+EsopeGrammarTest >> testSegmentArcopySaphtool [
+	| code  |
+
+	code := '      SEGMENT TEMPNO
+*: TEMPNO  Segment dans lequel on met un index du fichier 1
+         INTEGER      INDSAU
+      ENDSEGMENT
+'.
+	self parse: code rule: #segment
 ]
 
 { #category : #tests }
