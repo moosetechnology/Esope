@@ -22,23 +22,6 @@ IASTVarEso class >> realName [
 ]
 
 { #category : #accessing }
-IASTVarEso >> addEntities: aCollection [
-
-	aCollection asCollection do: [ :element |
-		(element class = IASTVarAccess and: [ element isAssigned not ]) ifTrue: [ 
-			self entities add: element ] ]
-]
-
-{ #category : #accessing }
-IASTVarEso >> addRefsEntities: aCollection [
-
-	aCollection do: [ :element |
-		(element class = IASTVarAccess or: [ 
-			 element class inheritsFrom: IASTVarEso ]) ifTrue: [ 
-			self entities add: element ] ]
-]
-
-{ #category : #accessing }
 IASTVarEso >> arguments: aCollection [
 
 	self entities: aCollection
