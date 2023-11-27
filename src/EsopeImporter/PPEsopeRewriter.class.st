@@ -25,10 +25,22 @@ PPEsopeRewriter >> applyTransformation: inputSource [
 	^ self dotTransformation: (self slashTransformation: inputSource)
 ]
 
+{ #category : #rules }
+PPEsopeRewriter >> canBeProcessed: aText [
+	 ^('Cc*' includes: aText first) or: [ self contains: aText keyword: 'FORMAT']
+]
+
 { #category : #annotations }
 PPEsopeRewriter >> commentAnnotation [
 
 	^ 'c@_   '
+]
+
+{ #category : #utilities }
+PPEsopeRewriter >> contains: text keyword: word [
+
+	^ (text asString asUppercase indexOfSubCollection: word asUppercase)
+	  ~= 0
 ]
 
 { #category : #utilities }
@@ -65,7 +77,7 @@ PPEsopeRewriter >> dotTransformation: inputSource [
 	^ String new writeStreamDo: [ :outputStream | 
 		  | regex index |
 		  index := 1.
-		  regex := '([a-zA-Z][a-zA-Z0-9_]*)(\.)([a-zA-Z][a-zA-Z0-9_]*)((\([^)]+\))*)'
+		  regex := '([a-zA-Z][a-zA-Z0-9_]*)(\.)([a-zA-Z][a-zA-Z0-9_]*)\s?((\([^)]+\))*)'
 			           asRegexIgnoringCase.
 		  (regex matchingRangesIn: inputSource) do: [ :interval | 
 			  | subText indexOfDot |
@@ -111,19 +123,18 @@ PPEsopeRewriter >> endSegment [
 
 { #category : #rules }
 PPEsopeRewriter >> fortranLine [
-
 	"'Cc*' indicates that a line is a comment. So we check that the first letter of the line starts with one of these characters"
 
 	"endOfLine negate star flatten , endOfLine"
 
-	^ super fortranLine ==> [ :nodes | 
-	  | line |
-	  line := '' writeStreamDo: [ :str | 
-		          nodes do: [ :node | str << node value ].
-		          str contents ].
-	  ('Cc*' includes: line first)
-		  ifTrue: [ stream << line ]
-		  ifFalse: [ stream << (self applyTransformation: line) ] ]
+	^ super fortranLine ==> [ :nodes |  | line |
+	  line := self sanitize: nodes first.
+	  stream
+		  << ((self canBeProcessed: line)
+				   ifTrue:  [ line ]
+				   ifFalse: [ self applyTransformation: line ]);
+		  << nodes allButFirst 
+	]
 ]
 
 { #category : #utilities }
@@ -225,7 +236,8 @@ PPEsopeRewriter >> processLinesInsideSegment: anOrderedCollection [
 		self addLineSeparator"""
 
 	anOrderedCollection do: [ :line | "option1"
-		(self containsPointeurKeyword: line) ifTrue: [ line at: 1 put: self commentAnnotation ].
+		line at: 1 put: (self sanitize: line first).
+		(self contains: line keyword: 'pointeur') ifTrue: [ line at: 1 put: self commentAnnotation ].
 		line do: [ :part | part ifNotNil: [ stream << part value ] ] ]
 ]
 
@@ -237,16 +249,27 @@ PPEsopeRewriter >> processNodes: nodes [
 ]
 
 { #category : #utilities }
+PPEsopeRewriter >> replaceCrByLf: aText [
+	^ aText
+		copyReplaceAll: String cr
+		with: String lf
+]
+
+{ #category : #utilities }
 PPEsopeRewriter >> rewriteFrom: esopeFile to: annotatedFile [
 
+	| code |
 	self parse: esopeFile contents.
+	code := self replaceCrByLf: self generatedCode.
+	
+	annotatedFile writeStreamDo: [ :fileStream |  fileStream << code ]
+]
 
-	annotatedFile writeStreamDo: [ :fileStream | 
-		fileStream truncate.
-		fileStream << (stream contents
-			 replaceAll: Character cr
-			 with: Character lf)
-	]
+{ #category : #utilities }
+PPEsopeRewriter >> sanitize: aString [
+	^Character tab = aString first 
+		ifTrue:  [  '        ' , aString allButFirst ]
+		ifFalse: [ aString   ]
 ]
 
 { #category : #rules }
@@ -330,7 +353,7 @@ PPEsopeRewriter >> slashTransformation: inputSource [
 	^ String new writeStreamDo: [ :outputStream | 
 		  | regex index |
 		  index := 1.
-		  regex := '(([a-zA-Z][a-zA-Z0-9_]*)(\.))*([a-zA-Z][a-zA-Z0-9_]*)(\(\/[^)]+\))'
+		  regex := '(([a-zA-Z][a-zA-Z0-9_]*)(\.))*([a-zA-Z][a-zA-Z0-9_]*)\s?(\(\/[^)]+\))'
 			           asRegexIgnoringCase.
 		  (regex matchingRangesIn: inputSource) do: [ :interval | 
 			  | subText indexOfDot |
@@ -362,9 +385,9 @@ PPEsopeRewriter >> slashTransformation: inputSource [
 						              dotPartStream contents ] ].
 				  outputStream
 					  << self slashAnnotation;
-					  << attrPart;
+					  << attrPart trim;
 					  << $,;
-					  << dimsPart;
+					  << dimsPart trim;
 					  << $).
 				  index := interval last + 1 ] ].
 		  outputStream << (inputSource copyFrom: index to: inputSource size).

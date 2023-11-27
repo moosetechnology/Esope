@@ -36,7 +36,8 @@ Class {
 		'pointerKeyWord',
 		'endSegment',
 		'segment',
-		'segprt'
+		'segprt',
+		'commentLine'
 	],
 	#category : #'EsopeImporter-Rewriter'
 }
@@ -49,7 +50,15 @@ PPEsopeGrammar class >> getSourceFromFile: filename [
 { #category : #tokens }
 PPEsopeGrammar >> beginOfLine [
 
-	^ '      ' asPParser flatten
+	^( '      ' asPParser / Character tab asPParser) flatten
+]
+
+{ #category : #grammar }
+PPEsopeGrammar >> commentLine [
+	^((self terminal: 'C') / (self terminal: '*')) flatten
+	, endOfLine negate plus flatten
+	, endOfLine
+	
 ]
 
 { #category : #tokens }
@@ -138,6 +147,7 @@ PPEsopeGrammar >> lines [
 PPEsopeGrammar >> notEndLine [
 
 	^ beginOfLine 
+	 , optionalBlanks
 	  , (self terminal: 'end') not 
 	  , endOfLine negate plus flatten
 	  , endOfLine
@@ -152,8 +162,20 @@ PPEsopeGrammar >> optionalBlanks [
 { #category : #grammar }
 PPEsopeGrammar >> pointer [
 
-	^ beginOfLine , optionalBlanks , pointerKeyWord
-	  , optionalBlanks , pointerName , optionalBlanks , endOfLine
+	"^ beginOfLine
+	, optionalBlanks 
+	, pointerKeyWord
+	, optionalBlanks
+	, pointerName
+	, optionalBlanks
+	, endOfLine"
+	
+	^beginOfLine
+	, optionalBlanks
+	, pointerKeyWord
+	, optionalBlanks
+	, endOfLine negate plus flatten
+	, endOfLine
 ]
 
 { #category : #tokens }
@@ -202,7 +224,7 @@ PPEsopeGrammar >> segini [
 PPEsopeGrammar >> segment [
 
 	^ (self esopeLine: 'segment') 
-	, lines 
+	, (commentLine / notEndLine ) star
 	, endSegment
 ]
 

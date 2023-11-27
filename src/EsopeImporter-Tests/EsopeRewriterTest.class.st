@@ -112,6 +112,29 @@ EsopeRewriterTest >> testFortranLineNoEsoAt [
 '
 ]
 
+{ #category : #'tests-todo' }
+EsopeRewriterTest >> testFortranLineStartWithTab [
+	| sourcecode |
+	sourcecode := String tab , '   call procedure
+'.
+	self parse: sourcecode rule: #fortranLine.
+
+	self assert: parser generatedCode equals: '           call procedure
+'
+]
+
+{ #category : #tests }
+EsopeRewriterTest >> testNoTranslateFormat [
+
+	| sourcecode |
+	sourcecode := ' 6000    FORMAT(/,1X,''text'',A)', String lf.
+
+	self parse: sourcecode rule: #fortranLine.
+	self
+		assert: parser generatedCode
+		equals:  sourcecode 
+]
+
 { #category : #tests }
 EsopeRewriterTest >> testPointer [
 
@@ -129,6 +152,16 @@ EsopeRewriterTest >> testPointerWithSpaces [
 	sourcecode := '   pointeur t1.mytab    
 '.
 	self parse: '      ' , sourcecode rule: #pointer.
+	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
+]
+
+{ #category : #tests }
+EsopeRewriterTest >> testPointers [
+
+	| sourcecode |
+	sourcecode := 'pointeur splist.list,p.q,r.s
+'.
+	self parse: sixSpaces , sourcecode rule: #pointer.
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
@@ -238,7 +271,27 @@ c@_   endsegment
 	self assert: parser generatedCode equals: finalcode
 ]
 
-{ #category : #'tests-cannotation' }
+{ #category : #'tests-todo' }
+EsopeRewriterTest >> testSegmentArcopySaphtool [
+	| actualSource expectedSource |
+	self skip.
+	self flag: #TODO. 
+
+	actualSource := '      SEGMENT TEMPNO
+*: comment
+         INTEGER      INDSAU
+      ENDSEGMENT
+'.
+	expectedSource := 'c@_   SEGMENT TEMPNO
+*: comment
+         INTEGER      INDSAU
+c@_   ENDSEGMENT
+'.
+	self parse: actualSource rule: #segment.
+	self assert: parser generatedCode equals: expectedSource.
+]
+
+{ #category : #'tests-todo' }
 EsopeRewriterTest >> testSegmentSimpleWithMoreThanSixSpaces [
 	| actualSource expectedSource |
 	self skip.
@@ -305,7 +358,7 @@ EsopeRewriterTest >> testTranslateEsopeArrayAsFunctionStatement [
 		equals: 'D__(ur,ubb(jr)) = D__(ur,ubb(jr + 1))'
 ]
 
-{ #category : #tests }
+{ #category : #'tests-todo' }
 EsopeRewriterTest >> testTranslateEsopeArrayDotInsidePar [
 
 	self skip.
@@ -387,6 +440,54 @@ EsopeRewriterTest >> testTranslateEsopeAtTwoDots [
 		equals: 'D__(abc,def)=D__(opq,xyz)'
 ]
 
+{ #category : #'tests-todo' }
+EsopeRewriterTest >> testTranslateEsopeIFLogical [
+
+	| sourcecode |
+	self skip.
+	
+	sourcecode := 'if(e) segadj, p
+'.
+	self parse: sixSpaces , sourcecode rule: #segact.
+	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
+]
+
+{ #category : #tests }
+EsopeRewriterTest >> testTranslateEsopeNotDot [
+
+	self skip.
+
+	self
+		assert: (parser applyTransformation: '      A=.NOT.B ')
+		equals: '      A=.NOT.B '
+]
+
+{ #category : #'tests-todo' }
+EsopeRewriterTest >> testTranslateEsopeSlash10 [
+
+	| sourcecode |
+	self skip.
+
+	sourcecode := sixSpaces , '   A = B ( /1 )
+'.
+	self parse: sourcecode rule: #fortranLine.
+	self assert: parser generatedCode equals: sixSpaces , '   A = S__(B,1)
+'
+]
+
+{ #category : #'tests-todo' }
+EsopeRewriterTest >> testTranslateEsopeSlash20 [
+
+	| sourcecode |
+	self skip.
+
+	sourcecode := sixSpaces , '   A = B ( /1 )
+'.
+	self parse: sourcecode rule: #fortranLine.
+	self assert: parser generatedCode equals: sixSpaces , '   A = S__(B,1)
+'
+]
+
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeSlashEsopeAt [
 
@@ -418,4 +519,12 @@ EsopeRewriterTest >> testTranslateEsopeSlashSlash [
 		assert: (parser slashTransformation:
 				 'C     //fin repeter "decouper chaque chaine"')
 		equals: 'C     //fin repeter "decouper chaque chaine"'
+]
+
+{ #category : #tests }
+EsopeRewriterTest >> testTranslateEsopeSlashWithSpacesBeforeLeftPar [
+
+	self
+		assert: (parser slashTransformation: 'tab (/1)')
+		equals: 'S__(tab,1)'
 ]
