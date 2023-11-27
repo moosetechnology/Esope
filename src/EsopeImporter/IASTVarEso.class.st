@@ -56,12 +56,11 @@ IASTVarEso >> entities: anObject [
 	entities := anObject
 ]
 
-{ #category : #accessing }
+{ #category : #initialization }
 IASTVarEso >> initialize [
-
 	super initialize.
 
-	entities := OrderedCollection new.
+	entities := OrderedCollection new
 ]
 
 { #category : #testing }
