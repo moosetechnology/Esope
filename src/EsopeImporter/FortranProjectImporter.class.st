@@ -46,7 +46,12 @@ FortranProjectImporter >> astFolder [
 FortranProjectImporter >> copyEsopeFiles [
 
 	self ensureEmptyFolder: self esopeFolder.
+	self copyFilesIn: self srcFolder with: '*.ec'.
 	self copyFilesIn: self srcFolder with: '*.E'.
+	self copyFilesIn: self srcFolder with: '*.fc'.
+	self copyFilesIn: self srcFolder with: '*.F'.
+	self copyFilesIn: self srcFolder with: '*.c'.
+	self copyFilesIn: self srcFolder with: '*.cxx'.
 	self copyFilesIn: self srcFolder with: '*.inc'
 ]
 
@@ -93,7 +98,8 @@ FortranProjectImporter >> esopeToFortran [
 	self ensureEmptyFolder: self fortranFolder.
 
 	"self esopeFolder asFileReference allFiles"
-	(self esopeFolder asFileReference allChildrenMatching: '*.E') do: [
+	( (self esopeFolder asFileReference allChildrenMatching: '*.ec') 
+	, (self esopeFolder asFileReference allChildrenMatching: '*.e'))  do: [
 		:esopeFile |
 		| fortranFile |
 		fortranFile := self
@@ -106,7 +112,7 @@ FortranProjectImporter >> esopeToFortran [
 { #category : #accessing }
 FortranProjectImporter >> f77parser [
 
-	^ 'fortran-src-extras serialize -t json -v77l encode'
+	^ 'fortran-src-extras serialize -tjson -v77e encode '
 ]
 
 { #category : #'private - import' }
@@ -134,7 +140,7 @@ FortranProjectImporter >> fortran: fortranFile toJsonASTFolder: astFolder [
 		            fileReference: fortranFile withoutExtension
 		            into: astFolder.
 
-	^ LibC runCommand: ('{1} "{2}" > "{3}.json" 2> "{3}.err"' format: {
+	^ LibC runCommand: ('{1} "{2}" > "{3}.json" 2>&1' format: {
 				   self f77parser.
 				   fortranFile pathString.
 				   jsonFile pathString })
