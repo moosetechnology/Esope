@@ -1028,7 +1028,7 @@ FortranAbstractJsonVisitor >> visitNot: aNotToOperatorNode [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitOp: anOpNode [
-	"should be a dictionnary with a 'tag' key and a string for value: 'multiplication', 'addition', ..."
+
 	^self visitJsonTaggedElement: anOpNode
 ]
 
