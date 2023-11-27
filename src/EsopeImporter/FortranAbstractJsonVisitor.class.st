@@ -124,6 +124,11 @@ FortranAbstractJsonVisitor >> visitAddition: anAdditionOperatorNode [
 	^'addition'
 ]
 
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitAnd: anAndOperatorNode [
+	^ '.and.'
+]
+
 { #category : #'visiting prog-unit' }
 FortranAbstractJsonVisitor >> visitArgument: anArgumentNode [
 	"used for argument in subprogram calls and parameter in subprogram definition
@@ -260,6 +265,11 @@ FortranAbstractJsonVisitor >> visitCommonStatement: aCommonStatementNode [
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitCommon_groups: aCommonGroupsNode [
 	^(aCommonGroupsNode at: 'list') collect: [ :each | self visitCommonGroup: each ]
+]
+
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitConcatenation: anConcatenationOperatorNode [
+	^ '//'
 ]
 
 { #category : #'visiting statement' }
@@ -494,6 +504,12 @@ FortranAbstractJsonVisitor >> visitFormatArgument: aFormatArgumentNode [
 	^self visitArgument: aFormatArgumentNode
 ]
 
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitFormatStatement: aFormatStatementNode [ 
+	^ { self visitSpan: (aFormatStatementNode at: 'span') .
+ 	 self visitJsonElement: (aFormatStatementNode at: 'format') }
+]
+
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitFortranComment: aFortranCommentNode [
 	"A real Fortran comment as opposed to a comment that contains an Esope command
@@ -584,6 +600,11 @@ FortranAbstractJsonVisitor >> visitGt: aGreaterthanOperatorNode [
 	^ '.gt.'
 ]
 
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitGte:  aGreatThanorEqualOperatorNode [ 
+	^'.ge.'
+]
+
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitIf: anIfNode [
 	"The THEN-Part is in 'conditions', the ELSE-PART in 'blocks', if no ELSE-PART, then 'blocks' is nil'
@@ -613,6 +634,15 @@ FortranAbstractJsonVisitor >> visitImplicitStatement: anImplicitStatementNode [
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitImplicitStatementRange: anImplicitStatementRangeNode [
 	^self visitJsonMap: anImplicitStatementRangeNode keys: #(span from to)
+]
+
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitImplied_do:  anImpliedDoListsNode [ 
+	^{
+		self visitSpan: (anImpliedDoListsNode at: 'span') .
+		self visitJsonElement: (anImpliedDoListsNode at: 'do_spec') .
+		self visitJsonElement: (anImpliedDoListsNode at: 'expressions') 
+	   }
 ]
 
 { #category : #'visiting statement' }
@@ -803,6 +833,11 @@ FortranAbstractJsonVisitor >> visitLt: aLessthanOperatorNode [
 	^ '.lt.'
 ]
 
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitLte:  aLessThanorEqualOperatorNode [ 
+	^'.le.'
+]
+
 { #category : #'visiting prog-unit' }
 FortranAbstractJsonVisitor >> visitMain: aMainProgramNode [
 	^self visitJsonMap: aMainProgramNode keys: #(span name blocks subprograms)
@@ -869,6 +904,19 @@ FortranAbstractJsonVisitor >> visitOp: anOpNode [
 	^self visitJsonTaggedElement: anOpNode
 ]
 
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitOr: anOrOperatorNode [
+	^ '.or.'
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitParameterStatement:  aParameterStatementNode [ 
+	^{
+		self visitSpan: (aParameterStatementNode at: 'span') .
+		self visitJsonElement: (aParameterStatementNode at: 'declarators')
+	}
+]
+
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitPrintFormat: aPrintFormatNode [
 
@@ -893,6 +941,23 @@ FortranAbstractJsonVisitor >> visitProgramFile: aProgramFileNode [
 { #category : #'visiting prog-unit' }
 FortranAbstractJsonVisitor >> visitProgram_units: aNode [
 	^self visitJsonArray: aNode
+]
+
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitRange: aRangeNode [
+	^{ self visitSpan: (aRangeNode at: 'span') .
+ 	 self visitJsonElement: (aRangeNode at: 'lower') .
+ 	 self visitJsonElement: (aRangeNode at: 'upper') .
+ 	 self visitJsonElement: (aRangeNode at: 'stride')  }
+]
+
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitReadStatement: aReadStatementNode [
+	^ {
+		  (self visitSpan: (aReadStatementNode at: 'span')) .
+		  (self visitJsonElement: (aReadStatementNode at: 'format')) .
+		  (self visitJsonElement: (aReadStatementNode at: 'arguments'))
+		}
 ]
 
 { #category : #'visiting expression' }

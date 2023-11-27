@@ -375,18 +375,21 @@ JsonToIASTVisitor >> visitFunctionParameters: aParameterList [
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitFunctionStatement: aFunctionNode [
 	"for now assuming this is an ESOat/ar/sl function"
-	| data esoFct |
+	| data fct fctName |
 	data := super visitFunctionStatement: aFunctionNode.
 	
-	esoFct := (IASTVarEso newFrom: data second entityName)
-		sourceAnchor: (self makeIndexedAnchor: data first) ;
-		isWrite: true ;
-		entities: (data third reject: #isNil) ;
-		yourself.
+	fctName := data second entityName.
+	fct := (self isSpecialEsopeFunctionName: fctName)
+		ifTrue: [ IASTVarEso newFrom: fctName ]
+		ifFalse: 	[ IASTStFunction new  ].
+
+	fct sourceAnchor: (self makeIndexedAnchor: data first).
+	fct	isWrite: true.
+	fct	entities: (data third reject: #isNil).
 
 	^data fourth
-		ifNil: [ { esoFct } ]
-		ifNotNil: [ { esoFct . data fourth } ]
+		ifNil: [ { fct } ]
+		ifNotNil: [ { fct . data fourth } ]
 ]
 
 { #category : #'visiting prog-unit' }
