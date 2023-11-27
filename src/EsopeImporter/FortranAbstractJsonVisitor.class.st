@@ -865,7 +865,7 @@ FortranAbstractJsonVisitor >> visitKey: key value: aNode [
 { #category : #visiting }
 FortranAbstractJsonVisitor >> visitKind: aKindNode [
 
-	^self visitJsonMap: aKindNode
+	^self visitJsonElement: aKindNode
 ]
 
 { #category : #'visiting statement' }
