@@ -415,7 +415,7 @@ FortranAbstractJsonVisitor >> visitDivision: aDivisionOperatorNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitDo: aDoNode [
-	^self visitJsonMap: aDoNode keys: #(span do_spec body)
+	^self visitJsonMap: aDoNode keys: #(span do_spec target body end_label)
 ]
 
 { #category : #'visiting statement' }
@@ -427,6 +427,11 @@ FortranAbstractJsonVisitor >> visitDo_spec: aDoSpecNode [
 FortranAbstractJsonVisitor >> visitElements: anImplicitElementsNode [
 	^(anImplicitElementsNode at: 'list')
 		collect: [ :each | self visitImplicitStatementRange: each ]
+]
+
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitEnd_label: aValueNode [
+	^self visitJsonElement: aValueNode
 ]
 
 { #category : #'visiting statement' }

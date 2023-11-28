@@ -233,9 +233,11 @@ JsonToIASTVisitor >> visitDeclarators: aDeclaratorsList [
 
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitDo: aDoNode [
+	"#(span do_spec target body end_label)"
+
 	| data |
 	data := (super visitDo: aDoNode).
-	^data second , data third
+	^data second , data fourth
 	 
 ]
 
