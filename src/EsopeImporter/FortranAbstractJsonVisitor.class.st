@@ -687,6 +687,12 @@ FortranAbstractJsonVisitor >> visitGotoStatement: aGotoStatementNode [
 ]
 
 { #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitGoto_computedStatement: aGotoComputedStatementNode [
+
+	^self visitJsonMap: aGotoComputedStatementNode keys:  #(span labels target)
+]
+
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitGreaterLabel: aLabelReference [
 	^self visitLabelReference: aLabelReference
 ]
@@ -895,6 +901,12 @@ FortranAbstractJsonVisitor >> visitLabel: aLabelNode [
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitLabelReference: aLabelReference [
 	^self visitJsonElement: aLabelReference 
+]
+
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitLabels: aLabelCollection [ 
+
+	^(aLabelCollection at: 'list') collect: [ :each | self visitLabel: each]
 ]
 
 { #category : #'visiting expression' }
