@@ -1085,7 +1085,7 @@ FortranAbstractJsonVisitor >> visitOr: anOrOperatorNode [
 	^ '.or.'
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitParameterStatement: aParameterStatementNode [ 
 	^self visitJsonMap: aParameterStatementNode keys: #(span declarators)
 ]
@@ -1129,7 +1129,7 @@ FortranAbstractJsonVisitor >> visitRange: aRangeNode [
  	 self visitJsonElement: (aRangeNode at: 'stride')  }
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitReadStatement: aReadStatementNode [
 	^ {
 		  (self visitSpan: (aReadStatementNode at: 'span')) .
