@@ -163,13 +163,14 @@ FortranProjectImporter >> fortranToJsonAST [
 { #category : #run }
 FortranProjectImporter >> getFASTFor: sourceCode [
 
+	"Remove TAB at state of lines ???? "
+
 	| fastSrcFile |
 	fastSrcFile := self defaultFASTSource.
-	fastSrcFile writeStreamDo: [:st |
-		st truncate.
-		st
-			<< sourceCode ;
-			cr
+	fastSrcFile writeStreamDo: [:stream |
+		stream truncate.
+		self preprocess: sourceCode to: stream.
+		stream cr
 	].
 	
 	self fortran: fastSrcFile toJsonASTFolder: self fastSrcFolder.
@@ -257,6 +258,22 @@ FortranProjectImporter >> jsonASTToIAST [
 		collect: [ :jsonFile | 
 			visitor visitProgramFile: (NeoJSONReader fromString: jsonFile contents) ].
 
+]
+
+{ #category : #run }
+FortranProjectImporter >> preprocess: sourceCode to: stream [
+
+	| lineStart |
+	lineStart := true.
+
+	sourceCode do: [ :c |
+		(lineStart and: [ c = Character tab ])
+			ifTrue: [ stream << '        ' ]
+			ifFalse: [ (c = Character cr)
+				ifTrue: [ stream lf ]
+				ifFalse: [ stream << c ] ].
+		lineStart := ({Character cr . Character lf} includes: c)
+	]
 ]
 
 { #category : #accessing }
