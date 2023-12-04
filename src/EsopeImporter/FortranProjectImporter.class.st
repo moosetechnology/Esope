@@ -112,7 +112,7 @@ FortranProjectImporter >> esopeToFortran [
 { #category : #accessing }
 FortranProjectImporter >> f77parser [
 
-	^ 'fortran-src-extras serialize -tjson -v77e encode '
+	^ 'fortran-src-extras serialize -t json -v77l encode '
 ]
 
 { #category : #'private - import' }
