@@ -162,10 +162,7 @@ PPEsopeGrammar >> segini [
 
 { #category : #grammar }
 PPEsopeGrammar >> segment [
-
-	^ (self esopeLine: 'segment') 
-	, (commentLine / notEndLine ) star
-	, endSegment
+	^self esopeLine: 'segment'
 ]
 
 { #category : #grammar }

@@ -301,22 +301,10 @@ PPEsopeRewriter >> segini [
 { #category : #rules }
 PPEsopeRewriter >> segment [
 
-	"(self esopeLine: 'segment') , lines , beginOfLine , optionalBlanks
-	  , endToken , optionalBlanks , segmentToken , optionalBlanks
-	  , endOfLine"
+	"self esopeLine: 'segment'"
 
-	" #processLinesInsideSegment 
-	There are several ways of handling the components of a segment:
-	- let a fortran77 parser handle them for us at this stage. this means not annotating them and having to process them later when parsing the AST obtained by the fortran77 parser.
-	- modify our grammars to handle the components correctly
-	- Annotate them, and be a master of regular expressions during ESOPE comment processing."
-
-	^ super segment ==> [ :nodes |
-	  stream << self commentAnnotation.
-	  self copyTokens: nodes from: 2 to: 6.
-	  self processLinesInsideSegment: (nodes at: 7).
-	  stream << self commentAnnotation.
-	  self copyTokens: nodes eighth from: 1 to: nodes eighth size ]
+	^ super segment
+	==> [ :nodes | self processNodes: nodes ]
 ]
 
 { #category : #rules }
