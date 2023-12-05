@@ -21,6 +21,28 @@ EsopeRewriterTest >> setUp [
 ]
 
 { #category : #tests }
+EsopeRewriterTest >> testCommentLine [
+
+	| sourcecode |
+	sourcecode := 'c       subroutine test(/brr)
+'.
+	self parse: sourcecode rule: #commentLine.
+
+	self assert: parser generatedCode equals: sourcecode
+]
+
+{ #category : #tests }
+EsopeRewriterTest >> testCommentLineWithStar [
+
+	| sourcecode |
+	sourcecode := '*: end of nothing
+'.
+	self parse: sourcecode rule: #commentLine.
+
+	self assert: parser generatedCode equals: sourcecode
+]
+
+{ #category : #tests }
 EsopeRewriterTest >> testEsoArImplicit [
 
 	self assert: (parser applyTransformation: 'a(b)') equals: 'a(b)'
@@ -28,23 +50,22 @@ EsopeRewriterTest >> testEsoArImplicit [
 
 { #category : #tests }
 EsopeRewriterTest >> testEsoSlImplicit [
-
-	self assert: (parser applyTransformation: 'a(/b)') equals: 'S__(a,b)'
+	| code |
+	code := String tab , 'a(/b)', String lf.
+	
+	self parse: code rule: #fortranLine.
+	self assert: parser generatedCode equals: '        a(S__/b)', String lf.
 ]
 
 { #category : #'tests-transformation' }
 EsopeRewriterTest >> testEsopeDotTransformationInsideInvocationOrArraySubscript [
 
 	| actualSource expectedSource |
-	self skip.
-	self flag: #TODO. "The regex we're using treats everything inside the outer parentheses as an index and therefore doesn't apply a transformation to it.
-	So it won't work for examples like this. 
-	Make sure you test (#testEsopeTransformationInsideInvocationOrArraySubscript) and add other situations to cover special cases that may arise."
 
-	actualSource := '      bk = lb.bref(ur.ubb(ibor))'.
-	expectedSource := '      bk = D__(lb,bref(D__(ur,ubb(ibor))))'.
+	actualSource := '      bk = lb.bref(/ur.ubb(/ibor))'.
+	expectedSource := '      bk = lb.bref(S__/ur.ubb(S__/ibor))'.
 	self
-		assert: (parser applyTransformation: actualSource)
+		assert: (parser applySlashTransformation: actualSource)
 		equals: expectedSource
 ]
 
@@ -52,13 +73,9 @@ EsopeRewriterTest >> testEsopeDotTransformationInsideInvocationOrArraySubscript 
 EsopeRewriterTest >> testEsopeSlashTransformationInsideInvocationOrArraySubscript [
 
 	| actualSource expectedSource |
-	self skip.
-	self flag: #TODO. "The regex we're using treats everything inside the outer parentheses as an index and therefore doesn't apply a transformation to it.
-	So it won't work for examples like this. 
-	Make sure you test (#testEsopeTransformationInsideInvocationOrArraySubscript) and add other situations to cover special cases that may arise."
 
 	actualSource := '      bk = lb.bref(ur.ubb(/ibor))'.
-	expectedSource := '      bk = D__(lb,bref(S__(D__(ur,ubb),ibor)))'.
+	expectedSource := '      bk = lb.bref(ur.ubb(S__/ibor))'.
 	self
 		assert: (parser applyTransformation: actualSource)
 		equals: expectedSource
@@ -70,7 +87,7 @@ EsopeRewriterTest >> testFortranLine [
 	| sourcecode |
 	sourcecode := sixSpaces , 'subroutine test(brr)
 '.
-	self parse: sourcecode rule: #fortranLine.
+	self parse: sourcecode rule: #anyLine.
 
 	self assert: parser generatedCode equals: sourcecode
 ]
@@ -78,23 +95,15 @@ EsopeRewriterTest >> testFortranLine [
 { #category : #tests }
 EsopeRewriterTest >> testFortranLineEsoAt [
 
-	self
-		parse: sixSpaces , 'rlist.ilist=0
-'
-		rule: #fortranLine.
-	self assert: parser generatedCode equals: '      D__(rlist,ilist)=0
-'
+	self parse: sixSpaces , 'rlist.ilist=0', String lf rule: #fortranLine.
+	self assert: parser generatedCode equals: sixSpaces , 'rlist.ilist=0', String lf.
 ]
 
 { #category : #tests }
 EsopeRewriterTest >> testFortranLineEsoSlash [
 
-	self
-		parse: '        lxs=xs.cstg(/1)
-'
-		rule: #fortranLine.
-	self assert: parser generatedCode equals: '        lxs=S__(D__(xs,cstg),1)
-'
+	self parse: '        lxs=xs.cstg(/1)', String lf rule: #fortranLine.
+	self assert: parser generatedCode equals: '        lxs=xs.cstg(S__/1)', String lf
 ]
 
 { #category : #tests }
@@ -115,12 +124,10 @@ EsopeRewriterTest >> testFortranLineNoEsoAt [
 { #category : #'tests-todo' }
 EsopeRewriterTest >> testFortranLineStartWithTab [
 	| sourcecode |
-	sourcecode := String tab , '   call procedure
-'.
-	self parse: sourcecode rule: #fortranLine.
+	sourcecode := String tab , '   call procedure', String lf.
 
-	self assert: parser generatedCode equals: '           call procedure
-'
+	self parse: sourcecode rule: #fortranLine.
+	self assert: parser generatedCode equals: '           call procedure', String lf.
 ]
 
 { #category : #tests }
@@ -209,7 +216,7 @@ EsopeRewriterTest >> testSegdefFromBorbk [
         integer     ibseg, ibref,        pntseg(nbseg), pntref(nbref)
 c@_   endsegment
 '.
-	self parse: inputCode rule: #segment.
+	self parse: inputCode.
 	self assert: parser generatedCode equals: rewriterdCode
 ]
 
@@ -227,7 +234,7 @@ EsopeRewriterTest >> testSegdefUpperCase [
         integer     ibseg, ibref,        pntseg(nbseg), pntref(nbref)
 c@_   endsegment
 '.
-	self parse: inputCode rule: #segment.
+	self parse: inputCode.
 	self assert: parser generatedCode equals: rewriterdCode
 ]
 
@@ -256,16 +263,8 @@ EsopeRewriterTest >> testSegment [
 
 	| finalcode sourcecode |
 	sourcecode := '      segment,values
-        character*8        valtyp
-        real               valf(valnf)
-        integer            vale(valne)
-      endsegment
 '.
 	finalcode := 'c@_   segment,values
-        character*8        valtyp
-        real               valf(valnf)
-        integer            vale(valne)
-c@_   endsegment
 '.
 	self parse: sourcecode rule: #segment.
 	self assert: parser generatedCode equals: finalcode
@@ -274,8 +273,6 @@ c@_   endsegment
 { #category : #'tests-todo' }
 EsopeRewriterTest >> testSegmentArcopySaphtool [
 	| actualSource expectedSource |
-	self skip.
-	self flag: #TODO. 
 
 	actualSource := '      SEGMENT TEMPNO
 *: comment
@@ -287,31 +284,26 @@ EsopeRewriterTest >> testSegmentArcopySaphtool [
          INTEGER      INDSAU
 c@_   ENDSEGMENT
 '.
-	self parse: actualSource rule: #segment.
+	self parse: actualSource rule: #start.
 	self assert: parser generatedCode equals: expectedSource.
 ]
 
 { #category : #'tests-todo' }
 EsopeRewriterTest >> testSegmentSimpleWithMoreThanSixSpaces [
 	| actualSource expectedSource |
-	self skip.
-	self flag: #TODO. 
-	"When we have more than sixSpace, the test for segment fails:
-	- it seems related to end of the segment definition
-	- 
-	"
+
 	actualSource := '       segment, user
         character*40 uname
         integer ubb(ubbcnt)
-       end segment
+        end segment
 '.
 	expectedSource := 'c@_    segment, user
         character*40 uname
         integer ubb(ubbcnt)
-c@_   end segment
+c@_     end segment
 '.
-	self parse: actualSource rule: #segment.
-	self assert: parser output equals: expectedSource.
+	self parse: actualSource.
+	self assert: parser generatedCode equals: expectedSource.
 ]
 
 { #category : #tests }
@@ -337,78 +329,81 @@ EsopeRewriterTest >> testSegsup [
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeArray [
 
-	self
-		assert: (parser applyTransformation: 'ab.cd(ef)')
-		equals: 'D__(ab,cd(ef))'
+	
+	self parse: sixSpaces, 'ab.cd(ef)', String lf rule: #fortranLine.
+	
+	self assert: parser generatedCode equals: sixSpaces , 'ab.cd(ef)', String lf
 ]
 
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeArrayAndEsopeAtWithExpressionAsSubscript [
 
 	self
-		assert: (parser applyTransformation: 'ur.ubb(jr + 1)')
-		equals: 'D__(ur,ubb(jr + 1))'
+		assert: (parser applySlashTransformation: 'ur.ubb(/jr + 1)')
+		equals: 'ur.ubb(S__/jr + 1)'
 ]
 
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeArrayAsFunctionStatement [
 
 	self
-		assert: (parser applyTransformation: 'ur.ubb(jr) = ur.ubb(jr + 1)')
-		equals: 'D__(ur,ubb(jr)) = D__(ur,ubb(jr + 1))'
+		assert: (parser applySlashTransformation: 'ur.ubb(//jr) = ur.ubb(/jr + 1)')
+		equals: 'ur.ubb(//jr) = ur.ubb(S__/jr + 1)'
 ]
 
 { #category : #'tests-todo' }
 EsopeRewriterTest >> testTranslateEsopeArrayDotInsidePar [
 
-	self skip.
+	| code |
+
+	code := sixSpaces, 'rlist.elist(rlist.ilist)=ms', String lf.
+	self parse: code rule: #fortranLine.
 	self
-		assert: (parser applyTransformation: 'rlist.elist(rlist.ilist)=ms')
-		equals: 'D__(rlist,elist(D__(rlist,ilist)))=ms'
+		assert: parser generatedCode equals: code
 ]
 
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeArrayNew [
 
 	self
-		assert: (parser applyTransformation: 'ab.cd')
-		equals: 'D__(ab,cd)'
+		assert: (parser applySlashTransformation: 'ab.cd')
+		equals: 'ab.cd'
 ]
 
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeArrayNewWithSubscript [
 
 	self
-		assert: (parser applyTransformation: 'ab.cd(i, j+1)')
-		equals: 'D__(ab,cd(i, j+1))'
+		assert: (parser applySlashTransformation: 'ab.cd(i, j+1)')
+		equals: 'ab.cd(i, j+1)'
 ]
 
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeArrayRelbk [
 
 	self
-		assert: (parser applyTransformation: 'ur.ubb(jr) = ur.ubb(jr + 1)')
-		equals: 'D__(ur,ubb(jr)) = D__(ur,ubb(jr + 1))'
+		assert: (parser applySlashTransformation: 'ur.ubb(jr) = ur.ubb(jr + 1)')
+		equals: 'ur.ubb(jr) = ur.ubb(jr + 1)'
 ]
 
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeArrayWithExpression [
 
 	self
-		assert: (parser applyTransformation: 'ur.ubb(jr + 1)')
-		equals: 'D__(ur,ubb(jr + 1))'
+		assert: (parser applySlashTransformation: 'ur.ubb(/jr/1)')
+		equals: 'ur.ubb(S__/jr/1)'
 ]
 
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeAtBinaryOperator [
 
 	self
-		assert: (parser applyTransformation: '         if(lxs.eq.0)then')
+		assert: (parser applySlashTransformation: '         if(lxs.eq.0)then')
 		equals: '         if(lxs.eq.0)then'.
 	self
-		assert: (parser applyTransformation:
+		assert: (parser applySlashTransformation:
 				 '              if((rlist.ilist).gt.nlist)then')
-		equals: '              if((D__(rlist,ilist)).gt.nlist)then'
+		equals: '              if((rlist.ilist).gt.nlist)then'
 ]
 
 { #category : #tests }
@@ -428,37 +423,67 @@ EsopeRewriterTest >> testTranslateEsopeAtNoDot [
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeAtOneDot [
 	self
-		assert: (parser applyTransformation: 'abc.def')
-		equals: 'D__(abc,def)'
+		assert: (parser applySlashTransformation: 'abc.def')
+		equals: 'abc.def'
 ]
 
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeAtTwoDots [
 
 	self
-		assert: (parser applyTransformation: 'abc.def=opq.xyz')
-		equals: 'D__(abc,def)=D__(opq,xyz)'
+		assert: (parser applySlashTransformation: 'abc.def=opq.xyz')
+		equals: 'abc.def=opq.xyz'
 ]
 
 { #category : #'tests-todo' }
 EsopeRewriterTest >> testTranslateEsopeIFLogical [
 
 	| sourcecode |
-	self skip.
 	
 	sourcecode := 'if(e) segadj, p
 '.
-	self parse: sixSpaces , sourcecode rule: #segact.
+	self parse: sixSpaces , sourcecode rule: #fortranLine.
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
+]
+
+{ #category : #'tests-todo' }
+EsopeRewriterTest >> testTranslateEsopeIFLogicalWithLineContinuation [
+
+	| sourcecode |
+	self skip.
+	
+	sourcecode := 'if(e)
+     * segadj p
+'.
+	self parse: sixSpaces , sourcecode.
+	self assert: parser generatedCode equals: '      ' , sourcecode
+]
+
+{ #category : #'tests-todo' }
+EsopeRewriterTest >> testTranslateEsopeIFLogicalWithSlash [
+
+	| sourcecode |
+	self skip.
+	
+	sourcecode := 'if(e1(/e2)) segadj, p
+'.
+	self parse: sixSpaces , sourcecode rule: #fortranLine.
+	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
+]
+
+{ #category : #tests }
+EsopeRewriterTest >> testTranslateEsopeMultipleSlashes [
+
+	self parse: sixSpaces, 'abc.def(/def.xyz)=opq.xyz(/abc.def)', String lf rule: #fortranLine.
+	
+	self assert: parser generatedCode equals: sixSpaces, 'abc.def(S__/def.xyz)=opq.xyz(S__/abc.def)', String lf
 ]
 
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeNotDot [
 
-	self skip.
-
 	self
-		assert: (parser applyTransformation: '      A=.NOT.B ')
+		assert: (parser applySlashTransformation: '      A=.NOT.B ')
 		equals: '      A=.NOT.B '
 ]
 
@@ -468,32 +493,32 @@ EsopeRewriterTest >> testTranslateEsopeSlash10 [
 	| sourcecode |
 	self skip.
 
-	sourcecode := sixSpaces , '   A = B ( /1 )
-'.
+	sourcecode := sixSpaces , '   A = B ( /1 )' , String lf.
 	self parse: sourcecode rule: #fortranLine.
-	self assert: parser generatedCode equals: sixSpaces , '   A = S__(B,1)
-'
+	self assert: parser generatedCode equals: sixSpaces , '   A = B ( S__/1 )' , String lf
 ]
 
 { #category : #'tests-todo' }
 EsopeRewriterTest >> testTranslateEsopeSlash20 [
 
 	| sourcecode |
-	self skip.
 
-	sourcecode := sixSpaces , '   A = B ( /1 )
-'.
+	self skip.
+	
+	
+	sourcecode := sixSpaces , '   A = B ( /1 )', String lf.
 	self parse: sourcecode rule: #fortranLine.
-	self assert: parser generatedCode equals: sixSpaces , '   A = S__(B,1)
-'
+	self assert: parser generatedCode equals: sixSpaces , '   A = B ( S__/1 )', String lf
 ]
 
 { #category : #tests }
 EsopeRewriterTest >> testTranslateEsopeSlashEsopeAt [
 
+	self parse: sixSpaces, 'abc.def(/1)', String lf rule: #fortranLine.
+
 	self
-		assert: (parser applyTransformation: 'abc.def(/1)')
-		equals: 'S__(D__(abc,def),1)'
+		assert: parser generatedCode
+		equals: sixSpaces, 'abc.def(S__/1)', String lf
 ]
 
 { #category : #tests }
@@ -519,6 +544,18 @@ EsopeRewriterTest >> testTranslateEsopeSlashSlash [
 		assert: (parser slashTransformation:
 				 'C     //fin repeter "decouper chaque chaine"')
 		equals: 'C     //fin repeter "decouper chaque chaine"'
+]
+
+{ #category : #'tests-todo' }
+EsopeRewriterTest >> testTranslateEsopeSlashWithDotInsidePar [
+
+	| code |
+
+	code := 'rlist.elist(/rlist.ilist)=ms'.
+	self parse: sixSpaces , code , String lf rule: #fortranLine.
+	self
+		assert: parser generatedCode
+		equals: sixSpaces , 'rlist.elist(S__/rlist.ilist)=ms' , String lf
 ]
 
 { #category : #tests }
