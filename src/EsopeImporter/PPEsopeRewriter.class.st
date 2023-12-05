@@ -44,12 +44,6 @@ PPEsopeRewriter >> contains: text keyword: word [
 ]
 
 { #category : #utilities }
-PPEsopeRewriter >> containsPointeurKeyword: line [
-
-	^ (line asString indexOfSubCollection: #pointeur) ~= 0
-]
-
-{ #category : #utilities }
 PPEsopeRewriter >> copyLine: nodes from: start to: end [
 
 	start to: end do: [ :i | stream << (nodes at: i) value ]
