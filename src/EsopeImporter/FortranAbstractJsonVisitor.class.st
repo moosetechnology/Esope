@@ -1145,11 +1145,12 @@ FortranAbstractJsonVisitor >> visitRange: aRangeNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitReadStatement: aReadStatementNode [
-	^ {
-		  (self visitSpan: (aReadStatementNode at: 'span')) .
-		  (self visitJsonElement: (aReadStatementNode at: 'format')) .
-		  (self visitJsonElement: (aReadStatementNode at: 'arguments'))
-		}
+
+	^{
+		self visitSpan: (aReadStatementNode at: 'span') .
+		self visitIOParameters: (aReadStatementNode at: 'format') .
+		self visitArguments: (aReadStatementNode at: 'arguments')
+	}
 ]
 
 { #category : #'visiting expression' }
@@ -1364,10 +1365,10 @@ FortranAbstractJsonVisitor >> visitVars: anExternalStatementVarList [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitWriteStatement: aWriteStatementNode [
-	"format for WRITE and PRINT statements can be quite different, so we created
-	 two different visit rules"
 
-	^{ self visitSpan: (aWriteStatementNode at: 'span') .
-	 self visitIOParameters: (aWriteStatementNode at: 'format') .
-	 self visitArguments: (aWriteStatementNode at: 'arguments') }
+	^{
+		self visitSpan: (aWriteStatementNode at: 'span') .
+		self visitIOParameters: (aWriteStatementNode at: 'format') .
+		self visitArguments: (aWriteStatementNode at: 'arguments')
+	}
 ]
