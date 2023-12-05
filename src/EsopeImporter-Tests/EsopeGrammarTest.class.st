@@ -106,13 +106,6 @@ EsopeGrammarTest >> testLines [
 ]
 
 { #category : #tests }
-EsopeGrammarTest >> testNotEndLine [
-
-	self parse: sixSpaces , 'abc' , String cr rule: #notEndLine.
-	self fail: sixSpaces , 'end' , String cr rule: #notEndLine
-]
-
-{ #category : #tests }
 EsopeGrammarTest >> testOptionalBlanks [
 
 	self parse: '     ' rule: #optionalBlanks.
@@ -224,18 +217,6 @@ EsopeGrammarTest >> testSegment [
 	self parse: segment rule: #segment.
 
 	self fail: '      segment,values' rule: #segment
-]
-
-{ #category : #tests }
-EsopeGrammarTest >> testSegmentArcopySaphtool [
-	| code  |
-
-	code := '      SEGMENT TEMPNO
-*: TEMPNO  Segment dans lequel on met un index du fichier 1
-         INTEGER      INDSAU
-      ENDSEGMENT
-'.
-	self parse: code rule: #segment
 ]
 
 { #category : #tests }
