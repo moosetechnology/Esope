@@ -423,6 +423,8 @@ FortranAbstractJsonVisitor >> visitDo: aDoNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitDo_spec: aDoSpecNode [
+	"note: fortran-src inverted content of 'limit' and 'increment'"
+
 	^self visitJsonMap: aDoSpecNode keys: #(span initial limit increment)
 ]
 
