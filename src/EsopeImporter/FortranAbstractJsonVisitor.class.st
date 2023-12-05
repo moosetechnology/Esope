@@ -746,6 +746,20 @@ FortranAbstractJsonVisitor >> visitGte: anOperatorNode [
 ]
 
 { #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitIOParameter: anIOParameterNode [
+	^self visitJsonMap: anIOParameterNode keys: #(span name expr)
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitIOParameters: aWriteFormatNode [
+	^{
+		self visitSpan: (aWriteFormatNode at: 'span') .
+	 	(aWriteFormatNode at: 'list')
+			collect: [ :each | self visitIOParameter: each ]
+	}
+]
+
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitIf: anIfNode [
 	"The THEN-Part is in 'conditions', the ELSE-PART in 'blocks', if no ELSE-PART, then 'blocks' is nil'
 	 ignoring key: end_label"
@@ -1349,18 +1363,11 @@ FortranAbstractJsonVisitor >> visitVars: anExternalStatementVarList [
 ]
 
 { #category : #'visiting statement' }
-FortranAbstractJsonVisitor >> visitWriteFormat: aWriteFormatNode [
-	^{ self visitSpan: (aWriteFormatNode at: 'span') .
-	  (aWriteFormatNode at: 'list')
-		collect: [ :each | self visitFormatArgument: each ] }
-]
-
-{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitWriteStatement: aWriteStatementNode [
 	"format for WRITE and PRINT statements can be quite different, so we created
 	 two different visit rules"
 
 	^{ self visitSpan: (aWriteStatementNode at: 'span') .
-	 self visitWriteFormat: (aWriteStatementNode at: 'format') .
+	 self visitIOParameters: (aWriteStatementNode at: 'format') .
 	 self visitArguments: (aWriteStatementNode at: 'arguments') }
 ]
