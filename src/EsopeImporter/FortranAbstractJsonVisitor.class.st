@@ -1244,7 +1244,17 @@ FortranAbstractJsonVisitor >> visitString: aStringLiteralNode [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitStringLiteralValue: aStringLiteralNode [
-	^aStringLiteralNode at: 'contents'
+	"Strings in Fortran are single quotes. And to print a single-quote, it is doubled in the string
+	 (same as Pharo).
+	fortran-src interprets the string and removes one of the two quotes to leave just one
+	 so we need to put back the two quotes"
+
+	^String streamContents: [ :stream |
+		(aStringLiteralNode at: 'contents') do: [ :c |
+			(c = $') ifTrue: [ stream << c ].
+			stream << c
+		]
+	]
 ]
 
 { #category : #'visiting prog-unit' }
