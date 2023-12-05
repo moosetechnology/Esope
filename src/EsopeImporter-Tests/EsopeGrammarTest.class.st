@@ -54,6 +54,21 @@ EsopeGrammarTest >> testEndOfLine [
 ]
 
 { #category : #tests }
+EsopeGrammarTest >> testEndSegment [
+
+	| segment |
+	segment := '      endsegment
+'.
+	self parse: segment rule: #endSegment.
+
+	segment := '      end segment  
+'.
+	self parse: segment rule: #endSegment.
+
+	self fail: '      end segment,values' rule: #endSegment
+]
+
+{ #category : #tests }
 EsopeGrammarTest >> testFortranLine [
 
 	self
@@ -92,17 +107,46 @@ EsopeGrammarTest >> testInclude [
 ]
 
 { #category : #tests }
+EsopeGrammarTest >> testIncludeDoubleQuote [
+
+
+	self
+		parse: '#include "string.seg"
+'
+		rule: #include.
+]
+
+{ #category : #tests }
+EsopeGrammarTest >> testIncludeMixed [
+
+
+	self
+		fail: '#include "string.seg>
+'
+		rule: #include.
+]
+
+{ #category : #tests }
+EsopeGrammarTest >> testIncludeNotDoubleQuote [
+
+
+	self
+		parse: '#include <string.seg>
+'
+		rule: #include.
+]
+
+{ #category : #tests }
 EsopeGrammarTest >> testLines [
 
 	| aLine |
 	aLine := sixSpaces , 'abc' , String cr.
 
-	self parse: '' rule: #lines.
-
-	self parse: aLine rule: #lines.
-	self parse: aLine , aLine , aLine rule: #lines.
-
-	self fail: aLine , (sixSpaces , 'end' , String cr) rule: #lines
+	self parse: '', String lf rule: #emptyLine.
+	self parse: 'C', String cr rule: #commentLine.
+	self parse: aLine rule: #fortranLine.
+	self parse: aLine , aLine , aLine.
+	self parse: aLine , (sixSpaces , 'end' , String cr)
 ]
 
 { #category : #tests }
@@ -201,18 +245,18 @@ EsopeGrammarTest >> testSegment [
 
 	| segment |
 	segment := '      segment,values
-        character*8        valtyp
-        real               valf(valnf)
-        integer            vale(valne)
-        logical            vall(valnl)
-        character*(valsmx) valc(valnc)
-        integer            vals(valnc)
-      endsegment
 '.
 	self parse: segment rule: #segment.
+
 	segment := '      segment string
-        character cstg*(lstg)
-      endsegment
+'.
+	self parse: segment rule: #segment.
+
+	segment := '      segment BIDon(LL)
+'.
+	self parse: segment rule: #segment.
+
+	segment := '      segment BIDon(LL)*R
 '.
 	self parse: segment rule: #segment.
 
@@ -228,7 +272,7 @@ EsopeGrammarTest >> testSegmentSimpleWithMoreThanSixSpaces [
         integer ubb(ubbcnt)
       end segment
 '.
-	self parse: segment rule: #segment
+	self parse: segment
 ]
 
 { #category : #tests }
