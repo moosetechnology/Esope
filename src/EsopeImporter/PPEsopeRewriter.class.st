@@ -20,9 +20,34 @@ PPEsopeRewriter class >> rewriteFrom: esopeFile to: annotatedFile [
 ]
 
 { #category : #transformations }
+PPEsopeRewriter >> applySlashTransformation: inputSource [
+
+	^String new writeStreamDo: [ :oStream |  | regex index |
+
+		regex := '\(\s?(\/)[^/]' asRegexIgnoringCase.
+		index := 1.
+		(regex matchingRangesIn: inputSource)
+		do: [ :interval | "1halt".
+			oStream << (inputSource copyFrom: index to: interval first);
+				  	  << 'S__';
+				     << (inputSource copyFrom: interval first + 1 to: interval last).
+			index := interval last + 1 
+		].
+	   oStream << (inputSource copyFrom: index to: inputSource size).
+		oStream contents
+	]
+]
+
+{ #category : #transformations }
 PPEsopeRewriter >> applyTransformation: inputSource [
 
-	^ self dotTransformation: (self slashTransformation: inputSource)
+	^(self isFormatStatement: inputSource) 
+		ifTrue:  [ inputSource ]
+		ifFalse: [ 
+			(self isIfLogicalStatementFollowedBySegmentCommand: inputSource)
+				ifTrue:  [ 'c@_   ' , (inputSource allButFirst: 6) ]
+				ifFalse: [ self applySlashTransformation: inputSource ] 
+		]
 ]
 
 { #category : #rules }
@@ -36,11 +61,32 @@ PPEsopeRewriter >> commentAnnotation [
 	^ 'c@_   '
 ]
 
+{ #category : #transformations }
+PPEsopeRewriter >> commentLine [
+	"	^((self terminal: 'C') / (self terminal: '*')) flatten
+	, endOfLine negate plus flatten
+	, endOfLine"
+
+	^ super commentLine
+	==> [ :nodes | 
+		self copyTokens: nodes from: 1 to: nodes size
+	]
+	
+]
+
 { #category : #utilities }
 PPEsopeRewriter >> contains: text keyword: word [
-
-	^ (text asString asUppercase indexOfSubCollection: word asUppercase)
+	^(text asString asUppercase indexOfSubCollection: word asUppercase)
 	  ~= 0
+]
+
+{ #category : #transformations }
+PPEsopeRewriter >> containsSegmentCommand: textLine [ 
+	
+	^{ 'segact'. 'segadj'. 'segdes'. 'segini'. 'segprt'. 'segsup' }
+		detect: [ :each | textLine includesSubstring: each caseSensitive: false ]
+		ifFound: [ true ]
+		ifNone:  [ false ] 
 ]
 
 { #category : #utilities }
@@ -99,7 +145,7 @@ PPEsopeRewriter >> dotTransformation: inputSource [
 
 { #category : #accessing }
 PPEsopeRewriter >> endOfLine [
-	"(Character cr asPParser / Character lf asPParser)  plus"
+	"(Character cr asPParser / Character lf asPParser) plus flatten"
 	
 	^ super endOfLine
 	==> [ :nodes | String streamContents: [ :str | nodes do: [ :c | str nextPut: c ] ] ]
@@ -108,23 +154,28 @@ PPEsopeRewriter >> endOfLine [
 { #category : #rules }
 PPEsopeRewriter >> endSegment [
 
-	"^ beginOfLine , optionalBlanks , endToken , optionalBlanks
-	  , segmentToken , optionalBlanks , endOfLine"
+	" beginOfLine
+	, optionalBlanks
+	, (self terminal: 'end') flatten
+	, optionalBlanks
+	, (self terminal: 'segment') flatten
+	, optionalBlanks
+	, endOfLine"
 
-	^ super endSegment ==> [ :nodes | 
-	  	nodes allButFirst ]
+	^ super endSegment
+	==> [ :nodes | self processNodes: nodes ]
 ]
 
 { #category : #rules }
 PPEsopeRewriter >> fortranLine [
-	"'Cc*' indicates that a line is a comment. So we check that the first letter of the line starts with one of these characters"
+	" endOfLine negate star flatten
+	, endOfLine"
 
-	"endOfLine negate star flatten , endOfLine"
-
-	^ super fortranLine ==> [ :nodes |  | line |
+	^ super fortranLine
+	==> [ :nodes |  | line | 
 	  line := self sanitize: nodes first.
 	  stream
-		  << ((self canBeProcessed: line)
+		  << ((self isCommentStatement: line)
 				   ifTrue:  [ line ]
 				   ifFalse: [ self applyTransformation: line ]);
 		  << nodes allButFirst 
@@ -162,11 +213,11 @@ PPEsopeRewriter >> generatedCode [
 
 { #category : #initialization }
 PPEsopeRewriter >> include [
-
-	"Not Esope/Fortran, `c/c++` preprocessor directive. But used to include segment definition, ..."
-
-	"^ (self terminal: '#include') flatten , optionalBlanks , includeName
-	   , optionalBlanks , endOfLine"
+	" (self terminal: '#include') flatten 
+	, optionalBlanks
+	, includeName
+	, optionalBlanks
+	, endOfLine"
 
 	^ super include ==> [ :nodes | 
 	  stream << 'c@_'.
@@ -175,14 +226,42 @@ PPEsopeRewriter >> include [
 
 { #category : #initialization }
 PPEsopeRewriter >> initStream [
-	stream := '' writeStream
+
+	stream := String new writeStream
 ]
 
 { #category : #initialization }
 PPEsopeRewriter >> initialize [
 	super initialize.
 	
-	self initStream.
+	self initStream
+]
+
+{ #category : #rules }
+PPEsopeRewriter >> isCommentStatement: aText [
+
+	^ 'Cc*' includes: aText first
+]
+
+{ #category : #rules }
+PPEsopeRewriter >> isFormatOrCommentStatement: aText [
+
+	^('Cc*' includes: aText first) 
+	or: [ self contains: aText keyword: 'FORMAT' ]
+]
+
+{ #category : #rules }
+PPEsopeRewriter >> isFormatStatement: aText [
+
+	^ self contains: aText keyword: 'FORMAT'
+]
+
+{ #category : #transformations }
+PPEsopeRewriter >> isIfLogicalStatementFollowedBySegmentCommand: textLine [
+
+	^ (textLine trimLeft beginsWith: 'if' caseSensitive: false)
+		ifTrue:  [ self containsSegmentCommand: textLine ]
+		ifFalse: [ false ]
 ]
 
 { #category : #utilities }
@@ -194,6 +273,7 @@ PPEsopeRewriter >> logicalOperators [
 
 { #category : #rules }
 PPEsopeRewriter >> optionalBlanks [
+	"#blank asPParser star flatten"
 
 	^ super optionalBlanks
 	  ==> [ :nodes | nodes ifNil: [ '' token ] ifNotNil: [ :tk | tk ] ]
@@ -202,10 +282,20 @@ PPEsopeRewriter >> optionalBlanks [
 { #category : #rules }
 PPEsopeRewriter >> pointer [
 
-	"beginOfLine , optionalBlanks , pointerKeyWord
-	  , optionalBlanks , pointerName , optionalBlanks , endOfLine"
+	" beginOfLine
+	, optionalBlanks
+	, (self terminal: 'pointeur') flatten
+	, optionalBlanks
+	, endOfLine negate plus flatten
+	, endOfLine"
 
-	^ super pointer ==> [ :nodes | self processNodes: nodes ]
+	^ super pointer
+	==> [ :nodes | self processNodes: nodes ]
+]
+
+{ #category : #rules }
+PPEsopeRewriter >> process: line [
+	^line
 ]
 
 { #category : #utilities }
@@ -244,7 +334,8 @@ PPEsopeRewriter >> processNodes: nodes [
 
 { #category : #utilities }
 PPEsopeRewriter >> replaceCrByLf: aText [
-	^ aText
+	
+	^aText
 		copyReplaceAll: String cr
 		with: String lf
 ]
@@ -269,33 +360,37 @@ PPEsopeRewriter >> sanitize: aString [
 { #category : #rules }
 PPEsopeRewriter >> segact [
 
-	"beginOfLine, spaces, 'segact' asPParser, segIdentifier, endOfLine"
+	" self esopeLine: 'segact'"
 
-	^ super segact ==> [ :nodes | self processNodes: nodes ]
+	^ super segact
+	==> [ :nodes | self processNodes: nodes ]
 ]
 
 { #category : #rules }
 PPEsopeRewriter >> segadj [
 
-	"beginOfLine, spaces, 'segadj' asPParser, segIdentifier, endOfLine"
+	"self esopeLine: 'segadj'"
 
-	^ super segadj ==> [ :nodes | self processNodes: nodes ]
+	^ super segadj
+	==> [ :nodes | self processNodes: nodes ]
 ]
 
 { #category : #rules }
 PPEsopeRewriter >> segdes [
 
-	" beginOfLine, spaces, 'segdes' asPParser, segIdentifier, endOfLine"
+	"self esopeLine: 'segdes'"
 
-	^ super segdes ==> [ :nodes | self processNodes: nodes ]
+	^ super segdes
+	==> [ :nodes | self processNodes: nodes ]
 ]
 
 { #category : #rules }
 PPEsopeRewriter >> segini [
 
-	" beginOfLine, spaces, 'segini' asPParser, segIdentifier, endOfLine"
+	"self esopeLine: 'segini'"
 
-	^ super segini ==> [ :nodes | self processNodes: nodes ]
+	^ super segini
+	==> [ :nodes | self processNodes: nodes ]
 ]
 
 { #category : #rules }
@@ -310,17 +405,19 @@ PPEsopeRewriter >> segment [
 { #category : #rules }
 PPEsopeRewriter >> segprt [
 
-	"beginOfLine, spaces, 'segprt' asPParser, segIdentifier, endOfLine"
+	"self esopeLine: 'segprt'"
 
-	^ super segprt ==> [ :nodes | self processNodes: nodes ]
+	^ super segprt
+	==> [ :nodes | self processNodes: nodes ]
 ]
 
 { #category : #rules }
 PPEsopeRewriter >> segsup [
 
-	" beginOfLine , spaces, 'segsup' asPParser, segIdentifier, endOfLine"
+	"self esopeLine: 'segsup'"
 
-	^ super segsup ==> [ :nodes | self processNodes: nodes ]
+	^ super segsup
+	==> [ :nodes | self processNodes: nodes ]
 ]
 
 { #category : #annotations }
