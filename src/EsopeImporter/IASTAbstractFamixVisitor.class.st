@@ -180,7 +180,9 @@ IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
 			indice class = IASTVarAccess
 				ifTrue: [ (self createFamixF77Access: indice) isWrite: indice isWrite  ] 
 		].
-	(self createFamixF77Access: aVarAccess dereferencedVariable) isWrite: aVarAccess dereferencedVariable isWrite.
+	aVarAccess dereferencedVariable 
+		ifNotNil: [ :dereferencedVariable | (self createFamixF77Access: dereferencedVariable) isWrite: dereferencedVariable isWrite].
+
 	^ (self createFamixF77Access: aVarAccess) isWrite: aVarAccess isWrite
 ]
 
