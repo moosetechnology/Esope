@@ -3,7 +3,8 @@ Class {
 	#superclass : #IASTEntityRef,
 	#instVars : [
 		'isWrite',
-		'indices'
+		'indices',
+		'dereferencedVariable'
 	],
 	#category : #'EsopeImporter-AST-IR'
 }
@@ -12,6 +13,18 @@ Class {
 IASTVarAccess >> accept: aVisitor [
 
 	^ aVisitor visitIASTVarAccess: self.
+]
+
+{ #category : #accessing }
+IASTVarAccess >> dereferencedVariable [
+
+	^ dereferencedVariable
+]
+
+{ #category : #accessing }
+IASTVarAccess >> dereferencedVariable: anObject [
+
+	dereferencedVariable := anObject
 ]
 
 { #category : #accessing }
