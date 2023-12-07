@@ -171,7 +171,16 @@ IASTAbstractFamixVisitor >> visitIASTTypeRef: aType [
 
 { #category : #visiting }
 IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
+	"an aVarAccess can have:
+	- indices for example: varAccess(i, j, k) -> i j k are indices
+	- dereferencedVariable for example: deref.var(...) "
 
+	aVarAccess indices deepFlatten
+		do: [ :indice |
+			indice class = IASTVarAccess
+				ifTrue: [ (self createFamixF77Access: indice) isWrite: indice isWrite  ] 
+		].
+	(self createFamixF77Access: aVarAccess dereferencedVariable) isWrite: aVarAccess dereferencedVariable isWrite.
 	^ (self createFamixF77Access: aVarAccess) isWrite: aVarAccess isWrite
 ]
 
