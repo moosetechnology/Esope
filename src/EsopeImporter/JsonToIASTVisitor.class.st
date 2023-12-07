@@ -577,9 +577,24 @@ JsonToIASTVisitor >> visitSubscript: aSubscriptNode [
 
 	| data |
 	data := super visitSubscript: aSubscriptNode.
-	^data second
-		indices: data third ;
-		yourself
+	^data second isArray
+		ifTrue:  [
+			"
+			var.attr(l:u:s)
+			data second third -> attr
+			     indices --> (l:u:s)
+			     dereferencedVariable --> var (MUST BE VISITED DURING SYMBOL RESOLUTION) 
+			"
+			data second third
+				indices: data third ;
+				dereferencedVariable: data second second;
+				yourself
+		]
+		ifFalse: [
+			data second
+				indices: data third ;
+				yourself
+		]
 
 ]
 
