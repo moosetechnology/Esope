@@ -406,6 +406,11 @@ FortranAbstractJsonVisitor >> visitDeclarators: aDeclaratorsList [
 	
 ]
 
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitDeref: aDerefNode [
+	^self visitJsonMap: aDerefNode keys: #(span expression field)
+]
+
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitDims: anArrayDeclarationDimsNode [ 
 
@@ -600,6 +605,11 @@ FortranAbstractJsonVisitor >> visitExternalStatement: anExternalStatementNode [
 FortranAbstractJsonVisitor >> visitFalseLiteralValue: aString [
 	"Camfort puts 'false' so we return the normal Fortran value instead"
 	^'.false.'
+]
+
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitField: aFieldNode [ 
+	^self visitJsonElement: aFieldNode
 ]
 
 { #category : #'visiting statement' }
