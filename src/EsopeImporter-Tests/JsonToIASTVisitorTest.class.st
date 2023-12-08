@@ -861,8 +861,7 @@ JsonToIASTVisitorTest >> testImplicitNoneStatement [
 
 	stmt := programFile progUnits first body first.
 	self assert: stmt class equals: IASTImplicit.
-	self assert: stmt ranges isNil.
-	self assert: stmt forType isNil
+	self assert: stmt rules isNil.
 ]
 
 { #category : #'tests-statement' }
@@ -872,7 +871,7 @@ JsonToIASTVisitorTest >> testImplicitStatementSeveralRanges [
       END
 "
 	
-	| programFile stmt range |
+	| programFile stmt rule range |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:39)","statement":{"anno":[],"items":{"anno":[],"list":[{"anno":[],"elements":{"anno":[],"list":[{"anno":[],"from":"c","span":"(2:28)-(2:30)","to":"e"},{"anno":[],"from":"h","span":"(2:33)-(2:33)","to":null},{"anno":[],"from":"l","span":"(2:36)-(2:38)","to":"m"}],"span":"(2:28)-(2:38)"},"span":"(2:17)-(2:39)","type":{"anno":[],"base_type":"character","selector":null,"span":"(2:17)-(2:25)"}}],"span":"(2:17)-(2:39)"},"span":"(2:8)-(2:39)","tag":"implicit"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
 
 
@@ -880,18 +879,23 @@ JsonToIASTVisitorTest >> testImplicitStatementSeveralRanges [
 
 	stmt := programFile progUnits first body first.
 	self assert: stmt class equals: IASTImplicit.
-	self assert: stmt ranges isCollection.
-	self assert: stmt ranges size equals: 3.
+	self assert: stmt rules isCollection.
+	self assert: stmt rules size equals: 1.
 
-	range := stmt ranges first.
+	rule := stmt rules first.
+	self assert: rule class equals: IASTImplicitTypingRule.
+	self assert: rule forType class equals: IASTTypeRef.
+	self assert: rule ranges size equals: 3.
+
+	range := rule ranges first.
 	self assert: range isCollection.
 	self assertCollection: range equals: { $c . $e }.
 
-	range := stmt ranges second.
+	range := rule ranges second.
 	self assert: range isCollection.
 	self assertCollection: range equals: { $h . $h }.
 
-	range := stmt ranges third.
+	range := rule ranges third.
 	self assert: range isCollection.
 	self assertCollection: range equals: { $l . $m }.
 
@@ -904,7 +908,7 @@ JsonToIASTVisitorTest >> testImplicitStatementSimpleChar [
       END
 "
 	
-	| programFile stmt range |
+	| programFile stmt range rule |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:29)","statement":{"anno":[],"items":{"anno":[],"list":[{"anno":[],"elements":{"anno":[],"list":[{"anno":[],"from":"c","span":"(2:28)-(2:28)","to":null}],"span":"(2:28)-(2:28)"},"span":"(2:17)-(2:29)","type":{"anno":[],"base_type":"character","selector":null,"span":"(2:17)-(2:25)"}}],"span":"(2:17)-(2:29)"},"span":"(2:8)-(2:29)","tag":"implicit"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
 
 
@@ -912,15 +916,18 @@ JsonToIASTVisitorTest >> testImplicitStatementSimpleChar [
 
 	stmt := programFile progUnits first body first.
 	self assert: stmt class equals: IASTImplicit.
-	self assert: stmt ranges isCollection.
-	self assert: stmt ranges size equals: 1.
+	self assert: stmt rules size equals: 1.
 
-	range := stmt ranges first.
+	rule := stmt rules first.
+	self assert: rule forType class equals: IASTTypeRef.
+	self assert: rule forType entityName equals: 'character'.
+
+	self assert: rule ranges size equals: 1.
+
+	range := rule ranges first.
 	self assert: range isCollection.
 	self assertCollection: range equals: { $c . $c }.
 
-	self assert: stmt forType class equals: IASTTypeRef.
-	self assert: stmt forType entityName equals: 'character'.
 ]
 
 { #category : #'tests-statement' }
@@ -930,7 +937,7 @@ JsonToIASTVisitorTest >> testImplicitStatementSimpleRange [
       END
 "
 	
-	| programFile stmt range |
+	| programFile stmt range rule |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:31)","statement":{"anno":[],"items":{"anno":[],"list":[{"anno":[],"elements":{"anno":[],"list":[{"anno":[],"from":"c","span":"(2:28)-(2:30)","to":"e"}],"span":"(2:28)-(2:30)"},"span":"(2:17)-(2:31)","type":{"anno":[],"base_type":"character","selector":null,"span":"(2:17)-(2:25)"}}],"span":"(2:17)-(2:31)"},"span":"(2:8)-(2:31)","tag":"implicit"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
 
 
@@ -938,10 +945,11 @@ JsonToIASTVisitorTest >> testImplicitStatementSimpleRange [
 
 	stmt := programFile progUnits first body first.
 	self assert: stmt class equals: IASTImplicit.
-	self assert: stmt ranges isCollection.
-	self assert: stmt ranges size equals: 1.
+	self assert: stmt rules size equals: 1.
 
-	range := stmt ranges first.
+	rule := stmt rules first.
+	self assert: rule ranges size equals: 1.
+	range := rule ranges first.
 	self assert: range isCollection.
 	self assertCollection: range equals: { $c . $e }.
 

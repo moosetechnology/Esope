@@ -292,6 +292,12 @@ FortranAbstractJsonVisitor >> visitCommon_groups: aCommonGroupsNode [
 	^(aCommonGroupsNode at: 'list') collect: [ :each | self visitCommonGroup: each ]
 ]
 
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitComplexBaseType: aString [
+	^aString
+
+]
+
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitConcatenation: anConcatenationOperatorNode [
 	^ '//'
@@ -871,10 +877,17 @@ FortranAbstractJsonVisitor >> visitItems: anImplicitItemsNode [
 	"'items' in implicit statement"
 
 	^anImplicitItemsNode
-		ifNil: [ nil ]
-		ifNotNil: [ | items |
-			items := (anImplicitItemsNode at: 'list') first.
-			self visitJsonMap: items keys: #(type elements)
+		ifNotNil: [
+			{
+				self visitJsonNode: anImplicitItemsNode key: #span
+				.
+				anImplicitItemsNode
+					ifNil: [ nil ]
+					ifNotNil: [
+						(anImplicitItemsNode at: 'list') collect: [ :item |
+							self visitJsonMap: item keys: #(span type elements) ]
+					]
+			}
 		]
 ]
 
