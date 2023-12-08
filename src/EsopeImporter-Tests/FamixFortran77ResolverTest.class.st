@@ -85,7 +85,7 @@ FamixFortran77ResolverTest >> defaultIASTVarAccess: name [
 { #category : #'default values' }
 FamixFortran77ResolverTest >> defaultImplicitNone [
 
-	^ IASTImplicit new
+	^ IASTImplicitTypingRule new
 ]
 
 { #category : #'default values' }
@@ -170,7 +170,7 @@ FamixFortran77ResolverTest >> defaultVariable: name withType: type [
 { #category : #'default values' }
 FamixFortran77ResolverTest >> implicitRule: typeName range: ranges [
 
-	^ IASTImplicit new
+	^ IASTImplicitTypingRule new
 		  forType: (self defaultType: typeName);
 		  ranges: ranges;
 		  yourself
@@ -239,8 +239,6 @@ FamixFortran77ResolverTest >> testRegisterImplicitMultiple [
 	"
 
 	| pu |
-	
-	self skip: '!!need to review after changes in Implicit statement representation!!'.
 
 	pu := (self defaultSubroutine: 'rtn')
 		      attributeAt: #implicits
@@ -272,8 +270,6 @@ FamixFortran77ResolverTest >> testRegisterImplicitNone [
 
 	| pu |
 
-	self skip: '!!need to review after changes in Implicit statement representation!!'.
-
 	pu := (self defaultSubroutine: 'rtn')
 		attributeAt: #implicits put: { self defaultImplicitNone } ;
 		yourself.
@@ -292,8 +288,6 @@ FamixFortran77ResolverTest >> testRegisterImplicitRange [
 	"
 
 	| pu |
-
-	self skip: '!!need to review after changes in Implicit statement representation!!'.
 
 	pu := (self defaultSubroutine: 'rtn')
 		      attributeAt: #implicits
@@ -319,8 +313,6 @@ FamixFortran77ResolverTest >> testRegisterImplicitSimple [
 	"
 
 	| pu |
-
-	self skip: '!!need to review after changes in Implicit statement representation!!'.
 
 	pu := (self defaultSubroutine: 'rtn')
 		      attributeAt: #implicits
@@ -699,8 +691,6 @@ FamixFortran77ResolverTest >> testResolveFunctionImplicit [
 
 	| sub |
 
-	self skip: '!!need to review after changes in Implicit statement representation!!'.
-
 	sub := (self defaultFunction: 'fct')
 		       attributeAt: #implicits
 		       put: { (self implicitRule: 'character' range: #( #( $f ) )) };
@@ -721,8 +711,6 @@ FamixFortran77ResolverTest >> testResolveFunctionImplicitWrongParameters [
 	"
 
 	| sub |
-
-	self skip: '!!need to review after changes in Implicit statement representation!!'.
 
 	sub := self defaultFunction: 'fct'.
 	sub addParameter: (self defaultParameter: 'param').
@@ -770,8 +758,6 @@ FamixFortran77ResolverTest >> testResolveImplicitParameterNone [
 
 		| entity |
 
-	self skip: '!!need to review after changes in Implicit statement representation!!'.
-
 	(self defaultSubroutine: 'sub')
 		attributeAt: #implicits put: { self defaultImplicitNone } ;
 		addParameter: (self defaultParameter: 'var').
@@ -794,8 +780,6 @@ FamixFortran77ResolverTest >> testResolveImplicitParameterRange [
 	"
 
 	| entity |
-
-	self skip: '!!need to review after changes in Implicit statement representation!!'.
 
 	(self defaultSubroutine: 'sub')
 		attributeAt: #implicits
