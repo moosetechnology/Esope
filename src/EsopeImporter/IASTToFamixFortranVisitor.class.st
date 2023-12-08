@@ -135,8 +135,8 @@ IASTToFamixFortranVisitor >> visitIASTFunction: aFunction [
 { #category : #visiting }
 IASTToFamixFortranVisitor >> visitIASTImplicit: anImplicit [
 
-	self flag: #TODO.
-	"put implicit info into the FamixFortranProgramFile"
+	(stack top attributeAt: #implicits ifAbsentPut: [ OrderedCollection new ])
+		addAll: anImplicit rules
 ]
 
 { #category : #visiting }
@@ -218,8 +218,6 @@ IASTToFamixFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixF
 	aProgramUnit body ifNotNil: [ :body | 
 			body deepFlatten do: [ :expr | expr accept: self ]
 	].
-
-	progUnit attributeAt: #implicits put: aProgramUnit implicits.
 
 	stack pop.
 	^ progUnit

@@ -163,9 +163,9 @@ IASTToFamixVisitorTest >> defaultVariable: varName withType: typeName [
 ]
 
 { #category : #running }
-IASTToFamixVisitorTest >> implicitRange: ranges forType: typeName [
+IASTToFamixVisitorTest >> implicitRule: typeName range: ranges [
 
-	^ IASTImplicit new
+	^ IASTImplicitTypingRule new
 		  forType: (self defaultType: typeName);
 		  ranges: ranges;
 		  yourself
@@ -814,12 +814,12 @@ c@_#include ""point.seg""
 IASTToFamixVisitorTest >> testImplicitWithRange [
 
 	| entity sub |
-	programFile progUnits: { IASTSubroutine new
+	programFile progUnits: { (IASTSubroutine new
 			 entityName: 'sub';
-			 body: {
-			 	self implicitRange: { #($c $f) } forType: 'character' .
+			 body: { IASTImplicit new
+				rules: { (self implicitRule: 'character' range: { #( $c $f ) }) }
 			 };
-			 yourself }.
+			 yourself) }.
 
 	entity := programFile accept: visitor.
 
@@ -830,26 +830,26 @@ IASTToFamixVisitorTest >> testImplicitWithRange [
 	self assert: sub implicits size equals: 1.
 
 	entity := sub implicits anyOne.
-	self assert: entity class equals: IASTImplicit.
+	self assert: entity class equals: IASTImplicitTypingRule.
+
 	self assert: entity ranges size equals: 1.
-	
+
 	entity := entity ranges anyOne.
 	self assert: entity size equals: 2.
 	self assert: entity first equals: $c.
-	self assert: entity second equals: $f.
-
+	self assert: entity second equals: $f
 ]
 
 { #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testMultipleImplicit [
 
 	| entity sub |
-	programFile progUnits: { IASTSubroutine new
+	programFile progUnits: { (IASTSubroutine new
 			 entityName: 'sub';
-			 body: {
-			 	self implicitRange: #( #($c) #($d $f) ) forType: 'character' .
-			 };
-			 yourself }.
+			 body: { IASTImplicit new
+				rules: { (self implicitRule: 'character' range: #( #( $c ) #( $d $f ) )) }
+			 } ;
+			 yourself) }.
 
 	entity := programFile accept: visitor.
 
@@ -860,9 +860,10 @@ IASTToFamixVisitorTest >> testMultipleImplicit [
 	self assert: sub implicits size equals: 1.
 
 	entity := sub implicits anyOne.
-	self assert: entity class equals: IASTImplicit.
+	self assert: entity class equals: IASTImplicitTypingRule.
+
 	self assert: entity ranges size equals: 2.
-	
+
 	entity := entity ranges first.
 	self assert: entity size equals: 1.
 	self assert: entity anyOne equals: $c.
@@ -870,20 +871,19 @@ IASTToFamixVisitorTest >> testMultipleImplicit [
 	entity := sub implicits anyOne ranges second.
 	self assert: entity size equals: 2.
 	self assert: entity first equals: $d.
-	self assert: entity second equals: $f.
-
+	self assert: entity second equals: $f
 ]
 
 { #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testSimpleImplicit [
 
 	| entity sub |
-	programFile progUnits: { IASTSubroutine new
+	programFile progUnits: { (IASTSubroutine new
 			 entityName: 'sub';
-			 body: {
-			 	self implicitRange: { #($c) } forType: 'character' .
-			 };
-			 yourself }.
+			 body: { IASTImplicit new
+				rules: { (self implicitRule: 'character' range: { #( $c ) }) }
+			};
+			 yourself) }.
 
 	entity := programFile accept: visitor.
 
@@ -894,15 +894,15 @@ IASTToFamixVisitorTest >> testSimpleImplicit [
 	self assert: sub implicits size equals: 1.
 
 	entity := sub implicits anyOne.
-	self assert: entity class equals: IASTImplicit.
+	self assert: entity class equals: IASTImplicitTypingRule.
+
 	self assert: entity ranges size equals: 1.
-	
+
 	entity := entity ranges anyOne.
 	self assert: entity size equals: 1.
 	self assert: entity anyOne equals: $c.
 
 	entity := sub implicits anyOne.
 	self assert: entity forType class equals: IASTTypeRef.
-	self assert: entity forType entityName equals:'character'
-	
+	self assert: entity forType entityName equals: 'character'
 ]
