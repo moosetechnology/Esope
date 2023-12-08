@@ -830,9 +830,7 @@ IASTToFamixVisitorTest >> testImplicitWithRange [
 	self assert: sub implicits size equals: 1.
 
 	entity := sub implicits anyOne.
-	self assert: entity class equals: IASTImplicit.
-
-	self skip: 'correct after this point'.
+	self assert: entity class equals: IASTImplicitTypingRule.
 
 	self assert: entity ranges size equals: 1.
 
@@ -862,9 +860,7 @@ IASTToFamixVisitorTest >> testMultipleImplicit [
 	self assert: sub implicits size equals: 1.
 
 	entity := sub implicits anyOne.
-	self assert: entity class equals: IASTImplicit.
-
-	self skip: 'correct after this point'.
+	self assert: entity class equals: IASTImplicitTypingRule.
 
 	self assert: entity ranges size equals: 2.
 
@@ -898,9 +894,7 @@ IASTToFamixVisitorTest >> testSimpleImplicit [
 	self assert: sub implicits size equals: 1.
 
 	entity := sub implicits anyOne.
-	self assert: entity class equals: IASTImplicit.
-	
-	self skip: 'correct after this point'.
+	self assert: entity class equals: IASTImplicitTypingRule.
 
 	self assert: entity ranges size equals: 1.
 
