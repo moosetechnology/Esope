@@ -874,7 +874,7 @@ FortranAbstractJsonVisitor >> visitItems: anImplicitItemsNode [
 		ifNil: [ nil ]
 		ifNotNil: [ | items |
 			items := (anImplicitItemsNode at: 'list') first.
-			self visitJsonMap: items keys: #(type elements)
+			self visitJsonMap: items keys: #(span type elements)
 		]
 ]
 
