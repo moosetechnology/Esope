@@ -861,8 +861,7 @@ JsonToIASTVisitorTest >> testImplicitNoneStatement [
 
 	stmt := programFile progUnits first body first.
 	self assert: stmt class equals: IASTImplicit.
-	self assert: stmt ranges isNil.
-	self assert: stmt forType isNil
+	self assert: stmt rules isNil.
 ]
 
 { #category : #'tests-statement' }
