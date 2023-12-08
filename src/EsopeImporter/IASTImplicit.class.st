@@ -2,8 +2,7 @@ Class {
 	#name : #IASTImplicit,
 	#superclass : #IASTAbstractEntity,
 	#instVars : [
-		'forType',
-		'ranges'
+		'rules'
 	],
 	#category : #'EsopeImporter-AST-IR'
 }
@@ -14,31 +13,19 @@ IASTImplicit >> accept: aVisitor [
 	^ aVisitor visitIASTImplicit: self.
 ]
 
-{ #category : #accessing }
-IASTImplicit >> forType [
-
-	^ forType
-]
-
-{ #category : #accessing }
-IASTImplicit >> forType: anObject [
-
-	forType := anObject
-]
-
 { #category : #testing }
 IASTImplicit >> isImplicit [
 	^true
 ]
 
 { #category : #accessing }
-IASTImplicit >> ranges [
-	"actually a collection of ranges, each range being an array {from . to}"
-	^ranges
+IASTImplicit >> rules [
+
+	^ rules
 ]
 
 { #category : #accessing }
-IASTImplicit >> ranges: anObject [
+IASTImplicit >> rules: anObject [
 
-	ranges := anObject
+	rules := anObject
 ]

@@ -464,9 +464,7 @@ JsonToIASTVisitor >> visitImplicitStatement: anImplicitStatementNode [
 		            sourceAnchor: (self makeIndexedAnchor: data first);
 		            yourself.
 	data second ifNotNil: [ 
-		implicit
-			forType: data second first;
-			ranges: data second second ].
+		implicit rules: data second ].
 
 	^ implicit
 ]
@@ -484,6 +482,25 @@ JsonToIASTVisitor >> visitImplicitStatementRange: anImplicitStatementRangeNode [
 { #category : #'visiting expression' }
 JsonToIASTVisitor >> visitInteger: anIntegerNode [
 	^nil
+]
+
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitItems: anImplicitItemsNode [
+	"'items' in implicit statement"
+
+	| data |
+	data := super visitItems: anImplicitItemsNode.
+
+	^data
+		ifNotNil: [
+			data second collect: [ :ruleData |
+				IASTImplicitTypingRule new
+					sourceAnchor: (self makeIndexedAnchor: ruleData first) ;
+					forType: ruleData second ;
+					ranges: ruleData third
+					yourself
+			]
+	]
 ]
 
 { #category : #'visiting prog-unit' }
