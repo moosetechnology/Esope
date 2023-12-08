@@ -54,7 +54,8 @@ IASTToFamixEsopeVisitor >> visitIASTEsopeSegment: aSegment [
 	stack push: segment.
 	self createSymbolTableFor: segment.
 	segment attributes: (aSegment declarations collect: [ :variable |
-			 variable accept: (self spawn: IASTToFamixFortranVisitor) ]).
+			variable isEsope: true.
+			variable accept: (self spawn: IASTToFamixFortranVisitor) ]).
 
 	^ stack pop
 ]

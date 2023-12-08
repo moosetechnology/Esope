@@ -277,26 +277,47 @@ FortranProjectImporter >> findIncludesIn: srcFileReference [
 ]
 
 { #category : #'private - import' }
-FortranProjectImporter >> fortran: fortranFile toJsonASTFolder: astFolder [
+FortranProjectImporter >> fortran: f77file toAST: astFolder [
 
 	| jsonFile |
-	jsonFile := self
-		            fileReference: fortranFile withoutExtension
-		            into: astFolder.
 
-	^ LibC runCommand: ('{1} "{2}" > "{3}.json" 2>&1' format: {
-				   self f77parser.
-				   fortranFile pathString.
-				   jsonFile pathString })
+	jsonFile := (self fortranFolderToASTFolder: f77file parent) / (f77file basename , '.json').
+
+	^LibC runCommand: (
+		'{1} "{2}" > "{3}.json" 2>&1'
+		format: {
+			self f77parser.
+			f77file fullName.
+			jsonFile fullName
+		}
+	)
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> fortranFolderToASTFolder: fortranFolder [
+
+	| astFolder |
+	self flag: #FIXME. "Reproduce the source directory hierarchy or not. 
+	If yes: replace the non-commented assignement by the commented one.
+	"
+	"astFolder := (
+		fortranFolder fullName
+			copyReplaceAll: self workingFortranName
+			with: self workingJsonName
+		) asFileReference."
+	astFolder := self workingJsonName asFileReference.
+	astFolder ensureCreateDirectory.
+
+	^ astFolder
 ]
 
 { #category : #run }
-FortranProjectImporter >> fortranToJsonAST [
+FortranProjectImporter >> fortranToAST [
+	"A ""standard"" Fortran-77 parser goes through all Fortran-77 files (de-esopified or pure)
+	and parses each of them to produce a corresponding AST in jsonWorkingFolder"
 
-	self ensureEmptyFolder: self workingJsonName.
-
-	self fortranFolder asFileReference allFiles do: [ :fortranFile |
-		self fortran: fortranFile toJsonASTFolder: self workingJsonName  ]
+	(self workingFortranName asFileReference allChildrenMatching: '*.f')
+		do: [ :file | self parseFortran77: file ]
 ]
 
 { #category : #'private - files' }
@@ -312,7 +333,7 @@ FortranProjectImporter >> getFASTFor: sourceCode [
 		stream cr
 	].
 	
-	self fortran: fastSrcFile toJsonASTFolder: self fastSrcFolder.
+	self fortran: fastSrcFile toAST: self fastSrcFolder.
 	^self jsonASTToFAST 
 ]
 
@@ -370,7 +391,7 @@ FortranProjectImporter >> importSteps [
 		'Copying Fortran Files' -> #copyFortranFiles .
 		'Collecting included Fortran files' -> #collectIncludedFortranFiles .
 
-		'Fortran to JSon AST' -> #fortranToJsonAST .
+		'Fortran to JSon AST' -> #fortranToAST .
 		'JSon AST to Intermediary AST' -> #jsonASTToIAST .
 		'Intermediary AST to Famix' -> #iASTToFamix .
 		'Famix symbol resolution' -> #famixResolve
@@ -432,6 +453,23 @@ FortranProjectImporter >> jsonASTToIAST [
 		collect: [ :jsonFile | 
 			visitor visitProgramFile: (NeoJSONReader fromString: jsonFile contents) ].
 
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> parseFortran77: f77file [
+
+	| jsonFile |
+
+	jsonFile := (self fortranFolderToASTFolder: f77file parent) / f77file basename.
+
+	^LibC runCommand: (
+		'{1} "{2}" > "{3}.json" 2>&1'
+		format: {
+			self f77parser.
+			f77file fullName.
+			jsonFile fullName
+		}
+	)
 ]
 
 { #category : #run }
@@ -526,5 +564,6 @@ FortranProjectImporter >> workingIncludeName [
 
 { #category : #accessing }
 FortranProjectImporter >> workingJsonName [
+	
 	^'tmpJsonImport'
 ]
