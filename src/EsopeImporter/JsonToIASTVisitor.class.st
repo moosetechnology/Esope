@@ -360,6 +360,13 @@ JsonToIASTVisitor >> visitFortranComment: aFortranCommentNode [
 		yourself
 ]
 
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitFrom: aString [
+	"start of a range for an implicit statement: a string of one character"
+
+	^aString first
+]
+
 { #category : #'visiting expression' }
 JsonToIASTVisitor >> visitFunctionAsValue: aFunctionNode [
 	^(super visitFunctionAsValue: aFunctionNode)
@@ -613,6 +620,15 @@ JsonToIASTVisitor >> visitSubscript: aSubscriptNode [
 				yourself
 		]
 
+]
+
+{ #category : #'as yet unclassified' }
+JsonToIASTVisitor >> visitTo: aString [
+	"end of a range for an implicit statement: a string of one character"
+
+	^aString
+		ifNil: [ nil ]
+		ifNotNil: [ aString first ]
 ]
 
 { #category : #visiting }
