@@ -650,7 +650,7 @@ FortranAbstractJsonVisitor >> visitFortranComment: aFortranCommentNode [
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitFrom: aString [
 	"start of a range for an implicit statement: a string of one character"
-	^aString first
+	^aString
 ]
 
 { #category : #'visiting prog-unit' }
@@ -1332,7 +1332,7 @@ FortranAbstractJsonVisitor >> visitTo: aString [
 	"end of a range for an implicit statement: a string of one character"
 	^aString
 		ifNil: [ nil ]
-		ifNotNil: [ aString first ]
+		ifNotNil: [ aString ]
 ]
 
 { #category : #'visiting expression' }
