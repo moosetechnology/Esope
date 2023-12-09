@@ -165,11 +165,6 @@ FortranProjectImporter >> copyIncludedFortranFile: includedFile to: workingFortr
 ]
 
 { #category : #'private - files' }
-FortranProjectImporter >> defaultFASTSource [
-	^(self ensureFolder: self fastSrcFolder) / 'tmpFASTSource.f'
-]
-
-{ #category : #'private - files' }
 FortranProjectImporter >> ensureEmptyFolder: folder [
 
 	folder exists
@@ -259,11 +254,6 @@ FortranProjectImporter >> famixResolve [
 		resolve
 ]
 
-{ #category : #accessing }
-FortranProjectImporter >> fastSrcFolder [
-	^'FastTmp'
-]
-
 { #category : #'private - files' }
 FortranProjectImporter >> findIncludesIn: srcFileReference [
 
@@ -318,23 +308,6 @@ FortranProjectImporter >> fortranToAST [
 
 	(self workingFortranName asFileReference allChildrenMatching: '*.f')
 		do: [ :file | self parseFortran77: file ]
-]
-
-{ #category : #'private - files' }
-FortranProjectImporter >> getFASTFor: sourceCode [
-
-	"Remove TAB at state of lines ???? "
-
-	| fastSrcFile |
-	fastSrcFile := self defaultFASTSource.
-	fastSrcFile writeStreamDo: [:stream |
-		stream truncate.
-		self preprocess: sourceCode to: stream.
-		stream cr
-	].
-	
-	self fortran: fastSrcFile toAST: self fastSrcFolder.
-	^self jsonASTToFAST 
 ]
 
 { #category : #'private - files' }
@@ -431,16 +404,6 @@ FortranProjectImporter >> isIncludeLine: aString [
 	(aString beginsWith: 'include ') ifTrue: [ ^true ].
 
 	^false
-]
-
-{ #category : #run }
-FortranProjectImporter >> jsonASTToFAST [
-
-	| jsonAST |
-	jsonAST := self defaultFASTSource withExtension: 'json'.
-	^FASTFortranJsonVisitor new visitProgramFile:
-		  (jsonAST readStreamDo: [ :str | 
-			   NeoJSONReader fromString: str contents ])
 ]
 
 { #category : #run }
