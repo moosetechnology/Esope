@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'typeSpec',
 		'initialValue',
-		'dimension'
+		'dimension',
+		'isEsope'
 	],
 	#category : #'EsopeImporter-AST-IR'
 }
@@ -37,6 +38,18 @@ IASTVariable >> initialValue [
 IASTVariable >> initialValue: anObject [
 
 	initialValue := anObject
+]
+
+{ #category : #accessing }
+IASTVariable >> isEsope [
+
+	^ isEsope
+]
+
+{ #category : #accessing }
+IASTVariable >> isEsope: anObject [
+
+	isEsope := anObject
 ]
 
 { #category : #testing }

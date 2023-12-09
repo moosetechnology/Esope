@@ -273,6 +273,7 @@ IASTToFamixFortranVisitor >> visitIASTVariable: aVariable [
 		       sourceAnchor:
 			       (self visitIndexedFileAnchor: aVariable sourceAnchor);
 		       name: aVariable entityName;
+				 isEsope: aVariable isEsope;
 		       declaredType: (self visitIASTTypeRef: aVariable typeSpec);
 		       yourself.
 	"stack top symbolTable at: var name put: var."

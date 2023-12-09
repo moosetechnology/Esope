@@ -220,14 +220,16 @@ FamixFortran77Resolver >> resolveAccess: anAccess asImplicitAttribute: accessedV
 
 	^self
 		findEntity: accessedVariable entityName
-		inList: (anAccess accessor types flatCollect: [ :type | type attributes ])
+		inList: (anAccess accessor allTypes flatCollect: [ :type | type attributes ])
 ]
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveAccess: anAccess asImplicitPointer: variableAccessed [
 	"try to find a segment with the same name as the accessed variable"
 
-	^anAccess accessor types
+	self flag: #FIXME. "Issue with an attribute."
+
+	^anAccess accessor allTypes
 		detect: [ :type |
 			(type class = FamixEsopeSegment) and: 
 			[ type name = variableAccessed entityName ]
@@ -301,10 +303,12 @@ FamixFortran77Resolver >> resolveEsopeVariable: esopeVariable [
 
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolveEsopeVariables [
-
-	(self model allWithSubTypesOf: FamixF77Variable) do: [ :var |
-			var isEsope
-				ifTrue: [ self resolveEsopeVariable: var ] ]
+	self flag: #FIXME. "Some Esope variables are not labelled as such"
+	
+	(self model allWithSubTypesOf: FamixF77Variable) 
+		do: [ :var | 
+			var isEsope ifTrue: [ self resolveEsopeVariable: var ]
+		]
 ]
 
 { #category : #'symbols resolution' }
@@ -346,12 +350,10 @@ FamixFortran77Resolver >> resolveImplicits [
 FamixFortran77Resolver >> resolveIncludes [
 	"puts FamixF77IncludedFile into the FamixF77Include that include them"
 
-	(self model allWithType: FamixF77Include) do: [ :include | | includedFilename |
-		includedFilename := include filename , '.f'.
-		
+	(self model allWithType: FamixF77Include) 
+	do: [ :include |
 		(self model allWithType: FamixF77IncludedFile)
-			detect: [ :includedFile |
-					includedFile programFile filename endsWith: includedFilename]
+			detect: [ :includedFile | includedFile programFile filename asPath basename beginsWith: include filename ]
 			ifFound: [ :includedFile | include included: includedFile ]
 			ifNone: [ Notification signal: 'IncludedFile: No such file or directory' ]
 	]
