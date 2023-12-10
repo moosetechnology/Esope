@@ -303,7 +303,7 @@ FortranProjectImporter >> fortranFolderToASTFolder: fortranFolder [
 
 { #category : #run }
 FortranProjectImporter >> fortranToAST [
-	"A ""standard"" Fortran-77 parser goes through all Fortran-77 files (de-esopified or pure)
+	"A 'standard' Fortran-77 parser goes through all Fortran-77 files (de-esopified or pure)
 	and parses each of them to produce a corresponding AST in jsonWorkingFolder"
 
 	(self workingFortranName asFileReference allChildrenMatching: '*.f')
