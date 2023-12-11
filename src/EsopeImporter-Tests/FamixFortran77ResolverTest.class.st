@@ -167,6 +167,12 @@ FamixFortran77ResolverTest >> defaultVariable: name withType: type [
 		  declaredType: (self defaultType: type)
 ]
 
+{ #category : #tests }
+FamixFortran77ResolverTest >> externalDeclaration: name [
+
+	^self newNamedEntity: name toFamix: FamixF77ExternalDeclaration
+]
+
 { #category : #'default values' }
 FamixFortran77ResolverTest >> implicitRule: typeName range: ranges [
 
@@ -363,7 +369,7 @@ FamixFortran77ResolverTest >> testRequalifyVariableDeclarationAsFunction [
 
 	| sub |
 
-	self skip: 'see issue #32'.
+	self flag: #FIXED. "see issue #32"
 
 	sub := (self defaultSubroutine: 'sub')
 		addExternalDeclaration: (self externalDeclaration: 'fct') ;
