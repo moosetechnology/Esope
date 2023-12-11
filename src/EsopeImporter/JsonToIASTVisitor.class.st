@@ -104,7 +104,11 @@ JsonToIASTVisitor >> visitAssign_expression: anAssignExpressionNode [
 	| data |
 	data := super visitAssign_expression: anAssignExpressionNode.
 
-	data second isWrite: true.
+	"Fix assignement like this ptr.attr ... = ...."
+	data second isCollection
+		ifTrue:  [ data second allButFirst do: [ :each | each isWrite: true  ] ]
+		ifFalse: [ data second isWrite: true ].
+
 	^(data third isCollection 
 		ifTrue:  [ { data second } , data third ]
 		ifFalse: [ { data second . data third } ]
@@ -347,7 +351,7 @@ JsonToIASTVisitor >> visitExternalStatement: anExternalStatementNode [
 	| data |
 	data := super visitExternalStatement: anExternalStatementNode.
 
-	^ data second
+	^ data second do: [ :anAccess | anAccess annotations: 'external' ]
 ]
 
 { #category : #'visiting statement' }

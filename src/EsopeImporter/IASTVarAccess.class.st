@@ -54,6 +54,12 @@ IASTVarAccess >> isEsope [
 		  ifNil: [ false ]
 ]
 
+{ #category : #'accessing - testing' }
+IASTVarAccess >> isExternal [
+
+	^ annotations = 'external'
+]
+
 { #category : #testing }
 IASTVarAccess >> isVarAccess [
 	^true

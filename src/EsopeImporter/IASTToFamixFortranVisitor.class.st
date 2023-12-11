@@ -135,8 +135,12 @@ IASTToFamixFortranVisitor >> visitIASTFunction: aFunction [
 { #category : #visiting }
 IASTToFamixFortranVisitor >> visitIASTImplicit: anImplicit [
 
-	(stack top attributeAt: #implicits ifAbsentPut: [ OrderedCollection new ])
-		addAll: anImplicit rules
+	anImplicit rules ifNotNil: [ :rules |
+		(stack top
+			 attributeAt: #implicits
+			 ifAbsentPut: [ OrderedCollection new ]
+		) addAll: rules 
+	]
 ]
 
 { #category : #visiting }
@@ -216,7 +220,7 @@ IASTToFamixFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixF
 	self createSymbolTableFor: progUnit.
 
 	aProgramUnit body ifNotNil: [ :body | 
-			body deepFlatten do: [ :expr | expr accept: self ]
+			(body deepFlatten reject: #isPoint) do: [ :expr | expr accept: self ]
 	].
 
 	stack pop.

@@ -108,7 +108,7 @@ FamixFortran77Resolver >> requalifyFunctionDeclaration: external [
 	"external decalration of functin followed by a VariableDeclaration of the same function
 	 we simply remove the VariableDeclaration"
 
-	external parentBehaviouralEntity localVariables
+	external programUnit localVariables
 		detect: [ :varDeclaration |
 			varDeclaration name = external name
 		]

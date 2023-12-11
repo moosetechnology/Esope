@@ -175,15 +175,26 @@ IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
 	- indices for example: varAccess(i, j, k) -> i j k are indices
 	- dereferencedVariable for example: deref.var(...) "
 
+	"Distinguish external accesses from other accesses"
+	aVarAccess isExternal ifTrue: [
+		^self model newExternalDeclaration
+			name: aVarAccess entityName;
+			sourceAnchor: (self visitIndexedFileAnchor: aVarAccess sourceAnchor);
+			programUnit: stack top;
+			yourself
+	].
+
 	aVarAccess indices deepFlatten
 		do: [ :indice |
 			indice class = IASTVarAccess
 				ifTrue: [ (self createFamixF77Access: indice) isWrite: indice isWrite  ] 
 		].
 	aVarAccess dereferencedVariable 
-		ifNotNil: [ :dereferencedVariable | (self createFamixF77Access: dereferencedVariable) isWrite: dereferencedVariable isWrite].
+		ifNotNil: [ :dereferencedVariable | 
+			(self createFamixF77Access: dereferencedVariable) isWrite: dereferencedVariable isWrite
+		].
 
-	^ (self createFamixF77Access: aVarAccess) isWrite: aVarAccess isWrite
+	^(self createFamixF77Access: aVarAccess) isWrite: aVarAccess isWrite
 ]
 
 { #category : #visiting }
