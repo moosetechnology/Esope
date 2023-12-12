@@ -418,6 +418,13 @@ FortranAbstractJsonVisitor >> visitDeref: aDerefNode [
 ]
 
 { #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitDimensionStatement: aDimensionStatementNode [
+
+	^self visitJsonMap: aDimensionStatementNode keys: #(span declarators)
+
+]
+
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitDims: anArrayDeclarationDimsNode [ 
 
 	^self visitArrayDeclarationDims: (anArrayDeclarationDimsNode at: #list)
