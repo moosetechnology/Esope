@@ -107,7 +107,7 @@ JsonToIASTVisitor >> visitAssign_expression: anAssignExpressionNode [
 	"Fix assignement like this ptr.attr ... = ...."
 	data second isCollection
 		ifTrue:  [ data second allButFirst do: [ :each | each isWrite: true  ] ]
-		ifFalse: [ data second isWrite: true ].
+		ifFalse: [ data second class = IASTInvocation ifFalse: [ data second isWrite: true ] ].
 
 	^(data third isCollection 
 		ifTrue:  [ { data second } , data third ]

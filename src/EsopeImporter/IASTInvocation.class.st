@@ -3,7 +3,8 @@ Class {
 	#superclass : #IASTEntityRef,
 	#instVars : [
 		'isIntrinsic',
-		'arguments'
+		'arguments',
+		'indices'
 	],
 	#category : #'EsopeImporter-AST-IR'
 }
@@ -24,6 +25,18 @@ IASTInvocation >> arguments [
 IASTInvocation >> arguments: aNodes [
 
 	arguments := aNodes
+]
+
+{ #category : #accessing }
+IASTInvocation >> indices [
+
+	^ indices
+]
+
+{ #category : #accessing }
+IASTInvocation >> indices: anObject [
+
+	indices := anObject
 ]
 
 { #category : #accessing }
