@@ -834,7 +834,8 @@ FortranAbstractJsonVisitor >> visitImplied_do:  anImpliedDoListsNode [
 	^{
 		self visitSpan: (anImpliedDoListsNode at: 'span') .
 		self visitJsonElement: (anImpliedDoListsNode at: 'do_spec') .
-		self visitJsonElement: (anImpliedDoListsNode at: 'expressions') 
+		self visitJsonElement: ((anImpliedDoListsNode at: 'expressions') at: 'list') first .
+		self visitJsonElement: ((anImpliedDoListsNode at: 'expressions') at: 'list') second
 	   }
 ]
 
