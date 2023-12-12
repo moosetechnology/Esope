@@ -833,9 +833,11 @@ FortranAbstractJsonVisitor >> visitImplicitStatementRange: anImplicitStatementRa
 FortranAbstractJsonVisitor >> visitImplied_do:  anImpliedDoListsNode [ 
 	^{
 		self visitSpan: (anImpliedDoListsNode at: 'span') .
-		self visitJsonElement: (anImpliedDoListsNode at: 'do_spec') .
-		self visitJsonElement: (anImpliedDoListsNode at: 'expressions') 
-	   }
+		self visitDo_spec: (anImpliedDoListsNode at: 'do_spec')
+	}
+	,
+	((anImpliedDoListsNode at: 'expressions' at: 'list')
+		collect: [ :expr | self visitJsonMap: expr ])
 ]
 
 { #category : #'visiting statement' }
