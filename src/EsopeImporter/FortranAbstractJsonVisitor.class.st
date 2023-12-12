@@ -119,6 +119,11 @@ FortranAbstractJsonVisitor >> processEsopeComment: anEsopeCommentNode [
 	, esopeCommand
 ]
 
+{ #category : #helpers }
+FortranAbstractJsonVisitor >> processEsopeIfComment: anEsopeIfCommentNode [ 
+	self shouldBeImplemented.
+]
+
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitAddition: anAdditionOperatorNode [
 ]
@@ -528,6 +533,11 @@ FortranAbstractJsonVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
 
 	^self processEsopeComment: anEsopeCommentNode
 
+]
+
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitEsopeIfComment: anEsopeIfCommentNode [ 
+	^self processEsopeIfComment: anEsopeIfCommentNode
 ]
 
 { #category : #'visiting esope' }
