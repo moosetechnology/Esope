@@ -1236,6 +1236,12 @@ FortranAbstractJsonVisitor >> visitReturn_spec: aReturn_specNode [
 	^self visitJsonMap: aReturn_specNode keys: #(span target)
 ]
 
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitRewind2Statement: aRewindStatement [ 
+
+	^self visitJsonMap: aRewindStatement keys: #(span specification)
+]
+
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitRight: aRightNode [
 	^self visitJsonElement: aRightNode
