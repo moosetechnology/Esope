@@ -896,6 +896,12 @@ FortranAbstractJsonVisitor >> visitIntegerLiteralValue: anIntegerLiteralValueNod
 	^anIntegerLiteralValueNode first
 ]
 
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitIntrinsicStatement: anIntrinsicStatement [
+
+	^self visitJsonMap: anIntrinsicStatement keys: #(span vars)
+]
+
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitItems: anImplicitItemsNode [
 	"'items' in implicit statement"
