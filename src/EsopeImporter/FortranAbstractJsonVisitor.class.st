@@ -783,12 +783,10 @@ FortranAbstractJsonVisitor >> visitIOParameter: anIOParameterNode [
 ]
 
 { #category : #'visiting statement' }
-FortranAbstractJsonVisitor >> visitIOParameters: aWriteFormatNode [
-	^{
-		self visitSpan: (aWriteFormatNode at: 'span') .
-	 	(aWriteFormatNode at: 'list')
+FortranAbstractJsonVisitor >> visitIOParameters: anIOParametersCollection [
+	^(anIOParametersCollection at: 'list')
 			collect: [ :each | self visitIOParameter: each ]
-	}
+
 ]
 
 { #category : #'visiting statement' }
@@ -873,15 +871,12 @@ FortranAbstractJsonVisitor >> visitInitial: anInitialNode [
 ]
 
 { #category : #visiting }
-FortranAbstractJsonVisitor >> visitInquireSpecifier: anInquireSpecifier [
-
-	^self visitJsonMap: anInquireSpecifier keys: #(span name expr)
-]
-
-{ #category : #visiting }
 FortranAbstractJsonVisitor >> visitInquireStatement: anInquireStatement [ 
 
-	^self visitJsonMap: anInquireStatement keys: #(span specification)
+	^{
+		self visitSpan: (anInquireStatement at: 'span') .
+		self visitIOParameters: (anInquireStatement at: 'specification')
+	}
 ]
 
 { #category : #'visiting expression' }
@@ -1283,14 +1278,6 @@ FortranAbstractJsonVisitor >> visitSpan: aSpanString [
 
 	^ {one asInteger @ two asInteger .
 		three asInteger @ (four asInteger + 1) }
-]
-
-{ #category : #visiting }
-FortranAbstractJsonVisitor >> visitSpecification: anInquireSpecification [ 
-
-	^(anInquireSpecification at: #list) collect: [ :specif |
-		self visitInquireSpecifier: specif
-	]
 ]
 
 { #category : #visiting }
