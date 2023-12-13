@@ -1238,8 +1238,13 @@ FortranAbstractJsonVisitor >> visitReturn_spec: aReturn_specNode [
 
 { #category : #visiting }
 FortranAbstractJsonVisitor >> visitRewind2Statement: aRewindStatement [ 
+	"a form of rewind with only a unit specified:
+	 REWIND 3"
 
-	^self visitJsonMap: aRewindStatement keys: #(span specification)
+	^{
+		self visitSpan: (aRewindStatement at: 'span') .
+		{ self visitJsonMap: (aRewindStatement at: 'specification') }
+	}
 ]
 
 { #category : #'visiting expression' }
