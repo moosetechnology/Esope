@@ -1247,6 +1247,16 @@ FortranAbstractJsonVisitor >> visitRewind2Statement: aRewindStatement [
 	}
 ]
 
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitRewindStatement: aRewindStatement [ 
+	"a form of rewind with a list of IOParameters"
+
+	^{
+		self visitSpan: (aRewindStatement at: 'span') .
+		self visitIOParameters: (aRewindStatement at: 'specification')
+	}
+]
+
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitRight: aRightNode [
 	^self visitJsonElement: aRightNode
