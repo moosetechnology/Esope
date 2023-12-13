@@ -1142,6 +1142,15 @@ FortranAbstractJsonVisitor >> visitOp: anOpNode [
 	^self visitJsonTaggedElement: anOpNode
 ]
 
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitOpenStatement: anOpenStatement [ 
+
+	^{
+		self visitSpan: (anOpenStatement at: 'span') .
+		self visitIOParameters: (anOpenStatement at: 'specification')
+	}
+]
+
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitOr: anOrOperatorNode [
 	^ '.or.'
