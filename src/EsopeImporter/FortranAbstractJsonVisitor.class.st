@@ -586,8 +586,16 @@ FortranAbstractJsonVisitor >> visitExitStatement: anExitNode [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitExponent: aRealLiteralExponentNode [
-	self flag: #TODO.
-	^nil
+
+	^(aRealLiteralExponentNode at: #num) = '0'
+		ifTrue: [ nil ]
+		ifFalse: [
+			(aRealLiteralExponentNode at: #letter)
+			,
+			(aRealLiteralExponentNode at: #num)
+		]
+	
+	
 ]
 
 { #category : #'visiting expression' }
@@ -1200,7 +1208,7 @@ FortranAbstractJsonVisitor >> visitRealBaseType: aString [
 
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitRealLiteralValue: aRealLiteralValueNode [
-	^self visitJsonMap: aRealLiteralValueNode first keys: #(exponent significand)
+	^self visitJsonMap: aRealLiteralValueNode first keys: #(significand exponent)
 ]
 
 { #category : #'visiting statement' }
