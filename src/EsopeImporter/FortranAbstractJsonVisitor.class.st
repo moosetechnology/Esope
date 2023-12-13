@@ -872,6 +872,18 @@ FortranAbstractJsonVisitor >> visitInitial: anInitialNode [
 	^self visitJsonElement: anInitialNode
 ]
 
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitInquireSpecifier: anInquireSpecifier [
+
+	^self visitJsonMap: anInquireSpecifier keys: #(span name expr)
+]
+
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitInquireStatement: anInquireStatement [ 
+
+	^self visitJsonMap: anInquireStatement keys: #(span specification)
+]
+
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitInteger: anIntegerNode [
 	"to be more explicit, Integer nodes are 'transformed' in IntegerLiteralValue nodes"
@@ -1271,6 +1283,14 @@ FortranAbstractJsonVisitor >> visitSpan: aSpanString [
 
 	^ {one asInteger @ two asInteger .
 		three asInteger @ (four asInteger + 1) }
+]
+
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitSpecification: anInquireSpecification [ 
+
+	^(anInquireSpecification at: #list) collect: [ :specif |
+		self visitInquireSpecifier: specif
+	]
 ]
 
 { #category : #visiting }
