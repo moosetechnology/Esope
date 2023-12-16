@@ -1377,7 +1377,7 @@ FortranAbstractJsonVisitor >> visitSubscript: aSubscriptNode [
 FortranAbstractJsonVisitor >> visitSubtraction: aSubtractionOperatorNode [
 ]
 
-{ #category : #'visiting statement' }
+{ #category : #visiting }
 FortranAbstractJsonVisitor >> visitTarget: aTargetNode [
 	^self visitJsonElement: aTargetNode
 ]
