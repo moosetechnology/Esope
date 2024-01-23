@@ -904,13 +904,6 @@ FortranAbstractJsonVisitor >> visitInquireStatement: anInquireStatement [
 ]
 
 { #category : #'visiting expression' }
-FortranAbstractJsonVisitor >> visitInquireStatement: anInquireStatementNode [
-
-	^self visitJsonMap: anInquireStatementNode keys: #( span specification )
-
-]
-
-{ #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitInteger: anIntegerNode [
 	"to be more explicit, Integer nodes are 'transformed' in IntegerLiteralValue nodes"
 	^self visitIntegerLiteralValue: (anIntegerNode at: 'contents')
@@ -1068,11 +1061,13 @@ FortranAbstractJsonVisitor >> visitLimit: aLimitNode [
 
 { #category : #visiting }
 FortranAbstractJsonVisitor >> visitList: aListNode [
-	"key 'list' used for different things should be treated upstream and never reach this point"
-	self flag: #FIXME. "self shouldNotImplement"
-	aListNode ifNil: [ ^#() ].
+	"key 'list' used for different things. Once we are in the list we might no not what its elements are.
+	 Therefore should be treated upstream and never reach this point
+	
+	 typically, one will do: ^(aNode at: 'list') collect: [ :each | self visitXYZ: each ] , knowing what are the elements
+	of the list and what needs to be called (#visitXYZ:) "
 
-	^self visitJsonElement: aListNode
+	self shouldNotImplement 
 ]
 
 { #category : #'visiting expression' }
@@ -1192,13 +1187,6 @@ FortranAbstractJsonVisitor >> visitOpenStatement: anOpenStatement [
 ]
 
 { #category : #'visiting expression' }
-FortranAbstractJsonVisitor >> visitOpenStatement: anOpenStatementNode [
-
-	^self visitJsonMap: anOpenStatementNode keys: #( span specification )
-
-]
-
-{ #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitOr: anOrOperatorNode [
 	^ '.or.'
 ]
@@ -1311,13 +1299,6 @@ FortranAbstractJsonVisitor >> visitRewindStatement: aRewindStatement [
 		self visitSpan: (aRewindStatement at: 'span') .
 		self visitIOParameters: (aRewindStatement at: 'specification')
 	}
-]
-
-{ #category : #'visiting expression' }
-FortranAbstractJsonVisitor >> visitRewindStatement: aRewindStatementNode [
-
-	^self visitJsonMap: aRewindStatementNode keys: #( span specification )
-
 ]
 
 { #category : #'visiting expression' }
