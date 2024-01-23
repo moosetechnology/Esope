@@ -119,6 +119,11 @@ FortranAbstractJsonVisitor >> processEsopeComment: anEsopeCommentNode [
 	, esopeCommand
 ]
 
+{ #category : #helpers }
+FortranAbstractJsonVisitor >> processEsopeIfComment: anEsopeIfCommentNode [ 
+	self shouldBeImplemented.
+]
+
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitAddition: anAdditionOperatorNode [
 ]
@@ -189,6 +194,13 @@ FortranAbstractJsonVisitor >> visitAttributes: aNode [
 	^nil
 ]
 
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitBackspaceStatement: aBackspaceStatementNode [
+
+	^self visitJsonMap: aBackspaceStatementNode keys: #( span specification )
+
+]
+
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitBase_type: aString [
 	"to offer the possibility to handle each baseType differently, we create #visitXYZBaseType: methods"
@@ -241,6 +253,13 @@ FortranAbstractJsonVisitor >> visitCallStatement: aCallStatementNode [
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitCharacterBaseType: aString [
 	^aString
+
+]
+
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitCloseStatement: aCloseStatementNode [
+
+	^self visitJsonMap: aCloseStatementNode keys: #( span specification )
 
 ]
 
@@ -521,6 +540,11 @@ FortranAbstractJsonVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
 
 	^self processEsopeComment: anEsopeCommentNode
 
+]
+
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitEsopeIfComment: anEsopeIfCommentNode [ 
+	^self processEsopeIfComment: anEsopeIfCommentNode
 ]
 
 { #category : #'visiting esope' }
@@ -880,6 +904,13 @@ FortranAbstractJsonVisitor >> visitInquireStatement: anInquireStatement [
 ]
 
 { #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitInquireStatement: anInquireStatementNode [
+
+	^self visitJsonMap: anInquireStatementNode keys: #( span specification )
+
+]
+
+{ #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitInteger: anIntegerNode [
 	"to be more explicit, Integer nodes are 'transformed' in IntegerLiteralValue nodes"
 	^self visitIntegerLiteralValue: (anIntegerNode at: 'contents')
@@ -1038,7 +1069,10 @@ FortranAbstractJsonVisitor >> visitLimit: aLimitNode [
 { #category : #visiting }
 FortranAbstractJsonVisitor >> visitList: aListNode [
 	"key 'list' used for different things should be treated upstream and never reach this point"
-	self shouldNotImplement 
+	self flag: #FIXME. "self shouldNotImplement"
+	aListNode ifNil: [ ^#() ].
+
+	^self visitJsonElement: aListNode
 ]
 
 { #category : #'visiting expression' }
@@ -1158,6 +1192,13 @@ FortranAbstractJsonVisitor >> visitOpenStatement: anOpenStatement [
 ]
 
 { #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitOpenStatement: anOpenStatementNode [
+
+	^self visitJsonMap: anOpenStatementNode keys: #( span specification )
+
+]
+
+{ #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitOr: anOrOperatorNode [
 	^ '.or.'
 ]
@@ -1273,8 +1314,22 @@ FortranAbstractJsonVisitor >> visitRewindStatement: aRewindStatement [
 ]
 
 { #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitRewindStatement: aRewindStatementNode [
+
+	^self visitJsonMap: aRewindStatementNode keys: #( span specification )
+
+]
+
+{ #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitRight: aRightNode [
 	^self visitJsonElement: aRightNode
+]
+
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitSaveStatement: aSaveStatementNode [
+
+	^self visitJsonMap: aSaveStatementNode keys: #( span vars )
+
 ]
 
 { #category : #visiting }
@@ -1314,6 +1369,13 @@ FortranAbstractJsonVisitor >> visitSpan: aSpanString [
 
 	^ {one asInteger @ two asInteger .
 		three asInteger @ (four asInteger + 1) }
+]
+
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitSpecification: aSpecificationNode [
+
+	^self visitJsonElement: aSpecificationNode
+
 ]
 
 { #category : #visiting }
