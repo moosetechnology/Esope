@@ -1037,7 +1037,12 @@ FortranAbstractJsonVisitor >> visitLimit: aLimitNode [
 
 { #category : #visiting }
 FortranAbstractJsonVisitor >> visitList: aListNode [
-	"key 'list' used for different things should be treated upstream and never reach this point"
+	"key 'list' used for different things. Once we are in the list we might no not what its elements are.
+	 Therefore should be treated upstream and never reach this point
+	
+	 typically, one will do: ^(aNode at: 'list') collect: [ :each | self visitXYZ: each ] , knowing what are the elements
+	of the list and what needs to be called (#visitXYZ:) "
+
 	self shouldNotImplement 
 ]
 
