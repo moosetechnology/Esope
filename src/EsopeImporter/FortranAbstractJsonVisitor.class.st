@@ -119,6 +119,11 @@ FortranAbstractJsonVisitor >> processEsopeComment: anEsopeCommentNode [
 	, esopeCommand
 ]
 
+{ #category : #helpers }
+FortranAbstractJsonVisitor >> processEsopeIfComment: anEsopeIfCommentNode [ 
+	self shouldBeImplemented.
+]
+
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitAddition: anAdditionOperatorNode [
 ]
@@ -189,6 +194,13 @@ FortranAbstractJsonVisitor >> visitAttributes: aNode [
 	^nil
 ]
 
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitBackspaceStatement: aBackspaceStatementNode [
+
+	^self visitJsonMap: aBackspaceStatementNode keys: #( span specification )
+
+]
+
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitBase_type: aString [
 	"to offer the possibility to handle each baseType differently, we create #visitXYZBaseType: methods"
@@ -244,12 +256,11 @@ FortranAbstractJsonVisitor >> visitCharacterBaseType: aString [
 
 ]
 
-{ #category : #'visiting statement' }
-FortranAbstractJsonVisitor >> visitCloseStatement: aCloseNode [
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitCloseStatement: aCloseStatementNode [
 
-	self flag: 'Node should have 2 keys: #span and #specification'.
+	^self visitJsonMap: aCloseStatementNode keys: #( span specification )
 
-	^self visitJsonMap: aCloseNode keys: #(span )
 ]
 
 { #category : #'visiting statement' }
@@ -529,6 +540,11 @@ FortranAbstractJsonVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
 
 	^self processEsopeComment: anEsopeCommentNode
 
+]
+
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitEsopeIfComment: anEsopeIfCommentNode [ 
+	^self processEsopeIfComment: anEsopeIfCommentNode
 ]
 
 { #category : #'visiting esope' }
@@ -1045,7 +1061,12 @@ FortranAbstractJsonVisitor >> visitLimit: aLimitNode [
 
 { #category : #visiting }
 FortranAbstractJsonVisitor >> visitList: aListNode [
-	"key 'list' used for different things should be treated upstream and never reach this point"
+	"key 'list' used for different things. Once we are in the list we might no not what its elements are.
+	 Therefore should be treated upstream and never reach this point
+	
+	 typically, one will do: ^(aNode at: 'list') collect: [ :each | self visitXYZ: each ] , knowing what are the elements
+	of the list and what needs to be called (#visitXYZ:) "
+
 	self shouldNotImplement 
 ]
 
@@ -1285,10 +1306,11 @@ FortranAbstractJsonVisitor >> visitRight: aRightNode [
 	^self visitJsonElement: aRightNode
 ]
 
-{ #category : #'visiting statement' }
-FortranAbstractJsonVisitor >> visitSaveStatement: aSaveNode [
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitSaveStatement: aSaveStatementNode [
 
-	^self visitJsonMap: aSaveNode keys: #(span vars)
+	^self visitJsonMap: aSaveStatementNode keys: #( span vars )
+
 ]
 
 { #category : #visiting }
@@ -1328,6 +1350,13 @@ FortranAbstractJsonVisitor >> visitSpan: aSpanString [
 
 	^ {one asInteger @ two asInteger .
 		three asInteger @ (four asInteger + 1) }
+]
+
+{ #category : #'visiting expression' }
+FortranAbstractJsonVisitor >> visitSpecification: aSpecificationNode [
+
+	^self visitJsonElement: aSpecificationNode
+
 ]
 
 { #category : #visiting }
