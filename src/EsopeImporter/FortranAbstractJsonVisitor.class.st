@@ -245,6 +245,14 @@ FortranAbstractJsonVisitor >> visitCharacterBaseType: aString [
 ]
 
 { #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitCloseStatement: aCloseNode [
+
+	self flag: 'Node should have 2 keys: #span and #specification'.
+
+	^self visitJsonMap: aCloseNode keys: #(span )
+]
+
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitComment: aCommentNode [
 	"Separates comments that are genuine fortran comments and the one that contain Esope commands"
 	| content |
@@ -1275,6 +1283,12 @@ FortranAbstractJsonVisitor >> visitRewindStatement: aRewindStatement [
 { #category : #'visiting expression' }
 FortranAbstractJsonVisitor >> visitRight: aRightNode [
 	^self visitJsonElement: aRightNode
+]
+
+{ #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitSaveStatement: aSaveNode [
+
+	^self visitJsonMap: aSaveNode keys: #(span vars)
 ]
 
 { #category : #visiting }
