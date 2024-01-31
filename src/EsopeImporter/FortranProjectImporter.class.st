@@ -351,7 +351,11 @@ FortranProjectImporter >> iASTToFamix [
 	| visitor |
 	visitor := IASTToFamixFortranVisitor new.
 
-	iastmodel do: [ :iastProgramFile | iastProgramFile accept: visitor ].
+	iastmodel do: [ :iastProgramFile |
+		[iastProgramFile accept: visitor]
+		on: Error
+		do: [ :err | self reportError: err onFile: iastProgramFile filename ]
+	].
 
 	famixModel := visitor model
 ]
@@ -368,6 +372,7 @@ FortranProjectImporter >> import [
 		from: 0 to: (self importSteps size - 1)
 		during: [:bar |
 			self importSteps withIndexDo: [ :step :i |
+				currentStep := step.
 				bar label: step key.
 				bar current: i.
 				self perform: step value
@@ -398,7 +403,7 @@ FortranProjectImporter >> importSteps [
 
 { #category : #accessing }
 FortranProjectImporter >> includeFolders [
-	^includeFolders
+	^includeFolders ifNil: [ #() ]
 ]
 
 { #category : #accessing }
@@ -439,7 +444,12 @@ FortranProjectImporter >> jsonASTToIAST [
 
 	iastmodel := (self workingJsonName asFileReference allChildrenMatching: '*.json') 
 		collect: [ :jsonFile | 
-			visitor visitProgramFile: (NeoJSONReader fromString: jsonFile contents) ].
+			[visitor visitProgramFile: (NeoJSONReader fromString: jsonFile contents)]
+			on: Error
+			do: [ :err |
+				self reportError: err onFile: jsonFile fullName.
+				IASTErrorEntity new filename: jsonFile fullName ; yourself ]
+		]
 
 ]
 
@@ -483,6 +493,26 @@ FortranProjectImporter >> preprocess: sourceCode to: stream [
 				ifFalse: [ stream << c ] ].
 		lineStart := ({Character cr . Character lf} includes: c)
 	]
+]
+
+{ #category : #'error management' }
+FortranProjectImporter >> reportError: aString [
+
+	self reportError: aString step: currentStep value asString
+]
+
+{ #category : #'error management' }
+FortranProjectImporter >> reportError: err onFile: aFileName [
+
+	self reportError: (err messageText , ' on file ' , aFileName)
+]
+
+{ #category : #'error management' }
+FortranProjectImporter >> reportError: aString step: aSymbol [
+
+	aSymbol trace.
+	' -- error: ' trace.
+	aString traceCr.
 ]
 
 { #category : #'private - import' }
