@@ -27,7 +27,9 @@ Class {
 		'iastmodel',
 		'srcFolders',
 		'includedFiles',
-		'includeFolders'
+		'includeFolders',
+		'defaultFileEncoding',
+		'currentStep'
 	],
 	#category : #'EsopeImporter-Importer'
 }
@@ -164,6 +166,22 @@ FortranProjectImporter >> copyIncludedFortranFile: includedFile to: workingFortr
 
 ]
 
+{ #category : #accessing }
+FortranProjectImporter >> defaultFileEncoding [
+	"other possibilities are 'latin1', 'utf8', ...
+	see `ZnCharacterEncoder knownEncodingIdentifiers` for all possibilities"
+
+	^defaultFileEncoding ifNil: [ 'iso-8859-1' ]
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> defaultFileEncoding: aString [
+	"other possibilities are 'latin1', 'utf8', ...
+	see `ZnCharacterEncoder knownEncodingIdentifiers` for all possibilities"
+
+	defaultFileEncoding := aString
+]
+
 { #category : #'private - files' }
 FortranProjectImporter >> ensureEmptyFolder: folder [
 
@@ -196,9 +214,14 @@ FortranProjectImporter >> esope: esopeReference toFortran: fortranFolder [
 			self esope: childReference toFortran: childWorkingReference ]
 	]
 	ifFalse: [
-		PPEsopeRewriter
-			rewriteFrom: esopeReference
+		[ PPEsopeRewriter
+			rewriteFrom: (esopeReference readStreamEncoded: self defaultFileEncoding)
 			to: fortranFolder / (esopeReference basename , '.f')
+		]
+		on: Error
+		do: [ :err |
+			self reportError: err onFile: esopeReference fullName
+		]
 	]
 ]
 
@@ -257,13 +280,15 @@ FortranProjectImporter >> famixResolve [
 { #category : #'private - files' }
 FortranProjectImporter >> findIncludesIn: srcFileReference [
 
-	srcFileReference readStreamDo: [ :stream |
+	[srcFileReference readStreamEncoded: self defaultFileEncoding do: [ :stream |
 		stream contents lines
 			do: [ :line |
 				(self isIncludeLine: line)
 				ifTrue: [ includedFiles add: (self getIncludedFile: line) ]
 			]
-	]
+	]]
+	on: Error
+	do: [ :err | self reportError: err onFile: srcFileReference fullName ]
 ]
 
 { #category : #'private - import' }
