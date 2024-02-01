@@ -41,6 +41,38 @@ FortranErrorManager >> errors [
 	^ errors
 ]
 
+{ #category : #api }
+FortranErrorManager >> handleErrorsFor: context running: runningBlock [
+	"1. register the context
+	 2. executes the runningBlock
+	 3. in case of Error register it"
+
+	^self handleErrorsFor: context running: runningBlock onErrorDo: [ :err | nil ]
+]
+
+{ #category : #api }
+FortranErrorManager >> handleErrorsFor: context running: runningBlock onErrorDo: errorBlock [
+	"1. register the context
+	 2. executes the runningBlock
+	 3. in case of Error register it
+	 4. and executes the errorBlock"
+
+	| value |
+
+	self enterContext: context.
+
+	[ value := runningBlock value ]
+	on: Error
+	do: [ :err |
+		self error: err.
+		value := errorBlock value: err
+	].
+
+	self leaveContext.
+	
+	^value
+]
+
 { #category : #initialization }
 FortranErrorManager >> initialize [ 
 
