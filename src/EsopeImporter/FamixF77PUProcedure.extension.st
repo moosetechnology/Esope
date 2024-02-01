@@ -9,7 +9,7 @@ FamixF77PUProcedure >> allLocalVariables [
 	,
 	(self includes
 		flatCollect: [ :include | 
-			   include included ifNotNil: [ :included | included localVariables ] ]
+			   include included ifNil: [ #() ] ifNotNil: [ :included | included localVariables ] ]
 	)
 ]
 
@@ -20,6 +20,6 @@ FamixF77PUProcedure >> allTypes [
 	^self types
 	  , 
    (self includes 
-		collect: [ :include | include included ifNotNil: [ :included | included types ] ]
-	) flattened
+		flatCollect: [ :include | include included ifNil: [ #() ] ifNotNil: [ :included | included types ] ]
+	)
 ]
