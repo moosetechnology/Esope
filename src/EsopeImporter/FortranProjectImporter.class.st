@@ -29,7 +29,8 @@ Class {
 		'includedFiles',
 		'includeFolders',
 		'defaultFileEncoding',
-		'currentStep'
+		'errorHandler',
+		'stopOnError'
 	],
 	#category : #'EsopeImporter-Importer'
 }
@@ -201,6 +202,12 @@ FortranProjectImporter >> ensureFolder: folderName [
 	^fileReference
 ]
 
+{ #category : #'error management' }
+FortranProjectImporter >> errors [
+
+	^errorHandler errors
+]
+
 { #category : #'private - import' }
 FortranProjectImporter >> esope: esopeReference toFortran: fortranFolder [
 	"for each Esope file in esopeReference, creates a de-esopified file in fortranFolder
@@ -214,14 +221,11 @@ FortranProjectImporter >> esope: esopeReference toFortran: fortranFolder [
 			self esope: childReference toFortran: childWorkingReference ]
 	]
 	ifFalse: [
-		[ PPEsopeRewriter
+		errorHandler enterFile: esopeReference fullName.
+		PPEsopeRewriter
 			rewriteFrom: (esopeReference readStreamEncoded: self defaultFileEncoding)
-			to: fortranFolder / (esopeReference basename , '.f')
-		]
-		on: Error
-		do: [ :err |
-			self reportError: err onFile: esopeReference fullName
-		]
+			to: fortranFolder / (esopeReference basename , '.f').
+		errorHandler leaveFile
 	]
 ]
 
@@ -274,21 +278,23 @@ FortranProjectImporter >> fakeEsopeProgramUnit: includedFile to: workingEsopeFol
 FortranProjectImporter >> famixResolve [
 
 	(FamixFortran77Resolver on: famixModel)
-		resolve
+		errorHandler: errorHandler ;
+		resolve.
+
 ]
 
 { #category : #'private - files' }
 FortranProjectImporter >> findIncludesIn: srcFileReference [
 
-	[srcFileReference readStreamEncoded: self defaultFileEncoding do: [ :stream |
+	errorHandler enterFile: srcFileReference fullName.
+	srcFileReference readStreamEncoded: self defaultFileEncoding do: [ :stream |
 		stream contents lines
 			do: [ :line |
 				(self isIncludeLine: line)
 				ifTrue: [ includedFiles add: (self getIncludedFile: line) ]
 			]
-	]]
-	on: Error
-	do: [ :err | self reportError: err onFile: srcFileReference fullName ]
+	].
+	errorHandler leaveFile
 ]
 
 { #category : #'private - import' }
@@ -345,18 +351,24 @@ FortranProjectImporter >> getIncludedFile: aString [
 	^self unquoteIncludedFile: file
 ]
 
+{ #category : #'error management' }
+FortranProjectImporter >> hasErrors [
+
+	^errorHandler isNotEmpty
+]
+
 { #category : #run }
 FortranProjectImporter >> iASTToFamix [
 
 	| visitor |
 	visitor := IASTToFamixFortranVisitor new.
-
+errorHandler stopOnError.
 	iastmodel do: [ :iastProgramFile |
-		[iastProgramFile accept: visitor]
-		on: Error
-		do: [ :err | self reportError: err onFile: iastProgramFile filename ]
+		errorHandler enterFile: iastProgramFile filename.
+		iastProgramFile accept: visitor.
+		errorHandler leaveFile
 	].
-
+errorHandler resumeOnError.
 	famixModel := visitor model
 ]
 
@@ -368,14 +380,22 @@ FortranProjectImporter >> import [
 	srcFolders ifEmpty: [ 
 		Warning signal: 'Set source folders first' ].
 
+	errorHandler := FortranErrorManager new.
+
 	UIManager default displayProgress: ''
 		from: 0 to: (self importSteps size - 1)
 		during: [:bar |
 			self importSteps withIndexDo: [ :step :i |
-				currentStep := step.
 				bar label: step key.
 				bar current: i.
-				self perform: step value
+				errorHandler enterContext: step value.
+				[self perform: step value]
+				on: Error
+				do: [ :err |
+					self reportError: err.
+					err resumeUnchecked: nil
+				].
+				errorHandler leaveContext
 			] 
 		].
 
@@ -439,16 +459,20 @@ FortranProjectImporter >> isIncludeLine: aString [
 { #category : #run }
 FortranProjectImporter >> jsonASTToIAST [
 
-	| visitor |
+	| visitor iastEntity |
 	visitor := JsonToIASTVisitor new.
 
 	iastmodel := (self workingJsonName asFileReference allChildrenMatching: '*.json') 
 		collect: [ :jsonFile | 
-			[visitor visitProgramFile: (NeoJSONReader fromString: jsonFile contents)]
+			errorHandler enterFile: jsonFile fullName.
+			[ iastEntity := visitor visitProgramFile: (NeoJSONReader fromString: jsonFile contents)]
 			on: Error
 			do: [ :err |
-				self reportError: err onFile: jsonFile fullName.
-				IASTErrorEntity new filename: jsonFile fullName ; yourself ]
+				self reportError: err.
+				iastEntity := IASTErrorEntity new filename: jsonFile fullName ; yourself
+			].
+			errorHandler leaveFile.
+			iastEntity
 		]
 
 ]
@@ -496,23 +520,9 @@ FortranProjectImporter >> preprocess: sourceCode to: stream [
 ]
 
 { #category : #'error management' }
-FortranProjectImporter >> reportError: aString [
+FortranProjectImporter >> reportError: error [
 
-	self reportError: aString step: currentStep value asString
-]
-
-{ #category : #'error management' }
-FortranProjectImporter >> reportError: err onFile: aFileName [
-
-	self reportError: (err messageText , ' on file ' , aFileName)
-]
-
-{ #category : #'error management' }
-FortranProjectImporter >> reportError: aString step: aSymbol [
-
-	aSymbol trace.
-	' -- error: ' trace.
-	aString traceCr.
+	errorHandler error: error
 ]
 
 { #category : #'private - import' }
