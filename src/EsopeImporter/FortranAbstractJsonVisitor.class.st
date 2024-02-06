@@ -455,7 +455,7 @@ FortranAbstractJsonVisitor >> visitDivision: aDivisionOperatorNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitDo: aDoNode [
-	^self visitJsonMap: aDoNode keys: #(span do_spec target body end_label)
+	^self visitJsonMap: aDoNode keys: #(span label do_spec target body end_label)
 ]
 
 { #category : #'visiting statement' }
