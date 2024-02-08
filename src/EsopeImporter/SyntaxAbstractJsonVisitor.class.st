@@ -1,78 +1,138 @@
 Class {
 	#name : #SyntaxAbstractJsonVisitor,
 	#superclass : #Object,
+	#classInstVars : [
+		'aNode'
+	],
 	#category : #'EsopeImporter-Visitor'
 }
 
-{ #category : #'visiting reflectivity' }
-SyntaxAbstractJsonVisitor >> generateMethod: aNode selector: selector [
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> createVisitSelector: key [
 
-	aNode isArray
-		ifTrue: [
-			^ selector , ' aNode
-			      "comment"
+	^ ('visit' , ((('_' split: key) collect: [ :each | each capitalized ])
+		   joinUsing: '') , ':') asSymbol
+]
+
+{ #category : #'visiting reflectivity' }
+SyntaxAbstractJsonVisitor >> generateAbstractMethod: aNode selector: selector [
+
+	aNode isArray ifTrue: [
+		^ selector , ' aNode
+		<generated>
 			
-			      self visitJsonArray: aNode' ].
-		
+			^ self visitJsonArray: aNode' ].
+
 	aNode isDictionary ifTrue: [
 		| keys |
-		keys := aNode keys reduce: [ :a :b | a , ' ' , b ].
-		
-		^ selector , ' aNode
-    "comment"
-
-    self visitJsonMap: aNode keys: #(' , keys , ')'.
-		 ].	
-
+		keys := aNode keys.
+		(keys includes: 'tag')
+			ifTrue: [
+				^ selector , ' aNode
+   <generated>
+	| result values keys |
 	1 halt.
+				
+	"keys := #( ' , (keys joinUsing: ' ') , ' ).
+	values := self visitJsonMap: aNode keys: keys.
+				
+	result := Dictionary new.
+	keys
+		with: values
+		do: [ :key :value | result at: key put: value ].
+	^ result"
+		
+	^ self visitJsonTaggedElement: aNode' ]
+			
+			ifFalse: [
+				^ selector , ' aNode
+    <generated>
+	| result values keys |
+	1 halt.
+				
+	keys := #( ' , keys joinUsing: ' ' , ' ).
+	values := self visitJsonMap: aNode keys: keys.
+				
+	result := Dictionary new.
+	keys
+		with: values
+		do: [ :key :value | result at: key put: value ].
+	^ result' ] ].
+
+	"not array, not dictionary"
+	^ selector , ' aNode
+	<generated>
+	
+	1 halt.'
 ]
 
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitArithmetic_if_statement: aNode [
-    "comment"
+{ #category : #'visiting reflectivity' }
+SyntaxAbstractJsonVisitor >> generateImplMethod: aNode selector: selector [
 
-    self visitJsonMap: aNode keys: #(start_pos s1 s2 expression s3)
-]
+	| keys |
+	aNode isDictionary
+		ifTrue: [ keys := aNode keys joinUsing: ' ' ]
+		ifFalse: [ keys := 'no keys in data' ].
 
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitAssignment_statement: aNode [
-			      "comment"
+	^ selector , ' aNode
+			  		<generated>
+					"', keys ,'"
+					
+					| data |    
+					data := super ' , selector , 'aNode.
 			      1 halt.
+					^ data'
 ]
 
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitBackspace_statement: aNode [
-    "comment"
+SyntaxAbstractJsonVisitor >> visitArithmeticExpression: aNode [
+	"generated"
 
-    self visitJsonMap: aNode keys: #(start_pos parameters)
+	^ self visitJsonMap: aNode keys: #( expression )
 ]
 
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitBlock_data: aNode [
-    "comment"
+SyntaxAbstractJsonVisitor >> visitAssignmentStatement: aNode [
 
-    self visitJsonMap: aNode keys: #(start_pos parameters end_pos statement_list name)
+	| result values keys |
+
+	keys := #( start_pos right left ).
+	values := self visitJsonMap: aNode keys: keys.
+
+	result := Dictionary new.
+	keys
+		with: values
+		do: [ :key :value | result at: key put: value ].
+	^ result
 ]
 
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitBlock_if_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos then_statements else_block expression)
+SyntaxAbstractJsonVisitor >> visitCharacterConstant: aNode [
+   <generated>
+	| result values keys |
+				
+	keys := #( start_pos value ).
+	values := self visitJsonMap: aNode keys: keys.
+				
+	result := Dictionary new.
+	keys
+		with: values
+		do: [ :key :value | result at: key put: value ].
+	^ result
 ]
 
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitCall_statement: aNode [
-    "comment"
+SyntaxAbstractJsonVisitor >> visitCharacterExpression: aNode [
 
-    self visitJsonMap: aNode keys: #(start_pos name arguments)
-]
+	<generated>
+	| result values keys |
+	
+	keys := #( expression ).
+	values := self visitJsonMap: aNode keys: keys.
 
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitClose_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos parameters)
+	result := Dictionary new.
+	keys with: values do: [ :key :value | result at: key put: value ].
+	^ result
 ]
 
 { #category : #'visiting statement' }
@@ -84,130 +144,87 @@ SyntaxAbstractJsonVisitor >> visitComments: aComments [
 ]
 
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitCommon_statement: aNode [
-    "comment"
+SyntaxAbstractJsonVisitor >> visitConstant: aNode [
+		
+	^ self visitJsonTaggedElement: aNode
+]
 
-    self visitJsonMap: aNode keys: #(start_pos parameters)
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitConstantSigned: aNode [
+   <generated>
+	| result values keys |
+				
+	keys := #( sign constant ).
+	values := self visitJsonMap: aNode keys: keys.
+				
+	result := Dictionary new.
+	keys
+		with: values
+		do: [ :key :value | result at: key put: value ].
+	^ result
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitDeclarators: aNode [
+		"generated"
+			
+			^ self visitJsonArray: aNode
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitDimensionDeclarators: aNode [
+		"generated"
+			
+			^ self visitJsonArray: aNode
 ]
 
 { #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitContinue_statement: aContinueStatement [
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitData_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos parameters)
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitDimension_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos array_declarators)
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitDo_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos statements_list loop_control statement_number)
-]
-
-{ #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitEnd_pos: aEndPos [
+SyntaxAbstractJsonVisitor >> visitEndPos: aEndPos [
 	
 	^ (aEndPos at: 'line') asInteger @ (aEndPos at: 'column') asInteger
 ]
 
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitEndfile_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos parameters)
+SyntaxAbstractJsonVisitor >> visitExpression: aNode [
+				"generated"
+		
+		^ self visitJsonTaggedElement: aNode
 ]
 
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitEntry_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(name start_pos parameters)
+SyntaxAbstractJsonVisitor >> visitFunctionReference: aNode [
+   <generated>
+	| result values keys |
+				
+	keys := #( name ).
+	values := self visitJsonMap: aNode keys: keys.
+				
+	result := Dictionary new.
+	keys
+		with: values
+		do: [ :key :value | result at: key put: value ].
+	^ result
 ]
 
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitEquivalence_statement: aNode [
-    "comment"
+SyntaxAbstractJsonVisitor >> visitIntegerType: aNode [
+    "generated"
 
-    self visitJsonMap: aNode keys: #(start_pos parameters)
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitExternal_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(proc_list start_pos)
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitFormat_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(label specification)
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitFunction: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos parameters end_pos statement_list name)
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitFunction_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos parameters expression name)
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitGoto_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(var start_pos labels type)
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitImplicit_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos parameters)
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitInquire_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos parameters)
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitIntrinsic_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos fun_list)
+    self visitJsonMap: aNode keys: #(name)
 ]
 
 { #category : #'visiting reflectivity' }
 SyntaxAbstractJsonVisitor >> visitJsonArray: aCollection [
-	^aCollection collect: [ :each | self visitJsonElement: each ]
+
+	^ aCollection collect: [ :each | self visitJsonElement: each ]
 ]
 
 { #category : #'visiting reflectivity' }
 SyntaxAbstractJsonVisitor >> visitJsonElement: aNode [
-	aNode ifNil: [ ^nil ].
-	aNode isDictionary  ifTrue: [ ^self visitJsonMap: aNode ].
-	aNode isArray  ifTrue: [ ^self visitJsonArray: aNode ].
+
+	aNode ifNil: [ ^ nil ].
+	aNode isDictionary ifTrue: [ ^ self visitJsonMap: aNode ].
+	aNode isArray ifTrue: [ ^ self visitJsonArray: aNode ]
 ]
 
 { #category : #'visiting reflectivity' }
@@ -236,7 +253,8 @@ SyntaxAbstractJsonVisitor >> visitJsonMap: jsonDictionary keys: aCollection [
 
 { #category : #'visiting reflectivity' }
 SyntaxAbstractJsonVisitor >> visitJsonNode: aJsonNode key: key [
-	^self visitKey: key value: (aJsonNode at: key)
+
+	^ self visitKey: key value: (aJsonNode at: key)
 ]
 
 { #category : #'visiting reflectivity' }
@@ -245,7 +263,7 @@ SyntaxAbstractJsonVisitor >> visitJsonTaggedElement: jsonDictionary [
 	 so that it is not visited again (not sure this is needed ...?)"
 
 	| key |
-	key := jsonDictionary removeKey: 'tag'.
+	key := jsonDictionary at: 'tag'.
 	^ self visitKey: key value: jsonDictionary
 ]
 
@@ -265,56 +283,79 @@ SyntaxAbstractJsonVisitor >> visitKey: key value: aNode [
 
 	| selector aClass abstrMethod implMethod |
 	
-	selector := ('visit' , key capitalized , ':') asSymbol.
+	selector := self createVisitSelector: key.
 	aClass := SyntaxAbstractJsonVisitor.
-	(aClass selectors includes: selector)
-		ifFalse: [
-			abstrMethod := self generateMethod: aNode selector: selector. 
-			
-			implMethod := selector,' aNode
-			      "comment"
-			      1 halt'.
-			
-			"add method to both abstract and current visitor"
-			aClass compile: abstrMethod.
-			self class compile: implMethod.
-		 ].
-	
-	 ^ self perform: selector with: aNode
+	(aClass selectors includes: selector) ifFalse: [
+		abstrMethod := self generateAbstractMethod: aNode selector: selector.
+
+		implMethod :=  self generateImplMethod: aNode selector: selector.
+		
+		"add method to both abstract and current visitor"
+		aClass compile: abstrMethod.
+		self class compile: implMethod ].
+
+	^ self perform: selector with: aNode
 ]
 
 { #category : #'as yet unclassified' }
 SyntaxAbstractJsonVisitor >> visitLeft: aNode [
-			      "comment"
-			
-			      self visitJsonArray: aNode
+
+	^ (self visitJsonArray: aNode) first
 ]
 
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitLogical_if_statement: aNode [
-    "comment"
+SyntaxAbstractJsonVisitor >> visitLiteral: aNode [
+				"generated"
+		
+		^ self visitJsonTaggedElement: aNode
+]
 
-    self visitJsonMap: aNode keys: #(statement start_pos expression)
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitLiteralExpression: aNode [
+	"generated"
+
+	^ self visitJsonMap: aNode keys: #( literal )
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitLogicalConstant: aNode [
+
+	^ (self visitJsonMap: aNode keys: #( value )) first
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitLogicalExpression: aNode [
+
+	^ (self visitJsonMap: aNode keys: #( expression )) first
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitLogicalFactor: aNode [
+	"TODO should visit negated as well"
+
+	^ (self visitJsonMap: aNode keys: #( expression )) first
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitLogicalPrimary: aNode [
+
+	^ (self visitJsonMap: aNode keys: #( expression )) first
 ]
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitMain: aMain [
+	"generated"
 
-	^ self visitJsonMap: aMain keys: #(start_pos statement_list end_pos name)  
+	^ self
+		  visitJsonMap: aMain
+		  keys: #( start_pos statement_list end_pos name )
 ]
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitName: aName [
 
-	"^ aName at: 'name'"
+	^ aName at: 'name'
     
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitOpen_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos parameters)
 ]
 
 { #category : #'visiting statement' }
@@ -322,13 +363,6 @@ SyntaxAbstractJsonVisitor >> visitParameter: aParameter [
 	
 	^ self subclassResponsibility
     
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitParameter_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos parameters)
 ]
 
 { #category : #'visiting statement' }
@@ -340,20 +374,6 @@ SyntaxAbstractJsonVisitor >> visitParameters: aParameters [
     
 ]
 
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitPause_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos argument)
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitPrint_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(format start_pos io_list)
-]
-
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitProgramFile: aProgramFile [
 	"a program file containing comments, program units, tag (fortran_file) and file name. everything else than program units are ingonred for the moment"
@@ -361,81 +381,116 @@ SyntaxAbstractJsonVisitor >> visitProgramFile: aProgramFile [
 	^ self visitJsonMap: aProgramFile keys: #(program_units) 
 ]
 
-{ #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitProgram_units: aProgramUnits [
-
-	^ self visitJsonArray: aProgramUnits 
-]
-
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitRead_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(format start_pos io_list control_info_list)
-]
-
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitRewind_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos parameters)
+SyntaxAbstractJsonVisitor >> visitProgramUnits: aNode [
+		"generated"
+			
+			^ self visitJsonArray: aNode
 ]
 
 { #category : #'as yet unclassified' }
 SyntaxAbstractJsonVisitor >> visitRight: aNode [
-			      "comment"
-			
-			      self visitJsonArray: aNode
+
+	^ (self visitJsonArray: aNode) first
 ]
 
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitSave_statement: aNode [
-    "comment"
+SyntaxAbstractJsonVisitor >> visitSign: aNode [
 
-    self visitJsonMap: aNode keys: #(start_pos var_list)
+	^ aNode
 ]
 
 { #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitStart_pos: aStartPos [
-	
-	^ (aStartPos at: 'line') asInteger @ (aStartPos at: 'column') asInteger
+SyntaxAbstractJsonVisitor >> visitStartPos: aStartPos [
+	"generated"
+
+	^ (aStartPos at: 'line') asInteger
+	  @ (aStartPos at: 'column') asInteger
 ]
 
 { #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitStatement_list: aStatementList [
+SyntaxAbstractJsonVisitor >> visitStatementList: aStatementList [
+	"generated"
 
 	^ aStatementList collect: [ :each | self visitJsonMap: each ]
 ]
 
-{ #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitStop_statement: aNode [
-    "comment"
-
-    self visitJsonMap: aNode keys: #(start_pos)
-]
-
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitSubroutine: aSubroutine [
-	 
-	^ self visitJsonMap: aSubroutine keys: #(start_pos parameters end_pos statement_list name) 
+	"generated"
+
+	^ self
+		  visitJsonMap: aSubroutine
+		  keys: #( start_pos parameters end_pos statement_list
+		     name )
 ]
 
 { #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitSymbolic_name: aSymbolicName [
+SyntaxAbstractJsonVisitor >> visitSymbolicName: aSymbolicName [
+	"generated"
 
 	^ aSymbolicName at: 'name'
 ]
 
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitType_statement: aNode [
-    "comment"
+SyntaxAbstractJsonVisitor >> visitType: aNode [
+    "generated"
 
-    self visitJsonMap: aNode keys: #(start_pos declarators type)
+    ^ self visitJsonTaggedElement: aNode
 ]
 
 { #category : #'as yet unclassified' }
-SyntaxAbstractJsonVisitor >> visitWrite_statement: aNode [
-    "comment"
+SyntaxAbstractJsonVisitor >> visitTypeReference: aNode [
+    "generated"
 
-    self visitJsonMap: aNode keys: #(start_pos control_info_list io_list)
+	^ self visitKey: ((aNode at: 'name') asLowercase capitalized , 'Type') value: aNode.
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitUnsignedIntConstant: aNode [
+				"generated"
+		
+		^ self visitJsonMap: aNode keys: #('value') 
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitUnsignedRealConstant: aNode [
+
+	| result values keys |
+	keys := #( start_pos value ).
+	values := self visitJsonMap: aNode keys: keys.
+
+	result := Dictionary new.
+	keys with: values do: [ :key :value | result at: key put: value ].
+	^ result
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitValue: aNode [
+	"generated"
+
+	^ aNode
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitVariable: aNode [
+	"comment"
+
+	^ self visitJsonTaggedElement: aNode
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitVariableDeclarationStatement: aNode [
+    "generated"
+
+    ^ self visitJsonMap: aNode keys: #(start_pos declarators type)
+
+
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitVariableDeclarator: aNode [
+	"generated"
+
+	^ self visitJsonMap: aNode keys: #( variable dimension_declarators )
 ]
