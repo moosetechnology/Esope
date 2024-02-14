@@ -379,7 +379,6 @@ SyntaxAbstractJsonVisitor >> visitControlInfoList: aNode [
 SyntaxAbstractJsonVisitor >> visitDataStatement: aNode [
     <generated>
 	| result values keys |
-	1 halt.
 				
 	keys := #( start_pos parameters ).
 	values := self visitJsonMap: aNode keys: keys.
@@ -442,7 +441,7 @@ SyntaxAbstractJsonVisitor >> visitElseBlock: aNode [
     <generated>
 	| result values keys |
 				
-	keys := #( else_statements end_if ).
+	keys := self generateKeys: aNode.
 	values := self visitJsonMap: aNode keys: keys.
 				
 	result := Dictionary new.
@@ -450,6 +449,12 @@ SyntaxAbstractJsonVisitor >> visitElseBlock: aNode [
 		with: values
 		do: [ :key :value | result at: key put: value ].
 	^ result
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitElseLabel: aNode [
+	
+	^ aNode 
 ]
 
 { #category : #'visiting statement' }
