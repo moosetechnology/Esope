@@ -291,6 +291,13 @@ SyntaxAbstractJsonVisitor >> visitCharacterType: aNode [
 	^ result
 ]
 
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitClist: aNode [
+   <generated>
+ 
+   ^ self visitJsonArray: aNode
+]
+
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitComments: aComments [
 
@@ -376,17 +383,36 @@ SyntaxAbstractJsonVisitor >> visitControlInfoList: aNode [
 ]
 
 { #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitDataParameters: aNode [
+   <generated>
+ 
+   ^ self visitJsonArray: aNode
+]
+
+{ #category : #'as yet unclassified' }
 SyntaxAbstractJsonVisitor >> visitDataStatement: aNode [
     <generated>
 	| result values keys |
 				
-	keys := #( start_pos parameters ).
+	keys := #( start_pos data_parameters ).
 	values := self visitJsonMap: aNode keys: keys.
 				
 	result := Dictionary new.
 	keys
 		with: values
 		do: [ :key :value | result at: key put: value ].
+	^ result
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitDataStatementConstant: aNode [
+
+	| result values keys |
+	keys := #( occurence constant ).
+	values := self visitJsonMap: aNode keys: keys.
+
+	result := Dictionary new.
+	keys with: values do: [ :key :value | result at: key put: value ].
 	^ result
 ]
 
@@ -501,18 +527,21 @@ SyntaxAbstractJsonVisitor >> visitEntryStatement: aNode [
 ]
 
 { #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitEquivalenceParameters: aNode [
+   <generated>
+ 
+   ^ self visitJsonArray: aNode
+]
+
+{ #category : #'as yet unclassified' }
 SyntaxAbstractJsonVisitor >> visitEquivalenceStatement: aNode [
-    <generated>
+
 	| result values keys |
-	1 halt.
-				
-	keys := #( start_pos parameters ).
+	keys := #( start_pos equivalence_parameters ).
 	values := self visitJsonMap: aNode keys: keys.
-				
+
 	result := Dictionary new.
-	keys
-		with: values
-		do: [ :key :value | result at: key put: value ].
+	keys with: values do: [ :key :value | result at: key put: value ].
 	^ result
 ]
 
@@ -542,6 +571,22 @@ SyntaxAbstractJsonVisitor >> visitFormat: aNode [
    <generated>
  
    ^ self visitJsonArray: aNode
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitFormatSpecification: aNode [
+    <generated>
+	| result values keys |
+	1 halt.
+				
+	keys := #( slash repeat_factor descriptor ).
+	values := self visitJsonMap: aNode keys: keys.
+				
+	result := Dictionary new.
+	keys
+		with: values
+		do: [ :key :value | result at: key put: value ].
+	^ result
 ]
 
 { #category : #'as yet unclassified' }
@@ -931,12 +976,39 @@ SyntaxAbstractJsonVisitor >> visitNlist: aNode [
 ]
 
 { #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitNonzeroUnsignedIntConstant: aNode [
+
+	| result values keys |
+	keys := #( start_pos value ).
+	values := self visitJsonMap: aNode keys: keys.
+
+	result := Dictionary new.
+	keys with: values do: [ :key :value | result at: key put: value ].
+	^ result
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitOccurence: aNode [
+
+	aNode isEmpty
+		ifTrue: [ ^ nil ]
+		ifFalse: [ ^ self visitJsonTaggedElement: aNode ]
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitOpenParameters: aNode [
+   <generated>
+ 
+   ^ self visitJsonArray: aNode
+]
+
+{ #category : #'as yet unclassified' }
 SyntaxAbstractJsonVisitor >> visitOpenStatement: aNode [
     <generated>
 	| result values keys |
 	1 halt.
 				
-	keys := #( start_pos parameters ).
+	keys := #( start_pos open_parameters ).
 	values := self visitJsonMap: aNode keys: keys.
 				
 	result := Dictionary new.
@@ -1069,6 +1141,13 @@ SyntaxAbstractJsonVisitor >> visitRealType: aNode [
 ]
 
 { #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitRepeatFactor: aNode [
+	<generated>
+	
+	1 halt.
+]
+
+{ #category : #'as yet unclassified' }
 SyntaxAbstractJsonVisitor >> visitReturnSpecifier: aNode [
 
 	^ aNode
@@ -1146,6 +1225,13 @@ SyntaxAbstractJsonVisitor >> visitS3: aNode [
 SyntaxAbstractJsonVisitor >> visitSign: aNode [
 
 	^ aNode
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitSlash: aNode [
+	<generated>
+	
+	1 halt.
 ]
 
 { #category : #'as yet unclassified' }
