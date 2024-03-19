@@ -27,7 +27,10 @@ Class {
 		'iastmodel',
 		'srcFolders',
 		'includedFiles',
-		'includeFolders'
+		'includeFolders',
+		'defaultFileEncoding',
+		'errorHandler',
+		'stopOnError'
 	],
 	#category : #'EsopeImporter-Importer'
 }
@@ -164,6 +167,22 @@ FortranProjectImporter >> copyIncludedFortranFile: includedFile to: workingFortr
 
 ]
 
+{ #category : #accessing }
+FortranProjectImporter >> defaultFileEncoding [
+	"other possibilities are 'latin1', 'utf8', ...
+	see `ZnCharacterEncoder knownEncodingIdentifiers` for all possibilities"
+
+	^defaultFileEncoding ifNil: [ 'iso-8859-1' ]
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> defaultFileEncoding: aString [
+	"other possibilities are 'latin1', 'utf8', ...
+	see `ZnCharacterEncoder knownEncodingIdentifiers` for all possibilities"
+
+	defaultFileEncoding := aString
+]
+
 { #category : #'private - files' }
 FortranProjectImporter >> ensureEmptyFolder: folder [
 
@@ -183,22 +202,34 @@ FortranProjectImporter >> ensureFolder: folderName [
 	^fileReference
 ]
 
+{ #category : #'error management' }
+FortranProjectImporter >> errors [
+
+	^errorHandler errors
+]
+
 { #category : #'private - import' }
 FortranProjectImporter >> esope: esopeReference toFortran: fortranFolder [
 	"for each Esope file in esopeReference, creates a de-esopified file in fortranFolder
 	(keeps the same directory hierarchy)"
 
 	esopeReference isDirectory
+
 	ifTrue: [ | childWorkingReference |
 		childWorkingReference := fortranFolder / (esopeReference basename).
 		childWorkingReference ensureCreateDirectory.
 		esopeReference children do: [ :childReference |
 			self esope: childReference toFortran: childWorkingReference ]
 	]
+
 	ifFalse: [
-		PPEsopeRewriter
-			rewriteFrom: esopeReference
-			to: fortranFolder / (esopeReference basename , '.f')
+		errorHandler
+			handleErrorsFor: 'file:' , esopeReference fullName
+			running: [
+				PPEsopeRewriter
+					rewriteFrom: (esopeReference readStreamEncoded: self defaultFileEncoding)
+					to: fortranFolder / (esopeReference basename , '.f')
+			]
 	]
 ]
 
@@ -251,19 +282,26 @@ FortranProjectImporter >> fakeEsopeProgramUnit: includedFile to: workingEsopeFol
 FortranProjectImporter >> famixResolve [
 
 	(FamixFortran77Resolver on: famixModel)
-		resolve
+		errorHandler: errorHandler ;
+		resolve.
+
 ]
 
 { #category : #'private - files' }
 FortranProjectImporter >> findIncludesIn: srcFileReference [
 
-	srcFileReference readStreamDo: [ :stream |
-		stream contents lines
-			do: [ :line |
-				(self isIncludeLine: line)
-				ifTrue: [ includedFiles add: (self getIncludedFile: line) ]
-			]
-	]
+	errorHandler
+		handleErrorsFor: 'file:' , srcFileReference fullName
+		running: [
+			srcFileReference
+				readStreamEncoded: self defaultFileEncoding
+				do: [ :stream |
+					stream contents lines do: [ :line |
+						(self isIncludeLine: line)
+							ifTrue: [ includedFiles add: (self getIncludedFile: line) ]
+					]
+				]
+		]
 ]
 
 { #category : #'private - import' }
@@ -320,13 +358,23 @@ FortranProjectImporter >> getIncludedFile: aString [
 	^self unquoteIncludedFile: file
 ]
 
+{ #category : #'error management' }
+FortranProjectImporter >> hasErrors [
+
+	^errorHandler isNotEmpty
+]
+
 { #category : #run }
 FortranProjectImporter >> iASTToFamix [
 
 	| visitor |
 	visitor := IASTToFamixFortranVisitor new.
 
-	iastmodel do: [ :iastProgramFile | iastProgramFile accept: visitor ].
+	iastmodel do: [ :iastProgramFile |
+		errorHandler
+			handleErrorsFor: 'file:' , iastProgramFile filename
+			running: [ iastProgramFile accept: visitor ]
+	].
 
 	famixModel := visitor model
 ]
@@ -339,13 +387,18 @@ FortranProjectImporter >> import [
 	srcFolders ifEmpty: [ 
 		Warning signal: 'Set source folders first' ].
 
+	errorHandler := FortranErrorManager new.
+
 	UIManager default displayProgress: ''
 		from: 0 to: (self importSteps size - 1)
 		during: [:bar |
 			self importSteps withIndexDo: [ :step :i |
 				bar label: step key.
 				bar current: i.
-				self perform: step value
+
+				errorHandler
+					handleErrorsFor: step value
+					running: [ self perform: step value ]
 			] 
 		].
 
@@ -373,7 +426,7 @@ FortranProjectImporter >> importSteps [
 
 { #category : #accessing }
 FortranProjectImporter >> includeFolders [
-	^includeFolders
+	^includeFolders ifNil: [ #() ]
 ]
 
 { #category : #accessing }
@@ -409,12 +462,22 @@ FortranProjectImporter >> isIncludeLine: aString [
 { #category : #run }
 FortranProjectImporter >> jsonASTToIAST [
 
-	| visitor |
+	| visitor iastEntity |
 	visitor := JsonToIASTVisitor new.
 
 	iastmodel := (self workingJsonName asFileReference allChildrenMatching: '*.json') 
 		collect: [ :jsonFile | 
-			visitor visitProgramFile: (NeoJSONReader fromString: jsonFile contents) ].
+			errorHandler
+				handleErrorsFor: 'file:' , jsonFile fullName
+				running: [ 
+					iastEntity := visitor visitProgramFile:
+						(NeoJSONReader fromString: jsonFile contents) ]
+				onErrorDo: [ :err |
+					iastEntity := IASTErrorEntity new filename: jsonFile fullName ; yourself
+				].
+
+			iastEntity
+		]
 
 ]
 

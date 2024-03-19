@@ -5,7 +5,8 @@ Class {
 	#name : #FamixFortran77Resolver,
 	#superclass : #Object,
 	#instVars : [
-		'model'
+		'model',
+		'errorHandler'
 	],
 	#category : #'EsopeImporter-Resolver'
 }
@@ -16,6 +17,18 @@ FamixFortran77Resolver class >> on: aMooseModel [
 	^self new
 		  model: aMooseModel;
 		  yourself
+]
+
+{ #category : #accessing }
+FamixFortran77Resolver >> errorHandler [
+
+	^errorHandler ifNil: [ errorHandler := FortranErrorManager new ]
+]
+
+{ #category : #accessing }
+FamixFortran77Resolver >> errorHandler: anErrorHandler [
+
+	errorHandler := anErrorHandler
 ]
 
 { #category : #'private - utility' }
@@ -56,10 +69,10 @@ FamixFortran77Resolver >> newEntity: aFamixClass [
 FamixFortran77Resolver >> registerImplicitForPU: programUnit range: aRange forType: iASTTypeRef [
 
 	(aRange size = 1)
-	ifTrue: [ programUnit dicImplicit at: aRange first put: iASTTypeRef name asSymbol ]
+	ifTrue: [ programUnit dicImplicit at: aRange first put: iASTTypeRef entityName asSymbol ]
 	ifFalse: [ 
 		(aRange first to: aRange second) do: [ :letter |
-			programUnit dicImplicit at: letter put: iASTTypeRef name asSymbol
+			programUnit dicImplicit at: letter put: iASTTypeRef entityName asSymbol
 		]
 	]
 ]
@@ -67,8 +80,11 @@ FamixFortran77Resolver >> registerImplicitForPU: programUnit range: aRange forTy
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> registerImplicitsDeclarations [
 
-	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :programUnit | 
-		self registerImplicitsForPU: programUnit ]
+	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :programUnit |
+		self errorHandler enterContext: programUnit name.
+		self registerImplicitsForPU: programUnit.
+		self errorHandler leaveContext
+	]
 ]
 
 { #category : #'symbols resolution' }
@@ -167,13 +183,17 @@ FamixFortran77Resolver >> requalifyVariableDeclarations [
 { #category : #'symbols resolution' }
 FamixFortran77Resolver >> resolve [
 
-	self resolveIncludes.
-	self registerImplicitsDeclarations.
-	self requalifyVariableDeclarations.
-	self resolveImplicits.
-	self resolveEsopeVariables.
-	self resolveInvocations.
-	self resolveAccesses.
+	#( resolveIncludes
+		registerImplicitsDeclarations
+		requalifyVariableDeclarations
+		resolveImplicits
+		resolveEsopeVariables
+		resolveInvocations
+		resolveAccesses) do: [ :step |
+		self errorHandler enterContext: step.
+		self perform: step.
+		self errorHandler leaveContext
+	]
 ]
 
 { #category : #'symbols resolution' }

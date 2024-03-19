@@ -789,6 +789,35 @@ JsonToIASTVisitorTest >> testEsoSlWithTwoDot [
 	self assert: stmt entities second entities second entityName equals: 'i'.
 ]
 
+{ #category : #'tests-esope' }
+JsonToIASTVisitorTest >> testEsopeIfCommentStatement [
+"      subroutine sub()
+c@_   IF (N.GT.0) SEGINI P
+      end
+"
+	| programFile seg cond |
+	
+	self skip.
+	
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"test.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   IF (N.GT.0) SEGINI P","span":"(2:1)-(2:26)","tag":"comment"}],"name":"sub","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	self assert: programFile progUnits size equals: 1.
+	
+	cond := programFile progUnits first body first first.
+	self assert: cond class equals: IASTVarAccess.
+	self assert: cond entityName equals: 'n'.
+
+	seg := programFile progUnits first body first second.
+	self assert: seg class equals: IASTEsopeSegCommand.
+	self assert: seg entityName equals: 'p'.
+	self assert: seg esopeCommand equals: 'segini'.
+	self assert: seg sourceAnchor class equals: IASTIndexedFileAnchor.
+	self assert: seg sourceAnchor startLine equals: 2.
+	self assert: seg sourceAnchor startColumn equals: 19.
+	self assert: seg sourceAnchor endLine equals: 2.
+	self assert: seg sourceAnchor endColumn equals: 29
+]
+
 { #category : #'tests-statement' }
 JsonToIASTVisitorTest >> testFunctionWithFunctionInvocation [
 "      integer function efunc()

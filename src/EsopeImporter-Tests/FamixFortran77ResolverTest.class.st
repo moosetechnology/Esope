@@ -174,10 +174,19 @@ FamixFortran77ResolverTest >> externalDeclaration: name [
 ]
 
 { #category : #'default values' }
+FamixFortran77ResolverTest >> iastTypeRef: typeName [
+
+	^ IASTTypeRef new
+		  entityName: typeName;
+		  sourceAnchor: self defaultAnchor;
+		  yourself
+]
+
+{ #category : #'default values' }
 FamixFortran77ResolverTest >> implicitRule: typeName range: ranges [
 
 	^ IASTImplicitTypingRule new
-		  forType: (self defaultType: typeName);
+		  forType: (self iastTypeRef: typeName);
 		  ranges: ranges;
 		  yourself
 ]
