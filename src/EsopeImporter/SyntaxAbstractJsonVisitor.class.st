@@ -423,6 +423,14 @@ SyntaxAbstractJsonVisitor >> visitDeclarators: aNode [
 	^ self visitJsonArray: aNode
 ]
 
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitDescriptor: aNode [
+   <generated>
+	1 halt.
+		
+	^ self visitJsonTaggedElement: aNode
+]
+
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitDimensionDeclarators: aNode [
 		<generated>
@@ -1305,17 +1313,13 @@ SyntaxAbstractJsonVisitor >> visitSubroutine: aSubroutine [
 
 { #category : #'as yet unclassified' }
 SyntaxAbstractJsonVisitor >> visitSubstring: aNode [
-    <generated>
+
 	| result values keys |
-	1 halt.
-				
 	keys := #( lower_bound variable upper_bound ).
 	values := self visitJsonMap: aNode keys: keys.
-				
+
 	result := Dictionary new.
-	keys
-		with: values
-		do: [ :key :value | result at: key put: value ].
+	keys with: values do: [ :key :value | result at: key put: value ].
 	^ result
 ]
 
