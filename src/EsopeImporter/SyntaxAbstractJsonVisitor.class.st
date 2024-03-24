@@ -509,8 +509,6 @@ SyntaxAbstractJsonVisitor >> visitJsonMap: jsonDictionary [
 	otherwise, perform a visit of each value for their key
 	'anno' key always ignored"
 
-	jsonDictionary removeKey: 'anno' ifAbsent: [ "nothing" ].
-
 	^ (jsonDictionary includesKey: 'tag')
 		  ifTrue: [ self visitJsonTaggedElement: jsonDictionary ]
 		  ifFalse: [
