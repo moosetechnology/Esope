@@ -126,7 +126,7 @@ SyntaxAbstractJsonVisitor >> visitArguments: aNode [
 SyntaxAbstractJsonVisitor >> visitArithmeticExpression: aNode [
 	"generated"
 
-	^ self visitJsonMap: aNode keys: #( expression )
+	^ self visitJsonNode: aNode key: #expression
 ]
 
 { #category : #'as yet unclassified' }
