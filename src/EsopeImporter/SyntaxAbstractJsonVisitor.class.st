@@ -272,6 +272,14 @@ SyntaxAbstractJsonVisitor >> visitControlInfoList: aNode [
 ]
 
 { #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitDataImplyDoList: aNode [
+    <generated>
+
+	self visitJsonMap: aNode keys: #( m3 dlist m1 m2 )
+
+]
+
+{ #category : #'as yet unclassified' }
 SyntaxAbstractJsonVisitor >> visitDataParameters: aNode [
    <generated>
  
@@ -317,6 +325,13 @@ SyntaxAbstractJsonVisitor >> visitDimensionStatement: aNode [
     <generated>
 
 	^ self visitJsonMap: aNode keys: #( start_pos array_declarators )
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitDlist: aNode [
+   <generated>
+ 
+   ^ self visitJsonArray: aNode
 ]
 
 { #category : #'visiting - statements' }
@@ -674,6 +689,28 @@ SyntaxAbstractJsonVisitor >> visitLowerBound: aNode [
 	^ self visitJsonTaggedElement: aNode
 ]
 
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitM1: aNode [
+   <generated>
+		
+	^ self visitJsonTaggedElement: aNode
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitM2: aNode [
+   <generated>
+		
+	^ self visitJsonTaggedElement: aNode
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitM3: aNode [
+    <generated>
+
+	self visitJsonMap: aNode keys: #(  )
+
+]
+
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitMain: aNode [
    <generated>
@@ -697,6 +734,14 @@ SyntaxAbstractJsonVisitor >> visitNlist: aNode [
    <generated>
  
    ^ self visitJsonArray: aNode
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitNonrepeatableEditDescriptor: aNode [
+    <generated>
+
+	self visitJsonMap: aNode keys: #( descriptor )
+
 ]
 
 { #category : #'as yet unclassified' }
@@ -818,6 +863,21 @@ SyntaxAbstractJsonVisitor >> visitRealType: aNode [
 SyntaxAbstractJsonVisitor >> visitRepeatFactor: aNode [
 	<generated>
 	
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitRepeatableEditDescriptor: aNode [
+    <generated>
+
+	self visitJsonMap: aNode keys: #( repeated_descriptors )
+
+]
+
+{ #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> visitRepeatedDescriptors: aNode [
+   <generated>
+ 
+   ^ self visitJsonArray: aNode
 ]
 
 { #category : #'as yet unclassified' }
