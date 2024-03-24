@@ -560,6 +560,9 @@ SyntaxAbstractJsonVisitor >> visitKey: key value: aNode [
 	| selector aClass abstrMethod implMethod |
 	
 	selector := self createVisitSelector: key.
+	
+	self flag: 'remove this automatic method creation stuff'.
+
 	aClass := SyntaxAbstractJsonVisitor.
 	(aClass selectors includes: selector) ifFalse: [
 		abstrMethod := self generateAbstractMethod: aNode selector: selector.
