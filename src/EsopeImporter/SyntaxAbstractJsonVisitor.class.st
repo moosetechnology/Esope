@@ -102,6 +102,12 @@ SyntaxAbstractJsonVisitor >> generateImplMethod: aNode selector: selector [
 ]
 
 { #category : #'as yet unclassified' }
+SyntaxAbstractJsonVisitor >> generateKeys: aNode [
+	
+	^ aNode keys reject: [ :e | e = 'tag' ]
+]
+
+{ #category : #'as yet unclassified' }
 SyntaxAbstractJsonVisitor >> visitArgument: aNode [
 
 	^ aNode
