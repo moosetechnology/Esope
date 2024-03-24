@@ -261,7 +261,7 @@ SyntaxAbstractJsonVisitor >> visitConstantSigned: aNode [
 SyntaxAbstractJsonVisitor >> visitContinueStatement: aNode [
    <generated>
 
-	^ self visitJsonMap: aNode keys: #( start_pos label)
+	^ self visitJsonMap: aNode keys: #( start_pos )
 ]
 
 { #category : #'as yet unclassified' }
