@@ -736,7 +736,7 @@ SyntaxAbstractJsonVisitor >> visitOperator: aNode [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitParameter: aParameter [
 
-	aParameter = '*' ifTrue: [ ^ aParameter  ].
+	(aParameter includesKey: #asterisk) ifTrue: [ ^aParameter at: #asterisk  ].
 	
 	^ self visitJsonTaggedElement: aParameter  
 	
