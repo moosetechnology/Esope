@@ -776,6 +776,8 @@ SyntaxAbstractJsonVisitor >> visitOperator: aNode [
 
 { #category : #'visiting prog-unit' }
 SyntaxAbstractJsonVisitor >> visitParameter: aParameter [
+	"returns a Dictionnary or '*'
+	 not very coherent :-("
 
 	(aParameter includesKey: #asterisk) ifTrue: [ ^aParameter at: #asterisk  ].
 	
@@ -793,11 +795,10 @@ SyntaxAbstractJsonVisitor >> visitParameterStatement: aNode [
 ]
 
 { #category : #'visiting prog-unit' }
-SyntaxAbstractJsonVisitor >> visitParameters: aParameters [
+SyntaxAbstractJsonVisitor >> visitParameters: parameterCollection [
 	
-	^ aParameters isEmpty 
-		ifTrue: [ #()]
-		ifFalse: [ aParameters collect: [ :each | self visitParameter: each ] ]
+	^(parameterCollection ifEmpty: [ #() ])
+		collect: [ :each | self visitParameter: each ]
     
 ]
 
@@ -996,12 +997,10 @@ SyntaxAbstractJsonVisitor >> visitStopStatement: aNode [
 
 { #category : #'visiting prog-unit' }
 SyntaxAbstractJsonVisitor >> visitSubroutine: aSubroutine [
-	"generated"
 
 	^ self
 		  visitJsonMap: aSubroutine
-		  keys: #( start_pos parameters end_pos statement_list
-		     name )
+		  keys: #( name parameters start_pos end_pos statement_list )
 ]
 
 { #category : #visiting }
