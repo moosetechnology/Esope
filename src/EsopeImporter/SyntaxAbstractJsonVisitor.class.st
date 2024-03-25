@@ -96,12 +96,6 @@ SyntaxAbstractJsonVisitor >> generateImplMethod: aNode selector: selector [
 					^ data'
 ]
 
-{ #category : #'method generation' }
-SyntaxAbstractJsonVisitor >> generateKeys: aNode [
-	
-	^ aNode keys reject: [ :e | e = 'tag' ]
-]
-
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitArgument: aNode [
 
@@ -343,9 +337,8 @@ SyntaxAbstractJsonVisitor >> visitDoStatement: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitElseBlock: aNode [
-    <generated>
 
-	^ self visitJsonMap: aNode keys: (self generateKeys: aNode)
+	^ self visitJsonMap: aNode keys: #( else_statements end_if )
 ]
 
 { #category : #visiting }
@@ -569,21 +562,9 @@ SyntaxAbstractJsonVisitor >> visitJsonTaggedStatement: aStatementNode [
 { #category : #'visiting reflectivity' }
 SyntaxAbstractJsonVisitor >> visitKey: key value: aNode [
 
-	| selector aClass abstrMethod implMethod |
+	| selector |
 	
 	selector := self createVisitSelector: key.
-	
-	self flag: 'remove this automatic method creation stuff'.
-
-	aClass := SyntaxAbstractJsonVisitor.
-	(aClass selectors includes: selector) ifFalse: [
-		abstrMethod := self generateAbstractMethod: aNode selector: selector.
-
-		implMethod :=  self generateImplMethod: aNode selector: selector.
-		
-		"add method to both abstract and current visitor"
-		aClass compile: abstrMethod.
-		self class compile: implMethod ].
 
 	^ self perform: selector with: aNode
 ]
@@ -988,11 +969,10 @@ SyntaxAbstractJsonVisitor >> visitStatementsList: aNode [
    ^ self visitJsonArray: aNode
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitStopStatement: aNode [
-    <generated>
 
-	^ self visitJsonMap: aNode keys: (self generateKeys: aNode)
+	^ self visitJsonMap: aNode keys: #( start_pos )
 ]
 
 { #category : #'visiting prog-unit' }

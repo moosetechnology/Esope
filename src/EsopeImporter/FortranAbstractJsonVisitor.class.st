@@ -960,10 +960,7 @@ FortranAbstractJsonVisitor >> visitJsonElement: aNode [
 { #category : #'visiting reflectivity' }
 FortranAbstractJsonVisitor >> visitJsonMap: jsonDictionary [
 	"If dicionary contains key 'tag', performs a visit of the whole node for this tag,
-	otherwise, perform a visit of each value for their key
-	'anno' key always ignored"
-
-	jsonDictionary removeKey: 'anno' ifAbsent: [ "nothing" ].
+	otherwise, perform a visit of each value for their key"
 
 	^ (jsonDictionary includesKey: 'tag')
 		  ifTrue: [ self visitJsonTaggedElement: jsonDictionary ]
