@@ -151,7 +151,7 @@ SyntaxAbstractJsonVisitor >> visitCommonStatement: aNode [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitComputedGotoStatement: aNode [
 
-	^ self visitJsonMap: aNode keys: #( var start_pos labels )
+	^ self visitLabeledStatement: aNode keys: #( var start_pos labels )
 ]
 
 { #category : #'visiting expression' }
@@ -945,7 +945,7 @@ SyntaxAbstractJsonVisitor >> visitUnaryExpression: aNode [
 SyntaxAbstractJsonVisitor >> visitUnconditionalGotoStatement: aNode [
 	"contrary to what it seems, there is only one label possible"
 
-	^self visitJsonMap: aNode keys: #( start_pos labels )
+	^self visitLabeledStatement: aNode keys: #( start_pos labels )
 ]
 
 { #category : #'visiting expression' }
