@@ -73,7 +73,7 @@ SyntaxAbstractJsonVisitor >> visitAsterisk: aNode [
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitBinaryExpression: aNode [
 
-	^ self visitJsonMap: aNode keys: #( rhs lhs operator )
+	^ self visitJsonMap: aNode keys: #( expression lhs operator )
 ]
 
 { #category : #visiting }
@@ -87,7 +87,7 @@ SyntaxAbstractJsonVisitor >> visitBlockData: aNode [
 SyntaxAbstractJsonVisitor >> visitBlockIfStatement: aNode [
     <generated>
 
-	^ self visitJsonMap: aNode keys: #( start_pos then_statements else_block expression )
+	^ self visitJsonMap: aNode keys: #( start_pos expression then_statements else_block )
 ]
 
 { #category : #'visiting statement' }
@@ -545,7 +545,7 @@ SyntaxAbstractJsonVisitor >> visitLogicalExpression: aNode [
 	^self visitJsonNode: aNode key: #expression
 ]
 
-{ #category : #'visiting expression' }
+{ #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitLogicalFactor: aNode [
 	"TODO should visit negated as well"
 
@@ -914,9 +914,8 @@ SyntaxAbstractJsonVisitor >> visitSymbolicName: aSymbolicName [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitThenStatements: aNode [
-		<generated>
 			
-			^ self visitJsonArray: aNode
+	^self visitJsonArray: aNode
 ]
 
 { #category : #visiting }
