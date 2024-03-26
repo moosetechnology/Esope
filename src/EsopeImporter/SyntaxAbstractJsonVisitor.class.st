@@ -57,7 +57,7 @@ SyntaxAbstractJsonVisitor >> visitArrayElementName: aNode [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitAssignmentStatement: aNode [
 
-	^ self visitJsonMap: aNode keys: #( start_pos right left )
+	^self visitLabeledStatement: aNode keys: #(start_pos left right)
 ]
 
 { #category : #visiting }
