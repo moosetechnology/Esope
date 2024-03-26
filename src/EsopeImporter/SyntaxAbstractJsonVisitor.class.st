@@ -148,6 +148,12 @@ SyntaxAbstractJsonVisitor >> visitCommonStatement: aNode [
 	^ self visitJsonMap: aNode keys: #( start_pos common_parameters )
 ]
 
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitComputedGotoStatement: aNode [
+
+	^ self visitJsonMap: aNode keys: #( var start_pos labels )
+]
+
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitConstant: aNode [
 		
@@ -350,13 +356,6 @@ SyntaxAbstractJsonVisitor >> visitFunctionReference: aNode [
 ]
 
 { #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitGotoStatement: aNode [
-    <generated>
-
-	^ self visitJsonMap: aNode keys: #( var start_pos labels type tag )
-]
-
-{ #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitImplicitStatement: aNode [
     <generated>
 
@@ -414,7 +413,8 @@ SyntaxAbstractJsonVisitor >> visitJsonElement: aNode [
 
 	aNode ifNil: [ ^ nil ].
 	aNode isDictionary ifTrue: [ ^ self visitJsonMap: aNode ].
-	aNode isArray ifTrue: [ ^ self visitJsonArray: aNode ]
+	aNode isArray ifTrue: [ ^ self visitJsonArray: aNode ].
+	^aNode
 ]
 
 { #category : #'visiting reflectivity' }
@@ -472,6 +472,12 @@ SyntaxAbstractJsonVisitor >> visitKey: key value: aNode [
 	^ self perform: selector asSymbol with: aNode
 ]
 
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitLabelReference: label [
+
+	^label
+]
+
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitLabeledStatement: aNode keys: keyCollection [
 
@@ -484,10 +490,9 @@ SyntaxAbstractJsonVisitor >> visitLabeledStatement: aNode keys: keyCollection [
 ]
 
 { #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitLabels: aNode [
-   <generated>
- 
-   ^ self visitJsonArray: aNode
+SyntaxAbstractJsonVisitor >> visitLabels: aCollection [
+
+   ^aCollection collect: [ :label | self visitLabelReference: label ]
 ]
 
 { #category : #visiting }
@@ -511,16 +516,17 @@ SyntaxAbstractJsonVisitor >> visitLhs: aNode [
 
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitLiteral: aNode [
-				"generated"
-		
-		^ self visitJsonTaggedElement: aNode
+
+	^(aNode includesKey: #asterisk)
+		ifTrue: [ self visitAsterisk: aNode ]
+		ifFalse: [ self visitJsonTaggedElement: aNode ]
 ]
 
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitLiteralExpression: aNode [
 	"generated"
 
-	^ self visitJsonMap: aNode keys: #( literal )
+	^ self visitJsonNode: aNode key: #literal
 ]
 
 { #category : #'visiting expression' }
@@ -935,6 +941,13 @@ SyntaxAbstractJsonVisitor >> visitUnaryExpression: aNode [
 	^ self visitJsonMap: aNode keys: #( expression operator )
 ]
 
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitUnconditionalGotoStatement: aNode [
+	"contrary to what it seems, there is only one label possible"
+
+	^self visitJsonMap: aNode keys: #( start_pos labels )
+]
+
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitUnsignedIntConstant: aNode [
 
@@ -961,9 +974,10 @@ SyntaxAbstractJsonVisitor >> visitValue: aNode [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitVar: aNode [
-   <generated>
- 
-   ^ self visitJsonArray: aNode
+	"why is this an array ?
+	there should be only one var"
+
+   ^ self visitJsonElement: aNode first
 ]
 
 { #category : #'visiting expression' }
@@ -1004,4 +1018,10 @@ SyntaxAbstractJsonVisitor >> visitWriteStatement: aNode [
     <generated>
 
 	^ self visitJsonMap: aNode keys: #( start_pos control_info_list io_list )
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> vsitLabels: aCollection [
+ 
+   ^aCollection collect: [ :label | self visitLabelReferrence: label ]
 ]
