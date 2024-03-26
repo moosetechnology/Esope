@@ -22,9 +22,9 @@ SyntaxAbstractJsonVisitor >> visitArgumentWithReturnSpecifier: aNode [
 
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitArguments: aNode [
-		<generated>
-			
-			^ self visitJsonArray: aNode
+	<generated>
+
+	^self visitJsonArray: aNode
 ]
 
 { #category : #'visiting expression' }
@@ -88,9 +88,8 @@ SyntaxAbstractJsonVisitor >> visitBlockIfStatement: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitCallStatement: aNode [
-   <generated>
 
-	^ self visitJsonMap: aNode keys: #( start_pos name arguments )
+	^ self visitLabeledStatement: aNode keys: #( start_pos name arguments )
 ]
 
 { #category : #'visiting expression' }
