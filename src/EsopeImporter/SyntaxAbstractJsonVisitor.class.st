@@ -861,7 +861,7 @@ SyntaxAbstractJsonVisitor >> visitStatement: aNode [
 SyntaxAbstractJsonVisitor >> visitStatementList: aStatementList [
 	"generated"
 
-	^ aStatementList collect: [ :each | self visitJsonMap: each ]
+	^self visitJsonArray: aStatementList
 ]
 
 { #category : #'visiting statement' }
