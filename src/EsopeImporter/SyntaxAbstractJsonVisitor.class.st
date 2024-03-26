@@ -114,7 +114,7 @@ SyntaxAbstractJsonVisitor >> visitCharacterExpression: aNode [
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitCharacterType: aNode [
 
-	^ self visitJsonMap: aNode keys: #( len_specification )
+	^'CHARACTER'
 ]
 
 { #category : #visiting }
@@ -150,6 +150,12 @@ SyntaxAbstractJsonVisitor >> visitCommonStatement: aNode [
     <generated>
 
 	^ self visitJsonMap: aNode keys: #( start_pos common_parameters )
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitComplexType: aNode [
+
+	^'COMPLEX'
 ]
 
 { #category : #'visiting statement' }
@@ -257,7 +263,7 @@ SyntaxAbstractJsonVisitor >> visitDoStatement: aNode [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitElseBlock: aNode [
 
-	^ self visitJsonMap: aNode keys: #( else_statements end_if )
+	^ self visitJsonNode: aNode key: #else_statements
 ]
 
 { #category : #visiting }
@@ -360,10 +366,66 @@ SyntaxAbstractJsonVisitor >> visitFunctionReference: aNode [
 ]
 
 { #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitImplicitStatement: aNode [
-    <generated>
+SyntaxAbstractJsonVisitor >> visitImplicitElements: anImplicitElements [
+	
+	^ self visitJsonArray: anImplicitElements
+	
+	
+    
+]
 
-	^ self visitJsonMap: aNode keys: #( start_pos parameters )
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitImplicitNoneStatement: aNode [
+
+	^self visitLabeledStatement: aNode keys: #( start_pos )
+]
+
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitImplicitParameter: anImplicitParameter [
+	
+	^ self visitJsonMap: anImplicitParameter keys: #(type implicit_elements)
+	
+	
+    
+]
+
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitImplicitParameters: parameterCollection [
+	
+	^(parameterCollection ifEmpty: [ #() ])
+		collect: [ :each | self visitImplicitParameter: each ]
+    
+]
+
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitImplicitRange: aNode [
+	
+	^self visitJsonMap: aNode keys: #(implicit_range_lower implicit_range_upper)
+	
+	
+    
+]
+
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitImplicitRangeLower: aString [
+	
+	^aString 
+	
+    
+]
+
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitImplicitRangeUpper: aString [
+	
+	^aString 
+	
+    
+]
+
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitImplicitStatement: aNode [
+
+	^self visitLabeledStatement: aNode keys: #( start_pos implicit_parameters )
 ]
 
 { #category : #visiting }
@@ -507,9 +569,11 @@ SyntaxAbstractJsonVisitor >> visitLeft: aNode [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitLenSpecification: aNode [
-    <generated>
+	"similar to #visitLiteral: should be unified"
 
-	^ self visitJsonMap: aNode keys: #( asterisk )
+	^(aNode includesKey: #asterisk)
+		ifTrue: [ self visitAsterisk: aNode ]
+		ifFalse: [ self visitJsonTaggedElement: aNode ]
 ]
 
 { #category : #visiting }
@@ -925,11 +989,18 @@ SyntaxAbstractJsonVisitor >> visitType: aNode [
 	^ self visitJsonTaggedElement: aNode
 ]
 
-{ #category : #'visiting expression' }
+{ #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitTypeReference: aNode [
-    "generated"
 
-	^ self visitKey: ((aNode at: 'name') asLowercase capitalized , 'Type') value: aNode.
+	| return |
+	return := Dictionary new: 2.
+	return
+		at: #name
+		put: (self visitKey: ((aNode at: 'name') asLowercase capitalized , 'Type') value: aNode).
+	aNode
+		at: #len_specification
+		ifPresent: [ :len | return at: #len_specification put: (self visitLenSpecification: len) ].
+	^return
 ]
 
 { #category : #visiting }
