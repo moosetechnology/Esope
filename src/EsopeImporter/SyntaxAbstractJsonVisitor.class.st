@@ -7,95 +7,6 @@ Class {
 	#category : #'EsopeImporter-Visitor'
 }
 
-{ #category : #'method generation' }
-SyntaxAbstractJsonVisitor >> abstractMethodForJsonArrayElement: selector [
-
-	^ selector , ' aNode
-   <generated>
- 
-   ^ self visitJsonArray: aNode'
-]
-
-{ #category : #'method generation' }
-SyntaxAbstractJsonVisitor >> abstractMethodForJsonDictionaryElement: selector keys: keys [
-
-
-	^ selector , ' aNode
-    <generated>
-
-	self visitJsonMap: aNode keys: #( ' ,
-	( (keys reject: [ :e | e = 'tag' ]) joinUsing: ' ' ) ,
-	' )
-'.
-]
-
-{ #category : #'method generation' }
-SyntaxAbstractJsonVisitor >> abstractMethodForJsonTaggedElement: selector [
-
-
-	^ selector , ' aNode
-   <generated>
-		
-	^ self visitJsonTaggedElement: aNode'
-]
-
-{ #category : #'method generation' }
-SyntaxAbstractJsonVisitor >> abstractMethodJsonElement:  selector [
-
-^ selector , ' aNode
-	<generated>
-'
-]
-
-{ #category : #'method generation' }
-SyntaxAbstractJsonVisitor >> createVisitSelector: key [
-
-	^ ('visit' , ((('_' split: key) collect: [ :each | each capitalized ])
-		   joinUsing: '') , ':') asSymbol
-]
-
-{ #category : #'method generation' }
-SyntaxAbstractJsonVisitor >> generateAbstractMethod: aNode selector: selector [
-
-	"array"
-	aNode isArray ifTrue: [
-		^ self abstractMethodForJsonArrayElement: selector ].
-
-	"dictionary"
-	aNode isDictionary ifTrue: [
-		| keys |
-		keys := aNode keys.
-
-		(keys includes: 'tag')
-			ifTrue: [
-				((self createVisitSelector: (aNode at: 'tag')) = selector)
-					ifTrue: [ ^ self abstractMethodForJsonDictionaryElement: selector keys: keys ]
-					ifFalse: [ ^ self abstractMethodForJsonTaggedElement: selector] ]
-			ifFalse: [
-			^ self abstractMethodForJsonDictionaryElement: selector keys: keys ] ].
-
-	"not array, not dictionary"
-	^ self abstractMethodJsonElement: selector
-]
-
-{ #category : #'method generation' }
-SyntaxAbstractJsonVisitor >> generateImplMethod: aNode selector: selector [
-
-	| keys |
-	aNode isDictionary
-		ifTrue: [ keys := aNode keys joinUsing: ' ' ]
-		ifFalse: [ keys := 'no keys in data' ].
-
-	^ selector , ' aNode
-			  		<generated>
-					"', keys ,'"
-					
-					| data |    
-					data := super ' , selector , 'aNode.
-
-					^ data'
-]
-
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitArgument: aNode [
 
@@ -549,31 +460,18 @@ SyntaxAbstractJsonVisitor >> visitJsonTaggedElement: jsonDictionary [
 ]
 
 { #category : #'visiting reflectivity' }
-SyntaxAbstractJsonVisitor >> visitJsonTaggedStatement: aStatementNode [
-	"a statementNode containing a tagged element
-	 Similar to #visitJsonTaggedElement: on the tagged element, but adds 'Statement' to the selector"
-
-	| key value |
-	value := aStatementNode at: 'statement' ifAbsent: [ aStatementNode ].
-	key := value removeKey: 'tag'.
-	^ self visitKey: key , 'Statement' value: value
-]
-
-{ #category : #'visiting reflectivity' }
 SyntaxAbstractJsonVisitor >> visitKey: key value: aNode [
 
 	| selector |
 	
-	selector := self createVisitSelector: key.
+	selector := String streamContents: [ :st |
+		st << 'visit'.
+		('_' split: key) do: [ :each |
+			st << each capitalized ].
+		st << ':'
+	].
 
-	^ self perform: selector with: aNode
-]
-
-{ #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitLabel: aNode [
-	<generated>
-
-	^ aNode
+	^ self perform: selector asSymbol with: aNode
 ]
 
 { #category : #visiting }
@@ -993,13 +891,6 @@ SyntaxAbstractJsonVisitor >> visitSubstring: aNode [
 SyntaxAbstractJsonVisitor >> visitSymbolicName: aSymbolicName [
 	
 	^ aSymbolicName at: 'name'
-]
-
-{ #category : #'visiting reflectivity' }
-SyntaxAbstractJsonVisitor >> visitTag: aNode [
-	<generated>
-
-	"if you are here, you forgot to remove tag from the list of keys to visit"
 ]
 
 { #category : #'visiting statement' }
