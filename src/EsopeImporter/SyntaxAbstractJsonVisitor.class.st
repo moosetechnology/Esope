@@ -37,7 +37,7 @@ SyntaxAbstractJsonVisitor >> visitArithmeticExpression: aNode [
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitArithmeticIfStatement: aNode [
 
-	^ self visitJsonMap: aNode keys: #( start_pos s1 s3 s2 expression )
+	^ self visitJsonMap: aNode keys: #( start_pos expression s1 s3 s2 )
 ]
 
 { #category : #visiting }
@@ -303,8 +303,9 @@ SyntaxAbstractJsonVisitor >> visitEquivalenceStatement: aNode [
 
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitExpression: aNode [
+	"why is this an array ?"
 
-	^ self visitJsonElement: aNode
+	^ self visitJsonElement: aNode first
 ]
 
 { #category : #visiting }
