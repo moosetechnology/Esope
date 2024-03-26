@@ -164,9 +164,8 @@ SyntaxAbstractJsonVisitor >> visitConstantSigned: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitContinueStatement: aNode [
-   <generated>
 
-	^ self visitJsonMap: aNode keys: #( start_pos )
+	^ self visitLabeledStatement: aNode keys: #( start_pos )
 ]
 
 { #category : #visiting }
@@ -472,6 +471,17 @@ SyntaxAbstractJsonVisitor >> visitKey: key value: aNode [
 	].
 
 	^ self perform: selector asSymbol with: aNode
+]
+
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitLabeledStatement: aNode keys: keyCollection [
+
+	| return |
+	return := self visitJsonMap: aNode keys: keyCollection.
+
+	aNode at: #label ifPresent: [ :label | return at: #label put: label ].
+	^return
+
 ]
 
 { #category : #visiting }
