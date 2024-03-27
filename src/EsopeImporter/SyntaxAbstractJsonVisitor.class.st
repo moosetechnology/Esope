@@ -980,7 +980,8 @@ SyntaxAbstractJsonVisitor >> visitSubstring: aNode [
 
 { #category : #'visiting prog-unit' }
 SyntaxAbstractJsonVisitor >> visitSymbolicName: aSymbolicName [
-	
+	"start_pos name"
+
 	^ aSymbolicName at: 'name'
 ]
 
