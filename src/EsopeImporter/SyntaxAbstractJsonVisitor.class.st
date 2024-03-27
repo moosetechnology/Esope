@@ -73,7 +73,7 @@ SyntaxAbstractJsonVisitor >> visitAsterisk: aNode [
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitBinaryExpression: aNode [
 
-	^ self visitJsonMap: aNode keys: #( expression lhs operator )
+	^ self visitJsonMap: aNode keys: #( rhs lhs operator )
 ]
 
 { #category : #visiting }
