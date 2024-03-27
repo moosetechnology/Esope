@@ -484,6 +484,22 @@ SyntaxAbstractJsonVisitor >> visitJsonElement: aNode [
 ]
 
 { #category : #'visiting reflectivity' }
+SyntaxAbstractJsonVisitor >> visitJsonKey: key value: aNode [
+	"not much to do with JSON, but named that way to highlight the relation with other
+	 reflective visit methods"
+	| selector |
+	
+	selector := String streamContents: [ :st |
+		st << 'visit'.
+		('_' split: key) do: [ :each |
+			st << each capitalized ].
+		st << ':'
+	].
+
+	^ self perform: selector asSymbol with: aNode
+]
+
+{ #category : #'visiting reflectivity' }
 SyntaxAbstractJsonVisitor >> visitJsonMap: jsonDictionary [
 	"If dicionary contains key 'tag', performs a visit of the whole node for this tag,
 	otherwise, perform a visit of each value for their key
@@ -493,7 +509,7 @@ SyntaxAbstractJsonVisitor >> visitJsonMap: jsonDictionary [
 		  ifTrue: [ self visitJsonTaggedElement: jsonDictionary ]
 		  ifFalse: [
 			  jsonDictionary associations collect: [ :assoc |
-				  self visitKey: assoc key value: assoc value ] ]
+				  self visitJsonKey: assoc key value: assoc value ] ]
 ]
 
 { #category : #'visiting reflectivity' }
@@ -510,7 +526,7 @@ SyntaxAbstractJsonVisitor >> visitJsonMap: jsonDictionary keys: aCollection [
 { #category : #'visiting reflectivity' }
 SyntaxAbstractJsonVisitor >> visitJsonNode: aJsonNode key: key [
 
-	^ self visitKey: key value: (aJsonNode at: key)
+	^ self visitJsonKey: key value: (aJsonNode at: key)
 ]
 
 { #category : #'visiting reflectivity' }
@@ -520,22 +536,7 @@ SyntaxAbstractJsonVisitor >> visitJsonTaggedElement: jsonDictionary [
 
 	| key |
 	key := jsonDictionary at: 'tag'.
-	^ self visitKey: key value: jsonDictionary
-]
-
-{ #category : #'visiting reflectivity' }
-SyntaxAbstractJsonVisitor >> visitKey: key value: aNode [
-
-	| selector |
-	
-	selector := String streamContents: [ :st |
-		st << 'visit'.
-		('_' split: key) do: [ :each |
-			st << each capitalized ].
-		st << ':'
-	].
-
-	^ self perform: selector asSymbol with: aNode
+	^ self visitJsonKey: key value: jsonDictionary
 ]
 
 { #category : #visiting }
@@ -996,7 +997,7 @@ SyntaxAbstractJsonVisitor >> visitTypeReference: aNode [
 	return := Dictionary new: 2.
 	return
 		at: #name
-		put: (self visitKey: ((aNode at: 'name') asLowercase capitalized , 'Type') value: aNode).
+		put: (self visitJsonKey: ((aNode at: 'name') asLowercase capitalized , 'Type') value: aNode).
 	aNode
 		at: #len_specification
 		ifPresent: [ :len | return at: #len_specification put: (self visitLenSpecification: len) ].
