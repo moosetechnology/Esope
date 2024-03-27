@@ -1555,5 +1555,5 @@ JsonToIASTVisitorTest >> testWriteStatementWithStringArgument [
 JsonToIASTVisitorTest >> visitJsonCode: jsonCode [
 	| visitor |
 	visitor := JsonToIASTVisitor new.
-	^visitor visitFortranFile: (NeoJSONReader fromString: jsonCode)
+	^visitor onFile: (NeoJSONReader fromString: jsonCode)
 ]

@@ -99,6 +99,11 @@ FortranAbstractJsonVisitor >> isTaggedStatement: aStatementNode [
 		  includesKey: 'tag'
 ]
 
+{ #category : #'visiting prog-unit' }
+FortranAbstractJsonVisitor >> onFile: aProgramFileNode [
+	^self visitJsonMap: aProgramFileNode keys: #(meta program_units)
+]
+
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> processEsopeComment: anEsopeCommentNode [
 	"For Esope comments the treatment is similar for most of them
@@ -684,11 +689,6 @@ FortranAbstractJsonVisitor >> visitFortranComment: aFortranCommentNode [
 	^{ self visitSpan: (aFortranCommentNode at: 'span') .
 	  aFortranCommentNode at: 'comment' }
 	
-]
-
-{ #category : #'visiting prog-unit' }
-FortranAbstractJsonVisitor >> visitFortranFile: aProgramFileNode [
-	^self visitJsonMap: aProgramFileNode keys: #(meta program_units)
 ]
 
 { #category : #'visiting statement' }

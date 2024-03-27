@@ -79,6 +79,20 @@ JsonToIASTVisitor >> model: aCollection [
 ]
 
 { #category : #'visiting prog-unit' }
+JsonToIASTVisitor >> onFile: aProgramFileNode [
+	| programFile data |
+	data := super onFile: aProgramFileNode.
+
+	programFile := IASTProgramFile new
+		filename: self f77sourcefile ;
+		progUnits: data second ;
+		yourself.
+	self model add: programFile.
+	^ programFile
+		
+]
+
+{ #category : #'visiting prog-unit' }
 JsonToIASTVisitor >> visitArgument: anArgumentNode [
 	"used for argument in subprogram calls and parameter in subprogram definition"
 
@@ -362,20 +376,6 @@ JsonToIASTVisitor >> visitFortranComment: aFortranCommentNode [
 		sourceAnchor: (self makeIndexedAnchor: data first) ;
 		text: data second ;
 		yourself
-]
-
-{ #category : #'visiting prog-unit' }
-JsonToIASTVisitor >> visitFortranFile: aProgramFileNode [
-	| programFile data |
-	data := super visitFortranFile: aProgramFileNode.
-
-	programFile := IASTProgramFile new
-		filename: self f77sourcefile ;
-		progUnits: data second ;
-		yourself.
-	self model add: programFile.
-	^ programFile
-		
 ]
 
 { #category : #'visiting statement' }

@@ -7,6 +7,13 @@ Class {
 	#category : #'EsopeImporter-Visitor'
 }
 
+{ #category : #'visiting prog-unit' }
+SyntaxAbstractJsonVisitor >> onFile: aProgramFile [
+	"a program file containing comments, program units, tag (fortran_file) and file name"
+
+	^ self visitJsonElement: aProgramFile
+]
+
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitArgument: aNode [
 
