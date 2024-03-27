@@ -956,7 +956,7 @@ SyntaxAbstractJsonVisitor >> visitStatementsList: aNode [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitStopStatement: aNode [
 
-	^ self visitJsonMap: aNode keys: #( start_pos )
+	^ self visitLabeledStatement: aNode keys: #( start_pos argument )
 ]
 
 { #category : #'visiting prog-unit' }
