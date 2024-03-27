@@ -7,7 +7,7 @@ Class {
 	#category : #'EsopeImporter-Visitor'
 }
 
-{ #category : #'visiting prog-unit' }
+{ #category : #running }
 SyntaxAbstractJsonVisitor >> onFile: aProgramFile [
 	"a program file containing comments, program units, tag (fortran_file) and file name"
 
@@ -331,6 +331,12 @@ SyntaxAbstractJsonVisitor >> visitExternalStatement: aNode [
 	^ self visitJsonMap: aNode keys: #( proc_list start_pos )
 ]
 
+{ #category : #'visiting prog-unit' }
+SyntaxAbstractJsonVisitor >> visitFile: aFileName [
+
+	^aFileName
+]
+
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitFormat: aNode [
    <generated>
@@ -354,9 +360,9 @@ SyntaxAbstractJsonVisitor >> visitFormatStatement: aNode [
 
 { #category : #'visiting prog-unit' }
 SyntaxAbstractJsonVisitor >> visitFortranFile: aProgramFile [
-	"a program file containing comments, program units, tag (fortran_file) and file name. everything else than program units are ingonred for the moment"
+	"a program file containing comments, program units, tag (#fortran_file) and file name"
 
-	^ self visitJsonNode: aProgramFile key: #program_units
+	^ self visitJsonMap: aProgramFile keys: #( comments file program_units )
 ]
 
 { #category : #visiting }
