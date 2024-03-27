@@ -10,7 +10,7 @@ Class {
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitArgument: aNode [
 
-	^ aNode
+	^self visitJsonElement: aNode
 ]
 
 { #category : #'visiting expression' }
@@ -770,9 +770,8 @@ SyntaxAbstractJsonVisitor >> visitParameters: parameterCollection [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitPauseStatement: aNode [
-    <generated>
 
-	^ self visitJsonMap: aNode keys: #( start_pos )
+	^self visitLabeledStatement: aNode keys: #( start_pos argument )
 ]
 
 { #category : #'visiting statement' }
