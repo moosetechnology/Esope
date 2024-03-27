@@ -686,6 +686,11 @@ FortranAbstractJsonVisitor >> visitFortranComment: aFortranCommentNode [
 	
 ]
 
+{ #category : #'visiting prog-unit' }
+FortranAbstractJsonVisitor >> visitFortranFile: aProgramFileNode [
+	^self visitJsonMap: aProgramFileNode keys: #(meta program_units)
+]
+
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitFrom: aString [
 	"start of a range for an implicit statement: a string of one character"
@@ -1212,11 +1217,6 @@ FortranAbstractJsonVisitor >> visitPrintStatement: aPrintStatementNode [
 	^{ self visitSpan: (aPrintStatementNode at: 'span') .
 	 self visitPrintFormat: (aPrintStatementNode at: 'format') .
 	 self visitArguments: (aPrintStatementNode at: 'arguments') }
-]
-
-{ #category : #'visiting prog-unit' }
-FortranAbstractJsonVisitor >> visitProgramFile: aProgramFileNode [
-	^self visitJsonMap: aProgramFileNode keys: #(meta program_units)
 ]
 
 { #category : #'visiting prog-unit' }

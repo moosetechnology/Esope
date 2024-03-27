@@ -364,6 +364,20 @@ JsonToIASTVisitor >> visitFortranComment: aFortranCommentNode [
 		yourself
 ]
 
+{ #category : #'visiting prog-unit' }
+JsonToIASTVisitor >> visitFortranFile: aProgramFileNode [
+	| programFile data |
+	data := super visitFortranFile: aProgramFileNode.
+
+	programFile := IASTProgramFile new
+		filename: self f77sourcefile ;
+		progUnits: data second ;
+		yourself.
+	self model add: programFile.
+	^ programFile
+		
+]
+
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitFrom: aString [
 	"start of a range for an implicit statement: a string of one character"
@@ -530,20 +544,6 @@ JsonToIASTVisitor >> visitMain: aMainProgramNode [
 { #category : #'visiting prog-unit' }
 JsonToIASTVisitor >> visitMiFilename: aString [
 	f77sourcefile := aString
-]
-
-{ #category : #'visiting prog-unit' }
-JsonToIASTVisitor >> visitProgramFile: aProgramFileNode [
-	| programFile data |
-	data := super visitProgramFile: aProgramFileNode.
-
-	programFile := IASTProgramFile new
-		filename: self f77sourcefile ;
-		progUnits: data second ;
-		yourself.
-	self model add: programFile.
-	^ programFile
-		
 ]
 
 { #category : #'visiting expression' }

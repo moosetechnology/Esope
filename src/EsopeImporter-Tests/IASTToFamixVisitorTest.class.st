@@ -175,7 +175,7 @@ IASTToFamixVisitorTest >> implicitRule: typeName range: ranges [
 IASTToFamixVisitorTest >> jsonToIAST: jsonCode [
 	| jsonVisitor |
 	jsonVisitor := JsonToIASTVisitor new.
-	^jsonVisitor visitProgramFile: (NeoJSONReader fromString: jsonCode)
+	^jsonVisitor visitFortranFile: (NeoJSONReader fromString: jsonCode)
 ]
 
 { #category : #running }

@@ -470,7 +470,7 @@ FortranProjectImporter >> jsonASTToIAST [
 			errorHandler
 				handleErrorsFor: 'file:' , jsonFile fullName
 				running: [ 
-					iastEntity := visitor visitProgramFile:
+					iastEntity := visitor visitFortranFile:
 						(NeoJSONReader fromString: jsonFile contents) ]
 				onErrorDo: [ :err |
 					iastEntity := IASTErrorEntity new filename: jsonFile fullName ; yourself

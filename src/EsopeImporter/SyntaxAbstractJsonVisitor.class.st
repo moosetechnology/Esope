@@ -345,6 +345,13 @@ SyntaxAbstractJsonVisitor >> visitFormatStatement: aNode [
 	^ self visitJsonMap: aNode keys: #( label specification )
 ]
 
+{ #category : #'visiting prog-unit' }
+SyntaxAbstractJsonVisitor >> visitFortranFile: aProgramFile [
+	"a program file containing comments, program units, tag (fortran_file) and file name. everything else than program units are ingonred for the moment"
+
+	^ self visitJsonNode: aProgramFile key: #program_units
+]
+
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitFunList: aNode [
    <generated>
@@ -791,13 +798,6 @@ SyntaxAbstractJsonVisitor >> visitProcList: aNode [
    <generated>
  
    ^ self visitJsonArray: aNode
-]
-
-{ #category : #'visiting prog-unit' }
-SyntaxAbstractJsonVisitor >> visitProgramFile: aProgramFile [
-	"a program file containing comments, program units, tag (fortran_file) and file name. everything else than program units are ingonred for the moment"
-
-	^ self visitJsonNode: aProgramFile key: #program_units
 ]
 
 { #category : #'visiting prog-unit' }
