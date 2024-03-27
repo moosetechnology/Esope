@@ -514,12 +514,19 @@ SyntaxAbstractJsonVisitor >> visitJsonMap: jsonDictionary [
 
 { #category : #'visiting reflectivity' }
 SyntaxAbstractJsonVisitor >> visitJsonMap: jsonDictionary keys: aCollection [
-	"visit only the keys listed in aCollection in the jsonDictionary"
+	"visit only the keys listed in aCollection in the jsonDictionary
+	 all keys or optional, if they are not found, they are not put in the result"
 
 	| result |
 	result := Dictionary new.
 	aCollection
-		do: [ :key | result at: key put: (self visitJsonNode: jsonDictionary key: key) ].
+		do: [ :key |
+			jsonDictionary
+				at: key
+				ifPresent: [ :jsonValue |
+					result at: key put: (self visitJsonKey: key value: jsonValue)
+				]
+		].
 	^result
 ]
 
@@ -548,11 +555,7 @@ SyntaxAbstractJsonVisitor >> visitLabelReference: label [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitLabeledStatement: aNode keys: keyCollection [
 
-	| return |
-	return := self visitJsonMap: aNode keys: keyCollection.
-
-	aNode at: #label ifPresent: [ :label | return at: #label put: label ].
-	^return
+	^self visitJsonMap: aNode keys: ({#label} , keyCollection)
 
 ]
 
