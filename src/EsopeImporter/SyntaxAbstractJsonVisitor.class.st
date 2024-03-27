@@ -547,6 +547,11 @@ SyntaxAbstractJsonVisitor >> visitJsonTaggedElement: jsonDictionary [
 ]
 
 { #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitLabel: aString [ 
+	^aString
+]
+
+{ #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitLabelReference: label [
 
 	^label
