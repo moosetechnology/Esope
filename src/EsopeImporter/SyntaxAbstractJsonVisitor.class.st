@@ -15,6 +15,12 @@ SyntaxAbstractJsonVisitor >> onFile: aProgramFile [
 ]
 
 { #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitAlternateReturnSpecifier: aNode [
+
+	^self visitJsonMap: aNode keys: #(start_pos return_specifier label)
+]
+
+{ #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitArgument: aNode [
 
 	^self visitJsonElement: aNode
@@ -46,7 +52,7 @@ SyntaxAbstractJsonVisitor >> visitArithmeticIfStatement: aNode [
 	"why is the expression an array ?"
 
 	| return |
-	return := self visitLabeledStatement: aNode keys: #( start_pos s1 s3 s2 ).
+	return := self visitLabeledStatement: aNode keys: #( start_pos labels ).
 	return at: #expression put: (self visitExpression: (aNode at: #expression) first).
 	^return
 ]
@@ -577,6 +583,11 @@ SyntaxAbstractJsonVisitor >> visitLabelReference: label [
 	^label
 ]
 
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitLabelRefs: aCollection [ 
+	self shouldBeImplemented.
+]
+
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitLabeledStatement: aNode keys: keyCollection [
 
@@ -896,25 +907,6 @@ SyntaxAbstractJsonVisitor >> visitRhs: aNode [
 SyntaxAbstractJsonVisitor >> visitRight: aNode [
 	
 	^ (self visitJsonArray: aNode) first
-]
-
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitS1: aNode [
-	<generated>
-	
-	^ aNode
-]
-
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitS2: aNode [
-
-	^ aNode
-]
-
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitS3: aNode [
-
-	^ aNode
 ]
 
 { #category : #visiting }
