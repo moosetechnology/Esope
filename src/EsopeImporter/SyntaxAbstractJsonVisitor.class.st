@@ -234,8 +234,7 @@ SyntaxAbstractJsonVisitor >> visitDataStatementConstant: aNode [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitDeclarators: aNode [
 
-	<generated>
-	^ self visitJsonArray: aNode
+	^self visitJsonArray: aNode
 ]
 
 { #category : #visiting }
@@ -1084,7 +1083,7 @@ SyntaxAbstractJsonVisitor >> visitVariableDeclarationStatement: aNode [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitVariableDeclarator: aNode [
 
-	^ self visitJsonMap: aNode keys: #( variable dimension_declarators )
+	^ self visitJsonMap: aNode keys: #( variable dimension_declarators expression )
 ]
 
 { #category : #visiting }
