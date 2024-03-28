@@ -660,7 +660,7 @@ SyntaxAbstractJsonVisitor >> visitLogicalFactor: aNode [
 SyntaxAbstractJsonVisitor >> visitLogicalIfStatement: aNode [
     <generated>
 
-	^ self visitJsonMap: aNode keys: #( statement start_pos expression )
+	^ self visitJsonMap: aNode keys: #( start_pos expression statement )
 ]
 
 { #category : #'visiting statement' }
