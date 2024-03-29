@@ -473,7 +473,6 @@ SyntaxAbstractJsonVisitor >> visitInit: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitInquireStatement: aNode [
-    <generated>
 
 	^ self visitJsonMap: aNode keys:  #( start_pos control_info_list )
 ]
@@ -908,9 +907,8 @@ SyntaxAbstractJsonVisitor >> visitReturnType: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitRewindStatement: aNode [
-    <generated>
 
-	^ self visitJsonMap: aNode keys: #( start_pos parameters )
+	^ self visitJsonMap: aNode keys: #( start_pos control_info_list )
 ]
 
 { #category : #visiting }
