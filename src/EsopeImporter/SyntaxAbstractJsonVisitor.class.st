@@ -71,12 +71,6 @@ SyntaxAbstractJsonVisitor >> visitArrayElementName: aNode [
 	^ self visitJsonMap: aNode keys: #( name qualifiers_list )
 ]
 
-{ #category : #'visiting expression' }
-SyntaxAbstractJsonVisitor >> visitAssignmentExpression: aNode [
-
-	^self visitJsonMap: aNode keys: #(left right)
-]
-
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitAssignmentStatement: aNode [
 
@@ -206,6 +200,12 @@ SyntaxAbstractJsonVisitor >> visitContinueStatement: aNode [
 SyntaxAbstractJsonVisitor >> visitControlInfoList: aCollection [
  
    ^aCollection collect: [ :each | self visitIoParameter: each ]
+]
+
+{ #category : #'visiting expression' }
+SyntaxAbstractJsonVisitor >> visitControlInfoOption: aNode [
+
+	^self visitJsonMap: aNode keys: #(symbolic_name right)
 ]
 
 { #category : #visiting }
