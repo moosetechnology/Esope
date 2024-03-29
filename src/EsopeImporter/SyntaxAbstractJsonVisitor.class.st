@@ -71,6 +71,12 @@ SyntaxAbstractJsonVisitor >> visitArrayElementName: aNode [
 	^ self visitJsonMap: aNode keys: #( name qualifiers_list )
 ]
 
+{ #category : #'visiting expression' }
+SyntaxAbstractJsonVisitor >> visitAssignmentExpression: aNode [
+
+	^self visitJsonMap: aNode keys: #(left right)
+]
+
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitAssignmentStatement: aNode [
 
@@ -197,10 +203,9 @@ SyntaxAbstractJsonVisitor >> visitContinueStatement: aNode [
 ]
 
 { #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitControlInfoList: aNode [
-   <generated>
+SyntaxAbstractJsonVisitor >> visitControlInfoList: aCollection [
  
-   ^ self visitJsonArray: aNode
+   ^aCollection collect: [ :each | self visitIoParameter: each ]
 ]
 
 { #category : #visiting }
@@ -486,11 +491,17 @@ SyntaxAbstractJsonVisitor >> visitIntrinsicStatement: aNode [
 	^ self visitJsonMap: aNode keys: #( start_pos fun_list )
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitIoList: aNode [
    <generated>
  
    ^ self visitJsonArray: aNode
+]
+
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitIoParameter: aNode [
+ 
+   ^self visitJsonElement: aNode
 ]
 
 { #category : #'visiting reflectivity' }
@@ -573,6 +584,12 @@ SyntaxAbstractJsonVisitor >> visitJsonTaggedElement: jsonDictionary [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitLabel: aString [ 
+	^aString
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitLabelRef: aString [ 
+
 	^aString
 ]
 
