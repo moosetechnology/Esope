@@ -854,9 +854,8 @@ SyntaxAbstractJsonVisitor >> visitQualifiersList: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitReadStatement: aNode [
-    <generated>
 
-	^ self visitJsonMap: aNode keys: #( format start_pos io_list control_info_list )
+	^ self visitJsonMap: aNode keys: #( start_pos format control_info_list io_list )
 ]
 
 { #category : #visiting }
@@ -1117,7 +1116,6 @@ SyntaxAbstractJsonVisitor >> visitVariableName: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitWriteStatement: aNode [
-    <generated>
 
 	^ self visitJsonMap: aNode keys: #( start_pos control_info_list io_list )
 ]
