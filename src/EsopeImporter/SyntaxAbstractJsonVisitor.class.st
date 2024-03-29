@@ -475,7 +475,7 @@ SyntaxAbstractJsonVisitor >> visitInit: aNode [
 SyntaxAbstractJsonVisitor >> visitInquireStatement: aNode [
     <generated>
 
-	^ self visitJsonMap: aNode keys:  #( start_pos parameters )
+	^ self visitJsonMap: aNode keys:  #( start_pos control_info_list )
 ]
 
 { #category : #visiting }
