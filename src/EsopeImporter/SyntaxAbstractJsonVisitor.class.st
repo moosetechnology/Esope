@@ -780,9 +780,8 @@ SyntaxAbstractJsonVisitor >> visitOpenParameters: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitOpenStatement: aNode [
-    <generated>
 
-	^ self visitJsonMap: aNode keys: #( start_pos open_parameters )
+	^ self visitJsonMap: aNode keys: #( start_pos control_info_list )
 ]
 
 { #category : #'visiting statement' }
