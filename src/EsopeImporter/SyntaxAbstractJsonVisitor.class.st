@@ -99,7 +99,7 @@ SyntaxAbstractJsonVisitor >> visitBinaryExpression: aNode [
 SyntaxAbstractJsonVisitor >> visitBlockData: aNode [
     <generated>
 
-	^ self visitJsonMap: aNode keys: #( start_pos parameters end_pos statement_list name )
+	^ self visitJsonMap: aNode keys: #( start_pos prog_unit_parameters end_pos statement_list name )
 ]
 
 { #category : #'visiting statement' }
@@ -193,6 +193,13 @@ SyntaxAbstractJsonVisitor >> visitComputedGotoStatement: aNode [
 SyntaxAbstractJsonVisitor >> visitConstant: aNode [
 		
 	^ self visitJsonTaggedElement: aNode
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitConstantDeclarations: parameterCollection [
+	
+	^parameterCollection collect: [ :each | self visitParameterAssign: each ]
+    
 ]
 
 { #category : #'visiting expression' }
@@ -397,7 +404,7 @@ SyntaxAbstractJsonVisitor >> visitFunList: aNode [
 { #category : #'visiting prog-unit' }
 SyntaxAbstractJsonVisitor >> visitFunction: aNode [
 
-	^ self visitJsonMap: aNode keys: #( name parameters return_type start_pos end_pos statement_list )
+	^ self visitJsonMap: aNode keys: #( name prog_unit_parameters return_type start_pos end_pos statement_list )
 ]
 
 { #category : #'visiting statement' }
@@ -822,18 +829,15 @@ SyntaxAbstractJsonVisitor >> visitParameter: aParameter [
 ]
 
 { #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitParameterStatement: aNode [
-    <generated>
+SyntaxAbstractJsonVisitor >> visitParameterAssign: aNode [
 
-	^ self visitJsonMap: aNode keys: #( start_pos parameters )
+	^self visitJsonMap: aNode keys: #(symbolic_name expression)
 ]
 
-{ #category : #'visiting prog-unit' }
-SyntaxAbstractJsonVisitor >> visitParameters: parameterCollection [
-	
-	^(parameterCollection ifEmpty: [ #() ])
-		collect: [ :each | self visitParameter: each ]
-    
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitParameterStatement: aNode [
+
+	^ self visitJsonMap: aNode keys: #( start_pos constant_declarations )
 ]
 
 { #category : #visiting }
@@ -854,6 +858,12 @@ SyntaxAbstractJsonVisitor >> visitProcList: aNode [
    <generated>
  
    ^ self visitJsonArray: aNode
+]
+
+{ #category : #'visiting prog-unit' }
+SyntaxAbstractJsonVisitor >> visitProgUnitParameters: aCollection [ 
+
+	^self visitJsonArray: aCollection
 ]
 
 { #category : #'visiting prog-unit' }
@@ -1004,7 +1014,7 @@ SyntaxAbstractJsonVisitor >> visitSubroutine: aSubroutine [
 
 	^ self
 		  visitJsonMap: aSubroutine
-		  keys: #( name parameters start_pos end_pos statement_list )
+		  keys: #( name prog_unit_parameters start_pos end_pos statement_list )
 ]
 
 { #category : #visiting }
