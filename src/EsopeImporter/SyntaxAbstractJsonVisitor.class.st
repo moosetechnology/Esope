@@ -985,7 +985,6 @@ SyntaxAbstractJsonVisitor >> visitStatement: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitStatementList: aStatementList [
-	"generated"
 
 	^self visitJsonArray: aStatementList
 ]
@@ -994,13 +993,6 @@ SyntaxAbstractJsonVisitor >> visitStatementList: aStatementList [
 SyntaxAbstractJsonVisitor >> visitStatementNumber: aNode [
 	<generated>
 
-]
-
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitStatementsList: aNode [
-   <generated>
- 
-   ^ self visitJsonArray: aNode
 ]
 
 { #category : #'visiting statement' }
