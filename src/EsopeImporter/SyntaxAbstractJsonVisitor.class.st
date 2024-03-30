@@ -40,6 +40,12 @@ SyntaxAbstractJsonVisitor >> visitArguments: aNode [
 	^self visitJsonArray: aNode
 ]
 
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitArithmeticConstExpr: aNode [
+
+	^self visitJsonNode: aNode key: #expression
+]
+
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitArithmeticExpression: aNode [
 	"generated"
@@ -107,6 +113,12 @@ SyntaxAbstractJsonVisitor >> visitBlockIfStatement: aNode [
 SyntaxAbstractJsonVisitor >> visitCallStatement: aNode [
 
 	^ self visitLabeledStatement: aNode keys: #( start_pos name arguments )
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitCharacterConstExpr: aNode [
+
+	^self visitJsonNode: aNode key: #expression
 ]
 
 { #category : #'visiting expression' }
@@ -650,6 +662,12 @@ SyntaxAbstractJsonVisitor >> visitLiteralExpression: aNode [
 	"generated"
 
 	^ self visitJsonNode: aNode key: #literal
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitLogicalConstExpr: aNode [
+
+	^self visitJsonNode: aNode key: #expression
 ]
 
 { #category : #'visiting expression' }
