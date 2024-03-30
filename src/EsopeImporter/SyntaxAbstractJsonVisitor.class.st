@@ -749,7 +749,7 @@ SyntaxAbstractJsonVisitor >> visitMain: aNode [
 	^ self visitJsonMap: aNode keys: #( name start_pos end_pos statement_list )
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitName: aName [
 
 	aName class = ByteString ifTrue: [ ^ aName ].
@@ -808,7 +808,7 @@ SyntaxAbstractJsonVisitor >> visitOperator: aNode [
 	^ aNode
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitParameter: aParameter [
 	"returns a Dictionnary or '*'
 	 not very coherent :-("
@@ -1013,7 +1013,7 @@ SyntaxAbstractJsonVisitor >> visitSubstring: aNode [
 	^ self visitJsonMap: aNode keys: #( lower_bound variable upper_bound )
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitSymbolicName: aSymbolicName [
 	"start_pos name"
 
