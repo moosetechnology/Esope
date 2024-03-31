@@ -262,9 +262,8 @@ SyntaxAbstractJsonVisitor >> visitDeclarators: aNode [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitDescriptor: aNode [
-   <generated>
-		
-	^ self visitJsonTaggedElement: aNode
+
+	^aNode
 ]
 
 { #category : #visiting }
@@ -380,9 +379,8 @@ SyntaxAbstractJsonVisitor >> visitFormatSpecification: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitFormatStatement: aNode [
-    <generated>
 
-	^ self visitJsonMap: aNode keys: #( label specification )
+	^self visitLabeledStatement: aNode keys: #( start_pos specification )
 ]
 
 { #category : #'visiting prog-unit' }
