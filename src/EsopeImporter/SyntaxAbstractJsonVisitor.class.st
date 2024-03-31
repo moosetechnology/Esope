@@ -276,7 +276,6 @@ SyntaxAbstractJsonVisitor >> visitDimensionDeclarators: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitDimensionStatement: aNode [
-    <generated>
 
 	^ self visitJsonMap: aNode keys: #( start_pos array_declarators )
 ]
