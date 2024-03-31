@@ -157,24 +157,23 @@ SyntaxAbstractJsonVisitor >> visitComments: aComments [
 	^ #()
 ]
 
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitCommonParameters: aNode [
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitCommonBody: aCollection [
 
-	<generated>
-	| result |
-
-	result := OrderedCollection new.
-	aNode do: [ :parameter |
-		result add: (self visitJsonMap: parameter keys: #( name nlist )) ].
-
-	^ result
+	^self visitJsonArray: aCollection
 ]
 
 { #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitCommonName: aCollection [ 
+
+	^self visitJsonElement: aCollection
+]
+
+{ #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitCommonStatement: aNode [
     <generated>
 
-	^ self visitJsonMap: aNode keys: #( start_pos common_parameters )
+	^ self visitJsonMap: aNode keys: #( start_pos common_body )
 ]
 
 { #category : #visiting }
