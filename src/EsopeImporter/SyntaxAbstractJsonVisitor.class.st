@@ -324,24 +324,29 @@ SyntaxAbstractJsonVisitor >> visitEndPos: aEndPos [
 	^ (aEndPos at: 'line') asInteger @ (aEndPos at: 'column') asInteger
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitEntryStatement: aNode [
     <generated>
 
 	^ self visitJsonMap: aNode keys: #( name start_pos parameters )
 ]
 
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitEquivalenceParameters: aNode [
-   <generated>
- 
-   ^ self visitJsonArray: aNode
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitEquivGroup: aCollection [
+
+	^self visitJsonArray: aCollection 
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitEquivalenceGroups: aCollection [
+
+	^aCollection collect: [ :each | self visitEquivGroup: (each at: #equiv_group) ]
+]
+
+{ #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitEquivalenceStatement: aNode [
 
-	^ self visitJsonMap: aNode keys: #( start_pos equivalence_parameters )
+	^ self visitJsonMap: aNode keys: #( start_pos equivalence_groups )
 ]
 
 { #category : #'visiting expression' }
@@ -350,7 +355,7 @@ SyntaxAbstractJsonVisitor >> visitExpression: aNode [
 	^ self visitJsonElement: aNode
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitExternalStatement: aNode [
     <generated>
 
