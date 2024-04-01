@@ -106,7 +106,7 @@ SyntaxAbstractJsonVisitor >> visitBlockData: aNode [
 SyntaxAbstractJsonVisitor >> visitBlockIfStatement: aNode [
     <generated>
 
-	^ self visitJsonMap: aNode keys: #( start_pos expression then_statements else_block )
+	^ self visitJsonMap: aNode keys: #( start_pos condition then_statements else_block )
 ]
 
 { #category : #'visiting statement' }
@@ -186,6 +186,12 @@ SyntaxAbstractJsonVisitor >> visitComplexType: aNode [
 SyntaxAbstractJsonVisitor >> visitComputedGotoStatement: aNode [
 
 	^ self visitLabeledStatement: aNode keys: #( var start_pos labels )
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitCondition: aNode [ 
+
+	^self visitJsonElement: aNode
 ]
 
 { #category : #'visiting expression' }
@@ -295,20 +301,13 @@ SyntaxAbstractJsonVisitor >> visitDoStatement: aNode [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitElseBlock: aNode [
 
-	^ self visitJsonNode: aNode key: #else_statements
+	^ self visitJsonMap: aNode keys: #(statement_list end_if)
 ]
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitElseLabel: aNode [
 	
 	^ aNode 
-]
-
-{ #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitElseStatements: aNode [
-   <generated>
- 
-   ^ self visitJsonArray: aNode
 ]
 
 { #category : #'visiting statement' }
