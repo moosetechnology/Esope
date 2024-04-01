@@ -288,9 +288,8 @@ SyntaxAbstractJsonVisitor >> visitDlist: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitDoStatement: aNode [
-    <generated>
 
-	^ self visitJsonMap: aNode keys: #( start_pos statements_list loop_control statement_number )
+	^ self visitJsonMap: aNode keys: #( start_pos statement_list loop_control )
 ]
 
 { #category : #'visiting statement' }
@@ -480,7 +479,8 @@ SyntaxAbstractJsonVisitor >> visitImplicitStatement: aNode [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitIncrement: aNode [
-	<generated>
+
+	^self visitJsonElement: aNode
 
 ]
 
@@ -657,6 +657,12 @@ SyntaxAbstractJsonVisitor >> visitLhs: aNode [
 	^ self visitJsonElement: aNode
 ]
 
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitLimit: aNode [
+
+	^self visitJsonElement: aNode
+]
+
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitLiteral: aNode [
 
@@ -718,37 +724,14 @@ SyntaxAbstractJsonVisitor >> visitLogicalType: aNode [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitLoopControl: aNode [
-    <generated>
 
-	^ self visitJsonMap: aNode keys: #( variable_name init increment )
+	^ self visitJsonMap: aNode keys: #( variable_name init limit increment )
 ]
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitLowerBound: aNode [
 
 	^ self visitJsonTaggedElement: aNode
-]
-
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitM1: aNode [
-   <generated>
-		
-	^ self visitJsonTaggedElement: aNode
-]
-
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitM2: aNode [
-   <generated>
-		
-	^ self visitJsonTaggedElement: aNode
-]
-
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitM3: aNode [
-    <generated>
-
-	self visitJsonMap: aNode keys: #(  )
-
 ]
 
 { #category : #'visiting prog-unit' }
@@ -875,7 +858,6 @@ SyntaxAbstractJsonVisitor >> visitProgramUnits: aNode [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitQualifiersList: aNode [
-   <generated>
  
    ^ self visitJsonArray: aNode
 ]
