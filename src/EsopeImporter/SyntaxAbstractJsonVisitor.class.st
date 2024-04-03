@@ -321,7 +321,7 @@ SyntaxAbstractJsonVisitor >> visitElseIf: aNode [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitEndIf: aNode [
 
-	^ self visitJsonMap: aNode keys: #( label )
+	^ self visitJsonMap: aNode keys: #( label start_pos )
 ]
 
 { #category : #visiting }
