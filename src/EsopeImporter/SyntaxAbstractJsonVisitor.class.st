@@ -104,7 +104,6 @@ SyntaxAbstractJsonVisitor >> visitBlockData: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitBlockIfStatement: aNode [
-    <generated>
 
 	^ self visitJsonMap: aNode keys: #( start_pos condition then_statements else_block )
 ]
@@ -299,15 +298,24 @@ SyntaxAbstractJsonVisitor >> visitDoStatement: aNode [
 ]
 
 { #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitElseBlock: aNode [
+SyntaxAbstractJsonVisitor >> visitElse: aNode [
 
 	^ self visitJsonMap: aNode keys: #(statement_list end_if)
 ]
 
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitElseLabel: aNode [
-	
-	^ aNode 
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitElseBlock: aNode [
+	"can be a simple #else containing a statement list or a #else_if, continaing another if_statement
+	 this is decided by the #tag"
+
+	^self visitJsonElement: aNode
+]
+
+{ #category : #'visiting statement' }
+SyntaxAbstractJsonVisitor >> visitElseIf: aNode [
+	"same as a block_if, but within an else"
+
+	^self visitBlockIfStatement: aNode
 ]
 
 { #category : #'visiting statement' }
