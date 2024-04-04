@@ -298,7 +298,7 @@ SyntaxAbstractJsonVisitor >> visitDoStatement: aNode [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitElse: aNode [
 
-	^ self visitJsonMap: aNode keys: #(statement_list end_if)
+	^ self visitJsonMap: aNode keys: #(start_pos statement_list end_if)
 ]
 
 { #category : #'visiting statement' }
