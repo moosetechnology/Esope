@@ -149,11 +149,9 @@ SyntaxAbstractJsonVisitor >> visitClist: aNode [
 ]
 
 { #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitComments: aComments [
+SyntaxAbstractJsonVisitor >> visitComments: aCollection [
 
-	"ignore for the moment"
-	
-	^ #()
+	^aCollection
 ]
 
 { #category : #'visiting statement' }
