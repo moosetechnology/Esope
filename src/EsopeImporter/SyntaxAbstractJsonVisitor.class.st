@@ -837,9 +837,8 @@ SyntaxAbstractJsonVisitor >> visitPauseStatement: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitPrintStatement: aNode [
-    <generated>
 
-	^ self visitJsonMap: aNode keys: #( format start_pos io_list label )
+	^ self visitLabeledStatement: aNode keys: #( start_pos format io_list )
 ]
 
 { #category : #visiting }
