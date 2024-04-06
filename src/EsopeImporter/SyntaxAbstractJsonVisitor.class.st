@@ -376,7 +376,7 @@ SyntaxAbstractJsonVisitor >> visitFile: aFileName [
 SyntaxAbstractJsonVisitor >> visitFormat: aNode [
    <generated>
  
-   ^ self visitJsonArray: aNode
+   ^ self visitJsonElement: aNode
 ]
 
 { #category : #visiting }
@@ -617,17 +617,6 @@ SyntaxAbstractJsonVisitor >> visitLabelRef: aString [
 	^aString
 ]
 
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitLabelReference: label [
-
-	^label
-]
-
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitLabelRefs: aCollection [ 
-	self shouldBeImplemented.
-]
-
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitLabeledStatement: aNode keys: keyCollection [
 
@@ -638,7 +627,7 @@ SyntaxAbstractJsonVisitor >> visitLabeledStatement: aNode keys: keyCollection [
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitLabels: aCollection [
 
-   ^aCollection collect: [ :label | self visitLabelReference: label ]
+   ^self visitJsonArray: aCollection
 ]
 
 { #category : #visiting }
