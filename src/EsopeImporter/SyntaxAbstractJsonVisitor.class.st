@@ -292,7 +292,7 @@ SyntaxAbstractJsonVisitor >> visitDlist: aNode [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitDoStatement: aNode [
 
-	^ self visitJsonMap: aNode keys: #( start_pos statement_list loop_control )
+	^ self visitJsonMap: aNode keys: #( start_pos statement_number loop_control statement_list )
 ]
 
 { #category : #'visiting statement' }
@@ -967,8 +967,8 @@ SyntaxAbstractJsonVisitor >> visitStatementList: aStatementList [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitStatementNumber: aNode [
-	<generated>
 
+	^self visitJsonNode: aNode key: #label_ref
 ]
 
 { #category : #'visiting statement' }
@@ -1104,9 +1104,8 @@ SyntaxAbstractJsonVisitor >> visitVariableExpression: aNode [
 
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitVariableName: aNode [
-   <generated>
 		
-	^ self visitJsonTaggedElement: aNode
+	^ self visitJsonMap: aNode keys: #( start_pos name )
 ]
 
 { #category : #'visiting statement' }
