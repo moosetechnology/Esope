@@ -231,9 +231,20 @@ SyntaxAbstractJsonVisitor >> visitControlInfoOption: aNode [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitDataImplyDoList: aNode [
-    <generated>
+	"keys: dlist init limit increment
+	 implied_do_list has the form: (array1, array2,..., indice, indice=init, limit, increment)
+	 #dlist will contain: array1, array2,..., indice, indice
+	 We remove the last two and add an extra key #variable_name so that it looks like a regular loop_control"
 
-	self visitJsonMap: aNode keys: #( m3 dlist m1 m2 )
+	| map dlist |
+	map := self visitJsonMap: aNode keys: #( init limit increment ).
+
+	dlist := self visitJsonArray: (aNode at: #dlist).
+	map at: #dlist put: (dlist allButLast: 2).
+	map at: #variable_name put: (dlist last).
+
+	^map
+
 
 ]
 
