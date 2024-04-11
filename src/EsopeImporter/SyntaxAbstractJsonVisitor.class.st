@@ -138,7 +138,7 @@ SyntaxAbstractJsonVisitor >> visitCharacterExpression: aNode [
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitCharacterType: aNode [
 
-	^'CHARACTER'
+	self subclassResponsibility
 ]
 
 { #category : #visiting }
@@ -1017,7 +1017,6 @@ SyntaxAbstractJsonVisitor >> visitThenStatements: aNode [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitType: aNode [
-   <generated>
 		
 	^ self visitJsonTaggedElement: aNode
 ]
@@ -1053,6 +1052,12 @@ SyntaxAbstractJsonVisitor >> visitUnconditionalGotoStatement: aNode [
 	"contrary to what it seems, there is only one label possible"
 
 	^self visitLabeledStatement: aNode keys: #( start_pos labels )
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitUndefinedType: aNode [
+
+	^'UNDEFINED'
 ]
 
 { #category : #'visiting expression' }
