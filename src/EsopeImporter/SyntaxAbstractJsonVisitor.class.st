@@ -257,7 +257,6 @@ SyntaxAbstractJsonVisitor >> visitDataParameters: aNode [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitDataStatement: aNode [
-    <generated>
 
 	^ self visitJsonMap: aNode keys: #( start_pos data_parameters )
 ]
@@ -314,7 +313,7 @@ SyntaxAbstractJsonVisitor >> visitElse: aNode [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitElseBlock: aNode [
-	"can be a simple #else containing a statement list or a #else_if, continaing another if_statement
+	"can be a simple #else containing a statement list or a #else_if, containing another if_statement
 	 this is decided by the #tag"
 
 	^self visitJsonElement: aNode
@@ -576,11 +575,13 @@ SyntaxAbstractJsonVisitor >> visitJsonMap: jsonDictionary [
 	otherwise, perform a visit of each value for their key
 	'anno' key always ignored"
 
-	^ (jsonDictionary includesKey: 'tag')
-		  ifTrue: [ self visitJsonTaggedElement: jsonDictionary ]
-		  ifFalse: [
-			  jsonDictionary associations collect: [ :assoc |
-				  self visitJsonKey: assoc key value: assoc value ] ]
+	^(jsonDictionary includesKey: 'tag')
+		ifTrue: [ self visitJsonTaggedElement: jsonDictionary ]
+		ifFalse: [ | result |
+			result := Dictionary new: jsonDictionary size.
+			jsonDictionary associationsDo: [ :assoc |
+				result at: assoc key put: (self visitJsonKey: assoc key value: assoc value) ].
+			result ]
 ]
 
 { #category : #'visiting reflectivity' }
@@ -649,7 +650,18 @@ SyntaxAbstractJsonVisitor >> visitLeft: aNode [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitLenSpecification: aNode [
-	"similar to #visitLiteral: should be unified"
+	"length of a type in a variable declaration (a number or * if len is unspecified)
+	similar to #visitLiteral: should be unified"
+
+	^(aNode includesKey: #asterisk)
+		ifTrue: [ self visitAsterisk: aNode ]
+		ifFalse: [ self visitJsonTaggedElement: aNode ]
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitLenSpecifier: aNode [
+	"dimension of a character array declaration: an expression or asterisk
+	 looks like dimension_declarator but can be asterisk too"
 
 	^(aNode includesKey: #asterisk)
 		ifTrue: [ self visitAsterisk: aNode ]
