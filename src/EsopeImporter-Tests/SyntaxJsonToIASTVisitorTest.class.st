@@ -31,15 +31,15 @@ SyntaxJsonToIASTVisitorTest class >> generateFortranSourcesForTests [
 
 	self methods do: [ :mth|
 		((mth selector beginsWith: 'test') and: [
-			(self statement: mth ast body statements first isAssignementTo: #programFile) and: [ 
+			(self statement: mth ast body statements first isAssignmentTo: #programFile) and: [ 
 			mth comments isNotEmpty ] ])
 			ifTrue: [ self generateFortranSourcesForTest: mth ]
-	].
+	]
 
 ]
 
 { #category : #generation }
-SyntaxJsonToIASTVisitorTest class >> statement: astStatement isAssignementTo: aSymbol [
+SyntaxJsonToIASTVisitorTest class >> statement: astStatement isAssignmentTo: aSymbol [
 
 	^(astStatement class = RBAssignmentNode) and: [
 		astStatement variable name = aSymbol ]
