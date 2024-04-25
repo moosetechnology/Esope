@@ -4,6 +4,47 @@ Class {
 	#category : #'EsopeImporter-Tests-Visitor'
 }
 
+{ #category : #generation }
+SyntaxJsonToIASTVisitorTest class >> generateFortranSourcesForTest: mth [
+	"regenerate #jsonCode for test method mth from the source code in these methods"
+
+	| fortranFilename fortran json |
+	fortranFilename := 'tmpFASTSource.f'.
+
+	fortran := mth comments first.
+	json := FortranProjectSyntaxImporter new getJsonFor: fortran.
+	json := String streamContents: [ :str || i |
+		i := json indexOfSubCollection: '/home/'.
+		str << (json copyFrom: 1 to: i-1).
+		str << './fortranCode.F'.
+		i := json indexOfSubCollection: fortranFilename.
+		str << (json copyFrom: i + fortranFilename size to: json size)
+	].
+
+	mth ast body statements first value arguments: { RBLiteralValueNode value: json }.
+	self compile: mth ast formattedCode.
+]
+
+{ #category : #generation }
+SyntaxJsonToIASTVisitorTest class >> generateFortranSourcesForTests [
+	"regenerate #jsonCode for all test methods from the source code in these methods"
+
+	self methods do: [ :mth|
+		((mth selector beginsWith: 'test') and: [
+			(self statement: mth ast body statements first isAssignementTo: #programFile) and: [ 
+			mth comments isNotEmpty ] ])
+			ifTrue: [ self generateFortranSourcesForTest: mth ]
+	].
+
+]
+
+{ #category : #generation }
+SyntaxJsonToIASTVisitorTest class >> statement: astStatement isAssignementTo: aSymbol [
+
+	^(astStatement class = RBAssignmentNode) and: [
+		astStatement variable name = aSymbol ]
+]
+
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testAccessArrayWithIndices [
 	"
@@ -12,8 +53,10 @@ SyntaxJsonToIASTVisitorTest >> testAccessArrayWithIndices [
       someVar = arr(i)
       end
 "
+
 	| programFile var |
-	programFile :=  self visitJsonCode: '{ "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "1", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "1", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "2", "column":"11"}, "type" : {"tag" : "type_reference", "name":"INTEGER"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"19"}, "name":"ARR"}, "dimension_declarators" : [{"tag" : "literal_expression", "literal" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "2", "column":"23"}, "value":"10"}}]}]}, {"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"ARR"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"21"}, "name":"I"}]}]}]}] }'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "5", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "3", "column":"7"}, "type" : {"tag" : "type_reference", "name":"INTEGER"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"15"}, "name":"ARR"}, "dimension_declarators" : [{"tag" : "literal_expression", "literal" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"19"}, "value":"10"}}]}]}, {"tag" : "assignment_statement", "start_pos" : {"line" : "4", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"17"}, "name":"ARR"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"21"}, "name":"I"}]}]}]}] }'.
 
 	"body of 1st program-unit has 2 statements"
 	self assert: programFile progUnits first body size equals: 2.
@@ -29,8 +72,7 @@ SyntaxJsonToIASTVisitorTest >> testAccessArrayWithIndices [
 	var := var indices first.
 	self assert: var class equals: IASTVarAccess.
 	self deny: var isWrite.
-	self assert: var entityName equals: 'i'.
-
+	self assert: var entityName equals: 'i'
 ]
 
 { #category : #'tests-statement' }
@@ -41,8 +83,10 @@ SyntaxJsonToIASTVisitorTest >> testAccessArrayWithIndicesLiteral [
       someVar = arr(5)
       end
 "
+
 	| programFile var |
-	programFile :=  self visitJsonCode: '{ "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "1", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "1", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "2", "column":"11"}, "type" : {"tag" : "type_reference", "name":"INTEGER"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"19"}, "name":"ARR"}, "dimension_declarators" : [{"tag" : "literal_expression", "literal" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "2", "column":"23"}, "value":"10"}}]}]}, {"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"ARR"}, "qualifiers_list" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"21"}, "value":"5"}}]}]}]}] }'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "5", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "3", "column":"7"}, "type" : {"tag" : "type_reference", "name":"INTEGER"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"15"}, "name":"ARR"}, "dimension_declarators" : [{"tag" : "literal_expression", "literal" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"19"}, "value":"10"}}]}]}, {"tag" : "assignment_statement", "start_pos" : {"line" : "4", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"17"}, "name":"ARR"}, "qualifiers_list" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "4", "column":"21"}, "value":"5"}}]}]}]}] }'.
 
 	"body of 1st program-unit has 2 statements"
 	self assert: programFile progUnits first body size equals: 2.
@@ -55,7 +99,7 @@ SyntaxJsonToIASTVisitorTest >> testAccessArrayWithIndicesLiteral [
 	self assert: var entityName equals: 'arr'.
 	self assert: var indices size equals: 1.
 	"note: keep 'nil' indice to indicate that this is an array"
-	self assert: var indices first isNil.
+	self assert: var indices first isNil
 ]
 
 { #category : #'tests-statement' }
@@ -66,8 +110,10 @@ SyntaxJsonToIASTVisitorTest >> testAccessArrayWithSeveralIndices [
       someVar = arr(x, 2, y)
       end
 "
+
 	| programFile var |
-	programFile :=  self visitJsonCode: '{ "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "1", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "1", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "2", "column":"7"}, "type" : {"tag" : "type_reference", "name":"INTEGER"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"ARR"}, "dimension_declarators" : [{"upper_bound" : {"tag" : "literal_expression", "literal" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "2", "column":"19"}, "value":"10"}}}, {"upper_bound" : {"tag" : "literal_expression", "literal" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "2", "column":"23"}, "value":"10"}}}, {"tag" : "literal_expression", "literal" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "2", "column":"27"}, "value":"10"}}]}]}, {"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"ARR"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"21"}, "name":"X"}, {"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"24"}, "value":"2"}}, {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"27"}, "name":"Y"}]}]}]}] }'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "5", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "3", "column":"7"}, "type" : {"tag" : "type_reference", "name":"INTEGER"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"15"}, "name":"ARR"}, "dimension_declarators" : [{"upper_bound" : {"tag" : "literal_expression", "literal" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"19"}, "value":"10"}}}, {"upper_bound" : {"tag" : "literal_expression", "literal" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"23"}, "value":"10"}}}, {"tag" : "literal_expression", "literal" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"27"}, "value":"10"}}]}]}, {"tag" : "assignment_statement", "start_pos" : {"line" : "4", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"17"}, "name":"ARR"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"21"}, "name":"X"}, {"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "4", "column":"24"}, "value":"2"}}, {"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"27"}, "name":"Y"}]}]}]}] }'.
 
 	"body of 1st program-unit has 2 statements"
 	self assert: programFile progUnits first body size equals: 2.
@@ -86,8 +132,7 @@ SyntaxJsonToIASTVisitorTest >> testAccessArrayWithSeveralIndices [
 	self assert: var indices second isNil.
 
 	self assert: var indices third class equals: IASTVarAccess.
-	self assert: var indices third entityName equals: 'y'.
-
+	self assert: var indices third entityName equals: 'y'
 ]
 
 { #category : #'tests-statement' }
@@ -97,8 +142,10 @@ SyntaxJsonToIASTVisitorTest >> testAssignementStatement [
       someVar = otherVar
       end
 "
+
 	| programFile var |
-	programFile :=  self visitJsonCode: '{ "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "1", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "1", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "2", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"17"}, "name":"OTHERVAR"}]}]}] }'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"OTHERVAR"}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 2.
@@ -111,8 +158,7 @@ SyntaxJsonToIASTVisitorTest >> testAssignementStatement [
 	var := programFile progUnits first body first second.
 	self assert: var class equals: IASTVarAccess.
 	self deny: var isWrite.
-	self assert: var entityName equals: 'othervar'.
-
+	self assert: var entityName equals: 'othervar'
 ]
 
 { #category : #'tests-statement' }
@@ -122,8 +168,10 @@ SyntaxJsonToIASTVisitorTest >> testAssignementStatementWithComplexRHS [
       someVar = otherVar + thirdVar
       end
 "
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{ "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "1", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "1", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "2", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "binary_expression", "lhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"17"}, "name":"OTHERVAR"}, "operator" : "+", "rhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"28"}, "name":"THIRDVAR"}}}]}]}] }'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "binary_expression", "lhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"OTHERVAR"}, "operator" : "+", "rhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"28"}, "name":"THIRDVAR"}}}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 3.
@@ -138,8 +186,7 @@ SyntaxJsonToIASTVisitorTest >> testAssignementStatementWithComplexRHS [
 
 	stmt := programFile progUnits first body first third.
 	self assert: stmt class equals: IASTVarAccess.
-	self assert: stmt entityName equals: 'thirdvar'.
-
+	self assert: stmt entityName equals: 'thirdvar'
 ]
 
 { #category : #'tests-statement' }
@@ -149,8 +196,10 @@ SyntaxJsonToIASTVisitorTest >> testAssignementStatementWithEsoAt [
       someVar = D__(var,1)
       end
 "
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{ "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "1", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "1", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "2", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"17"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"21"}, "name":"VAR"}, {"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "2", "column":"25"}, "value":"1"}}]}]}]}] }'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"21"}, "name":"VAR"}, {"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"25"}, "value":"1"}}]}]}]}] }'.
 
 	"first statement in body"
 	stmt := programFile progUnits first body first.
@@ -160,8 +209,7 @@ SyntaxJsonToIASTVisitorTest >> testAssignementStatementWithEsoAt [
 	self assert: stmt first entityName equals: 'somevar'.
 
 	self assert: stmt second class equals: IASTVarEsoAt.
-	self assert: stmt second entityName equals: 'd__'.
-
+	self assert: stmt second entityName equals: 'd__'
 ]
 
 { #category : #'tests-progUnit' }
@@ -171,8 +219,10 @@ SyntaxJsonToIASTVisitorTest >> testBlockDataWithOneCommon [
       common /mycom/ i
       end
 "
+
 	| programFile blockdata var |
-	programFile :=  self visitJsonCode: '{ "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "block_data", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "1", "column":"17"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "1", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : [{"tag" : "common_statement", "start_pos" : {"line" : "2", "column":"7"}, "common_body" : [{"common_name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"MYCOM"}},{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"22"}, "name":"I"}, "dimension_declarators" : []}]}]}] }'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "block_data", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"17"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "common_statement", "start_pos" : {"line" : "3", "column":"7"}, "common_body" : [{"common_name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"15"}, "name":"MYCOM"}},{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"22"}, "name":"I"}, "dimension_declarators" : []}]}]}] }'.
 
 
 	self assert: programFile class equals: IASTProgramFile.
@@ -181,16 +231,16 @@ SyntaxJsonToIASTVisitorTest >> testBlockDataWithOneCommon [
 	blockdata := programFile progUnits first.
 	self assert: blockdata entityName equals: 'hello'.
 	self assert: blockdata body size equals: 1.
-	
+
 	var := blockdata body first first.
 	self assert: var class equals: IASTVariable.
 	self assert: var entityName equals: 'mycom'
-
 ]
 
 { #category : #'tests-progUnit' }
 SyntaxJsonToIASTVisitorTest >> testBlockDataWithOneCommonOneData [
-	"block data hello
+	"
+      block data hello
       common /mycom/ i
       data i /12345/
       end
@@ -199,7 +249,7 @@ SyntaxJsonToIASTVisitorTest >> testBlockDataWithOneCommonOneData [
 	self flag: 'not dealing with COMMON for now'.
 	self skip.
 
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:22)","statement":{"anno":[],"common_groups":{"anno":[],"list":[{"anno":[],"name":{"anno":[],"span":"(2:14)-(2:20)","tag":"value","value":{"contents":"mycom","tag":"variable"}},"span":"(2:14)-(2:22)","vars":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:22)-(2:22)","type":"scalar","variable":{"anno":[],"span":"(2:22)-(2:22)","tag":"value","value":{"contents":"i","tag":"variable"}}}],"span":"(2:22)-(2:22)"}}],"span":"(2:14)-(2:22)"},"span":"(2:7)-(2:22)","tag":"common"},"tag":"statement"},{"anno":[],"label":null,"span":"(3:7)-(3:20)","statement":{"anno":[],"data_groups":{"anno":[],"list":[{"anno":[],"initializers":{"anno":[],"list":[{"anno":[],"span":"(3:15)-(3:19)","tag":"value","value":{"contents":["12345",null],"tag":"integer"}}],"span":"(3:15)-(3:19)"},"names":{"anno":[],"list":[{"anno":[],"span":"(3:12)-(3:12)","tag":"value","value":{"contents":"i","tag":"variable"}}],"span":"(3:12)-(3:12)"},"span":"(3:12)-(3:20)"}],"span":"(3:12)-(3:20)"},"span":"(3:7)-(3:20)","tag":"data"},"tag":"statement"}],"name":"hello","span":"(1:7)-(4:9)","tag":"block_data"}]}'.
+	programFile :=  self visitJsonCode: ''.
 
 
 	self assert: programFile class equals: IASTProgramFile.
@@ -221,7 +271,8 @@ SyntaxJsonToIASTVisitorTest >> testCallToWrite [
 "
 
 	| programFile stmt arg |
-	programFile :=  self visitJsonCode: '{ "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "1", "column":"18"}, "name":"MYSUB"}, "prog_unit_parameters" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "1", "column":"25"}, "name":"MSG"}], "start_pos" : {"line" : "1", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : [{"tag" : "write_statement", "start_pos" : {"line" : "2", "column":"7"}, "control_info_list" : [{"asterisk":"*"},{"asterisk":"*"}], "io_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"MSG"}]}]}] }'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"MYSUB"}, "prog_unit_parameters" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"25"}, "name":"MSG"}], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "write_statement", "start_pos" : {"line" : "3", "column":"7"}, "control_info_list" : [{"asterisk":"*"},{"asterisk":"*"}], "io_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"18"}, "name":"MSG"}]}]}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -236,14 +287,16 @@ SyntaxJsonToIASTVisitorTest >> testCallToWrite [
 	self assert: arg class equals: IASTVarAccess.
 	self assert: arg entityName equals: 'msg'.
 	self deny: arg isWrite
-
 ]
 
 { #category : #'tests-progUnit' }
 SyntaxJsonToIASTVisitorTest >> testComment [
-	"c     blah"
+	"c     blah
+"
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{ "tag":"fortran_file", "comments": { "1":"c     blah\n" }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "main", "name" : "null", "prog_unit_parameters" : [], "start_pos" : {"line" : "3", "column":"1"}, "end_pos" : {"line" : "3", "column":"3"}, "statement_list" : []}] }'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { "1":"c     blah\n" }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "main", "name" : "null", "prog_unit_parameters" : [], "start_pos" : {"line" : "3", "column":"1"}, "end_pos" : {"line" : "3", "column":"3"}, "statement_list" : []}] }'.
 
 	self assert: programFile progUnits size equals: 1.
 	stmt := programFile progUnits first.
@@ -256,8 +309,7 @@ SyntaxJsonToIASTVisitorTest >> testComment [
 	self assert: stmt sourceAnchor startLine equals: 1.
 	self assert: stmt sourceAnchor startColumn equals: 1.
 	self assert: stmt sourceAnchor endLine equals: 1.
-	self assert: stmt sourceAnchor endColumn equals: 11.
-
+	self assert: stmt sourceAnchor endColumn equals: 11
 ]
 
 { #category : #'tests-statement' }
@@ -267,16 +319,17 @@ SyntaxJsonToIASTVisitorTest >> testCommentInside [
 c     blah
       end
 "
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{ "tag":"fortran_file", "comments": { "2":"c     blah\n" }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "function", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "1", "column":"24"}, "name":"HELLO"}, "prog_unit_parameters" : [], "return_type" : {"tag" : "type_reference", "name":"INTEGER"}, "start_pos" : {"line" : "1", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : []}] }'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { "3":"c     blah\n" }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "function", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"24"}, "name":"HELLO"}, "prog_unit_parameters" : [], "return_type" : {"tag" : "type_reference", "name":"INTEGER"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
 	stmt := programFile progUnits first body first.
 
 	self assert: stmt class equals: IASTComment.
-	self assert: stmt text equals: '     blah'.
-
+	self assert: stmt text equals: '     blah'
 ]
 
 { #category : #'tests-progUnit' }
@@ -285,26 +338,29 @@ SyntaxJsonToIASTVisitorTest >> testCommentOutside [
       integer function hello()
       end
 "
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{ "tag":"fortran_file", "comments": { "1":"c     blah\n" }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "function", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"24"}, "name":"HELLO"}, "prog_unit_parameters" : [], "return_type" : {"tag" : "type_reference", "name":"INTEGER"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : []}] }'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { "1":"c     blah\n" }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "function", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"24"}, "name":"HELLO"}, "prog_unit_parameters" : [], "return_type" : {"tag" : "type_reference", "name":"INTEGER"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile progUnits size equals: 2.
 	stmt := programFile progUnits first.
 	self assert: stmt class equals: IASTComment.
-	self assert: stmt text equals: '     blah'.
-
+	self assert: stmt text equals: '     blah'
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testContinueStatement [
-"      PROGRAM MYPROG
+	"
+      PROGRAM MYPROG
       continue
       END
 "
-	
+
 	| programFile |
-	programFile :=  self visitJsonCode: '{ "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "1", "column":"15"}, "name":"MYPROG"}, "start_pos" : {"line" : "1", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : [{"tag" : "continue_statement", "start_pos" : {"line" : "2", "column":"7"}}]}] }'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"MYPROG"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "continue_statement", "start_pos" : {"line" : "3", "column":"7"}}]}] }'.
 
 
 	self assert: programFile progUnits first body isEmpty
@@ -312,18 +368,18 @@ SyntaxJsonToIASTVisitorTest >> testContinueStatement [
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testESOAtWithArrayArgument [
-"Special case of a D__ function call with an array as argument
-
+"
       subroutine hello
         integer arr(10)
         x = D__(y,arr(z))
       end
 "
+	"Special case of a D__ function call with an array as argument"
 
 	| programFile d__ arg |
 	self skip.
 
-	programFile := self visitJsonCode: '{ "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "1", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "1", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "2", "column":"9"}, "type" : {"tag" : "type_reference", "name":"INTEGER"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"17"}, "name":"ARR"}, "dimension_declarators" : [{"tag" : "literal_expression", "literal" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "2", "column":"21"}, "value":"10"}}]}]}, {"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"9"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"9"}, "name":"X"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"13"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"Y"}, {"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"19"}, "name":"ARR"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"23"}, "name":"Z"}]}]}]}]}] }'.
+	programFile := self visitJsonCode: ''.
 
 	"body of 1st program-unit, then second statement"
 	self assert: programFile progUnits first body second size equals: 2.
@@ -352,8 +408,10 @@ SyntaxJsonToIASTVisitorTest >> testEmptyBlockData [
       BLOCK data hello
       end
 "
+
 	| programFile block |
-	programFile :=  self visitJsonCode: ''.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "block_data", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile class equals: IASTProgramFile.
@@ -362,19 +420,20 @@ SyntaxJsonToIASTVisitorTest >> testEmptyBlockData [
 	block := programFile progUnits first.
 	self assert: block entityName equals: 'hello'.
 	self assert: block body isEmpty.
-	self assert: block comments isEmpty.
+	self assert: block comments isEmpty
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testEmptyExitStatement [
-"
+	"
       PROGRAM MYPROG
       exit
       END
 "
-	
+
 	| programFile |
-	programFile :=  self visitJsonCode: ''.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./tmpFASTSource.f", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"MYPROG"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"7"}, "name":"EXIT"}], "right" : [{"tag" : "logical_expression", "expression" : {"tag" : "logical_factor", "negated" : "false", "expression" : {"tag" : "logical_primary", "expression" : {"tag" : "logical_constant", "start_pos" : {"line" : "3", "column":"11"}, "value":".FALSE."}}}}]}]}] }'.
 
 
 	self assert: programFile progUnits first body isEmpty
@@ -382,11 +441,14 @@ SyntaxJsonToIASTVisitorTest >> testEmptyExitStatement [
 
 { #category : #'tests-progUnit' }
 SyntaxJsonToIASTVisitorTest >> testEmptyFunction [
-	"integer function hello()
+	"
+      integer function hello()
       end
 "
+
 	| programFile fct |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[],"name":"hello","result":null,"span":"(1:7)-(2:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "function", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"24"}, "name":"HELLO"}, "prog_unit_parameters" : [], "return_type" : {"tag" : "type_reference", "name":"INTEGER"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile class equals: IASTProgramFile.
@@ -405,17 +467,19 @@ SyntaxJsonToIASTVisitorTest >> testEmptyFunction [
 	self assert: fct sourceAnchor startLine equals: 1.
 	self assert: fct sourceAnchor startColumn equals: 7.
 	self assert: fct sourceAnchor endLine equals: 2.
-	self assert: fct sourceAnchor endColumn equals: 10.
-
+	self assert: fct sourceAnchor endColumn equals: 10
 ]
 
 { #category : #'tests-progUnit' }
 SyntaxJsonToIASTVisitorTest >> testEmptyFunctionWithArguments [
-	"integer function hello(i,j)
+	"
+      integer function hello(i,j)
       end
 "
+
 	| programFile fct param |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(1:30)-(1:30)","tag":"value","value":{"contents":"i","tag":"variable"}},{"anno":[],"span":"(1:32)-(1:32)","tag":"value","value":{"contents":"j","tag":"variable"}}],"span":"(1:30)-(1:32)"},"blocks":[],"name":"hello","result":null,"span":"(1:7)-(2:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "function", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"24"}, "name":"HELLO"}, "prog_unit_parameters" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"30"}, "name":"I"}, {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"32"}, "name":"J"}], "return_type" : {"tag" : "type_reference", "name":"INTEGER"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : []}] }'.
 
 
 	fct := programFile progUnits first.
@@ -428,22 +492,26 @@ SyntaxJsonToIASTVisitorTest >> testEmptyFunctionWithArguments [
 
 	param := fct parameters second.
 	self assert: param class equals: IASTParameter.
-	self assert: param entityName equals: 'j'.
-
+	self assert: param entityName equals: 'j'
 ]
 
 { #category : #'tests-progUnit' }
 SyntaxJsonToIASTVisitorTest >> testEmptyProgram [
-	"program hello
+	"
+      program hello
       end
 "
+
 	| programFile prog |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[],"name":"hello","span":"(1:7)-(2:9)","subprograms":null,"tag":"main"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"HELLO"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile class equals: IASTProgramFile.
 	self assert: programFile progUnits size equals: 1.
-	self assert: programFile progUnits first class equals: IASTMainProgram.
+	self
+		assert: programFile progUnits first class
+		equals: IASTMainProgram.
 	prog := programFile progUnits first.
 	self assert: prog entityName equals: 'hello'.
 	self assert: prog body isEmpty.
@@ -455,32 +523,37 @@ SyntaxJsonToIASTVisitorTest >> testEmptyProgram [
 	self assert: prog sourceAnchor startLine equals: 1.
 	self assert: prog sourceAnchor startColumn equals: 7.
 	self assert: prog sourceAnchor endLine equals: 2.
-	self assert: prog sourceAnchor endColumn equals: 10.
-
+	self assert: prog sourceAnchor endColumn equals: 10
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testEmptyReturnStatement [
-"      subroutine hello
+	"
+      subroutine hello
       return
       end
 "
+
 	| programFile fct |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:12)","statement":{"anno":[],"span":"(2:7)-(2:12)","tag":"return","target":null},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "return_statement", "start_pos" : {"line" : "3", "column":"7"}}]}] }'.
 
 	self assert: programFile progUnits size equals: 1.
-	
+
 	fct := programFile progUnits first.
 	self assert: fct body isEmpty
 ]
 
 { #category : #'tests-progUnit' }
 SyntaxJsonToIASTVisitorTest >> testEmptySubroutine [
-	"subroutine hello
+	"
+      subroutine hello
       end
 "
+
 	| programFile sub |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[],"name":"hello","options":[null,null],"span":"(1:7)-(2:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile class equals: IASTProgramFile.
@@ -497,16 +570,19 @@ SyntaxJsonToIASTVisitorTest >> testEmptySubroutine [
 	self assert: sub sourceAnchor startLine equals: 1.
 	self assert: sub sourceAnchor startColumn equals: 7.
 	self assert: sub sourceAnchor endLine equals: 2.
-	self assert: sub sourceAnchor endColumn equals: 10.
+	self assert: sub sourceAnchor endColumn equals: 10
 ]
 
 { #category : #'tests-progUnit' }
 SyntaxJsonToIASTVisitorTest >> testEmptySubroutineOneParam [
-	"subroutine hello( name )
+	"
+      subroutine hello( name )
       end
 "
+
 	| programFile sub |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(1:25)-(1:28)","tag":"value","value":{"contents":"name","tag":"variable"}}],"span":"(1:25)-(1:28)"},"blocks":[],"name":"hello","options":[null,null],"span":"(1:7)-(2:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"25"}, "name":"NAME"}], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : []}] }'.
 
 
 	sub := programFile progUnits first.
@@ -514,16 +590,19 @@ SyntaxJsonToIASTVisitorTest >> testEmptySubroutineOneParam [
 	self assert: sub parameters size equals: 1.
 	self assert: sub parameters first class equals: IASTParameter.
 	self assert: sub parameters first entityName equals: 'name'.
-	self assert: sub body isEmpty.
+	self assert: sub body isEmpty
 ]
 
 { #category : #'tests-progUnit' }
 SyntaxJsonToIASTVisitorTest >> testEmptySubroutineTwoParams [
-	"subroutine hello( param1, param2 )
+	"
+      subroutine hello( param1, param2 )
       end
 "
+
 	| programFile sub |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(1:25)-(1:30)","tag":"value","value":{"contents":"param1","tag":"variable"}},{"anno":[],"span":"(1:33)-(1:38)","tag":"value","value":{"contents":"param2","tag":"variable"}}],"span":"(1:25)-(1:38)"},"blocks":[],"name":"hello","options":[null,null],"span":"(1:7)-(2:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"25"}, "name":"PARAM1"}, {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"33"}, "name":"PARAM2"}], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : []}] }'.
 
 
 	sub := programFile progUnits first.
@@ -533,38 +612,40 @@ SyntaxJsonToIASTVisitorTest >> testEmptySubroutineTwoParams [
 	self assert: sub parameters first entityName equals: 'param1'.
 	self assert: sub parameters second class equals: IASTParameter.
 	self assert: sub parameters second entityName equals: 'param2'.
-	self assert: sub body isEmpty.
+	self assert: sub body isEmpty
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testEsoArTwoArgs [
-	"subroutine hello()
+	"
+      subroutine hello()
         d__(baz,bar) = 5
       end
 "
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:26)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:15)-(2:17)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"span":"(2:19)-(2:21)","tag":"value","value":{"contents":"bar","tag":"variable"}}],"span":"(2:15)-(2:21)"},"body":{"anno":[],"span":"(2:26)-(2:26)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"name":{"anno":[],"span":"(2:9)-(2:13)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:26)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"9"}, "left" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"9"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"13"}, "name":"BAZ"}, {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"BAR"}]}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"24"}, "value":"5"}}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 1.
 	stmt := programFile progUnits first body first first.
 	self assert: stmt class equals: IASTVarEsoAt.
 	self assert: stmt isWrite.
-	self assert: stmt entities size equals: 2.
-
+	self assert: stmt entities size equals: 2
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testEsoArWithDotArg [
-
-"      subroutine hello( )
+	"
+      subroutine hello( )
 	     d__(p,a(d__(p,i))) = 5
       end
 "
 
 	| programFile d__ arg |
 	programFile := self visitJsonCode:
-		               '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:30)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:13)-(2:13)","tag":"value","value":{"contents":"p","tag":"variable"}},{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:21)-(2:21)","tag":"value","value":{"contents":"p","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:21)-(2:21)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:23)-(2:23)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:23)-(2:23)"}],"span":"(2:21)-(2:23)"},"function":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:17)-(2:24)","tag":"function_call"},"tag":"expr"},"name":null,"span":"(2:17)-(2:24)"}],"span":"(2:17)-(2:24)"},"function":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"a","tag":"variable"}},"span":"(2:15)-(2:25)","tag":"function_call"}],"span":"(2:13)-(2:25)"},"body":{"anno":[],"span":"(2:30)-(2:30)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"name":{"anno":[],"span":"(2:9)-(2:11)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:30)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"14"}, "left" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"14"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"18"}, "name":"P"}, {"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"20"}, "name":"A"}, "qualifiers_list" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"22"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"26"}, "name":"P"}, {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"28"}, "name":"I"}]}]}]}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"35"}, "value":"5"}}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 1.
@@ -585,7 +666,7 @@ SyntaxJsonToIASTVisitorTest >> testEsoArWithDotArg [
 	self assert: arg class equals: IASTInvocation.
 	self assert: arg entityName equals: 'a'.
 	self assert: arg arguments size equals: 1.
-	
+
 	d__ := arg arguments first.
 	self assert: d__ class equals: IASTVarEsoAt.
 
@@ -593,18 +674,20 @@ SyntaxJsonToIASTVisitorTest >> testEsoArWithDotArg [
 	self assert: d__ entities first class equals: IASTVarAccess.
 	self assert: d__ entities first entityName equals: 'p'.
 	self assert: d__ entities second class equals: IASTVarAccess.
-	self assert: d__ entities second entityName equals: 'i'.
-
+	self assert: d__ entities second entityName equals: 'i'
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testEsoArWithEsoAtArg [
-	"      subroutine hello( )
+	"
+      subroutine hello( )
 	     d__(baz,bar(2)) = 5
       end
 "
+
 	| programFile d__ arg |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:10)-(2:28)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:14)-(2:16)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:22)-(2:22)","tag":"value","value":{"contents":["2",null],"tag":"integer"}},"tag":"expr"},"name":null,"span":"(2:22)-(2:22)"}],"span":"(2:22)-(2:22)"},"function":{"anno":[],"span":"(2:18)-(2:20)","tag":"value","value":{"contents":"bar","tag":"variable"}},"span":"(2:18)-(2:23)","tag":"function_call"}],"span":"(2:14)-(2:23)"},"body":{"anno":[],"span":"(2:28)-(2:28)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"name":{"anno":[],"span":"(2:10)-(2:12)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:10)-(2:28)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"14"}, "left" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"14"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"18"}, "name":"BAZ"}, {"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"22"}, "name":"BAR"}, "qualifiers_list" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"26"}, "value":"2"}}]}]}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"32"}, "value":"5"}}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 1.
@@ -623,21 +706,20 @@ SyntaxJsonToIASTVisitorTest >> testEsoArWithEsoAtArg [
 	arg := d__ entities second.
 	self assert: arg class equals: IASTInvocation.
 	self assert: arg arguments size equals: 0.
-	self assert: arg entityName equals: 'bar'.
-
+	self assert: arg entityName equals: 'bar'
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testEsoArWithVarArg [
-
-	"      subroutine hello( )
+	"
+      subroutine hello( )
 	     d__(baz,bar(i)) = 5
       end
 "
 
 	| programFile d__ arg |
 	programFile := self visitJsonCode:
-		               '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:27)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:21)-(2:21)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:21)-(2:21)"}],"span":"(2:21)-(2:21)"},"function":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"bar","tag":"variable"}},"span":"(2:17)-(2:22)","tag":"function_call"}],"span":"(2:13)-(2:22)"},"body":{"anno":[],"span":"(2:27)-(2:27)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"name":{"anno":[],"span":"(2:9)-(2:11)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:27)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"14"}, "left" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"14"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"18"}, "name":"BAZ"}, {"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"22"}, "name":"BAR"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"26"}, "name":"I"}]}]}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"32"}, "value":"5"}}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 1.
@@ -662,12 +744,15 @@ SyntaxJsonToIASTVisitorTest >> testEsoArWithVarArg [
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testEsoAtOneArg [
-	"      subroutine hello( )
+	"
+      subroutine hello( )
         d__(baz,2) = 5.3
       end
 "
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:24)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"span":"(2:17)-(2:17)","tag":"value","value":{"contents":["2",null],"tag":"integer"}}],"span":"(2:13)-(2:17)"},"body":{"anno":[],"span":"(2:22)-(2:24)","tag":"value","value":{"contents":[{"exponent":{"letter":"e","num":"0"},"significand":"5.3"},null],"tag":"real"}},"name":{"anno":[],"span":"(2:9)-(2:11)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:24)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"9"}, "left" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"9"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"13"}, "name":"BAZ"}, {"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"17"}, "value":"2"}}]}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_real_constant", "start_pos" : {"line" : "3", "column":"22"}, "value":"5.3"}}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 1.
@@ -682,12 +767,15 @@ SyntaxJsonToIASTVisitorTest >> testEsoAtOneArg [
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testEsoAtTwoArgs [
-	"      subroutine hello( )
+	"
+      subroutine hello( )
         d__(baz,bar) = 5
       end
 "
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:24)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"bar","tag":"variable"}}],"span":"(2:13)-(2:19)"},"body":{"anno":[],"span":"(2:24)-(2:24)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"name":{"anno":[],"span":"(2:9)-(2:11)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:24)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"9"}, "left" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"9"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"13"}, "name":"BAZ"}, {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"BAR"}]}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"24"}, "value":"5"}}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 1.
@@ -697,19 +785,21 @@ SyntaxJsonToIASTVisitorTest >> testEsoAtTwoArgs [
 	self assert: stmt entities size equals: 2.
 	stmt entities do: [ :ent |
 		self assert: ent class equals: IASTVarAccess.
-		self assert: (#(baz bar) includes: ent entityName asSymbol).
-		self deny: ent isWrite
-	]
+		self assert: (#( baz bar ) includes: ent entityName asSymbol).
+		self deny: ent isWrite ]
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testEsoAtTwoArgsReceivesVar [
-	"      subroutine hello( )
+	"
+      subroutine hello( )
         d__(baz,bar) = otherVar
       end
 "
+
 	| programFile var |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:31)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"bar","tag":"variable"}}],"span":"(2:13)-(2:19)"},"body":{"anno":[],"span":"(2:24)-(2:31)","tag":"value","value":{"contents":"othervar","tag":"variable"}},"name":{"anno":[],"span":"(2:9)-(2:11)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:31)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"9"}, "left" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"9"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"13"}, "name":"BAZ"}, {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"BAR"}]}], "right" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"24"}, "name":"OTHERVAR"}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 2.
@@ -720,65 +810,82 @@ SyntaxJsonToIASTVisitorTest >> testEsoAtTwoArgsReceivesVar [
 	var := programFile progUnits first body first second.
 	self assert: var class equals: IASTVarAccess.
 	self assert: var entityName equals: 'othervar'.
-	self deny: var isWrite.
+	self deny: var isWrite
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testEsoSl [
-	"      subroutine hello( )
+	"
+      subroutine hello( )
         n = s__(a,i)
       end
 "
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:20)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:17)-(2:17)","tag":"value","value":{"contents":"a","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:17)-(2:17)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:19)-(2:19)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:19)-(2:19)"}],"span":"(2:17)-(2:19)"},"function":{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"s__","tag":"variable"}},"span":"(2:13)-(2:20)","tag":"function_call"},"span":"(2:9)-(2:20)","tag":"assign_expression","target":{"anno":[],"span":"(2:9)-(2:9)","tag":"value","value":{"contents":"n","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"9"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"9"}, "name":"N"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"13"}, "name":"S__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"A"}, {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"19"}, "name":"I"}]}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 2.
 	stmt := programFile progUnits first body first second.
 	self assert: stmt class equals: IASTVarEsoSl.
 	self assert: stmt entities size equals: 2.
-	
+
 	self assert: stmt entities first class equals: IASTVarAccess.
 	self assert: stmt entities first entityName equals: 'a'.
-	
+
 	self assert: stmt entities second class equals: IASTVarAccess.
 	self assert: stmt entities second entityName equals: 'i'
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testEsoSlWithDot [
-	"      subroutine hello( )
+	"
+      subroutine hello( )
         n = s__(d__(p,a),i)
       end
 "
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:27)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:21)-(2:21)","tag":"value","value":{"contents":"p","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:21)-(2:21)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:23)-(2:23)","tag":"value","value":{"contents":"a","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:23)-(2:23)"}],"span":"(2:21)-(2:23)"},"function":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:17)-(2:24)","tag":"function_call"},"tag":"expr"},"name":null,"span":"(2:17)-(2:24)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:26)-(2:26)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:26)-(2:26)"}],"span":"(2:17)-(2:26)"},"function":{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"s__","tag":"variable"}},"span":"(2:13)-(2:27)","tag":"function_call"},"span":"(2:9)-(2:27)","tag":"assign_expression","target":{"anno":[],"span":"(2:9)-(2:9)","tag":"value","value":{"contents":"n","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"9"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"9"}, "name":"N"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"13"}, "name":"S__"}, "qualifiers_list" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"21"}, "name":"P"}, {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"23"}, "name":"A"}]}, {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"26"}, "name":"I"}]}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 2.
 	stmt := programFile progUnits first body first second.
 	self assert: stmt class equals: IASTVarEsoSl.
 	self assert: stmt entities size equals: 2.
-	
+
 	self assert: stmt entities first class equals: IASTVarEsoAt.
 	self assert: stmt entities first entities size equals: 2.
-	self assert: stmt entities first entities first class equals: IASTVarAccess.
-	self assert: stmt entities first entities first entityName equals: 'p'.
-	self assert: stmt entities first entities second class equals: IASTVarAccess.
-	self assert: stmt entities first entities second entityName equals: 'a'.
-	
+	self
+		assert: stmt entities first entities first class
+		equals: IASTVarAccess.
+	self
+		assert: stmt entities first entities first entityName
+		equals: 'p'.
+	self
+		assert: stmt entities first entities second class
+		equals: IASTVarAccess.
+	self
+		assert: stmt entities first entities second entityName
+		equals: 'a'.
+
 	self assert: stmt entities second class equals: IASTVarAccess.
 	self assert: stmt entities second entityName equals: 'i'
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testEsoSlWithTwoDot [
-	"      subroutine hello( )
+	"
+      subroutine hello( )
         n = s__(d__(p,a),d__(p,i))
       end
 "
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:34)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:21)-(2:21)","tag":"value","value":{"contents":"p","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:21)-(2:21)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:23)-(2:23)","tag":"value","value":{"contents":"a","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:23)-(2:23)"}],"span":"(2:21)-(2:23)"},"function":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:17)-(2:24)","tag":"function_call"},"tag":"expr"},"name":null,"span":"(2:17)-(2:24)"},{"anno":[],"expr":{"contents":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:30)-(2:30)","tag":"value","value":{"contents":"p","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:30)-(2:30)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:32)-(2:32)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:32)-(2:32)"}],"span":"(2:30)-(2:32)"},"function":{"anno":[],"span":"(2:26)-(2:28)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:26)-(2:33)","tag":"function_call"},"tag":"expr"},"name":null,"span":"(2:26)-(2:33)"}],"span":"(2:17)-(2:33)"},"function":{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"s__","tag":"variable"}},"span":"(2:13)-(2:34)","tag":"function_call"},"span":"(2:9)-(2:34)","tag":"assign_expression","target":{"anno":[],"span":"(2:9)-(2:9)","tag":"value","value":{"contents":"n","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"9"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"9"}, "name":"N"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"13"}, "name":"S__"}, "qualifiers_list" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"21"}, "name":"P"}, {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"23"}, "name":"A"}]}, {"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"26"}, "name":"D__"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"30"}, "name":"P"}, {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"32"}, "name":"I"}]}]}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 2.
@@ -787,22 +894,39 @@ SyntaxJsonToIASTVisitorTest >> testEsoSlWithTwoDot [
 	self assert: stmt entities size equals: 2.
 	self assert: stmt entities first class equals: IASTVarEsoAt.
 	self assert: stmt entities first entities size equals: 2.
-	self assert: stmt entities first entities first class equals: IASTVarAccess.
-	self assert: stmt entities first entities first entityName equals: 'p'.
-	self assert: stmt entities first entities second class equals: IASTVarAccess.
-	self assert: stmt entities first entities second entityName equals: 'a'.
-	
+	self
+		assert: stmt entities first entities first class
+		equals: IASTVarAccess.
+	self
+		assert: stmt entities first entities first entityName
+		equals: 'p'.
+	self
+		assert: stmt entities first entities second class
+		equals: IASTVarAccess.
+	self
+		assert: stmt entities first entities second entityName
+		equals: 'a'.
+
 	self assert: stmt entities second class equals: IASTVarEsoAt.
 	self assert: stmt entities second entities size equals: 2.
-	self assert: stmt entities second entities first class equals: IASTVarAccess.
-	self assert: stmt entities second entities first entityName equals: 'p'.
-	self assert: stmt entities second entities second class equals: IASTVarAccess.
-	self assert: stmt entities second entities second entityName equals: 'i'.
+	self
+		assert: stmt entities second entities first class
+		equals: IASTVarAccess.
+	self
+		assert: stmt entities second entities first entityName
+		equals: 'p'.
+	self
+		assert: stmt entities second entities second class
+		equals: IASTVarAccess.
+	self
+		assert: stmt entities second entities second entityName
+		equals: 'i'
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testEsopeIfCommentStatement [
-"      subroutine sub()
+"
+      subroutine sub()
 c@_   IF (N.GT.0) SEGINI P
       end
 "
@@ -810,7 +934,7 @@ c@_   IF (N.GT.0) SEGINI P
 	
 	self skip.
 	
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"test.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   IF (N.GT.0) SEGINI P","span":"(2:1)-(2:26)","tag":"comment"}],"name":"sub","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile :=  self visitJsonCode: ''.
 
 	self assert: programFile progUnits size equals: 1.
 	
@@ -831,17 +955,19 @@ c@_   IF (N.GT.0) SEGINI P
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testFunctionWithFunctionInvocation [
-"      integer function efunc()
+	"
+      integer function efunc()
       i = ifunc (i, j)
       end
 "
 
 	| programFile fct |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:22)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:18)-(2:18)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:18)-(2:18)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:21)-(2:21)","tag":"value","value":{"contents":"j","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:21)-(2:21)"}],"span":"(2:18)-(2:21)"},"function":{"anno":[],"span":"(2:11)-(2:15)","tag":"value","value":{"contents":"ifunc","tag":"variable"}},"span":"(2:11)-(2:22)","tag":"function_call"},"span":"(2:7)-(2:22)","tag":"assign_expression","target":{"anno":[],"span":"(2:7)-(2:7)","tag":"value","value":{"contents":"i","tag":"variable"}}},"tag":"statement"}],"name":"efunc","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "function", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"24"}, "name":"EFUNC"}, "prog_unit_parameters" : [], "return_type" : {"tag" : "type_reference", "name":"INTEGER"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"7"}, "name":"I"}], "right" : [{"tag" : "array_element_name", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"11"}, "name":"IFUNC"}, "qualifiers_list" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"18"}, "name":"I"}, {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"21"}, "name":"J"}]}]}]}] }'.
 
 
 	self assert: programFile progUnits size equals: 1.
-	
+
 	fct := programFile progUnits first.
 
 	self assert: fct class equals: IASTFunction.
@@ -850,19 +976,20 @@ SyntaxJsonToIASTVisitorTest >> testFunctionWithFunctionInvocation [
 	self assert: fct sourceAnchor startLine equals: 1.
 	self assert: fct sourceAnchor startColumn equals: 7.
 	self assert: fct sourceAnchor endLine equals: 3.
-	self assert: fct sourceAnchor endColumn equals: 10.
-	
+	self assert: fct sourceAnchor endColumn equals: 10
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testGotoStatement [
-"      PROGRAM MYPROG
+	"
+      PROGRAM MYPROG
       goto 100
       END
 "
-	
+
 	| programFile |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:14)","statement":{"anno":[],"span":"(2:7)-(2:14)","tag":"goto","target":{"anno":[],"span":"(2:12)-(2:14)","tag":"value","value":{"contents":["100",null],"tag":"integer"}}},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"MYPROG"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "unconditional_goto_statement", "start_pos" : {"line" : "3", "column":"7"}, "labels" : [{"label_ref":"100"}], "var" : []}]}] }'.
 
 
 	self assert: programFile progUnits first body isEmpty
@@ -870,49 +997,56 @@ SyntaxJsonToIASTVisitorTest >> testGotoStatement [
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testIfStatement [
-"      integer function hello()
+	"
+      integer function hello()
       if(a) a=1
       end
 "
+
 	| programFile fct |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"tmp.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:15)","statement":{"anno":[],"condition":{"anno":[],"span":"(2:10)-(2:10)","tag":"value","value":{"contents":"a","tag":"variable"}},"span":"(2:7)-(2:15)","statement":{"anno":[],"expression":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"span":"(2:13)-(2:15)","tag":"assign_expression","target":{"anno":[],"span":"(2:13)-(2:13)","tag":"value","value":{"contents":"a","tag":"variable"}}},"tag":"if_logical"},"tag":"statement"}],"name":"hello","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "function", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"24"}, "name":"HELLO"}, "prog_unit_parameters" : [], "return_type" : {"tag" : "type_reference", "name":"INTEGER"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "logical_if_statement", "start_pos" : {"line" : "3", "column":"7"}, "expression" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"10"}, "name":"A"}, "statement" : {"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"13"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"13"}, "name":"A"}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"15"}, "value":"1"}}]}}]}] }'.
 
 	self assert: programFile progUnits size equals: 1.
-	
+
 	fct := programFile progUnits first.
 	self assert: fct body first first class equals: IASTVarAccess.
 	self assert: fct body first first entityName equals: 'a'.
 	self assert: fct body first second first class equals: IASTVarAccess.
-	self assert: fct body first second first entityName equals: 'a'.
+	self assert: fct body first second first entityName equals: 'a'
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testImplicitNoneStatement [
-	"PROGRAM MYPROG
+	"
+      PROGRAM MYPROG
        implicit none
       END
 "
-	
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:20)","statement":{"anno":[],"items":null,"span":"(2:8)-(2:20)","tag":"implicit"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"MYPROG"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "implicit_none_statement", "start_pos" : {"line" : "3", "column":"8"}}]}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
 
 	stmt := programFile progUnits first body first.
 	self assert: stmt class equals: IASTImplicit.
-	self assert: stmt rules isNil.
+	self assert: stmt rules isNil
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testImplicitStatementSeveralRanges [
-	"PROGRAM MYPROG
+	"
+      PROGRAM MYPROG
        implicit character (c-e, h, l-m)
       END
 "
-	
+
 	| programFile stmt rule range |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:39)","statement":{"anno":[],"items":{"anno":[],"list":[{"anno":[],"elements":{"anno":[],"list":[{"anno":[],"from":"c","span":"(2:28)-(2:30)","to":"e"},{"anno":[],"from":"h","span":"(2:33)-(2:33)","to":null},{"anno":[],"from":"l","span":"(2:36)-(2:38)","to":"m"}],"span":"(2:28)-(2:38)"},"span":"(2:17)-(2:39)","type":{"anno":[],"base_type":"character","selector":null,"span":"(2:17)-(2:25)"}}],"span":"(2:17)-(2:39)"},"span":"(2:8)-(2:39)","tag":"implicit"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"MYPROG"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "implicit_statement", "start_pos" : {"line" : "3", "column":"8"}, "implicit_parameters" : [{"type" : {"tag" : "type_reference", "name":"CHARACTER"}, "implicit_elements" : [{"tag" : "implicit_range", "implicit_range_lower" : "c", "implicit_range_upper":"e"},{"tag" : "implicit_range", "implicit_range_lower" : "h", "implicit_range_upper":""},{"tag" : "implicit_range", "implicit_range_lower" : "l", "implicit_range_upper":"m"}]}]}]}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -929,27 +1063,28 @@ SyntaxJsonToIASTVisitorTest >> testImplicitStatementSeveralRanges [
 
 	range := rule ranges first.
 	self assert: range isCollection.
-	self assertCollection: range equals: { $c . $e }.
+	self assertCollection: range equals: { $c. $e }.
 
 	range := rule ranges second.
 	self assert: range isCollection.
-	self assertCollection: range equals: { $h . $h }.
+	self assertCollection: range equals: { $h. $h }.
 
 	range := rule ranges third.
 	self assert: range isCollection.
-	self assertCollection: range equals: { $l . $m }.
-
+	self assertCollection: range equals: { $l. $m }
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testImplicitStatementSimpleChar [
-	"PROGRAM MYPROG
+	"
+      PROGRAM MYPROG
        implicit character (c)
       END
 "
-	
+
 	| programFile stmt range rule |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:29)","statement":{"anno":[],"items":{"anno":[],"list":[{"anno":[],"elements":{"anno":[],"list":[{"anno":[],"from":"c","span":"(2:28)-(2:28)","to":null}],"span":"(2:28)-(2:28)"},"span":"(2:17)-(2:29)","type":{"anno":[],"base_type":"character","selector":null,"span":"(2:17)-(2:25)"}}],"span":"(2:17)-(2:29)"},"span":"(2:8)-(2:29)","tag":"implicit"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"MYPROG"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "implicit_statement", "start_pos" : {"line" : "3", "column":"8"}, "implicit_parameters" : [{"type" : {"tag" : "type_reference", "name":"CHARACTER"}, "implicit_elements" : [{"tag" : "implicit_range", "implicit_range_lower" : "c", "implicit_range_upper":""}]}]}]}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -966,19 +1101,20 @@ SyntaxJsonToIASTVisitorTest >> testImplicitStatementSimpleChar [
 
 	range := rule ranges first.
 	self assert: range isCollection.
-	self assertCollection: range equals: { $c . $c }.
-
+	self assertCollection: range equals: { $c. $c }
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testImplicitStatementSimpleRange [
-	"PROGRAM MYPROG
+	"
+      PROGRAM MYPROG
        implicit character (c-e)
       END
 "
-	
+
 	| programFile stmt range rule |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:31)","statement":{"anno":[],"items":{"anno":[],"list":[{"anno":[],"elements":{"anno":[],"list":[{"anno":[],"from":"c","span":"(2:28)-(2:30)","to":"e"}],"span":"(2:28)-(2:30)"},"span":"(2:17)-(2:31)","type":{"anno":[],"base_type":"character","selector":null,"span":"(2:17)-(2:25)"}}],"span":"(2:17)-(2:31)"},"span":"(2:8)-(2:31)","tag":"implicit"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"MYPROG"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "implicit_statement", "start_pos" : {"line" : "3", "column":"8"}, "implicit_parameters" : [{"type" : {"tag" : "type_reference", "name":"CHARACTER"}, "implicit_elements" : [{"tag" : "implicit_range", "implicit_range_lower" : "c", "implicit_range_upper":"e"}]}]}]}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -991,21 +1127,20 @@ SyntaxJsonToIASTVisitorTest >> testImplicitStatementSimpleRange [
 	self assert: rule ranges size equals: 1.
 	range := rule ranges first.
 	self assert: range isCollection.
-	self assertCollection: range equals: { $c . $e }.
-
+	self assertCollection: range equals: { $c. $e }
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testIncludeFile [
-
-	"      subroutine hello( )
+	"
+      subroutine hello( )
 c@_#include ""file.inc""
       end
 "
 
 	| programFile stmt |
 	programFile := self visitJsonCode:
-		               '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_#include \"file.inc\"","span":"(2:1)-(2:22)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+		               '{ "tag":"fortran_file", "comments": { "3":"c@_#include \"file.inc\"\n" }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -1017,12 +1152,15 @@ c@_#include ""file.inc""
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testIntegerVariableDeclaration [
-	"subroutine hello
+	"
+      subroutine hello
       integer i
       end
 "
+
 	| programFile var |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:15)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:15)-(2:15)","type":"scalar","variable":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"i","tag":"variable"}}}],"span":"(2:15)-(2:15)"},"span":"(2:7)-(2:15)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "3", "column":"7"}, "type" : {"tag" : "type_reference", "name":"INTEGER"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"15"}, "name":"I"}, "dimension_declarators" : []}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 1.
@@ -1038,13 +1176,16 @@ SyntaxJsonToIASTVisitorTest >> testIntegerVariableDeclaration [
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testMultipleStatements [
-	"subroutine hello
+	"
+      subroutine hello
       integer someVar
       someVar = 3 * someVar
       end
 "
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:21)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:15)-(2:21)","type":"scalar","variable":{"anno":[],"span":"(2:15)-(2:21)","tag":"value","value":{"contents":"somevar","tag":"variable"}}}],"span":"(2:15)-(2:21)"},"span":"(2:7)-(2:21)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:7)-(3:27)","statement":{"anno":[],"expression":{"anno":[],"left":{"anno":[],"span":"(3:17)-(3:17)","tag":"value","value":{"contents":["3",null],"tag":"integer"}},"op":{"tag":"multiplication"},"right":{"anno":[],"span":"(3:21)-(3:27)","tag":"value","value":{"contents":"somevar","tag":"variable"}},"span":"(3:17)-(3:27)","tag":"binary"},"span":"(3:7)-(3:27)","tag":"assign_expression","target":{"anno":[],"span":"(3:7)-(3:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "5", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "3", "column":"7"}, "type" : {"tag" : "type_reference", "name":"INTEGER"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"15"}, "name":"SOMEVAR"}, "dimension_declarators" : []}]}, {"tag" : "assignment_statement", "start_pos" : {"line" : "4", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"7"}, "name":"SOMEVAR"}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "binary_expression", "lhs" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "4", "column":"17"}, "value":"3"}, "operator" : "*", "rhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"21"}, "name":"SOMEVAR"}}}]}]}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 2.
@@ -1062,18 +1203,20 @@ SyntaxJsonToIASTVisitorTest >> testMultipleStatements [
 	stmt := programFile progUnits first body second second.
 	self assert: stmt class equals: IASTVarAccess.
 	self deny: stmt isWrite.
-	self assert: stmt entityName equals: 'somevar'.
-
+	self assert: stmt entityName equals: 'somevar'
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testPointeurDeclaration [
-"      subroutine hello
+	"
+      subroutine hello
 c@_   pointeur p1.pstr
       end
 "
+
 	| programFile seg |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   pointeur p1.pstr","span":"(2:1)-(2:22)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { "3":"c@_   pointeur p1.pstr\n" }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -1090,27 +1233,30 @@ c@_   pointeur p1.pstr
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testProgramWithEmptyDoStatement [
-	"program hello
+	"
+      program hello
       do i=1, n
       enddo 
       end
 "
+
 	| prog programFile |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"body":[],"do_spec":{"anno":[],"increment":null,"initial":{"anno":[],"expression":{"anno":[],"span":"(2:12)-(2:12)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"span":"(2:10)-(2:12)","tag":"assign_expression","target":{"anno":[],"span":"(2:10)-(2:10)","tag":"value","value":{"contents":"i","tag":"variable"}}},"limit":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"n","tag":"variable"}},"span":"(2:10)-(2:15)"},"end_label":null,"label":null,"name":null,"span":"(2:7)-(3:11)","tag":"do","target":null}],"name":"hello","span":"(1:7)-(4:9)","subprograms":null,"tag":"main"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"HELLO"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "5", "column":"9"}, "statement_list" : [{"tag" : "do_statement", "start_pos" : {"line" : "3", "column":"7"}, "loop_control" : {"variable_name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"10"}, "name":"I"}, "init" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"12"}, "value":"1"}, "limit" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"15"}, "name":"N"}}, "statement_list" : [{"tag" : "continue_statement", "start_pos" : {"line" : "4", "column":"13"}}], "end_do" : {"label":""}}]}] }'.
 
 
 	prog := programFile progUnits first.
 	self assert: prog accesses size equals: 2.
-	self assertCollection: (prog accesses collect: [ :each | each entityName ]) hasSameElements: #(i n)
-	
-
-	
-
+	self
+		assertCollection:
+		(prog accesses collect: [ :each | each entityName ])
+		hasSameElements: #( i n )
 ]
 
 { #category : #'tests-progUnit' }
 SyntaxJsonToIASTVisitorTest >> testProgramWithMultipleProgUnits [
-	"program myprog
+	"
+      program myprog
       end
 
       integer function ifunc( k, l )
@@ -1119,18 +1265,20 @@ SyntaxJsonToIASTVisitorTest >> testProgramWithMultipleProgUnits [
       subroutine mysub (msg)
       end
 "
+
 	| programFile node |
-	programFile :=  self visitJsonCode:  '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[],"name":"myprog","span":"(1:7)-(2:9)","subprograms":null,"tag":"main"},{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(4:31)-(4:31)","tag":"value","value":{"contents":"k","tag":"variable"}},{"anno":[],"span":"(4:34)-(4:34)","tag":"value","value":{"contents":"l","tag":"variable"}}],"span":"(4:31)-(4:34)"},"blocks":[],"name":"ifunc","result":null,"span":"(4:7)-(5:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(4:7)-(4:13)"}},{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(7:25)-(7:27)","tag":"value","value":{"contents":"msg","tag":"variable"}}],"span":"(7:25)-(7:27)"},"blocks":[],"name":"mysub","options":[null,null],"span":"(7:7)-(8:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"MYPROG"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "3", "column":"9"}, "statement_list" : []}, {"tag" : "function", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "5", "column":"24"}, "name":"IFUNC"}, "prog_unit_parameters" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "5", "column":"31"}, "name":"K"}, {"tag" : "symbolic_name", "start_pos" : {"line" : "5", "column":"34"}, "name":"L"}], "return_type" : {"tag" : "type_reference", "name":"INTEGER"}, "start_pos" : {"line" : "5", "column":"7"}, "end_pos" : {"line" : "6", "column":"9"}, "statement_list" : []}, {"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "8", "column":"18"}, "name":"MYSUB"}, "prog_unit_parameters" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "8", "column":"25"}, "name":"MSG"}], "start_pos" : {"line" : "8", "column":"7"}, "end_pos" : {"line" : "9", "column":"9"}, "statement_list" : []}] }'.
 
 	self assert: programFile progUnits size equals: 3.
-	
+
 	node := programFile progUnits first.
 	self assert: node class equals: IASTMainProgram.
 	self assert: node entityName equals: 'myprog'.
 	self assert: node body size equals: 0.
 	self assert: node accesses size equals: 0.
 	self assert: node invocations size equals: 0.
-	
+
 	node := programFile progUnits second.
 	self assert: node class equals: IASTFunction.
 	self assert: node parameters size equals: 2.
@@ -1140,137 +1288,161 @@ SyntaxJsonToIASTVisitorTest >> testProgramWithMultipleProgUnits [
 	node := programFile progUnits third.
 	self assert: node class equals: IASTSubroutine.
 	self assert: node parameters size equals: 1.
-	self assert: node parameters first entityName equals: 'msg'.
+	self assert: node parameters first entityName equals: 'msg'
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testProgramWithOneStatement [
-	"program hello
+	"
+      program hello
       a = -b
       end
 "
+
 	| programFile prog |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:12)","statement":{"anno":[],"expression":{"anno":[],"expression":{"anno":[],"span":"(2:12)-(2:12)","tag":"value","value":{"contents":"b","tag":"variable"}},"op":{"tag":"minus"},"span":"(2:11)-(2:12)","tag":"unary"},"span":"(2:7)-(2:12)","tag":"assign_expression","target":{"anno":[],"span":"(2:7)-(2:7)","tag":"value","value":{"contents":"a","tag":"variable"}}},"tag":"statement"}],"name":"hello","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"HELLO"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"7"}, "name":"A"}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "constant_signed", "sign" : "-", "constant" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"12"}, "name":"B"}}}]}]}] }'.
 
 
 	self assert: programFile class equals: IASTProgramFile.
 	self assert: programFile progUnits size equals: 1.
-	self assert: programFile progUnits first class equals: IASTMainProgram.
+	self
+		assert: programFile progUnits first class
+		equals: IASTMainProgram.
 
 	prog := programFile progUnits first.
 	self assert: prog entityName equals: 'hello'.
 	self assert: prog body size equals: 1.
 	self assert: prog comments isEmpty.
-	self assert: prog body first size equals: 2.
+	self assert: prog body first size equals: 2
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testProgramWithSimpleIfElseStatementWitBody [
-	"program hello
-      if (i < j) then
+	"
+      program hello
+      if (i .lt. j) then
         i = i + 1
       else
         j = j - 1
       endif
       end
 "
+
 	| prog programFile |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(5:9)-(5:17)","statement":{"anno":[],"expression":{"anno":[],"left":{"anno":[],"span":"(5:13)-(5:13)","tag":"value","value":{"contents":"j","tag":"variable"}},"op":{"tag":"subtraction"},"right":{"anno":[],"span":"(5:17)-(5:17)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"span":"(5:13)-(5:17)","tag":"binary"},"span":"(5:9)-(5:17)","tag":"assign_expression","target":{"anno":[],"span":"(5:9)-(5:9)","tag":"value","value":{"contents":"j","tag":"variable"}}},"tag":"statement"}],"conditions":[[{"anno":[],"left":{"anno":[],"span":"(2:11)-(2:11)","tag":"value","value":{"contents":"i","tag":"variable"}},"op":{"tag":"lt"},"right":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"j","tag":"variable"}},"span":"(2:11)-(2:15)","tag":"binary"},[{"anno":[],"label":null,"span":"(3:9)-(3:17)","statement":{"anno":[],"expression":{"anno":[],"left":{"anno":[],"span":"(3:13)-(3:13)","tag":"value","value":{"contents":"i","tag":"variable"}},"op":{"tag":"addition"},"right":{"anno":[],"span":"(3:17)-(3:17)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"span":"(3:13)-(3:17)","tag":"binary"},"span":"(3:9)-(3:17)","tag":"assign_expression","target":{"anno":[],"span":"(3:9)-(3:9)","tag":"value","value":{"contents":"i","tag":"variable"}}},"tag":"statement"}]]],"end_label":null,"label":null,"name":null,"span":"(2:7)-(6:11)","tag":"if"}],"name":"hello","span":"(1:7)-(7:9)","subprograms":null,"tag":"main"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"HELLO"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "8", "column":"9"}, "statement_list" : [{"tag" : "block_if_statement", "start_pos" : {"line" : "3", "column":"7"}, "condition" : {"tag" : "logical_expression", "expression" : {"tag" : "logical_factor", "negated" : "false", "expression" : {"tag" : "logical_primary", "expression" : {"tag" : "binary_expression", "lhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"11"}, "name":"I"}, "operator" : ".LT.", "rhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"18"}, "name":"J"}}}}}, "then_statements" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "4", "column":"9"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"9"}, "name":"I"}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "binary_expression", "lhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"13"}, "name":"I"}, "operator" : "+", "rhs" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "4", "column":"17"}, "value":"1"}}}]}], "else_block" : {"tag" : "else", "start_pos" : {"line" : "5", "column":"7"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "6", "column":"9"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "6", "column":"9"}, "name":"J"}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "binary_expression", "lhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "6", "column":"13"}, "name":"J"}, "operator" : "-", "rhs" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "6", "column":"17"}, "value":"1"}}}]}], "end_if" : {"tag" : "end_if", "start_pos" : {"line" : "7", "column":"7"}}}}]}] }'.
 
 
 	prog := programFile progUnits first.
 	self assert: prog accesses size equals: 6.
-	self assertCollection: (prog accesses collect: [ :each | each entityName ]) hasSameElements: #(i j).
-	self assert: (prog accesses select: [:each | each entityName = 'i']) size equals: 3.
+	self
+		assertCollection:
+		(prog accesses collect: [ :each | each entityName ])
+		hasSameElements: #( i j ).
+	self
+		assert:
+		(prog accesses select: [ :each | each entityName = 'i' ]) size
+		equals: 3.
 	self assert: prog accesses third isWrite.
-	self assert: prog accesses fifth isWrite.
-	
-
-	
-
+	self assert: prog accesses fifth isWrite
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWitBody [
-	"program hello
-      if (i < j) then
+	"
+      program hello
+      if (i .lt. j) then
         i = j
       endif
       end
 "
+
 	| prog programFile |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"blocks":null,"conditions":[[{"anno":[],"left":{"anno":[],"span":"(2:11)-(2:11)","tag":"value","value":{"contents":"i","tag":"variable"}},"op":{"tag":"lt"},"right":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"j","tag":"variable"}},"span":"(2:11)-(2:15)","tag":"binary"},[{"anno":[],"label":null,"span":"(3:9)-(3:13)","statement":{"anno":[],"expression":{"anno":[],"span":"(3:13)-(3:13)","tag":"value","value":{"contents":"j","tag":"variable"}},"span":"(3:9)-(3:13)","tag":"assign_expression","target":{"anno":[],"span":"(3:9)-(3:9)","tag":"value","value":{"contents":"i","tag":"variable"}}},"tag":"statement"}]]],"end_label":null,"label":null,"name":null,"span":"(2:7)-(4:11)","tag":"if"}],"name":"hello","span":"(1:7)-(5:9)","subprograms":null,"tag":"main"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"HELLO"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "6", "column":"9"}, "statement_list" : [{"tag" : "block_if_statement", "start_pos" : {"line" : "3", "column":"7"}, "condition" : {"tag" : "logical_expression", "expression" : {"tag" : "logical_factor", "negated" : "false", "expression" : {"tag" : "logical_primary", "expression" : {"tag" : "binary_expression", "lhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"11"}, "name":"I"}, "operator" : ".LT.", "rhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"18"}, "name":"J"}}}}}, "then_statements" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "4", "column":"9"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"9"}, "name":"I"}], "right" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"13"}, "name":"J"}]}], "else_block" : {"statement_list" : [], "end_if" : {"tag" : "end_if", "start_pos" : {"line" : "5", "column":"7"}}}}]}] }'.
 
 
 	prog := programFile progUnits first.
 	self assert: prog accesses size equals: 4.
-	self assertCollection: (prog accesses collect: [ :each | each entityName ]) hasSameElements: #(i j).
-	self assert: prog accesses third isWrite.
-	
-
-	
-
+	self
+		assertCollection:
+		(prog accesses collect: [ :each | each entityName ])
+		hasSameElements: #( i j ).
+	self assert: prog accesses third isWrite
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWithoutBody [
-	"program hello
-      if (i < j) then
+	"
+      program hello
+      if (i .lt. j) then
       endif
       end
 "
+
 	| prog programFile |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"blocks":null,"conditions":[[{"anno":[],"left":{"anno":[],"span":"(2:11)-(2:11)","tag":"value","value":{"contents":"i","tag":"variable"}},"op":{"tag":"lt"},"right":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"j","tag":"variable"}},"span":"(2:11)-(2:15)","tag":"binary"},[]]],"end_label":null,"label":null,"name":null,"span":"(2:7)-(3:11)","tag":"if"}],"name":"hello","span":"(1:7)-(4:9)","subprograms":null,"tag":"main"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"HELLO"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "5", "column":"9"}, "statement_list" : [{"tag" : "block_if_statement", "start_pos" : {"line" : "3", "column":"7"}, "condition" : {"tag" : "logical_expression", "expression" : {"tag" : "logical_factor", "negated" : "false", "expression" : {"tag" : "logical_primary", "expression" : {"tag" : "binary_expression", "lhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"11"}, "name":"I"}, "operator" : ".LT.", "rhs" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"18"}, "name":"J"}}}}}, "then_statements" : [], "else_block" : {"statement_list" : [], "end_if" : {"tag" : "end_if", "start_pos" : {"line" : "4", "column":"7"}}}}]}] }'.
 
 
 	prog := programFile progUnits first.
 	self assert: prog accesses size equals: 2.
-	self assertCollection: (prog accesses collect: [ :each | each entityName ]) hasSameElements: #(i j)
-	
-
-	
-
+	self
+		assertCollection:
+		(prog accesses collect: [ :each | each entityName ])
+		hasSameElements: #( i j )
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testReturnConstantStatement [
-"      integer function hello()
-      return 42
+	"
+      integer function hello()
+      hello = 42
+      return
       end
 "
+
 	| programFile fct |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:15)","statement":{"anno":[],"span":"(2:7)-(2:15)","tag":"return","target":{"anno":[],"span":"(2:14)-(2:15)","tag":"value","value":{"contents":["42",null],"tag":"integer"}}},"tag":"statement"}],"name":"hello","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "function", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"24"}, "name":"HELLO"}, "prog_unit_parameters" : [], "return_type" : {"tag" : "type_reference", "name":"INTEGER"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "5", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"7"}, "name":"HELLO"}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"15"}, "value":"42"}}]}, {"tag" : "return_statement", "start_pos" : {"line" : "4", "column":"7"}}]}] }'.
 
 	self assert: programFile progUnits size equals: 1.
-	
+
 	fct := programFile progUnits first.
 	self assert: fct body isEmpty
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testReturnStatement [
-"      integer function hello()
-      return someVar
+	"
+      integer function hello()
+      return
       end
 "
+
 	| programFile fct |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:20)","statement":{"anno":[],"span":"(2:7)-(2:20)","tag":"return","target":{"anno":[],"span":"(2:14)-(2:20)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "function", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"24"}, "name":"HELLO"}, "prog_unit_parameters" : [], "return_type" : {"tag" : "type_reference", "name":"INTEGER"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "return_statement", "start_pos" : {"line" : "3", "column":"7"}}]}] }'.
 
 	self assert: programFile progUnits size equals: 1.
-	
+
 	fct := programFile progUnits first.
 	self assert: fct body first class equals: IASTVarAccess.
-	self assert: fct body first entityName equals: 'somevar'.
+	self assert: fct body first entityName equals: 'somevar'
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testSegactCommand [
-	"subroutine hello
+	"
+      subroutine hello
 c@_   segact, lb
       end
 "
+
 	| programFile seg |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segact, lb","span":"(2:1)-(2:16)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { "3":"c@_   segact, lb\n" }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -1288,12 +1460,15 @@ c@_   segact, lb
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testSegadjCommand [
-	"subroutine hello
+	"
+      subroutine hello
 c@_   segadj,lb
       end
 "
+
 	| programFile seg |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segadj,lb","span":"(2:1)-(2:15)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { "3":"c@_   segadj,lb\n" }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -1311,12 +1486,15 @@ c@_   segadj,lb
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testSeginiCommand [
-	"subroutine hello
+	"
+      subroutine hello
 c@_   segini,lb
       end
 "
+
 	| programFile seg |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segini,lb","span":"(2:1)-(2:15)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { "3":"c@_   segini,lb\n" }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -1334,13 +1512,16 @@ c@_   segini,lb
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testSegmentDeclarationEmpty [
-	"subroutine hello
+	"
+      subroutine hello
 c@_   segment,user
 c@_   end segment
       end
 "
+
 	| programFile seg |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment,user","span":"(2:1)-(2:18)","tag":"comment"},{"anno":[],"comment":"@_   end segment","span":"(3:1)-(3:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { "3":"c@_   segment,user\nc@_   end segment\n" }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "5", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -1360,15 +1541,18 @@ c@_   end segment
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testSegmentDeclarationWithContent [
-	"subroutine hello
+	"
+      subroutine hello
 c@_   segment, user
         character*40 uname
         integer uid, age
 c@_   end segment
       end
 "
+
 	| programFile seg |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment, user","span":"(2:1)-(2:19)","tag":"comment"},{"anno":[],"label":null,"span":"(3:9)-(3:26)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(3:22)-(3:26)","type":"scalar","variable":{"anno":[],"span":"(3:22)-(3:26)","tag":"value","value":{"contents":"uname","tag":"variable"}}}],"span":"(3:22)-(3:26)"},"span":"(3:9)-(3:26)","tag":"declaration","type":{"anno":[],"base_type":"character","selector":{"anno":[],"kind":null,"length":{"anno":[],"span":"(3:19)-(3:20)","tag":"value","value":{"contents":["40",null],"tag":"integer"}},"span":"(3:18)-(3:20)"},"span":"(3:9)-(3:20)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(4:9)-(4:24)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(4:17)-(4:19)","type":"scalar","variable":{"anno":[],"span":"(4:17)-(4:19)","tag":"value","value":{"contents":"uid","tag":"variable"}}},{"anno":[],"initial":null,"length":null,"span":"(4:22)-(4:24)","type":"scalar","variable":{"anno":[],"span":"(4:22)-(4:24)","tag":"value","value":{"contents":"age","tag":"variable"}}}],"span":"(4:17)-(4:24)"},"span":"(4:9)-(4:24)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(4:9)-(4:15)"}},"tag":"statement"},{"anno":[],"comment":"@_   end segment","span":"(5:1)-(5:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(6:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { "3":"c@_   segment, user\n", "6":"c@_   end segment\n" }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "7", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "4", "column":"9"}, "type" : {"tag" : "type_reference", "name" : "CHARACTER", "len_specification" : {"tag" : "nonzero_unsigned_int_constant", "start_pos" : {"line" : "4", "column":"19"}, "value":"40"}}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "4", "column":"19"}, "name":"UNAME"}, "dimension_declarators" : []}]}, {"tag" : "variable_declaration_statement", "start_pos" : {"line" : "5", "column":"9"}, "type" : {"tag" : "type_reference", "name":"INTEGER"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "5", "column":"17"}, "name":"UID"}, "dimension_declarators" : []},{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "5", "column":"22"}, "name":"AGE"}, "dimension_declarators" : []}]}]}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -1380,18 +1564,20 @@ c@_   end segment
 
 	self assert: seg declarations first entityName equals: 'uname'.
 	self assert: seg declarations second entityName equals: 'uid'.
-	self assert: seg declarations third entityName equals: 'age'.
-
+	self assert: seg declarations third entityName equals: 'age'
 ]
 
 { #category : #'tests-esope' }
 SyntaxJsonToIASTVisitorTest >> testSegsupCommand [
-	"subroutine hello
+	"
+      subroutine hello
 c@_   segsup, lb
       end
 "
+
 	| programFile seg |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segsup, lb","span":"(2:1)-(2:16)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { "3":"c@_   segsup, lb\n" }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : []}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -1409,8 +1595,8 @@ c@_   segsup, lb
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testSpecialSubroutine [
-
-	"      subroutine __$__
+	"
+      subroutine __$__
       integer l
 c@_   segment point
       real abs, ord
@@ -1421,7 +1607,7 @@ c@_   end segment
 
 	| programFile entity dummySub segment |
 	programFile := self visitJsonCode:
-		               '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:15)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:15)-(2:15)","type":"scalar","variable":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"l","tag":"variable"}}}],"span":"(2:15)-(2:15)"},"span":"(2:7)-(2:15)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"},{"anno":[],"comment":"@_   segment point","span":"(3:1)-(3:19)","tag":"comment"},{"anno":[],"label":null,"span":"(4:7)-(4:19)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(4:12)-(4:14)","type":"scalar","variable":{"anno":[],"span":"(4:12)-(4:14)","tag":"value","value":{"contents":"abs","tag":"variable"}}},{"anno":[],"initial":null,"length":null,"span":"(4:17)-(4:19)","type":"scalar","variable":{"anno":[],"span":"(4:17)-(4:19)","tag":"value","value":{"contents":"ord","tag":"variable"}}}],"span":"(4:12)-(4:19)"},"span":"(4:7)-(4:19)","tag":"declaration","type":{"anno":[],"base_type":"real","selector":null,"span":"(4:7)-(4:10)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(5:7)-(5:25)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(5:21)-(5:25)","type":"scalar","variable":{"anno":[],"span":"(5:21)-(5:25)","tag":"value","value":{"contents":"label","tag":"variable"}}}],"span":"(5:21)-(5:25)"},"span":"(5:7)-(5:25)","tag":"declaration","type":{"anno":[],"base_type":"character","selector":{"anno":[],"kind":null,"length":{"anno":[],"span":"(5:17)-(5:19)","tag":"value","value":{"contents":"l","tag":"variable"}},"span":"(5:16)-(5:19)"},"span":"(5:7)-(5:19)"}},"tag":"statement"},{"anno":[],"comment":"@_   end segment","span":"(6:1)-(6:17)","tag":"comment"}],"name":"__$__","options":[null,null],"span":"(1:7)-(7:9)","subprograms":null,"tag":"subroutine"}]}'.
+		               '{ "tag":"fortran_file", "comments": { "4":"c@_   segment point\n", "7":"c@_   end segment\n" }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"__$__"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "8", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "3", "column":"7"}, "type" : {"tag" : "type_reference", "name":"INTEGER"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"15"}, "name":"L"}, "dimension_declarators" : []}]}, {"tag" : "variable_declaration_statement", "start_pos" : {"line" : "5", "column":"7"}, "type" : {"tag" : "type_reference", "name":"REAL"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "5", "column":"12"}, "name":"ABS"}, "dimension_declarators" : []},{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "5", "column":"17"}, "name":"ORD"}, "dimension_declarators" : []}]}, {"tag" : "variable_declaration_statement", "start_pos" : {"line" : "6", "column":"7"}, "type" : {"tag" : "type_reference", "name" : "CHARACTER", "len_specification" : {"tag" : "variable_expression", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "6", "column":"18"}, "name":"L"}}}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "6", "column":"21"}, "name":"LABEL"}, "dimension_declarators" : []}]}]}] }'.
 
 
 	dummySub := programFile progUnits first.
@@ -1456,32 +1642,37 @@ c@_   end segment
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testStringVariableDeclaration [
-	"subroutine hello
+	"
+      subroutine hello
       character*8 str
       end
 "
+
 	| programFile var |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:21)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:19)-(2:21)","type":"scalar","variable":{"anno":[],"span":"(2:19)-(2:21)","tag":"value","value":{"contents":"str","tag":"variable"}}}],"span":"(2:19)-(2:21)"},"span":"(2:7)-(2:21)","tag":"declaration","type":{"anno":[],"base_type":"character","selector":{"anno":[],"kind":null,"length":{"anno":[],"span":"(2:17)-(2:17)","tag":"value","value":{"contents":["8",null],"tag":"integer"}},"span":"(2:16)-(2:17)"},"span":"(2:7)-(2:17)"}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "3", "column":"7"}, "type" : {"tag" : "type_reference", "name" : "CHARACTER", "len_specification" : {"tag" : "nonzero_unsigned_int_constant", "start_pos" : {"line" : "3", "column":"17"}, "value":"8"}}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"STR"}, "dimension_declarators" : []}]}]}] }'.
 
 
-	self assert: programFile progUnits first body first  size equals: 1.
+	self assert: programFile progUnits first body first size equals: 1.
 
 	var := programFile progUnits first body first first.
 	self assert: var class equals: IASTVariable.
 	self assert: var entityName equals: 'str'.
 	self assert: var typeSpec class equals: IASTTypeRef.
-	self assert: var typeSpec entityName equals: 'character'.
-
+	self assert: var typeSpec entityName equals: 'character'
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testSubroutineInvocation [
-	"subroutine hello
+	"
+      subroutine hello
       call someSubRoutine
       end
 "
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:25)","statement":{"anno":[],"arguments":{"anno":[],"list":[],"span":"(2:25)-(2:25)"},"function":{"anno":[],"span":"(2:12)-(2:25)","tag":"value","value":{"contents":"somesubroutine","tag":"variable"}},"span":"(2:7)-(2:25)","tag":"call"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "call_statement", "start_pos" : {"line" : "3", "column":"7"}, "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"12"}, "name":"SOMESUBROUTINE"}, "arguments" : []}]}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -1490,17 +1681,19 @@ SyntaxJsonToIASTVisitorTest >> testSubroutineInvocation [
 	self assert: stmt class equals: IASTInvocation.
 	self assert: stmt entityName equals: 'somesubroutine'.
 	self assert: stmt arguments size equals: 0
-
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testSubroutineInvocationWithArguments [
-	"subroutine hello
+	"
+      subroutine hello
       call someSubRoutine(bar,5,baz)
       end
 "
+
 	| programFile stmt arg |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:36)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:27)-(2:29)","tag":"value","value":{"contents":"bar","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:27)-(2:29)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:31)-(2:31)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"tag":"expr"},"name":null,"span":"(2:31)-(2:31)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:33)-(2:35)","tag":"value","value":{"contents":"baz","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:33)-(2:35)"}],"span":"(2:26)-(2:36)"},"function":{"anno":[],"span":"(2:12)-(2:25)","tag":"value","value":{"contents":"somesubroutine","tag":"variable"}},"span":"(2:7)-(2:36)","tag":"call"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "call_statement", "start_pos" : {"line" : "3", "column":"7"}, "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"12"}, "name":"SOMESUBROUTINE"}, "arguments" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"27"}, "name":"BAR"}, {"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"31"}, "value":"5"}}, {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"33"}, "name":"BAZ"}]}]}] }'.
 
 
 	self assert: programFile progUnits first body size equals: 1.
@@ -1516,17 +1709,20 @@ SyntaxJsonToIASTVisitorTest >> testSubroutineInvocationWithArguments [
 
 	arg := stmt arguments second.
 	self assert: arg class equals: IASTVarAccess.
-	self assert: arg entityName equals: 'baz'.
+	self assert: arg entityName equals: 'baz'
 ]
 
 { #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testTwoIntegerVariableDeclarations [
-	"subroutine hello
+	"
+      subroutine hello
       integer i,j
       end
 "
+
 	| programFile var |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:17)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:15)-(2:15)","type":"scalar","variable":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"i","tag":"variable"}}},{"anno":[],"initial":null,"length":null,"span":"(2:17)-(2:17)","type":"scalar","variable":{"anno":[],"span":"(2:17)-(2:17)","tag":"value","value":{"contents":"j","tag":"variable"}}}],"span":"(2:15)-(2:17)"},"span":"(2:7)-(2:17)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"HELLO"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "variable_declaration_statement", "start_pos" : {"line" : "3", "column":"7"}, "type" : {"tag" : "type_reference", "name":"INTEGER"}, "declarators" : [{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"15"}, "name":"I"}, "dimension_declarators" : []},{"tag" : "variable_declarator", "variable" : {"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"17"}, "name":"J"}, "dimension_declarators" : []}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 2.
@@ -1541,7 +1737,7 @@ SyntaxJsonToIASTVisitorTest >> testTwoIntegerVariableDeclarations [
 	self assert: var class equals: IASTVariable.
 	self assert: var entityName equals: 'j'.
 	self assert: var typeSpec class equals: IASTTypeRef.
-	self assert: var typeSpec entityName equals: 'integer'.
+	self assert: var typeSpec entityName equals: 'integer'
 ]
 
 { #category : #'tests-esope' }
@@ -1551,15 +1747,17 @@ SyntaxJsonToIASTVisitorTest >> testWriteStatementWithStringArgument [
        write(*,*) 'hello'      
       end	
 	"
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:25)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:19)-(2:25)","tag":"value","value":{"contents":"hello","tag":"string"}}],"span":"(2:19)-(2:25)"},"format":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:14)-(2:14)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:14)-(2:14)"},{"anno":[],"expr":{"anno":[],"span":"(2:16)-(2:16)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:16)-(2:16)"}],"span":"(2:13)-(2:17)"},"span":"(2:8)-(2:25)","tag":"write"},"tag":"statement"}],"name":"print","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               ' end |^ ./fortranCode.F, line 4: column 10: Warning:	A tabulation character is illegal outside comments or character constants. In this executable program, each such tabulation character is changed into one space. { "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"PRINT"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "write_statement", "start_pos" : {"line" : "3", "column":"8"}, "control_info_list" : [{"asterisk":"*"},{"asterisk":"*"}], "io_list" : [{"tag" : "character_expression", "expression" : {"tag" : "character_constant", "start_pos" : {"line" : "3", "column":"19"}, "value":"''hello''"}}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 1.
 	stmt := programFile progUnits first body first first.
 	self assert: stmt class equals: IASTInvocation.
 	self assert: stmt entityName equals: 'write'.
-	self assert: stmt arguments size equals: 0.
+	self assert: stmt arguments size equals: 0
 ]
 
 { #category : #running }
