@@ -455,19 +455,19 @@ SyntaxJsonToIASTVisitorTest >> testEmptyFunction [
 	self assert: programFile progUnits size equals: 1.
 	self assert: programFile progUnits first class equals: IASTFunction.
 	fct := programFile progUnits first.
-	self assert: fct entityName equals: 'hello'.
+	self assert: fct entityName equals: 'HELLO'.
 	self assert: fct parameters isEmpty.
 	self assert: fct returnType class equals: IASTTypeRef.
-	self assert: fct returnType entityName equals: 'integer'.
+	self assert: fct returnType entityName equals: 'INTEGER'.
 	self assert: fct body isEmpty.
 
 	self assert: fct sourceAnchor notNil.
 	self assert: fct sourceAnchor class equals: IASTIndexedFileAnchor.
-	self assert: fct sourceAnchor fileName equals: './fortran77.f'.
-	self assert: fct sourceAnchor startLine equals: 1.
+	self assert: fct sourceAnchor fileName equals: './fortranCode.F'.
+	self assert: fct sourceAnchor startLine equals: 2.
 	self assert: fct sourceAnchor startColumn equals: 7.
-	self assert: fct sourceAnchor endLine equals: 2.
-	self assert: fct sourceAnchor endColumn equals: 10
+	self assert: fct sourceAnchor endLine equals: 3.
+	self assert: fct sourceAnchor endColumn equals: 9
 ]
 
 { #category : #'tests-progUnit' }
@@ -483,16 +483,16 @@ SyntaxJsonToIASTVisitorTest >> testEmptyFunctionWithArguments [
 
 
 	fct := programFile progUnits first.
-	self assert: fct entityName equals: 'hello'.
+	self assert: fct entityName equals: 'HELLO'.
 	self assert: fct parameters size equals: 2.
 
 	param := fct parameters first.
 	self assert: param class equals: IASTParameter.
-	self assert: param entityName equals: 'i'.
+	self assert: param entityName equals: 'I'.
 
 	param := fct parameters second.
 	self assert: param class equals: IASTParameter.
-	self assert: param entityName equals: 'j'
+	self assert: param entityName equals: 'J'
 ]
 
 { #category : #'tests-progUnit' }
@@ -1274,7 +1274,7 @@ SyntaxJsonToIASTVisitorTest >> testProgramWithMultipleProgUnits [
 
 	node := programFile progUnits first.
 	self assert: node class equals: IASTMainProgram.
-	self assert: node entityName equals: 'myprog'.
+	self assert: node entityName equals: 'MYPROG'.
 	self assert: node body size equals: 0.
 	self assert: node accesses size equals: 0.
 	self assert: node invocations size equals: 0.
@@ -1282,13 +1282,13 @@ SyntaxJsonToIASTVisitorTest >> testProgramWithMultipleProgUnits [
 	node := programFile progUnits second.
 	self assert: node class equals: IASTFunction.
 	self assert: node parameters size equals: 2.
-	self assert: node parameters first entityName equals: 'k'.
-	self assert: node parameters second entityName equals: 'l'.
+	self assert: node parameters first entityName equals: 'K'.
+	self assert: node parameters second entityName equals: 'L'.
 
 	node := programFile progUnits third.
 	self assert: node class equals: IASTSubroutine.
 	self assert: node parameters size equals: 1.
-	self assert: node parameters first entityName equals: 'msg'
+	self assert: node parameters first entityName equals: 'MSG'
 ]
 
 { #category : #'tests-statement' }

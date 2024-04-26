@@ -74,7 +74,7 @@ SyntaxJsonToIASTVisitor >> onFile: aProgramFileNode [
 { #category : #visiting }
 SyntaxJsonToIASTVisitor >> visitCharacterType: aNode [
 
-	self shouldNotImplement
+	^'CHARACTER'
 ]
 
 { #category : #visiting }
@@ -83,16 +83,35 @@ SyntaxJsonToIASTVisitor >> visitFile: aFileName [
 	f77sourcefile := aFileName
 ]
 
+{ #category : #'visiting prog-unit' }
+SyntaxJsonToIASTVisitor >> visitFunction: aNode [
+	" name prog_unit_parameters return_type start_pos end_pos statement_list "
+
+	| data progUnit |
+	data := super visitFunction: aNode.
+
+	progUnit := (self newEntity: IASTFunction withPosition: data)
+		entityName: ((data at: 'name') at: #name);
+		parameters: (data at: 'prog_unit_parameters');
+		body: (data at: 'statement_list');
+		returnType: (data at: 'return_type');
+		yourself.
+
+	"self checkForComments: progUnit."
+
+	^progUnit
+]
+
 { #category : #visiting }
 SyntaxJsonToIASTVisitor >> visitIntegerType: aNode [
 
-   self shouldNotImplement 
+   ^'INTEGER'
 ]
 
 { #category : #visiting }
 SyntaxJsonToIASTVisitor >> visitLogicalType: aNode [
 
-	self shouldNotImplement 
+	^'LOGICAL'
 ]
 
 { #category : #'visiting prog-unit' }
@@ -119,7 +138,7 @@ SyntaxJsonToIASTVisitor >> visitProgUnitParameters: aCollection [
 { #category : #visiting }
 SyntaxJsonToIASTVisitor >> visitRealType: aNode [
 
-	self shouldNotImplement 
+	^'REAL'
 ]
 
 { #category : #'visiting prog-unit' }
@@ -148,4 +167,18 @@ SyntaxJsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 SyntaxJsonToIASTVisitor >> visitSymbolicName: aSymbolicName [
 
 	^self visitJsonMap: aSymbolicName keys: #(start_pos name)
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitTypeReference: aNode [
+
+	| data return |
+	data := super visitTypeReference: aNode.
+
+	return := IASTTypeRef new
+		entityName: (data at: #name) ;
+		yourself.
+	data at: #len_specification ifPresent: [ :size | return length: size ].
+
+	^return
 ]
