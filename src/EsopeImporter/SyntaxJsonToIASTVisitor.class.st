@@ -97,7 +97,20 @@ SyntaxJsonToIASTVisitor >> visitAssignmentStatement: aNode [
 			yourself
 		.
 		self variableNameOrExpression: (data at: #right)
-	}
+	} flattened reject: #isNil
+]
+
+{ #category : #'visiting expression' }
+SyntaxJsonToIASTVisitor >> visitBinaryExpression: aNode [
+	"expression lhs operator"
+
+	| data |
+
+	data := super visitBinaryExpression: aNode.
+
+	^{ self variableNameOrExpression: (data at: 'lhs')
+		.
+		self variableNameOrExpression: (data at: 'rhs') }
 ]
 
 { #category : #'visiting prog-unit' }

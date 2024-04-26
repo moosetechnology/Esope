@@ -178,15 +178,15 @@ SyntaxJsonToIASTVisitorTest >> testAssignementStatementWithComplexRHS [
 
 	stmt := programFile progUnits first body first first.
 	self assert: stmt class equals: IASTVarAccess.
-	self assert: stmt entityName equals: 'somevar'.
+	self assert: stmt entityName equals: 'SOMEVAR'.
 
 	stmt := programFile progUnits first body first second.
 	self assert: stmt class equals: IASTVarAccess.
-	self assert: stmt entityName equals: 'othervar'.
+	self assert: stmt entityName equals: 'OTHERVAR'.
 
 	stmt := programFile progUnits first body first third.
 	self assert: stmt class equals: IASTVarAccess.
-	self assert: stmt entityName equals: 'thirdvar'
+	self assert: stmt entityName equals: 'THIRDVAR'
 ]
 
 { #category : #'tests-statement' }
