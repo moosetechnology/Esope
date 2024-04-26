@@ -1,3 +1,9 @@
+"
+A visitor on the intermediate representation of a Famix/Esope file.
+This visitor is specialized for Fortran and delegates Esope construct parsing to another visitor.
+It builds a Famix model from the intermediary representation.
+
+"
 Class {
 	#name : #IASTToFamixFortranVisitor,
 	#superclass : #IASTAbstractFamixVisitor,

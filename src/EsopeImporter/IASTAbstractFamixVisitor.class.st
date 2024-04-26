@@ -1,3 +1,9 @@
+"
+An abstract visitor for the intermediate representation of a Fortran/Esope file
+
+It keeps a `stack` of parsing contexts
+It can `spawn` another visitor on the current node for handling specialized visiting strategies
+"
 Class {
 	#name : #IASTAbstractFamixVisitor,
 	#superclass : #Object,

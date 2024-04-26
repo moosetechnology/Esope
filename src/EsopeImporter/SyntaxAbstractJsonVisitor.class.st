@@ -1,3 +1,8 @@
+"
+An abstract visitor for the JSON output of the Syntax parser.
+It declares all the visiting methods required to fully visit the AST
+
+"
 Class {
 	#name : #SyntaxAbstractJsonVisitor,
 	#superclass : #Object,

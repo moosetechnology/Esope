@@ -1,7 +1,9 @@
 "
 An abstrat visitor for the JSON output of [camfort/fortran-src](https://github.com/camfort/fortran-src)
 
-Defines all the needed `#visitXYZ:` methods and go to the JSON tree
+Defines all the needed visiting methods to fully visit the JSON tree.
+
+Typical used by calling `onFile: (NeoJSONReader fromString: <the-JSONCode>)`
 "
 Class {
 	#name : #FortranAbstractJsonVisitor,
