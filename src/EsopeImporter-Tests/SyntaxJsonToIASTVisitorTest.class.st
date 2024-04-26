@@ -513,17 +513,17 @@ SyntaxJsonToIASTVisitorTest >> testEmptyProgram [
 		assert: programFile progUnits first class
 		equals: IASTMainProgram.
 	prog := programFile progUnits first.
-	self assert: prog entityName equals: 'hello'.
+	self assert: prog entityName equals: 'HELLO'.
 	self assert: prog body isEmpty.
 	self assert: prog comments isEmpty.
 
 	self assert: prog sourceAnchor notNil.
 	self assert: prog sourceAnchor class equals: IASTIndexedFileAnchor.
-	self assert: prog sourceAnchor fileName equals: './fortran77.f'.
-	self assert: prog sourceAnchor startLine equals: 1.
+	self assert: prog sourceAnchor fileName equals: './fortranCode.F'.
+	self assert: prog sourceAnchor startLine equals: 2.
 	self assert: prog sourceAnchor startColumn equals: 7.
-	self assert: prog sourceAnchor endLine equals: 2.
-	self assert: prog sourceAnchor endColumn equals: 10
+	self assert: prog sourceAnchor endLine equals: 3.
+	self assert: prog sourceAnchor endColumn equals: 9
 ]
 
 { #category : #'tests-statement' }

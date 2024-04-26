@@ -25,14 +25,18 @@ SyntaxJsonToIASTVisitor >> initialize [
 ]
 
 { #category : #'private - utilities' }
-SyntaxJsonToIASTVisitor >> makeIndexedAnchor: aPointPair [
+SyntaxJsonToIASTVisitor >> makeIndexedAnchor: aNode [
+	| start end |
+	start := aNode at: #start_pos ifAbsent: [ 0@0 ].
+	end := aNode at: #end_pos ifAbsent: [ 0@0 ].
+
 	^IASTIndexedFileAnchor new
-		  startLine: aPointPair first x ;
-		  startColumn: aPointPair first y ;
-		  endLine: aPointPair second x ;
-		  endColumn: aPointPair second y ;
-		  fileName: f77sourcefile;
-		  yourself
+		startLine: start x ;
+		startColumn: start y ;
+		endLine: end x ;
+		endColumn: end y ;
+		fileName: f77sourcefile;
+		yourself
 ]
 
 { #category : #accessing }
@@ -45,6 +49,14 @@ SyntaxJsonToIASTVisitor >> model: aCollection [
 	model := aCollection
 ]
 
+{ #category : #'private - utilities' }
+SyntaxJsonToIASTVisitor >> newEntity: anIASTClass withPosition: aNode [
+
+	^anIASTClass new
+		sourceAnchor: (self makeIndexedAnchor: aNode) ;
+		yourself
+]
+
 { #category : #'visiting prog-unit' }
 SyntaxJsonToIASTVisitor >> onFile: aProgramFileNode [
 	| programFile data |
@@ -52,11 +64,35 @@ SyntaxJsonToIASTVisitor >> onFile: aProgramFileNode [
 
 	programFile := IASTProgramFile new
 		filename: self f77sourcefile ;
-		progUnits: data second ;
+		progUnits: (data at: #program_units) ;
 		yourself.
 	self model add: programFile.
 	^ programFile
 		
+]
+
+{ #category : #visiting }
+SyntaxJsonToIASTVisitor >> visitCharacterType: aNode [
+
+	self shouldNotImplement
+]
+
+{ #category : #visiting }
+SyntaxJsonToIASTVisitor >> visitFile: aFileName [
+
+	f77sourcefile := aFileName
+]
+
+{ #category : #visiting }
+SyntaxJsonToIASTVisitor >> visitIntegerType: aNode [
+
+   self shouldNotImplement 
+]
+
+{ #category : #visiting }
+SyntaxJsonToIASTVisitor >> visitLogicalType: aNode [
+
+	self shouldNotImplement 
 ]
 
 { #category : #'visiting prog-unit' }
@@ -64,10 +100,15 @@ SyntaxJsonToIASTVisitor >> visitMain: aMainProgramNode [
  	| data |
 	data := super visitMain: aMainProgramNode.
 
-	^IASTMainProgram new
-		sourceAnchor: (self makeIndexedAnchor: data first) ;
-		entityName: data second ;
-		body: data third ;
+	^(self newEntity: IASTMainProgram withPosition: data)
+		entityName: (data at: #name) ;
+		body: (data at: #statement_list) ;
 		yourself
 
+]
+
+{ #category : #visiting }
+SyntaxJsonToIASTVisitor >> visitRealType: aNode [
+
+	self shouldNotImplement 
 ]
