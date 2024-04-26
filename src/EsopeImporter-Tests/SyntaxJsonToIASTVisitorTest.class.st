@@ -418,7 +418,7 @@ SyntaxJsonToIASTVisitorTest >> testEmptyBlockData [
 	self assert: programFile progUnits size equals: 1.
 	self assert: programFile progUnits first class equals: IASTBlockData.
 	block := programFile progUnits first.
-	self assert: block entityName equals: 'hello'.
+	self assert: block entityName equals: 'HELLO'.
 	self assert: block body isEmpty.
 	self assert: block comments isEmpty
 ]

@@ -71,6 +71,23 @@ SyntaxJsonToIASTVisitor >> onFile: aProgramFileNode [
 		
 ]
 
+{ #category : #'visiting prog-unit' }
+SyntaxJsonToIASTVisitor >> visitBlockData: aNode [
+	"start_pos prog_unit_parameters end_pos statement_list name tag"
+
+	| data progUnit |
+	data := super visitBlockData: aNode.
+
+	progUnit := (self newEntity: IASTBlockData withPosition: data)
+		entityName: ((data at: 'name') at: #name);
+		body: (data at: 'statement_list');
+		yourself.
+
+	"self checkForComments: progUnit."
+
+	^progUnit
+]
+
 { #category : #visiting }
 SyntaxJsonToIASTVisitor >> visitCharacterType: aNode [
 
