@@ -94,6 +94,11 @@ SyntaxJsonToIASTVisitor >> visitCharacterType: aNode [
 	^'CHARACTER'
 ]
 
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitContinueStatement: aContinueStatementNode [
+	^nil
+]
+
 { #category : #visiting }
 SyntaxJsonToIASTVisitor >> visitFile: aFileName [
 
@@ -119,6 +124,12 @@ SyntaxJsonToIASTVisitor >> visitFunction: aNode [
 	^progUnit
 ]
 
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitGotoStatement: aGotoStatementNode [
+
+	^nil
+]
+
 { #category : #visiting }
 SyntaxJsonToIASTVisitor >> visitIntegerType: aNode [
 
@@ -139,6 +150,14 @@ SyntaxJsonToIASTVisitor >> visitIoList: aCollection [
 			]
 			ifFalse: [ each ]
 	]
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitLabeledStatement: aNode keys: keyCollection [
+	"ignore labels"
+
+	^self visitJsonMap: aNode keys: keyCollection
+
 ]
 
 { #category : #visiting }
@@ -172,6 +191,13 @@ SyntaxJsonToIASTVisitor >> visitProgUnitParameters: aCollection [
 SyntaxJsonToIASTVisitor >> visitRealType: aNode [
 
 	^'REAL'
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitStatementList: statementCollection [
+
+	^(super visitStatementList: statementCollection)
+		reject: #isNil
 ]
 
 { #category : #'visiting prog-unit' }
@@ -214,6 +240,12 @@ SyntaxJsonToIASTVisitor >> visitTypeReference: aNode [
 	data at: #len_specification ifPresent: [ :size | return length: size ].
 
 	^return
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitUnconditionalGotoStatement: aNode [
+
+	^nil
 ]
 
 { #category : #'visiting statement' }
