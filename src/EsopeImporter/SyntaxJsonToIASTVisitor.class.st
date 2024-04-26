@@ -101,7 +101,7 @@ SyntaxJsonToIASTVisitor >> visitMain: aMainProgramNode [
 	data := super visitMain: aMainProgramNode.
 
 	^(self newEntity: IASTMainProgram withPosition: data)
-		entityName: (data at: #name) ;
+		entityName: ((data at: #name) at: #name) ;
 		body: (data at: #statement_list) ;
 		yourself
 
@@ -116,10 +116,13 @@ SyntaxJsonToIASTVisitor >> visitRealType: aNode [
 { #category : #'visiting prog-unit' }
 SyntaxJsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 
-	| data entity |
+	| data name entity |
 	data := super visitSubroutine: aSubroutineNode.
 
-	entity := (data at: #name) = '__$__'
+	"name is a #symbolic_name with a #position and a #name"
+	name := (data at: #name) at: #name.
+
+	entity := (name = '__$__')
 		          ifTrue: [ IASTIncludedFile new ]
 		          ifFalse: [ 
 			          IASTSubroutine new
@@ -127,7 +130,13 @@ SyntaxJsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 				          yourself ].
 	^entity
 		sourceAnchor: (self makeIndexedAnchor: data) ;
-		entityName: (data at: #name) ;
+		entityName: name ;
 		body: (data at: #statement_list) ;
 		yourself
+]
+
+{ #category : #'visiting expression' }
+SyntaxJsonToIASTVisitor >> visitSymbolicName: aSymbolicName [
+
+	^self visitJsonMap: aSymbolicName keys: #(start_pos name)
 ]
