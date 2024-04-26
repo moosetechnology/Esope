@@ -92,6 +92,20 @@ JsonToIASTVisitor >> onFile: aProgramFileNode [
 		
 ]
 
+{ #category : #'private - utilities' }
+JsonToIASTVisitor >> varAccessesToParams: varAccesses [
+
+	^varAccesses
+		ifNil: [ #(  ) ]
+		ifNotNil: [ 
+			varAccesses collect: [ :node | 
+				IASTParameter new
+					sourceAnchor: node sourceAnchor ;
+					entityName: node entityName ;
+					yourself ]
+		]
+]
+
 { #category : #'visiting prog-unit' }
 JsonToIASTVisitor >> visitArgument: anArgumentNode [
 	"used for argument in subprogram calls and parameter in subprogram definition"
@@ -425,7 +439,7 @@ JsonToIASTVisitor >> visitFunctionWithBlocks: aFunctionNode [
 		sourceAnchor: (self makeIndexedAnchor: data first) ;
 		entityName: data second ;
 		returnType: data third ;
-		parameters: data fourth ;
+		parameters: (self varAccessesToParams: data fourth) ;
 		body: data fifth ;
 		yourself
 
@@ -591,7 +605,7 @@ JsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 		          ifTrue: [ IASTIncludedFile new ]
 		          ifFalse: [ 
 			          IASTSubroutine new
-				          parameters: data third;
+				          parameters: (self varAccessesToParams: data third) ;
 				          yourself ].
 	^entity
 		sourceAnchor: (self makeIndexedAnchor: data first) ;

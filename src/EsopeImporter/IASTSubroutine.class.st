@@ -20,12 +20,7 @@ IASTSubroutine >> parameters [
 ]
 
 { #category : #accessing }
-IASTSubroutine >> parameters: aNodes [
+IASTSubroutine >> parameters: nodes [
 
-	parameters := aNodes ifNil: [ #(  ) ] ifNotNil: [ 
-		              aNodes collect: [ :node | 
-			              IASTParameter new
-				              sourceAnchor: node sourceAnchor ;
-				              entityName: node entityName ;
-				              yourself ] ]
+	parameters := nodes
 ]
