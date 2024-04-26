@@ -423,22 +423,6 @@ SyntaxJsonToIASTVisitorTest >> testEmptyBlockData [
 	self assert: block comments isEmpty
 ]
 
-{ #category : #'tests-statement' }
-SyntaxJsonToIASTVisitorTest >> testEmptyExitStatement [
-	"
-      PROGRAM MYPROG
-      exit
-      END
-"
-
-	| programFile |
-	programFile := self visitJsonCode:
-		               '{ "tag":"fortran_file", "comments": { }, "file" : "./tmpFASTSource.f", "program_units" : [{"tag" : "main", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"15"}, "name":"MYPROG"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"7"}, "name":"EXIT"}], "right" : [{"tag" : "logical_expression", "expression" : {"tag" : "logical_factor", "negated" : "false", "expression" : {"tag" : "logical_primary", "expression" : {"tag" : "logical_constant", "start_pos" : {"line" : "3", "column":"11"}, "value":".FALSE."}}}}]}]}] }'.
-
-
-	self assert: programFile progUnits first body isEmpty
-]
-
 { #category : #'tests-progUnit' }
 SyntaxJsonToIASTVisitorTest >> testEmptyFunction [
 	"

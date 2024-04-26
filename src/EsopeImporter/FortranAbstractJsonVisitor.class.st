@@ -612,6 +612,8 @@ FortranAbstractJsonVisitor >> visitEsopeSegsupComment: anEsopeCommentNode [
 
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitExitStatement: anExitNode [
+	self flag: 'Not a Fortran-77 instruction'.
+
 	^self visitJsonMap: anExitNode keys: #(span var)
 ]
 

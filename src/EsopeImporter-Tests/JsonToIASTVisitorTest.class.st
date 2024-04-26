@@ -363,6 +363,9 @@ JsonToIASTVisitorTest >> testEmptyExitStatement [
 "
 	
 	| programFile |
+
+	self skip: 'Not a Fortran-77 instruction'.
+
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:11)","statement":{"anno":[],"span":"(2:8)-(2:11)","tag":"exit","var":null},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
