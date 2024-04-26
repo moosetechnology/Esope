@@ -615,12 +615,8 @@ SyntaxAbstractJsonVisitor >> visitJsonNode: aJsonNode key: key [
 
 { #category : #'visiting reflectivity' }
 SyntaxAbstractJsonVisitor >> visitJsonTaggedElement: jsonDictionary [
-	"similar to #visitJsonNode: , but removes first the 'tag' key from the JsonDisctionary
-	 so that it is not visited again (not sure this is needed ...?)"
 
-	| key |
-	key := jsonDictionary at: 'tag'.
-	^ self visitJsonKey: key value: jsonDictionary
+	^ self visitJsonKey: (jsonDictionary at: 'tag') value: jsonDictionary
 ]
 
 { #category : #visiting }
