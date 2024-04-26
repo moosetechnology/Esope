@@ -606,12 +606,12 @@ SyntaxJsonToIASTVisitorTest >> testEmptySubroutineTwoParams [
 
 
 	sub := programFile progUnits first.
-	self assert: sub entityName equals: 'hello'.
+	self assert: sub entityName equals: 'HELLO'.
 	self assert: sub parameters size equals: 2.
 	self assert: sub parameters first class equals: IASTParameter.
-	self assert: sub parameters first entityName equals: 'param1'.
+	self assert: sub parameters first entityName equals: 'PARAM1'.
 	self assert: sub parameters second class equals: IASTParameter.
-	self assert: sub parameters second entityName equals: 'param2'.
+	self assert: sub parameters second entityName equals: 'PARAM2'.
 	self assert: sub body isEmpty
 ]
 
