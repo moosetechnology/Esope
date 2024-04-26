@@ -279,13 +279,13 @@ SyntaxJsonToIASTVisitorTest >> testCallToWrite [
 
 	stmt := programFile progUnits first body first.
 	self assert: stmt first class equals: IASTInvocation.
-	self assert: stmt first entityName equals: 'write'.
+	self assert: stmt first entityName equals: 'WRITE'.
 	self assert: stmt first arguments size equals: 1.
 	self assert: stmt first sourceAnchor isNotNil.
 
 	arg := stmt first arguments first.
 	self assert: arg class equals: IASTVarAccess.
-	self assert: arg entityName equals: 'msg'.
+	self assert: arg entityName equals: 'MSG'.
 	self deny: arg isWrite
 ]
 

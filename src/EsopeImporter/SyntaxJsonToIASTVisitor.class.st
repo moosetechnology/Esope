@@ -125,6 +125,22 @@ SyntaxJsonToIASTVisitor >> visitIntegerType: aNode [
    ^'INTEGER'
 ]
 
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitIoList: aCollection [
+ 
+   | data |
+	data := super visitIoList: aCollection.
+
+	^data collect: [ :each |
+		each isDictionary 
+			ifTrue: [ (self newEntity: IASTVarAccess withPosition: each)
+				entityName: (each at: #name) ;
+				yourself
+			]
+			ifFalse: [ each ]
+	]
+]
+
 { #category : #visiting }
 SyntaxJsonToIASTVisitor >> visitLogicalType: aNode [
 
@@ -198,4 +214,18 @@ SyntaxJsonToIASTVisitor >> visitTypeReference: aNode [
 	data at: #len_specification ifPresent: [ :size | return length: size ].
 
 	^return
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitWriteStatement: aNode [
+    "start_pos control_info_list io_list"
+
+	| data |
+	data := super visitWriteStatement: aNode.
+
+	^{ (self newEntity: IASTInvocation withPosition: data)
+			entityName: 'WRITE' ;
+			"ioParameters: (data at: #control_info_list) ;"
+			arguments: (data at: #io_list) ;
+			yourself }
 ]
