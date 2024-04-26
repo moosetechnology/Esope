@@ -25,6 +25,13 @@ SyntaxJsonToIASTVisitor >> initialize [
 ]
 
 { #category : #'private - utilities' }
+SyntaxJsonToIASTVisitor >> isEsopeTransformation: aString [
+
+	aString isString ifFalse: [ ^ false ].
+	^ #( #d__ #s__ ) includes: aString
+]
+
+{ #category : #'private - utilities' }
 SyntaxJsonToIASTVisitor >> makeIndexedAnchor: aNode [
 	| start end |
 	start := aNode at: #start_pos ifAbsent: [ 0@0 ].
@@ -128,6 +135,28 @@ SyntaxJsonToIASTVisitor >> visitBlockData: aNode [
 	"self checkForComments: progUnit."
 
 	^progUnit
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitCallStatement: aNode [
+	"start_pos tag name arguments"
+
+	| data astNode name |
+	data := super visitCallStatement: aNode.
+
+	name := (data at: 'name') at: #name.
+
+	astNode := (self isEsopeTransformation: name)
+		ifTrue: [ IASTVarEso newFrom: name ]
+		ifFalse: [ 
+			IASTInvocation new
+				entityName: name ;
+				yourself ].
+
+	^ astNode
+		  sourceAnchor: (self makeIndexedAnchor: data first);
+		  arguments: (data at: 'arguments') ;
+		  yourself
 ]
 
 { #category : #visiting }

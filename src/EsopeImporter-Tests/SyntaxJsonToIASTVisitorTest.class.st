@@ -955,12 +955,12 @@ SyntaxJsonToIASTVisitorTest >> testFunctionWithFunctionInvocation [
 	fct := programFile progUnits first.
 
 	self assert: fct class equals: IASTFunction.
-	self assert: fct entityName equals: 'efunc'.
+	self assert: fct entityName equals: 'EFUNC'.
 	self assert: fct body first size equals: 2.
-	self assert: fct sourceAnchor startLine equals: 1.
+	self assert: fct sourceAnchor startLine equals: 2.
 	self assert: fct sourceAnchor startColumn equals: 7.
-	self assert: fct sourceAnchor endLine equals: 3.
-	self assert: fct sourceAnchor endColumn equals: 10
+	self assert: fct sourceAnchor endLine equals: 4.
+	self assert: fct sourceAnchor endColumn equals: 9
 ]
 
 { #category : #'tests-statement' }
