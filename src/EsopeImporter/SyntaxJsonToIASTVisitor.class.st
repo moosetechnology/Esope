@@ -71,6 +71,35 @@ SyntaxJsonToIASTVisitor >> onFile: aProgramFileNode [
 		
 ]
 
+{ #category : #'private - utilities' }
+SyntaxJsonToIASTVisitor >> variableNameOrExpression: anObject [
+	"Scalar variables appear as Dictionary with a #name and a #start_pos,
+	 otherwise, don't do anything"
+
+	^anObject isDictionary
+		ifTrue: [ (self newEntity: IASTVarAccess withPosition: anObject)
+			entityName: (anObject at: #name) ;
+			yourself ]
+		ifFalse: [ anObject ]
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitAssignmentStatement: aNode [
+	"start_pos right left"
+
+	| data |
+	data := super visitAssignmentStatement: aNode.
+
+	^{
+		IASTVarAccess new
+			entityName: ((data at: #left) at: #name) ;
+			isWrite: true ;
+			yourself
+		.
+		self variableNameOrExpression: (data at: #right)
+	}
+]
+
 { #category : #'visiting prog-unit' }
 SyntaxJsonToIASTVisitor >> visitBlockData: aNode [
 	"start_pos prog_unit_parameters end_pos statement_list name tag"

@@ -153,12 +153,12 @@ SyntaxJsonToIASTVisitorTest >> testAssignementStatement [
 	var := programFile progUnits first body first first.
 	self assert: var class equals: IASTVarAccess.
 	self assert: var isWrite.
-	self assert: var entityName equals: 'somevar'.
+	self assert: var entityName equals: 'SOMEVAR'.
 
 	var := programFile progUnits first body first second.
 	self assert: var class equals: IASTVarAccess.
 	self deny: var isWrite.
-	self assert: var entityName equals: 'othervar'
+	self assert: var entityName equals: 'OTHERVAR'
 ]
 
 { #category : #'tests-statement' }
