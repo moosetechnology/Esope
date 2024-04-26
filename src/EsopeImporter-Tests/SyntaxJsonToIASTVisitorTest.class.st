@@ -560,17 +560,17 @@ SyntaxJsonToIASTVisitorTest >> testEmptySubroutine [
 	self assert: programFile progUnits size equals: 1.
 	self assert: programFile progUnits first class equals: IASTSubroutine.
 	sub := programFile progUnits first.
-	self assert: sub entityName equals: 'hello'.
+	self assert: sub entityName equals: 'HELLO'.
 	self assert: sub parameters isEmpty.
 	self assert: sub body isEmpty.
 
 	self assert: sub sourceAnchor notNil.
 	self assert: sub sourceAnchor class equals: IASTIndexedFileAnchor.
-	self assert: sub sourceAnchor fileName equals: './fortran77.f'.
-	self assert: sub sourceAnchor startLine equals: 1.
+	self assert: sub sourceAnchor fileName equals: './fortranCode.F'.
+	self assert: sub sourceAnchor startLine equals: 2.
 	self assert: sub sourceAnchor startColumn equals: 7.
-	self assert: sub sourceAnchor endLine equals: 2.
-	self assert: sub sourceAnchor endColumn equals: 10
+	self assert: sub sourceAnchor endLine equals: 3.
+	self assert: sub sourceAnchor endColumn equals: 9
 ]
 
 { #category : #'tests-progUnit' }

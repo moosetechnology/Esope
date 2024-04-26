@@ -112,3 +112,22 @@ SyntaxJsonToIASTVisitor >> visitRealType: aNode [
 
 	self shouldNotImplement 
 ]
+
+{ #category : #'visiting prog-unit' }
+SyntaxJsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
+
+	| data entity |
+	data := super visitSubroutine: aSubroutineNode.
+
+	entity := (data at: #name) = '__$__'
+		          ifTrue: [ IASTIncludedFile new ]
+		          ifFalse: [ 
+			          IASTSubroutine new
+				          parameters: (data at: #prog_unit_parameters);
+				          yourself ].
+	^entity
+		sourceAnchor: (self makeIndexedAnchor: data) ;
+		entityName: (data at: #name) ;
+		body: (data at: #statement_list) ;
+		yourself
+]
