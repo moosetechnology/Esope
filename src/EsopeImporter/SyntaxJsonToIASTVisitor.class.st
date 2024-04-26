@@ -107,6 +107,15 @@ SyntaxJsonToIASTVisitor >> visitMain: aMainProgramNode [
 
 ]
 
+{ #category : #'visiting prog-unit' }
+SyntaxJsonToIASTVisitor >> visitProgUnitParameters: aCollection [ 
+
+	^(self visitJsonArray: aCollection) collect: [ :parameter |
+		(self newEntity: IASTParameter  withPosition: parameter)
+			entityName: (parameter at: #name) ;
+			yourself ]
+]
+
 { #category : #visiting }
 SyntaxJsonToIASTVisitor >> visitRealType: aNode [
 
