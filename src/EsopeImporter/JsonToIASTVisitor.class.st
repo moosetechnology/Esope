@@ -640,7 +640,7 @@ JsonToIASTVisitor >> visitSubscript: aSubscriptNode [
 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'visiting statement' }
 JsonToIASTVisitor >> visitTo: aString [
 	"end of a range for an implicit statement: a string of one character"
 
