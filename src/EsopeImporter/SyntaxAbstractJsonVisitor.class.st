@@ -25,7 +25,7 @@ SyntaxAbstractJsonVisitor >> visitAlternateReturnSpecifier: aNode [
 	^self visitJsonMap: aNode keys: #(start_pos return_specifier label)
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitArgument: aNode [
 
 	^self visitJsonElement: aNode
@@ -45,7 +45,7 @@ SyntaxAbstractJsonVisitor >> visitArguments: aNode [
 	^self visitJsonArray: aNode
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitArithmeticConstExpr: aNode [
 
 	^self visitJsonNode: aNode key: #expression
@@ -75,7 +75,7 @@ SyntaxAbstractJsonVisitor >> visitArrayDeclarators: aNode [
    ^ self visitJsonArray: aNode
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitArrayElementName: aNode [
     <generated>
 
@@ -119,7 +119,7 @@ SyntaxAbstractJsonVisitor >> visitCallStatement: aNode [
 	^ self visitLabeledStatement: aNode keys: #( start_pos name arguments )
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitCharacterConstExpr: aNode [
 
 	^self visitJsonNode: aNode key: #expression
@@ -188,7 +188,7 @@ SyntaxAbstractJsonVisitor >> visitComputedGotoStatement: aNode [
 	^ self visitLabeledStatement: aNode keys: #( var start_pos labels )
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitCondition: aNode [ 
 
 	^self visitJsonElement: aNode
@@ -258,7 +258,7 @@ SyntaxAbstractJsonVisitor >> visitDataParameters: aNode [
    ^ self visitJsonArray: aNode
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitDataStatement: aNode [
 
 	^ self visitJsonMap: aNode keys: #( start_pos data_parameters )
@@ -840,7 +840,7 @@ SyntaxAbstractJsonVisitor >> visitParameterStatement: aNode [
 	^ self visitJsonMap: aNode keys: #( start_pos constant_declarations )
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitPauseStatement: aNode [
 
 	^self visitLabeledStatement: aNode keys: #( start_pos argument )
@@ -1046,13 +1046,13 @@ SyntaxAbstractJsonVisitor >> visitTypeReference: aNode [
 	^return
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitTypeStatement: aNode [
 
 	^ self visitJsonMap: aNode keys: #( start_pos declarators type )
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitUnaryExpression: aNode [
 
 	^ self visitJsonMap: aNode keys: #( expression operator )
@@ -1122,7 +1122,7 @@ SyntaxAbstractJsonVisitor >> visitVariableDeclarator: aNode [
 	^ self visitJsonMap: aNode keys: #( variable dimension_declarators expression )
 ]
 
-{ #category : #visiting }
+{ #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitVariableExpression: aNode [
     <generated>
 
