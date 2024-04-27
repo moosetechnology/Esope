@@ -135,9 +135,7 @@ SyntaxAbstractJsonVisitor >> visitCharacterConstant: aNode [
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitCharacterExpression: aNode [
 
-	<generated>
-
-	^ self visitJsonMap: aNode keys: #( expression )
+	^ self visitExpression: (aNode at: #expression)
 ]
 
 { #category : #visiting }
