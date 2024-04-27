@@ -1079,7 +1079,7 @@ SyntaxJsonToIASTVisitorTest >> testImplicitStatementSimpleChar [
 
 	rule := stmt rules first.
 	self assert: rule forType class equals: IASTTypeRef.
-	self assert: rule forType entityName equals: 'character'.
+	self assert: rule forType entityName equals: 'CHARACTER'.
 
 	self assert: rule ranges size equals: 1.
 

@@ -227,6 +227,64 @@ SyntaxJsonToIASTVisitor >> visitGotoStatement: aGotoStatementNode [
 	^nil
 ]
 
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitImplicitNoneStatement: aNode [
+
+	^self newEntity: IASTImplicit withPosition: (super visitImplicitNoneStatement: aNode)
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitImplicitParameter: anImplicitParameter [
+	"type implicit_elements"
+
+	| data |
+	data := super visitImplicitParameter: anImplicitParameter.
+
+	^IASTImplicitTypingRule new
+		forType: (data at: #type) ;
+		ranges: (data at: #implicit_elements) ;
+		yourself
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitImplicitRange: aNode [
+	"implicit_range_lower implicit_range_upper"
+
+	| data lower upper |
+	data := super visitImplicitRange: aNode.
+
+	lower := data at: #implicit_range_lower.
+	upper := data at: #implicit_range_upper.
+
+	^upper
+		ifNil: [ { lower . lower } ]
+		ifNotNil: [ { lower . upper } ]
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitImplicitRangeLower: aString [
+	
+	^aString ifEmpty: [ nil ] ifNotEmpty: [ aString first ]
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitImplicitRangeUpper: aString [
+	
+	^aString ifEmpty: [ nil ] ifNotEmpty: [ aString first ]
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitImplicitStatement: aNode [
+	"start_pos implicit_parameters"
+
+	| data |
+	data := super visitImplicitStatement: aNode.
+
+	^(self newEntity: IASTImplicit withPosition: data)
+		rules: (data at: #implicit_parameters) ;
+		yourself
+]
+
 { #category : #visiting }
 SyntaxJsonToIASTVisitor >> visitIntegerType: aNode [
 
