@@ -66,13 +66,13 @@ SyntaxJsonToIASTVisitorTest >> testAccessArrayWithIndices [
 	"array access is seond expression of second statement"
 	var := programFile progUnits first body second second.
 	self assert: var class equals: IASTVarAccess.
-	self assert: var entityName equals: 'arr'.
+	self assert: var entityName equals: 'ARR'.
 	self assert: var indices size equals: 1.
 
 	var := var indices first.
 	self assert: var class equals: IASTVarAccess.
 	self deny: var isWrite.
-	self assert: var entityName equals: 'i'
+	self assert: var entityName equals: 'I'
 ]
 
 { #category : #'tests-statement' }
@@ -96,7 +96,7 @@ SyntaxJsonToIASTVisitorTest >> testAccessArrayWithIndicesLiteral [
 	"array access is seond expression of second statement"
 	var := programFile progUnits first body second second.
 	self assert: var class equals: IASTVarAccess.
-	self assert: var entityName equals: 'arr'.
+	self assert: var entityName equals: 'ARR'.
 	self assert: var indices size equals: 1.
 	"note: keep 'nil' indice to indicate that this is an array"
 	self assert: var indices first isNil
@@ -123,16 +123,16 @@ SyntaxJsonToIASTVisitorTest >> testAccessArrayWithSeveralIndices [
 	"array access is 2nd expression of 2nd statement"
 	var := programFile progUnits first body second second.
 	self assert: var class equals: IASTVarAccess.
-	self assert: var entityName equals: 'arr'.
+	self assert: var entityName equals: 'ARR'.
 	self assert: var indices size equals: 3.
 
 	self assert: var indices first class equals: IASTVarAccess.
-	self assert: var indices first entityName equals: 'x'.
+	self assert: var indices first entityName equals: 'X'.
 
 	self assert: var indices second isNil.
 
 	self assert: var indices third class equals: IASTVarAccess.
-	self assert: var indices third entityName equals: 'y'
+	self assert: var indices third entityName equals: 'Y'
 ]
 
 { #category : #'tests-statement' }

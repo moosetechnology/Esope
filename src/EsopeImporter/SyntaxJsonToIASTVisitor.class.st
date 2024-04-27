@@ -97,6 +97,19 @@ SyntaxJsonToIASTVisitor >> visitArguments: anArgumentList [
 		thenCollect: [ :each | self variableNameOrExpression: each ]
 ]
 
+{ #category : #'visiting expression' }
+SyntaxJsonToIASTVisitor >> visitArrayElementName: aNode [
+	"name tag qualifiers_list"
+
+	| data |
+	data := super visitArrayElementName: aNode.
+
+	^IASTVarAccess new
+		  entityName: ((data at: 'name') at: #name) ;
+		  indices: (data at: 'qualifiers_list');
+		  yourself
+]
+
 { #category : #'visiting statement' }
 SyntaxJsonToIASTVisitor >> visitAssignmentStatement: aNode [
 	"start_pos right left"
@@ -277,6 +290,14 @@ SyntaxJsonToIASTVisitor >> visitProgUnitParameters: aCollection [
 		(self newEntity: IASTParameter  withPosition: parameter)
 			entityName: (parameter at: #name) ;
 			yourself ]
+]
+
+{ #category : #'visiting expression' }
+SyntaxJsonToIASTVisitor >> visitQualifiersList: aNode [
+
+	^(super visitQualifiersList: aNode)
+		collect: [ :each |
+		  self variableNameOrExpression: each ]
 ]
 
 { #category : #visiting }
