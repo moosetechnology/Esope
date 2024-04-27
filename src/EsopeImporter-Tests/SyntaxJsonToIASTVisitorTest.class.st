@@ -1151,9 +1151,9 @@ SyntaxJsonToIASTVisitorTest >> testIntegerVariableDeclaration [
 	var := programFile progUnits first body first first.
 
 	self assert: var class equals: IASTVariable.
-	self assert: var entityName equals: 'i'.
+	self assert: var entityName equals: 'I'.
 	self assert: var typeSpec class equals: IASTTypeRef.
-	self assert: var typeSpec entityName equals: 'integer'.
+	self assert: var typeSpec entityName equals: 'INTEGER'.
 	self assert: var sourceAnchor isNotNil.
 	self assert: var sourceAnchor class equals: IASTIndexedFileAnchor
 ]
@@ -1177,17 +1177,17 @@ SyntaxJsonToIASTVisitorTest >> testMultipleStatements [
 	stmt := programFile progUnits first body first first.
 	self assert: stmt class equals: IASTVariable.
 	self assert: stmt typeSpec class equals: IASTTypeRef.
-	self assert: stmt entityName equals: 'somevar'.
+	self assert: stmt entityName equals: 'SOMEVAR'.
 
 	stmt := programFile progUnits first body second first.
 	self assert: stmt class equals: IASTVarAccess.
 	self assert: stmt isWrite.
-	self assert: stmt entityName equals: 'somevar'.
+	self assert: stmt entityName equals: 'SOMEVAR'.
 
 	stmt := programFile progUnits first body second second.
 	self assert: stmt class equals: IASTVarAccess.
 	self deny: stmt isWrite.
-	self assert: stmt entityName equals: 'somevar'
+	self assert: stmt entityName equals: 'SOMEVAR'
 ]
 
 { #category : #'tests-esope' }

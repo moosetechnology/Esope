@@ -432,6 +432,40 @@ SyntaxJsonToIASTVisitor >> visitUnsignedIntConstant: aNode [
 ]
 
 { #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitVariableDeclarationStatement: aNode [
+	"start_pos tag declarators type"
+
+	| data |
+	data := super visitVariableDeclarationStatement: aNode.
+
+	(data at: 'declarators') do: [ :iastVar | iastVar typeSpec: (data at: 'type') ].
+
+	^entityStack
+		ifNotEmpty: [
+			entityStack top addAllDeclarations: (data at: 'declarators').
+			nil
+		]
+		ifEmpty: [ data at: 'declarators' ]
+
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitVariableDeclarator: aNode [
+	"variable dimension_declarators expression
+
+	1- not sure expression is possible in Fortran-77
+	2- only interested in the `variable` as `dimension_declarator` must be a literal ?"
+
+	| data |
+	data := (super visitVariableDeclarator: aNode) at: #variable.
+
+	^(self newEntity: IASTVariable withPosition: data)
+		entityName: (data at: #name) ;
+		yourself
+
+]
+
+{ #category : #'visiting statement' }
 SyntaxJsonToIASTVisitor >> visitWriteStatement: aNode [
     "start_pos control_info_list io_list"
 
