@@ -307,6 +307,12 @@ SyntaxJsonToIASTVisitor >> visitRealType: aNode [
 ]
 
 { #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitReturnStatement: aNode [
+
+	^nil
+]
+
+{ #category : #'visiting statement' }
 SyntaxJsonToIASTVisitor >> visitStatementList: statementCollection [
 
 	^(super visitStatementList: statementCollection)
