@@ -90,6 +90,13 @@ SyntaxJsonToIASTVisitor >> variableNameOrExpression: anObject [
 		ifFalse: [ anObject ]
 ]
 
+{ #category : #'visiting expression' }
+SyntaxJsonToIASTVisitor >> visitArguments: anArgumentList [
+	^(super visitArguments: anArgumentList)
+		select: #isNotNil
+		thenCollect: [ :each | self variableNameOrExpression: each ]
+]
+
 { #category : #'visiting statement' }
 SyntaxJsonToIASTVisitor >> visitAssignmentStatement: aNode [
 	"start_pos right left"
@@ -154,9 +161,15 @@ SyntaxJsonToIASTVisitor >> visitCallStatement: aNode [
 				yourself ].
 
 	^ astNode
-		  sourceAnchor: (self makeIndexedAnchor: data first);
+		  sourceAnchor: (self makeIndexedAnchor: data);
 		  arguments: (data at: 'arguments') ;
 		  yourself
+]
+
+{ #category : #'visiting expression' }
+SyntaxJsonToIASTVisitor >> visitCharacterConstant: aNode [
+
+	^nil
 ]
 
 { #category : #visiting }
@@ -213,13 +226,15 @@ SyntaxJsonToIASTVisitor >> visitIoList: aCollection [
    | data |
 	data := super visitIoList: aCollection.
 
-	^data collect: [ :each |
-		each isDictionary 
-			ifTrue: [ (self newEntity: IASTVarAccess withPosition: each)
-				entityName: (each at: #name) ;
-				yourself
-			]
-			ifFalse: [ each ]
+	^data
+		select: #isNotNil
+		thenCollect: [ :each |
+			each isDictionary 
+				ifTrue: [ (self newEntity: IASTVarAccess withPosition: each)
+					entityName: (each at: #name) ;
+					yourself
+				]
+				ifFalse: [ each ]
 	]
 ]
 
@@ -229,6 +244,12 @@ SyntaxJsonToIASTVisitor >> visitLabeledStatement: aNode keys: keyCollection [
 
 	^self visitJsonMap: aNode keys: keyCollection
 
+]
+
+{ #category : #'visiting expression' }
+SyntaxJsonToIASTVisitor >> visitLiteralExpression: aNode [
+
+	^nil
 ]
 
 { #category : #visiting }
@@ -315,6 +336,12 @@ SyntaxJsonToIASTVisitor >> visitTypeReference: aNode [
 
 { #category : #'visiting statement' }
 SyntaxJsonToIASTVisitor >> visitUnconditionalGotoStatement: aNode [
+
+	^nil
+]
+
+{ #category : #'visiting expression' }
+SyntaxJsonToIASTVisitor >> visitUnsignedIntConstant: aNode [
 
 	^nil
 ]

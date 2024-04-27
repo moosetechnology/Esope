@@ -1663,7 +1663,7 @@ SyntaxJsonToIASTVisitorTest >> testSubroutineInvocation [
 
 	stmt := programFile progUnits first body first.
 	self assert: stmt class equals: IASTInvocation.
-	self assert: stmt entityName equals: 'somesubroutine'.
+	self assert: stmt entityName equals: 'SOMESUBROUTINE'.
 	self assert: stmt arguments size equals: 0
 ]
 
@@ -1684,16 +1684,16 @@ SyntaxJsonToIASTVisitorTest >> testSubroutineInvocationWithArguments [
 
 	stmt := programFile progUnits first body first.
 	self assert: stmt class equals: IASTInvocation.
-	self assert: stmt entityName equals: 'somesubroutine'.
+	self assert: stmt entityName equals: 'SOMESUBROUTINE'.
 	self assert: stmt arguments size equals: 2.
 
 	arg := stmt arguments first.
 	self assert: arg class equals: IASTVarAccess.
-	self assert: arg entityName equals: 'bar'.
+	self assert: arg entityName equals: 'BAR'.
 
 	arg := stmt arguments second.
 	self assert: arg class equals: IASTVarAccess.
-	self assert: arg entityName equals: 'baz'
+	self assert: arg entityName equals: 'BAZ'
 ]
 
 { #category : #'tests-statement' }
@@ -1728,19 +1728,19 @@ SyntaxJsonToIASTVisitorTest >> testTwoIntegerVariableDeclarations [
 SyntaxJsonToIASTVisitorTest >> testWriteStatementWithStringArgument [
 	"
       subroutine print
-       write(*,*) 'hello'      
+       write(*,*) 'hello'
       end	
 	"
 
 	| programFile stmt |
 	programFile := self visitJsonCode:
-		               ' end |^ ./fortranCode.F, line 4: column 10: Warning:	A tabulation character is illegal outside comments or character constants. In this executable program, each such tabulation character is changed into one space. { "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"PRINT"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "write_statement", "start_pos" : {"line" : "3", "column":"8"}, "control_info_list" : [{"asterisk":"*"},{"asterisk":"*"}], "io_list" : [{"tag" : "character_expression", "expression" : {"tag" : "character_constant", "start_pos" : {"line" : "3", "column":"19"}, "value":"''hello''"}}]}]}] }'.
+		               '{ "tag":"fortran_file", "comments": { }, "file" : "/home/anquetil/Pharo/images/fortran/FastTmp/tmpFASTSource.f", "program_units" : [{"tag" : "subroutine", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"18"}, "name":"PRINT"}, "prog_unit_parameters" : [], "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "4", "column":"9"}, "statement_list" : [{"tag" : "write_statement", "start_pos" : {"line" : "3", "column":"8"}, "control_info_list" : [{"asterisk":"*"},{"asterisk":"*"}], "io_list" : [{"tag" : "character_expression", "expression" : {"tag" : "character_constant", "start_pos" : {"line" : "3", "column":"19"}, "value":"''hello''"}}]}]}] }''hello''"}}]}]}] }'.
 
 
 	self assert: programFile progUnits first body first size equals: 1.
 	stmt := programFile progUnits first body first first.
 	self assert: stmt class equals: IASTInvocation.
-	self assert: stmt entityName equals: 'write'.
+	self assert: stmt entityName equals: 'WRITE'.
 	self assert: stmt arguments size equals: 0
 ]
 
