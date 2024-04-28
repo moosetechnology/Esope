@@ -207,6 +207,12 @@ SyntaxJsonToIASTVisitor >> visitCharacterType: aNode [
 	^'CHARACTER'
 ]
 
+{ #category : #'visiting expression' }
+SyntaxJsonToIASTVisitor >> visitConstantSigned: aNode [
+
+	^(super visitConstantSigned: aNode) at: #constant
+]
+
 { #category : #'visiting statement' }
 SyntaxJsonToIASTVisitor >> visitContinueStatement: aContinueStatementNode [
 	^nil

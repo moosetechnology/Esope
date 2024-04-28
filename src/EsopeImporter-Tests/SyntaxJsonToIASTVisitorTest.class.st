@@ -1294,7 +1294,7 @@ SyntaxJsonToIASTVisitorTest >> testProgramWithOneStatement [
 		equals: IASTMainProgram.
 
 	prog := programFile progUnits first.
-	self assert: prog entityName equals: 'hello'.
+	self assert: prog entityName equals: 'HELLO'.
 	self assert: prog body size equals: 1.
 	self assert: prog comments isEmpty.
 	self assert: prog body first size equals: 2
@@ -1351,7 +1351,7 @@ SyntaxJsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWitBody [
 	self
 		assertCollection:
 		(prog accesses collect: [ :each | each entityName ])
-		hasSameElements: #( i j ).
+		hasSameElements: #( I J ).
 	self assert: prog accesses third isWrite
 ]
 
@@ -1374,7 +1374,7 @@ SyntaxJsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWithoutBody [
 	self
 		assertCollection:
 		(prog accesses collect: [ :each | each entityName ])
-		hasSameElements: #( i j )
+		hasSameElements: #( I J )
 ]
 
 { #category : #'tests-statement' }
