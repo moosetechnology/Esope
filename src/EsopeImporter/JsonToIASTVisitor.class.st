@@ -275,9 +275,9 @@ JsonToIASTVisitor >> visitDo: aDoNode [
 
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitDo_spec: aDoSpecNode [
-	| data |
-	data := (super visitDo_spec: aDoSpecNode).
-	^data allButFirst flattened reject: #isNil
+
+	^(super visitDo_spec: aDoSpecNode)
+		allButFirst flattened reject: #isNil
 	 
 ]
 
