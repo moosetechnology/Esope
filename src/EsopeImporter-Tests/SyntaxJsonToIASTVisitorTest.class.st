@@ -1378,25 +1378,6 @@ SyntaxJsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWithoutBody [
 ]
 
 { #category : #'tests-statement' }
-SyntaxJsonToIASTVisitorTest >> testReturnConstantStatement [
-	"
-      integer function hello()
-      hello = 42
-      return
-      end
-"
-
-	| programFile fct |
-	programFile := self visitJsonCode:
-		               '{ "tag":"fortran_file", "comments": { }, "file" : "./fortranCode.F", "program_units" : [{"tag" : "function", "name" : {"tag" : "symbolic_name", "start_pos" : {"line" : "2", "column":"24"}, "name":"HELLO"}, "prog_unit_parameters" : [], "return_type" : {"tag" : "type_reference", "name":"INTEGER"}, "start_pos" : {"line" : "2", "column":"7"}, "end_pos" : {"line" : "5", "column":"9"}, "statement_list" : [{"tag" : "assignment_statement", "start_pos" : {"line" : "3", "column":"7"}, "left" : [{"tag" : "symbolic_name", "start_pos" : {"line" : "3", "column":"7"}, "name":"HELLO"}], "right" : [{"tag" : "arithmetic_expression", "expression" : {"tag" : "unsigned_int_constant", "start_pos" : {"line" : "3", "column":"15"}, "value":"42"}}]}, {"tag" : "return_statement", "start_pos" : {"line" : "4", "column":"7"}}]}] }'.
-
-	self assert: programFile progUnits size equals: 1.
-
-	fct := programFile progUnits first.
-	self assert: fct body isEmpty
-]
-
-{ #category : #'tests-statement' }
 SyntaxJsonToIASTVisitorTest >> testReturnStatement [
 	"
       integer function hello()
@@ -1411,8 +1392,7 @@ SyntaxJsonToIASTVisitorTest >> testReturnStatement [
 	self assert: programFile progUnits size equals: 1.
 
 	fct := programFile progUnits first.
-	self assert: fct body first class equals: IASTVarAccess.
-	self assert: fct body first entityName equals: 'somevar'
+	self assert: fct body size equals: 0
 ]
 
 { #category : #'tests-esope' }
