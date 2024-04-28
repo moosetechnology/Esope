@@ -46,6 +46,22 @@ SyntaxJsonToIASTVisitor >> makeIndexedAnchor: aNode [
 		yourself
 ]
 
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> makeLoopControl: data [
+
+	| init |
+	init := (self newEntity: FASTFortranAssignmentExpression)
+		        variable: (data at: #variable_name) ;
+		        expression: (self variableNameOrExpression: (data at: #init)) ;
+		        yourself.
+
+	^ (self newEntity: FASTFortranLoopControlExpression)
+		  init: init;
+		  limit: (self variableNameOrExpression: (data at: #limit));
+		  increment: (data at: #increment ifAbsent: [ nil ]);
+		  yourself
+]
+
 { #category : #accessing }
 SyntaxJsonToIASTVisitor >> model [
 	^ model
@@ -196,6 +212,15 @@ SyntaxJsonToIASTVisitor >> visitContinueStatement: aContinueStatementNode [
 	^nil
 ]
 
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitDoStatement: aNode [
+
+	| data |
+	data := super visitDoStatement: aNode.
+
+	^(data at: #loop_control) , (data at: #statement_list)
+]
+
 { #category : #visiting }
 SyntaxJsonToIASTVisitor >> visitFile: aFileName [
 
@@ -286,6 +311,19 @@ SyntaxJsonToIASTVisitor >> visitImplicitStatement: aNode [
 ]
 
 { #category : #visiting }
+SyntaxJsonToIASTVisitor >> visitIncrement: aNode [
+
+	^self variableNameOrExpression: (super visitIncrement: aNode)
+
+]
+
+{ #category : #visiting }
+SyntaxJsonToIASTVisitor >> visitInit: aNode [
+		
+	^self variableNameOrExpression: (super visitInit: aNode)
+]
+
+{ #category : #visiting }
 SyntaxJsonToIASTVisitor >> visitIntegerType: aNode [
 
    ^'INTEGER'
@@ -317,6 +355,12 @@ SyntaxJsonToIASTVisitor >> visitLabeledStatement: aNode keys: keyCollection [
 
 ]
 
+{ #category : #visiting }
+SyntaxJsonToIASTVisitor >> visitLimit: aNode [
+
+	^self variableNameOrExpression: (super visitLimit: aNode)
+]
+
 { #category : #'visiting expression' }
 SyntaxJsonToIASTVisitor >> visitLiteralExpression: aNode [
 
@@ -327,6 +371,17 @@ SyntaxJsonToIASTVisitor >> visitLiteralExpression: aNode [
 SyntaxJsonToIASTVisitor >> visitLogicalType: aNode [
 
 	^'LOGICAL'
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitLoopControl: aNode [
+
+	| data |
+	data := super visitLoopControl: aNode.
+
+	^#(variable_name init limit increment)
+		collect: [ :key | data at: key ifAbsent: [ nil ] ]
+		thenSelect: #isNotNil
 ]
 
 { #category : #'visiting prog-unit' }
@@ -463,6 +518,17 @@ SyntaxJsonToIASTVisitor >> visitVariableDeclarator: aNode [
 		entityName: (data at: #name) ;
 		yourself
 
+]
+
+{ #category : #'visiting expression' }
+SyntaxJsonToIASTVisitor >> visitVariableName: aNode [
+
+	| data |
+	data := super visitVariableName: aNode.
+
+	^(self newEntity: IASTVarAccess withPosition: data)
+		entityName: (data at: #name) ;
+		yourself
 ]
 
 { #category : #'visiting statement' }

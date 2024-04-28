@@ -1232,9 +1232,8 @@ SyntaxJsonToIASTVisitorTest >> testProgramWithEmptyDoStatement [
 	prog := programFile progUnits first.
 	self assert: prog accesses size equals: 2.
 	self
-		assertCollection:
-		(prog accesses collect: [ :each | each entityName ])
-		hasSameElements: #( i n )
+		assertCollection: (prog accesses collect: [ :each | each entityName ])
+		hasSameElements: #( I N )
 ]
 
 { #category : #'tests-progUnit' }
