@@ -1231,6 +1231,9 @@ JsonToIASTVisitorTest >> testReturnConstantStatement [
       end
 "
 	| programFile fct |
+	
+	self skip: 'Not a valid Fortran-77 statement'.
+
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:15)","statement":{"anno":[],"span":"(2:7)-(2:15)","tag":"return","target":{"anno":[],"span":"(2:14)-(2:15)","tag":"value","value":{"contents":["42",null],"tag":"integer"}}},"tag":"statement"}],"name":"hello","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
 
 	self assert: programFile progUnits size equals: 1.
