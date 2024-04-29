@@ -1620,9 +1620,9 @@ SyntaxJsonToIASTVisitorTest >> testStringVariableDeclaration [
 
 	var := programFile progUnits first body first first.
 	self assert: var class equals: IASTVariable.
-	self assert: var entityName equals: 'str'.
+	self assert: var entityName equals: 'STR'.
 	self assert: var typeSpec class equals: IASTTypeRef.
-	self assert: var typeSpec entityName equals: 'character'
+	self assert: var typeSpec entityName equals: 'CHARACTER'
 ]
 
 { #category : #'tests-statement' }
@@ -1692,15 +1692,15 @@ SyntaxJsonToIASTVisitorTest >> testTwoIntegerVariableDeclarations [
 
 	var := programFile progUnits first body first first.
 	self assert: var class equals: IASTVariable.
-	self assert: var entityName equals: 'i'.
+	self assert: var entityName equals: 'I'.
 	self assert: var typeSpec class equals: IASTTypeRef.
-	self assert: var typeSpec entityName equals: 'integer'.
+	self assert: var typeSpec entityName equals: 'INTEGER'.
 
 	var := programFile progUnits first body first second.
 	self assert: var class equals: IASTVariable.
-	self assert: var entityName equals: 'j'.
+	self assert: var entityName equals: 'J'.
 	self assert: var typeSpec class equals: IASTTypeRef.
-	self assert: var typeSpec entityName equals: 'integer'
+	self assert: var typeSpec entityName equals: 'INTEGER'
 ]
 
 { #category : #'tests-esope' }
