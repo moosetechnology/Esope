@@ -206,10 +206,10 @@ SyntaxJsonToIASTVisitorTest >> testAssignementStatementWithEsoAt [
 	self assert: stmt size equals: 2.
 
 	self assert: stmt first class equals: IASTVarAccess.
-	self assert: stmt first entityName equals: 'somevar'.
+	self assert: stmt first entityName equals: 'SOMEVAR'.
 
 	self assert: stmt second class equals: IASTVarEsoAt.
-	self assert: stmt second entityName equals: 'd__'
+	self assert: stmt second entityName equals: 'D__'
 ]
 
 { #category : #'tests-progUnit' }
@@ -229,12 +229,12 @@ SyntaxJsonToIASTVisitorTest >> testBlockDataWithOneCommon [
 	self assert: programFile progUnits size equals: 1.
 
 	blockdata := programFile progUnits first.
-	self assert: blockdata entityName equals: 'hello'.
+	self assert: blockdata entityName equals: 'HELLO'.
 	self assert: blockdata body size equals: 1.
 
 	var := blockdata body first first.
 	self assert: var class equals: IASTVariable.
-	self assert: var entityName equals: 'mycom'
+	self assert: var entityName equals: 'MYCOM'
 ]
 
 { #category : #'tests-progUnit' }
@@ -816,10 +816,10 @@ SyntaxJsonToIASTVisitorTest >> testEsoSl [
 	self assert: stmt entities size equals: 2.
 
 	self assert: stmt entities first class equals: IASTVarAccess.
-	self assert: stmt entities first entityName equals: 'a'.
+	self assert: stmt entities first entityName equals: 'A'.
 
 	self assert: stmt entities second class equals: IASTVarAccess.
-	self assert: stmt entities second entityName equals: 'i'
+	self assert: stmt entities second entityName equals: 'I'
 ]
 
 { #category : #'tests-esope' }
