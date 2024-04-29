@@ -995,9 +995,9 @@ SyntaxJsonToIASTVisitorTest >> testIfStatement [
 
 	fct := programFile progUnits first.
 	self assert: fct body first first class equals: IASTVarAccess.
-	self assert: fct body first first entityName equals: 'a'.
-	self assert: fct body first second first class equals: IASTVarAccess.
-	self assert: fct body first second first entityName equals: 'a'
+	self assert: fct body first first entityName equals: 'A'.
+	self assert: fct body first second class equals: IASTVarAccess.
+	self assert: fct body first second entityName equals: 'A'
 ]
 
 { #category : #'tests-statement' }

@@ -402,7 +402,7 @@ SyntaxJsonToIASTVisitor >> visitLogicalIfStatement: aNode [
 
 	| data |
 	data := super visitLogicalIfStatement: aNode.
-	^{ data at: #expression .
+	^{ self variableNameOrExpression: (data at: #expression) .
 		data at: #statement }
 			flattened reject: #isNil
 ]
