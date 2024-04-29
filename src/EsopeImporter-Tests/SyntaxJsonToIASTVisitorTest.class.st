@@ -1322,10 +1322,10 @@ SyntaxJsonToIASTVisitorTest >> testProgramWithSimpleIfElseStatementWitBody [
 	self
 		assertCollection:
 		(prog accesses collect: [ :each | each entityName ])
-		hasSameElements: #( i j ).
+		hasSameElements: #( I J ).
 	self
 		assert:
-		(prog accesses select: [ :each | each entityName = 'i' ]) size
+		(prog accesses select: [ :each | each entityName = 'I' ]) size
 		equals: 3.
 	self assert: prog accesses third isWrite.
 	self assert: prog accesses fifth isWrite

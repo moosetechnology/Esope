@@ -113,6 +113,12 @@ SyntaxJsonToIASTVisitor >> visitArguments: anArgumentList [
 		thenCollect: [ :each | self variableNameOrExpression: each ]
 ]
 
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitArithmeticIfStatement: aNode [
+
+	^(super visitArithmeticIfStatement: aNode) at: #expression
+]
+
 { #category : #'visiting expression' }
 SyntaxJsonToIASTVisitor >> visitArrayElementName: aNode [
 	"name tag qualifiers_list"
@@ -174,6 +180,18 @@ SyntaxJsonToIASTVisitor >> visitBlockData: aNode [
 ]
 
 { #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitBlockIfStatement: aNode [
+
+	| data |
+	data := super visitBlockIfStatement: aNode.
+	
+	^{ data at: #condition .
+		data at: #then_statements .
+		data at: #else_block }
+			flattened reject: #isNil
+]
+
+{ #category : #'visiting statement' }
 SyntaxJsonToIASTVisitor >> visitCallStatement: aNode [
 	"start_pos tag name arguments"
 
@@ -225,6 +243,12 @@ SyntaxJsonToIASTVisitor >> visitDoStatement: aNode [
 	data := super visitDoStatement: aNode.
 
 	^(data at: #loop_control) , (data at: #statement_list)
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitElseBlock: aNode [
+
+	^(super visitElseBlock: aNode) at: #statement_list
 ]
 
 { #category : #visiting }
@@ -371,6 +395,16 @@ SyntaxJsonToIASTVisitor >> visitLimit: aNode [
 SyntaxJsonToIASTVisitor >> visitLiteralExpression: aNode [
 
 	^nil
+]
+
+{ #category : #'visiting statement' }
+SyntaxJsonToIASTVisitor >> visitLogicalIfStatement: aNode [
+
+	| data |
+	data := super visitLogicalIfStatement: aNode.
+	^{ data at: #expression .
+		data at: #statement }
+			flattened reject: #isNil
 ]
 
 { #category : #visiting }
