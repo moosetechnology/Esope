@@ -147,13 +147,6 @@ SyntaxAbstractJsonVisitor >> visitCharacterType: aNode [
 	self subclassResponsibility
 ]
 
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitClist: aNode [
-   <generated>
- 
-   ^ self visitJsonArray: aNode
-]
-
 { #category : #'visiting prog-unit' }
 SyntaxAbstractJsonVisitor >> visitComments: theComments [
 	"creating an ordered collection of the coments (which are in a Dictionary) where theCachedRepository comments are ordered by their line number (which is itself converted from String to Integer)
@@ -247,6 +240,51 @@ SyntaxAbstractJsonVisitor >> visitControlInfoOption: aNode [
 ]
 
 { #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitDataGroup: aNode [
+
+	<generated>
+	^ self
+		  visitJsonMap: aNode
+		  keys:
+		  #( start_pos data_group_constants_list data_group_variables_list )
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitDataGroupConstant: aNode [
+   <generated>
+ 
+	^ self visitJsonMap: aNode keys: #( occurence constant )
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitDataGroupConstantsList: aNode [
+   <generated>
+ 
+   ^ self visitJsonArray: aNode
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitDataGroupVariable: aNode [
+
+	<generated>
+	^ self visitJsonElement: (aNode at: 'variable_name')
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitDataGroupVariablesList: aNode [
+   <generated>
+ 
+  ^ self visitJsonArray: aNode
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitDataGroups: aNode [
+
+	<generated>
+	^ self visitJsonArray: aNode
+]
+
+{ #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitDataImplyDoList: aNode [
 	"keys: dlist init limit increment
 	 implied_do_list has the form: (array1, array2,..., indice, indice=init, limit, increment)
@@ -265,23 +303,10 @@ SyntaxAbstractJsonVisitor >> visitDataImplyDoList: aNode [
 
 ]
 
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitDataParameters: aNode [
-   <generated>
- 
-   ^ self visitJsonArray: aNode
-]
-
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitDataStatement: aNode [
 
-	^ self visitJsonMap: aNode keys: #( start_pos data_parameters )
-]
-
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitDataStatementConstant: aNode [
-
-	^ self visitJsonMap: aNode keys: #( occurence constant )
+	^ self visitJsonMap: aNode keys: #( start_pos data_groups )
 ]
 
 { #category : #'visiting statement' }
@@ -779,13 +804,6 @@ SyntaxAbstractJsonVisitor >> visitName: aName [
 	(aName isDictionary and: aName size = 0) ifTrue: [ ^ '' ].
 
 	^ self visitJsonTaggedElement: aName
-]
-
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitNlist: aNode [
-   <generated>
- 
-   ^ self visitJsonArray: aNode
 ]
 
 { #category : #visiting }

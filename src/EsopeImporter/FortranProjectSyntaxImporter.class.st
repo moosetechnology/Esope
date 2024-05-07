@@ -7,7 +7,7 @@ Class {
 { #category : #accessing }
 FortranProjectSyntaxImporter >> f77parser [
 
-	^ '/home/anquetil/Documents/RMod/Tools/Fortran/Syntax/trunk/examples/j77/bin/f77.out -json'
+	^ '/Users/lsafina/Projects/Syntax/trunk/examples/j77/bin/f77.out -json'
 ]
 
 { #category : #accessing }
