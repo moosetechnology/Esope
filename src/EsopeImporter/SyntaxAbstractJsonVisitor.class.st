@@ -738,7 +738,7 @@ SyntaxAbstractJsonVisitor >> visitLiteral: aNode [
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitLiteralExpression: aNode [
 
-	^ self visitJsonElement: (aNode at: 'expression_value')
+	^ self visitJsonTaggedElement: (aNode at: 'expression_value')
 ]
 
 { #category : #visiting }
