@@ -683,7 +683,7 @@ SyntaxAbstractJsonVisitor >> visitLabels: aCollection [
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitLeft: aNode [
 
-	^ (self visitJsonArray: aNode) first
+	^ self visitJsonTaggedElement: aNode
 ]
 
 { #category : #visiting }
@@ -976,7 +976,7 @@ SyntaxAbstractJsonVisitor >> visitRhs: aNode [
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitRight: aNode [
 	
-	^ (self visitJsonArray: aNode) first
+	^ self visitJsonTaggedElement: aNode
 ]
 
 { #category : #visiting }
