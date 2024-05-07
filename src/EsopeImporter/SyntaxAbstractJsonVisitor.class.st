@@ -322,10 +322,19 @@ SyntaxAbstractJsonVisitor >> visitDescriptor: aNode [
 ]
 
 { #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitDimensionDeclarator: aNode [
+
+	<generated>
+	^ self
+		  visitJsonMap: aNode
+		  keys: #( start_pos lower_bound upper_bound )
+]
+
+{ #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitDimensionDeclarators: aNode [
-		<generated>
-			
-			^ self visitJsonArray: aNode
+
+	<generated>
+	^ self visitJsonArray: aNode
 ]
 
 { #category : #'visiting statement' }
@@ -728,9 +737,8 @@ SyntaxAbstractJsonVisitor >> visitLiteral: aNode [
 
 { #category : #'visiting expression' }
 SyntaxAbstractJsonVisitor >> visitLiteralExpression: aNode [
-	"generated"
 
-	^ self visitJsonNode: aNode key: #literal
+	^ self visitJsonElement: (aNode at: 'expression_value')
 ]
 
 { #category : #visiting }
