@@ -243,7 +243,7 @@ SyntaxAbstractJsonVisitor >> visitContinueStatement: aNode [
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitControlInfoList: aCollection [
  
-   ^aCollection collect: [ :each | self visitIoParameter: each ]
+   ^aCollection collect: [ :each | self visitJsonTaggedElement: each ]
 ]
 
 { #category : #'visiting expression' }
@@ -622,12 +622,6 @@ SyntaxAbstractJsonVisitor >> visitIoList: aNode [
    <generated>
  
    ^ self visitJsonArray: aNode
-]
-
-{ #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitIoParameter: aNode [
- 
-   ^self visitJsonElement: aNode
 ]
 
 { #category : #'visiting reflectivity' }
