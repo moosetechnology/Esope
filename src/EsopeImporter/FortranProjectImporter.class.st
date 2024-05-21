@@ -45,20 +45,24 @@ FortranProjectImporter class >> import [
 { #category : #run }
 FortranProjectImporter >> collectIncludedEsopeFiles [
 
+	self collectIncludedFiles: self sourceEsopeExtensions
+]
+
+{ #category : #run }
+FortranProjectImporter >> collectIncludedFiles: extensions [
+
+	includedFiles := Set new.
+
 	self srcFolders do: [ :srcFolderName |
 		self
 			collectIncludedFiles: srcFolderName asFileReference
-			inExtensions: self sourceEsopeExtensions.
-	]
-
+			inExtensions: extensions ]
 ]
 
 { #category : #'private - files' }
 FortranProjectImporter >> collectIncludedFiles: srcFileReference inExtensions: extensions [
 	"collects all included files in file with the given extensions
 	Put the result in the instance variable includedFiles"
-
-	includedFiles := Set new.
 
 	srcFileReference isDirectory
 	ifTrue: [
@@ -78,16 +82,16 @@ FortranProjectImporter >> collectIncludedFortranFiles [
 	Tries to keep the same directory hierarchy"
 
 	| fortranFolder |
-	self srcFolders do: [ :srcFolderName |
-		self
-			collectIncludedFiles: srcFolderName asFileReference
-			inExtensions: self sourceFortranExtensions
-	].
+	
+	self collectIncludedFiles: self sourceFortranExtensions.
 
 	fortranFolder := self workingFortranName asFileReference / self workingIncludeName.
 	fortranFolder ensureCreateDirectory.
 
-	includedFiles do: [ :fortranFile | self copyIncludedFortranFile: fortranFile to: fortranFolder ]
+	includedFiles do: 
+		[ :fortranFile | 
+			self copyIncludedFortranFile: fortranFile asFileReference to: fortranFolder
+		]
 
 ]
 
@@ -200,6 +204,18 @@ FortranProjectImporter >> ensureFolder: folderName [
 		ifTrue: [ folderName  ]
 		ifFalse: [ fileReference ensureCreateDirectory ].
 	^fileReference
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> errorHandler [
+
+	^ errorHandler
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> errorHandler: anObject [
+
+	errorHandler := anObject
 ]
 
 { #category : #'error management' }
@@ -435,6 +451,12 @@ FortranProjectImporter >> includeFolders: aCollection [
 	includeFolders := aCollection
 ]
 
+{ #category : #accessing }
+FortranProjectImporter >> includedFiles [
+
+	^ includedFiles
+]
+
 { #category : #run }
 FortranProjectImporter >> includedFilesToEsope [
 
@@ -541,13 +563,13 @@ FortranProjectImporter >> searchIncluded: includedFileName among: includeFolderR
 { #category : #accessing }
 FortranProjectImporter >> sourceEsopeExtensions [
 
-	^#(E e ec)
+	^#(E ec)
 ]
 
 { #category : #accessing }
 FortranProjectImporter >> sourceFortranExtensions [
 
-	^#(F f fc)
+	^#(F fc)
 ]
 
 { #category : #accessing }
