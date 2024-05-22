@@ -1087,10 +1087,9 @@ SyntaxAbstractJsonVisitor >> visitSubstring: aNode [
 ]
 
 { #category : #'visiting expression' }
-SyntaxAbstractJsonVisitor >> visitSymbolicName: aSymbolicName [
-	"start_pos name"
+SyntaxAbstractJsonVisitor >> visitSymbolicName: aNode [
 
-	^ aSymbolicName at: 'name'
+	^ self visitJsonMap: aNode keys: #( name start_pos )
 ]
 
 { #category : #'visiting statement' }
