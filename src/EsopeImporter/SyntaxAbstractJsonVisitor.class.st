@@ -484,15 +484,20 @@ SyntaxAbstractJsonVisitor >> visitFormat: aNode [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitFormatSpecifier: aNode [
-    <generated>
 
 	^ self visitJsonTaggedElement: (aNode at: 'descriptor' )
+]
+
+{ #category : #visiting }
+SyntaxAbstractJsonVisitor >> visitFormatSpecifiers: aNode [
+ 
+   ^ self visitJsonArray: aNode
 ]
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitFormatStatement: aNode [
 
-	^self visitLabeledStatement: aNode keys: #( start_pos specification )
+	^self visitLabeledStatement: aNode keys: #( start_pos format_specifiers )
 ]
 
 { #category : #'visiting prog-unit' }
@@ -1030,13 +1035,6 @@ SyntaxAbstractJsonVisitor >> visitSign: aNode [
 SyntaxAbstractJsonVisitor >> visitSlash: aNode [
 	<generated>
 
-]
-
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitSpecification: aNode [
-   <generated>
- 
-   ^ self visitJsonArray: aNode
 ]
 
 { #category : #visiting }
