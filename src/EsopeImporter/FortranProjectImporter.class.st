@@ -30,7 +30,7 @@ Class {
 		'defaultFileEncoding',
 		'errorHandler',
 		'stopOnError',
-		'includedFilePathsDictionary'
+		'includedFiles'
 	],
 	#category : #'EsopeImporter-Importer'
 }
@@ -57,7 +57,7 @@ FortranProjectImporter >> collectIncludedFiles [
 { #category : #run }
 FortranProjectImporter >> collectIncludedFiles: extensions [
 
-	includedFilePathsDictionary := Dictionary new.
+	includedFiles := Set new.
 
 	self srcFolders do: [ :srcFolderName |
 		self
@@ -79,7 +79,7 @@ FortranProjectImporter >> collectIncludedFiles: srcFileReference inExtensions: e
 		(extensions includes: srcFileReference extension)
 			ifTrue: [ self findIncludesIn: srcFileReference] ].
 
-	^includedFilePathsDictionary
+	^includedFiles
 ]
 
 { #category : #run }
@@ -115,7 +115,7 @@ FortranProjectImporter >> copyEsopeFiles [
 FortranProjectImporter >> copyFile: srcReference to: workingFolder [
 	"copies a file srcReference to a directory workingFolder"
 
-	(#( e f ) includes: srcReference extension) 
+	(self sourceTransformedExtensions includes: srcReference extension) 
 		ifTrue: [
 			self sourceWithIncludeExtensions do: [ :ext |
 				(workingFolder / (srcReference withoutExtension , ext) basename)
@@ -324,7 +324,7 @@ FortranProjectImporter >> findIncludesIn: srcFileReference [
 				do: [ :stream |
 					stream contents lines do: [ :line |
 						(self isIncludeLine: line)
-							ifTrue: [ includedFilePathsDictionary at: (self getIncludedFile: line) put: nil ]
+							ifTrue: [ includedFiles add: (self getIncludedFile: line) ]
 					]
 				]
 		]
@@ -470,15 +470,11 @@ FortranProjectImporter >> includeFolders: aCollection [
 ]
 
 { #category : #accessing }
-FortranProjectImporter >> includedFilePathsDictionary [
-
-	^ includedFilePathsDictionary
-]
-
-{ #category : #accessing }
 FortranProjectImporter >> includedFiles [
 
-	^ includedFilePathsDictionary keys
+	^ includedFiles ifNil: [ includedFiles := Set new ]
+
+
 ]
 
 { #category : #run }
@@ -493,12 +489,6 @@ FortranProjectImporter >> includedFilesToEsope [
 		(self searchIncluded: includedFile among: includeFolderReferences)
 			ifNotNil: [ :foundFile | self fakeEsopeProgramUnit: foundFile to: esopeFolder  ]
 	]
-]
-
-{ #category : #accessing }
-FortranProjectImporter >> includedPaths [
-
-	^ includedFilePathsDictionary values
 ]
 
 { #category : #'private - files' }
@@ -575,29 +565,6 @@ FortranProjectImporter >> preprocess: sourceCode to: stream [
 	]
 ]
 
-{ #category : #helpers }
-FortranProjectImporter >> resolveIncludedFiles [
-
-	self includeFolderReferences
-		do: [ :folder | | filesInFolder |
-			filesInFolder := folder allFiles.
-			self includedFiles 
-				do: [ :filename | | searchedFile |
-					searchedFile := folder / filename.
-					(includedFilePathsDictionary at: filename)
-						ifNil: [ | found |
-							found := filesInFolder 
-								detect: [ :each | each basename = filename ]
-								ifFound: [ :file | file ]
-								ifNone: [ nil ].
-							found 
-								ifNotNil: [ includedFilePathsDictionary at: filename put: searchedFile fullName ]
-						]
-				]
-		]
-
-]
-
 { #category : #'private - import' }
 FortranProjectImporter >> searchIncluded: includedFileName among: includeFolderReferences [
 	"search for includedFileName in one of the includeFolderReferences
@@ -624,6 +591,12 @@ FortranProjectImporter >> sourceEsopeExtensions [
 FortranProjectImporter >> sourceFortranExtensions [
 
 	^#(f for)
+]
+
+{ #category : #run }
+FortranProjectImporter >> sourceTransformedExtensions [
+
+	^ #( e f )
 ]
 
 { #category : #run }

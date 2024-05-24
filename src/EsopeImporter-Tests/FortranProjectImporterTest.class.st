@@ -97,28 +97,6 @@ FortranProjectImporterTest >> testGetIncludedFile [
 ]
 
 { #category : #tests }
-FortranProjectImporterTest >> testResolveIncludedFortranFiles [
-
-	[
-		self prepareWorkspace.
-		importer collectIncludedFiles.
-		importer resolveIncludedFiles.
-		self
-			assert: (importer includedPaths select: #isNotNil) size
-			equals: 3.
-		self assert: importer includedFilePathsDictionary size equals: 3.
-		self
-			assertCollection: importer includedFiles
-			includesAll: #( 'f1.inc' 'f3.obj' 'f2.seg' ).
-		self
-			assertCollection: importer includedPaths
-			includesAll: #( '/project/inc1/f1.inc' '/project/inc1/f2.seg' '/project/inc2/f3.obj' )
-	] ensure: [
-		(fileSystem / 'project') ensureDeleteAll 
-	]
-]
-
-{ #category : #tests }
 FortranProjectImporterTest >> testSearchIncludedAmong [
 
 	| file1 |
