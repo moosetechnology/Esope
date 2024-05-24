@@ -26,11 +26,11 @@ Class {
 		'famixModel',
 		'iastmodel',
 		'srcFolders',
-		'includedFiles',
 		'includeFolders',
 		'defaultFileEncoding',
 		'errorHandler',
-		'stopOnError'
+		'stopOnError',
+		'includedFiles'
 	],
 	#category : #'EsopeImporter-Importer'
 }
@@ -45,20 +45,30 @@ FortranProjectImporter class >> import [
 { #category : #run }
 FortranProjectImporter >> collectIncludedEsopeFiles [
 
+	self collectIncludedFiles: self sourceWithIncludeExtensions
+]
+
+{ #category : #run }
+FortranProjectImporter >> collectIncludedFiles [
+
+	self collectIncludedFiles: self sourceWithIncludeExtensions
+]
+
+{ #category : #run }
+FortranProjectImporter >> collectIncludedFiles: extensions [
+
+	includedFiles := Set new.
+
 	self srcFolders do: [ :srcFolderName |
 		self
 			collectIncludedFiles: srcFolderName asFileReference
-			inExtensions: self sourceEsopeExtensions.
-	]
-
+			inExtensions: extensions ]
 ]
 
 { #category : #'private - files' }
 FortranProjectImporter >> collectIncludedFiles: srcFileReference inExtensions: extensions [
 	"collects all included files in file with the given extensions
 	Put the result in the instance variable includedFiles"
-
-	includedFiles := Set new.
 
 	srcFileReference isDirectory
 	ifTrue: [
@@ -78,16 +88,16 @@ FortranProjectImporter >> collectIncludedFortranFiles [
 	Tries to keep the same directory hierarchy"
 
 	| fortranFolder |
-	self srcFolders do: [ :srcFolderName |
-		self
-			collectIncludedFiles: srcFolderName asFileReference
-			inExtensions: self sourceFortranExtensions
-	].
+	
+	self collectIncludedFiles: self sourceFortranExtensions.
 
 	fortranFolder := self workingFortranName asFileReference / self workingIncludeName.
 	fortranFolder ensureCreateDirectory.
 
-	includedFiles do: [ :fortranFile | self copyIncludedFortranFile: fortranFile to: fortranFolder ]
+	self includedFiles do: 
+		[ :fortranFile | 
+			self copyIncludedFortranFile: fortranFile asFileReference to: fortranFolder
+		]
 
 ]
 
@@ -105,7 +115,13 @@ FortranProjectImporter >> copyEsopeFiles [
 FortranProjectImporter >> copyFile: srcReference to: workingFolder [
 	"copies a file srcReference to a directory workingFolder"
 
-	srcReference copyTo: workingFolder / (srcReference basename)
+	(self sourceTransformedExtensions includes: srcReference extension) 
+		ifTrue: [
+			self sourceWithIncludeExtensions do: [ :ext |
+				(workingFolder / (srcReference withoutExtension , ext) basename)
+					exists ifTrue: [ ^ self ] ] ].
+
+	srcReference copyTo: workingFolder / srcReference basename
 ]
 
 { #category : #'private - files' }
@@ -122,7 +138,8 @@ FortranProjectImporter >> copyFiles: srcReference extensions: extensions in: wor
 	]
 	ifFalse: [
 		(extensions includes: srcReference extension)
-			ifTrue: [self copyFile: srcReference to: workingFolder] ]
+			ifTrue: [ self copyFile: srcReference to: workingFolder ] 
+	]
 ]
 
 { #category : #'private - files' }
@@ -186,9 +203,8 @@ FortranProjectImporter >> defaultFileEncoding: aString [
 { #category : #'private - files' }
 FortranProjectImporter >> ensureEmptyFolder: folder [
 
-	folder exists
-		ifTrue: [ folder deleteAll  ]
-		ifFalse: [ folder ensureCreateDirectory ].
+	folder exists ifTrue: [ folder deleteAll  ].
+	folder ensureCreateDirectory.
 	^folder
 ]
 
@@ -200,6 +216,18 @@ FortranProjectImporter >> ensureFolder: folderName [
 		ifTrue: [ folderName  ]
 		ifFalse: [ fileReference ensureCreateDirectory ].
 	^fileReference
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> errorHandler [
+
+	^ errorHandler
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> errorHandler: anObject [
+
+	errorHandler := anObject
 ]
 
 { #category : #'error management' }
@@ -214,23 +242,21 @@ FortranProjectImporter >> esope: esopeReference toFortran: fortranFolder [
 	(keeps the same directory hierarchy)"
 
 	esopeReference isDirectory
-
-	ifTrue: [ | childWorkingReference |
-		childWorkingReference := fortranFolder / (esopeReference basename).
-		childWorkingReference ensureCreateDirectory.
-		esopeReference children do: [ :childReference |
-			self esope: childReference toFortran: childWorkingReference ]
-	]
-
-	ifFalse: [
-		errorHandler
-			handleErrorsFor: 'file:' , esopeReference fullName
-			running: [
-				PPEsopeRewriter
-					rewriteFrom: (esopeReference readStreamEncoded: self defaultFileEncoding)
-					to: fortranFolder / (esopeReference basename , '.f')
-			]
-	]
+		ifTrue: [ | childWorkingReference |
+			childWorkingReference := fortranFolder / (esopeReference basename).
+			childWorkingReference ensureCreateDirectory.
+			esopeReference children do: [ :childReference |
+				self esope: childReference toFortran: childWorkingReference ]
+		]
+		ifFalse: [
+			errorHandler
+				handleErrorsFor: 'file:' , esopeReference fullName
+				running: [
+					PPEsopeRewriter
+						rewriteFrom: (esopeReference readStreamEncoded: self defaultFileEncoding)
+						to: fortranFolder / (esopeReference basename , '.f')
+				]
+		]
 ]
 
 { #category : #run }
@@ -411,11 +437,12 @@ FortranProjectImporter >> importSteps [
 		'Prepare working folders' -> #prepareWorkingFolders .
 		
 		'Collecting included Esope files' -> #collectIncludedEsopeFiles .
+		"'Resolving collected included Esope files' -> #resolveIncludedFiles ."
 		'Converting included files to Esope' -> #includedFilesToEsope .
 		'Copying Esope Files' -> #copyEsopeFiles .
 		'De-Esopifying files' -> #esopeToFortran .
 		'Copying Fortran Files' -> #copyFortranFiles .
-		'Collecting included Fortran files' -> #collectIncludedFortranFiles .
+		"'Collecting included Fortran files' -> #collectIncludedFortranFiles ."
 
 		'Fortran to JSon AST' -> #fortranToAST .
 		'JSon AST to Intermediary AST' -> #jsonASTToIAST .
@@ -425,8 +452,15 @@ FortranProjectImporter >> importSteps [
 ]
 
 { #category : #accessing }
+FortranProjectImporter >> includeFolderReferences [
+
+	^ self includeFolders collect: #asFileReference
+]
+
+{ #category : #accessing }
 FortranProjectImporter >> includeFolders [
-	^includeFolders ifNil: [ #() ]
+
+	^ includeFolders ifNil: [ #(  ) ]
 ]
 
 { #category : #accessing }
@@ -435,15 +469,23 @@ FortranProjectImporter >> includeFolders: aCollection [
 	includeFolders := aCollection
 ]
 
+{ #category : #accessing }
+FortranProjectImporter >> includedFiles [
+
+	^ includedFiles ifNil: [ includedFiles := Set new ]
+
+
+]
+
 { #category : #run }
 FortranProjectImporter >> includedFilesToEsope [
 
 	| includeFolderReferences esopeFolder |
-	includeFolderReferences := self includeFolders collect: #asFileReference.
+	includeFolderReferences := self includeFolderReferences.
 
 	esopeFolder := self workingEsopeName asFileReference.
 
-	includedFiles do: [ :includedFile |
+	self includedFiles do: [ :includedFile |
 		(self searchIncluded: includedFile among: includeFolderReferences)
 			ifNotNil: [ :foundFile | self fakeEsopeProgramUnit: foundFile to: esopeFolder  ]
 	]
@@ -452,9 +494,9 @@ FortranProjectImporter >> includedFilesToEsope [
 { #category : #'private - files' }
 FortranProjectImporter >> isIncludeLine: aString [
 
-	(aString beginsWith: '#include ') ifTrue: [ ^true ].
-	(aString beginsWith: '%INC ') ifTrue: [ ^true ].
-	(aString beginsWith: 'include ') ifTrue: [ ^true ].
+	(aString beginsWith: '#include ' caseSensitive: false) ifTrue: [ ^true ].
+	(aString beginsWith: '%INC ' caseSensitive: false) ifTrue: [ ^true ].
+	(aString beginsWith: 'include ' caseSensitive: false) ifTrue: [ ^true ].
 
 	^false
 ]
@@ -540,14 +582,27 @@ FortranProjectImporter >> searchIncluded: includedFileName among: includeFolderR
 
 { #category : #accessing }
 FortranProjectImporter >> sourceEsopeExtensions [
+	"Add F and fc as esope files in order to let the ReWriter handle the include statement for this type of file"
 
-	^#(E e ec)
+	^#(E ec e F fc)
 ]
 
 { #category : #accessing }
 FortranProjectImporter >> sourceFortranExtensions [
 
-	^#(F f fc)
+	^#(f for)
+]
+
+{ #category : #run }
+FortranProjectImporter >> sourceTransformedExtensions [
+
+	^ #( e f )
+]
+
+{ #category : #run }
+FortranProjectImporter >> sourceWithIncludeExtensions [
+
+	^ #( F fc E ec )
 ]
 
 { #category : #accessing }

@@ -11,13 +11,83 @@ Class {
 	#category : #'EsopeImporter-Tests-Importer'
 }
 
+{ #category : #'tests - helper' }
+FortranProjectImporterTest >> prepareWorkspace [
+
+	| f1 f2 |
+	fileSystem createDirectory: '/project'.
+	fileSystem createDirectory: '/project/inc1'.
+	fileSystem createDirectory: '/project/inc2'.
+	fileSystem createDirectory: '/project/src'.
+
+	(fileSystem / '/project/inc1/f1.inc') createFile.
+	(fileSystem / '/project/inc1/f2.seg') createFile.
+	(fileSystem / '/project/inc2/f3.obj') createFile.
+	(fileSystem / '/project/inc2/f1.inc') createFile.
+	(fileSystem / '/project/inc2/f4.h') createFile.
+
+	f1 := (fileSystem / 'project/src/f1.fc') createFile.
+	f2 := (fileSystem / 'project/src/f2.ec') createFile.
+	(fileSystem / 'project/src/f3.f') createFile.
+
+	f1 writeStreamDo: [ :st |
+		st
+			<< '#include "f1.inc"'; cr;
+			<< '#include "f3.obj"'; cr
+	].
+
+	f2 writeStreamDo: [ :st |
+		st
+			<< '#include "f2.seg"'; cr;
+			<< '#include "f1.inc"'; cr
+	].
+
+	importer srcFolders: { fileSystem / '/project/src' }.
+	importer includeFolders: { 
+		fileSystem / 'project/inc1'.
+		fileSystem / 'project/inc2' 
+	}
+]
+
 { #category : #running }
 FortranProjectImporterTest >> setUp [
 	super setUp.
 
 	importer := FortranProjectImporter new.
+	importer errorHandler: FortranErrorManager new.
 	fileSystem := FileSystem memory
 
+]
+
+{ #category : #tests }
+FortranProjectImporterTest >> testCollectIncludedEsopeFiles [
+
+	[ |expected|
+		expected := #( 'f2.seg' 'f1.inc' 'f3.obj' ).
+		self prepareWorkspace.
+		importer collectIncludedFiles.
+		self
+			assertCollection: importer includedFiles
+			includesAll: expected.
+		self assert: importer includedFiles size equals: expected size.
+	] ensure: [
+		(fileSystem / 'project') ensureDeleteAll
+	]
+]
+
+{ #category : #tests }
+FortranProjectImporterTest >> testCollectIncludedFortranFiles [
+
+	[
+		self prepareWorkspace.
+		importer collectIncludedFiles.
+		self
+			assertCollection: importer includedFiles
+			includesAll: #( 'f1.inc' 'f3.obj' ).
+		self assert: importer includedFiles size equals: 3.
+	] ensure: [
+		(fileSystem / 'project') ensureDeleteAll 
+	]
 ]
 
 { #category : #tests }

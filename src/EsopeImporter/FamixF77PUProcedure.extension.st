@@ -23,3 +23,9 @@ FamixF77PUProcedure >> allTypes [
 		flatCollect: [ :include | include included ifNil: [ #() ] ifNotNil: [ :included | included types ] ]
 	)
 ]
+
+{ #category : #'*EsopeImporter' }
+FamixF77PUProcedure >> isInvocable [
+
+	^ true
+]
