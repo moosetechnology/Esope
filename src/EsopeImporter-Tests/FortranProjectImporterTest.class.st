@@ -61,6 +61,67 @@ FortranProjectImporterTest >> setUp [
 ]
 
 { #category : #tests }
+FortranProjectImporterTest >> testCollectFilesInWithExtensions [
+
+	| files |
+	self prepareWorkspace.
+
+	files := importer
+		collectFilesIn: importer includeFolders first "project/inc1"
+		withExtensions: {'inc'}.
+	self assert: files size equals: 1.
+	self assert: files anyOne fullName equals: '/project/inc1/f1.inc'.
+]
+
+{ #category : #tests }
+FortranProjectImporterTest >> testCollectFilesInWithExtensionsSeveralFiles [
+
+	| files |
+	self prepareWorkspace.
+
+	files := importer
+		collectFilesIn: importer includeFolders anyOne parent "/project/"
+		withExtensions: {'inc'}.
+	self assert: files size equals: 2.
+	self assert: files anyOne basename equals: 'f1.inc'.
+]
+
+{ #category : #tests }
+FortranProjectImporterTest >> testCollectIncludedFiles [
+
+	self prepareWorkspace.
+	importer collectIncludedFiles.
+
+	self
+		assertCollection: importer includedFiles
+		hasSameElements: #( 'f1.inc' 'f2.seg' 'f3.obj' )
+]
+
+{ #category : #tests }
+FortranProjectImporterTest >> testCollectSrcFilesWithExtensions [
+	| files |
+	self prepareWorkspace.
+
+	files := importer collectSrcFilesWithExtensions: {'fc' . 'ec' }.
+	self
+		assertCollection: (files collect: #basename)
+		 hasSameElements: #( 'f1.fc' 'f2.ec' )
+]
+
+{ #category : #tests }
+FortranProjectImporterTest >> testFindIncludesIn [
+	| includer files |
+	self prepareWorkspace.
+
+	includer := importer srcFolders anyOne children detect: [ :file | file basename = 'f1.fc' ].
+	files := importer findIncludesIn: includer.
+
+	self
+		assertCollection: files
+		 hasSameElements: #( 'f1.inc' 'f3.obj' )
+]
+
+{ #category : #tests }
 FortranProjectImporterTest >> testGetIncludedFile [
 
 	self assert: (importer getIncludedFileName: '#include  "blah.inc"') equals: 'blah.inc'
