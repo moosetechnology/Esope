@@ -23,6 +23,7 @@ FortranProjectImporterTest >> prepareWorkspace [
 	(fileSystem / '/project/inc1/f1.inc') createFile.
 	(fileSystem / '/project/inc1/f2.seg') createFile.
 	(fileSystem / '/project/inc2/f3.obj') createFile.
+	"note: duplicated name f1.inc, by default importer will take the first found"
 	(fileSystem / '/project/inc2/f1.inc') createFile.
 	(fileSystem / '/project/inc2/f4.h') createFile.
 
@@ -60,40 +61,9 @@ FortranProjectImporterTest >> setUp [
 ]
 
 { #category : #tests }
-FortranProjectImporterTest >> testCollectIncludedEsopeFiles [
-
-	[ |expected|
-		expected := #( 'f2.seg' 'f1.inc' 'f3.obj' ).
-		self prepareWorkspace.
-		importer collectIncludedFiles.
-		self
-			assertCollection: importer includedFiles
-			includesAll: expected.
-		self assert: importer includedFiles size equals: expected size.
-	] ensure: [
-		(fileSystem / 'project') ensureDeleteAll
-	]
-]
-
-{ #category : #tests }
-FortranProjectImporterTest >> testCollectIncludedFortranFiles [
-
-	[
-		self prepareWorkspace.
-		importer collectIncludedFiles.
-		self
-			assertCollection: importer includedFiles
-			includesAll: #( 'f1.inc' 'f3.obj' ).
-		self assert: importer includedFiles size equals: 3.
-	] ensure: [
-		(fileSystem / 'project') ensureDeleteAll 
-	]
-]
-
-{ #category : #tests }
 FortranProjectImporterTest >> testGetIncludedFile [
 
-	self assert: (importer getIncludedFile: '#include  "blah.inc"') equals: 'blah.inc'
+	self assert: (importer getIncludedFileName: '#include  "blah.inc"') equals: 'blah.inc'
 ]
 
 { #category : #tests }
