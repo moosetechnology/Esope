@@ -30,7 +30,8 @@ Class {
 		'defaultFileEncoding',
 		'errorHandler',
 		'stopOnError',
-		'includedFiles'
+		'includedFiles',
+		'originalFileMap'
 	],
 	#category : #'EsopeImporter-Importer'
 }
@@ -246,28 +247,22 @@ FortranProjectImporter >> f77parser [
 
 { #category : #'private - import' }
 FortranProjectImporter >> fakeEsopeProgramUnit: includedFile to: workingEsopeFolder [
+	"creates a fake programUnit from an includedFile
+	 The includedFile is actually an association containingFolder -> filename
+	 Records in originalFileMap the original name of the file and the created fake esope file"
 
-	| relativePath destEsopeFolder |
+	| fakeEsopeFile |
+	fakeEsopeFile := (self makeTempDirectory: includedFile in: workingEsopeFolder)  / (includedFile basename , '.E').
+	
+	originalFileMap at: fakeEsopeFile fullName put: includedFile fullName.
 
-	relativePath := includedFile isAbsolute
-		ifTrue: [
-			(includedFile fullName
-				copyFrom: 2 to: (includedFile fullName lastIndexOf: $/))
-		]
-		ifFalse: [ includedFile pathString ].
-
-	destEsopeFolder := workingEsopeFolder / self workingIncludeName / relativePath.
-	destEsopeFolder ensureCreateDirectory.
-
-	(destEsopeFolder / (includedFile basename , '.E'))
-		writeStreamDo: [ :tmpStream | 
-			tmpStream
-				<< '      subroutine __$__' ;
-				cr ;
-				<< includedFile contents ;
-				<< '      end' ;
-				cr ]
-		
+	fakeEsopeFile writeStreamDo: [ :tmpStream |
+		tmpStream
+			<< '      subroutine __$__';
+			cr;
+			<< includedFile contents;
+			<< '      end';
+			cr ]
 ]
 
 { #category : #run }
@@ -277,6 +272,16 @@ FortranProjectImporter >> famixResolve [
 		errorHandler: errorHandler ;
 		resolve.
 
+]
+
+{ #category : #run }
+FortranProjectImporter >> fileReferencesFor: fileNames in: folders [
+	"try to find files matching one of fileNames in folders
+	 returns a FileReference and the folder containing it for each one found"
+
+	^fileNames
+		collect: [ :includedFile | self folderContaining: includedFile among: folders ]
+		thenReject: #isNil
 ]
 
 { #category : #'private - files' }
@@ -294,6 +299,21 @@ FortranProjectImporter >> findIncludesIn: srcFileReference [
 						thenCollect: [ :line | self getIncludedFileName: line ]
 				]
 		]
+
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> folderContaining: includedFileName among: includeFolderReferences [
+	"search for includedFileName in one of the includeFolderReferences
+	 if found, returns the folder if found and nil otherwise
+
+	 Note: The includedFileName may be a file name ('blah.h'),
+	   a path name ('lib/blah.h'), or a filename without extension ('blah')"
+
+	^includeFolderReferences
+		detect: [ :folder | (folder / includedFileName)  exists ]
+		ifOne: [ :folder | folder / includedFileName ]
+		ifNone: [ nil ]
 
 ]
 
@@ -430,15 +450,20 @@ FortranProjectImporter >> includedFiles [
 { #category : #run }
 FortranProjectImporter >> includedFilesToEsope [
 
-	| includeFolderReferences esopeFolder |
-	includeFolderReferences := self includeFolderReferences.
-
+	| esopeFolder |
 	esopeFolder := self workingEsopeName asFileReference.
 
-	self includedFiles do: [ :includedFile |
-		(self searchIncluded: includedFile among: includeFolderReferences)
-			ifNotNil: [ :foundFile | self fakeEsopeProgramUnit: foundFile to: esopeFolder  ]
-	]
+	(self fileReferencesFor: self includedFiles in: self includeFolderReferences)
+		do: [ :foundFile | self fakeEsopeProgramUnit: foundFile to: esopeFolder  ]
+]
+
+{ #category : #initialization }
+FortranProjectImporter >> initialize [
+
+	super initialize.
+
+	includedFiles := #().
+	originalFileMap := Dictionary new.
 ]
 
 { #category : #'private - files' }
@@ -474,6 +499,29 @@ FortranProjectImporter >> jsonASTToIAST [
 ]
 
 { #category : #'private - import' }
+FortranProjectImporter >> makeTempDirectory: includedFile in: workingEsopeFolder [
+
+	| destEsopeFolder relativePath |
+	relativePath := includedFile isAbsolute
+		                ifTrue: [
+			                includedFile fullName
+				                copyFrom: 2
+				                to: (includedFile fullName lastIndexOf: $/) ]
+		                ifFalse: [ includedFile pathString ].
+
+	destEsopeFolder := workingEsopeFolder / self workingIncludeName
+	                   / relativePath.
+	destEsopeFolder ensureCreateDirectory.
+	^ destEsopeFolder
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> originalFileMap [
+
+	^ originalFileMap
+]
+
+{ #category : #'private - import' }
 FortranProjectImporter >> parseFortran77: f77file [
 
 	| jsonFile |
@@ -496,21 +544,6 @@ FortranProjectImporter >> prepareWorkingFolders [
 	self ensureEmptyFolder: self workingEsopeName asFileReference.
 	self ensureEmptyFolder: self workingFortranName asFileReference.
 	self ensureEmptyFolder: self workingJsonName asFileReference.
-
-]
-
-{ #category : #'private - import' }
-FortranProjectImporter >> searchIncluded: includedFileName among: includeFolderReferences [
-	"search for includedFileName in one of the includeFolderReferences
-	 if found, returns the file reference of the file, otherwise nil
-
-	 Note: The includedFileName may be a file name ('blah.h'),
-	   a path name ('lib/blah.h'), or a filename without extension ('blah')"
-
-	^includeFolderReferences
-		detect: [ :folder | (folder / includedFileName)  exists ]
-		ifOne: [ :folder | (folder / includedFileName) ]
-		ifNone: [ nil ]
 
 ]
 

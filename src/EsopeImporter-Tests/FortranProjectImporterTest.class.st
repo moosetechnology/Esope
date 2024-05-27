@@ -109,6 +109,66 @@ FortranProjectImporterTest >> testCollectSrcFilesWithExtensions [
 ]
 
 { #category : #tests }
+FortranProjectImporterTest >> testFakeEsopeProgramUnitTo [
+
+	| srcFile resultFile |
+	(fileSystem  / 'inc') createDirectory.
+	srcFile := (fileSystem / 'inc' / 'included.h').
+	srcFile writeStreamDo: [:st | st << 'a line' ; cr].
+
+	importer fakeEsopeProgramUnit: srcFile to: (fileSystem / 'tmpEsope').
+
+	self assert: importer originalFileMap size equals: 1.
+	self
+		assert: (importer originalFileMap at: '/tmpEsope/tmpIncludeDirectory/inc/included.h.E')
+		equals: '/inc/included.h'.
+
+	resultFile := fileSystem / 'tmpEsope' / 'tmpIncludeDirectory' / 'inc' / 'included.h.E'.
+
+	self assert: resultFile exists.
+	self assert: resultFile contents equals: '      subroutine __$__
+a line
+      end
+'
+]
+
+{ #category : #test }
+FortranProjectImporterTest >> testFileReferencesForIn [
+
+	| files |
+	self prepareWorkspace.
+
+	files := importer fileReferencesFor: #( 'f2.seg' ) in: { importer includeFolders first }.
+
+	self assert: files size equals: 1.
+	self assert: files anyOne fullName equals: '/project/inc1/f2.seg'
+]
+
+{ #category : #test }
+FortranProjectImporterTest >> testFileReferencesForInNotFound [
+
+	| files |
+	self prepareWorkspace.
+
+	files := importer fileReferencesFor: #( 'inexistent.file' ) in: importer includeFolders.
+
+	self assert: files size equals: 0
+]
+
+{ #category : #test }
+FortranProjectImporterTest >> testFileReferencesForInWithDuplicate [
+
+	| files |
+	self prepareWorkspace.
+
+
+	files := importer fileReferencesFor: #( 'f1.inc' ) in: importer includeFolders.
+
+	self assert: files size equals: 1.
+	self assert: files anyOne fullName equals: '/project/inc1/f1.inc'
+]
+
+{ #category : #tests }
 FortranProjectImporterTest >> testFindIncludesIn [
 	| includer files |
 	self prepareWorkspace.
@@ -122,55 +182,45 @@ FortranProjectImporterTest >> testFindIncludesIn [
 ]
 
 { #category : #tests }
+FortranProjectImporterTest >> testFolderContainingAmong [
+
+	| file |
+	file := (fileSystem / 'included.h') createFile.
+
+	self assert: (importer folderContaining: 'included.h' among: { fileSystem } ) equals: file
+]
+
+{ #category : #tests }
+FortranProjectImporterTest >> testFolderContainingAmongNoExtension [
+
+	| file |
+	file := (fileSystem / 'included') createFile.
+
+	self assert: (importer folderContaining: 'included' among: { fileSystem } ) equals: file
+]
+
+{ #category : #tests }
+FortranProjectImporterTest >> testFolderContainingAmongNotFound [
+
+	(fileSystem / 'excluded.h') createFile.
+
+	self assert: (importer folderContaining: 'included.h' among: { fileSystem } ) equals: nil
+]
+
+{ #category : #tests }
+FortranProjectImporterTest >> testFolderContainingAmongWithPath [
+
+	| file |
+	(fileSystem  / 'inc') createDirectory.
+	file := (fileSystem / 'inc' / 'included.h') createFile.
+
+	self assert: (importer folderContaining: 'inc/included.h' among: { fileSystem } ) equals: file
+]
+
+{ #category : #tests }
 FortranProjectImporterTest >> testGetIncludedFile [
 
 	self assert: (importer getIncludedFileName: '#include  "blah.inc"') equals: 'blah.inc'
-]
-
-{ #category : #tests }
-FortranProjectImporterTest >> testSearchIncludedAmong [
-
-	| file1 |
-	file1 := (fileSystem / 'included.h') createFile.
-
-	self assert: (importer searchIncluded: 'included.h' among: { fileSystem } ) equals: file1.
-]
-
-{ #category : #tests }
-FortranProjectImporterTest >> testSearchIncludedAmongNoExtension [
-
-	| file1 |
-	file1 := (fileSystem / 'included') createFile.
-
-	self assert: (importer searchIncluded: 'included' among: { fileSystem } ) equals: file1.
-]
-
-{ #category : #tests }
-FortranProjectImporterTest >> testSearchIncludedAmongNotFound [
-
-	| file1 |
-	file1 := (fileSystem / 'excluded.h') createFile.
-
-	self assert: (importer searchIncluded: 'included.h' among: { fileSystem } ) equals: nil.
-]
-
-{ #category : #tests }
-FortranProjectImporterTest >> testSearchIncludedAmongWithPath [
-
-	| srcFile resultFile |
-	(fileSystem  / 'inc') createDirectory.
-	srcFile := (fileSystem / 'inc' / 'included.h').
-	srcFile writeStreamDo: [:st | st << 'a line' ; cr].
-
-	importer fakeEsopeProgramUnit: srcFile to: (fileSystem / 'tmpEsope').
-
-	resultFile := fileSystem / 'tmpEsope' / 'tmpIncludeDirectory' / 'inc' / 'included.h.E'.
-
-	self assert: resultFile exists.
-	self assert: resultFile contents equals: '      subroutine __$__
-a line
-      end
-'
 ]
 
 { #category : #tests }
