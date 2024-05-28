@@ -318,7 +318,7 @@ FamixFortran77Resolver >> resolveEsopeVariable: esopeVariable [
 	segments := self model allWithType: FamixEsopeSegment.
 	segments
 		detect: [ :segment | segment name = esopeVariable segment ]
-		ifOne: [ :segment | esopeVariable declaredType: segment ]
+		ifFound: [ :segment | esopeVariable declaredType: segment ]
 ]
 
 { #category : #'symbols resolution' }
