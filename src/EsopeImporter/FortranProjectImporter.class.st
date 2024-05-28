@@ -460,18 +460,23 @@ FortranProjectImporter >> makeFileReference: aFileReference localTo: aFolder [
 FortranProjectImporter >> parseFortran77: localPath from: srcFolder to: destFolder [
 	"runs fortran77 parser on localPath in srcFolder to JSON file in destFolder"
 
-	| destFile |
+	| destFile cmdReturn |
 	destFile := (destFolder / localPath pathString) withExtension: 'json'.
 	destFile parent ensureCreateDirectory.
 
-	^LibC runCommand: (
+	cmdReturn := LibC runCommand: (
 		'{1} "{2}" > "{3}" 2>&1'
 		format: {
 			self f77parser .
 			(srcFolder / localPath pathString) fullName .
 			destFile fullName
 		}
-	)
+	).
+
+	(cmdReturn = 0)
+		ifFalse: [ 
+			self errorHandler error: 'Error while parsing ' , localPath pathString.
+			destFile ensureDelete  ].
 ]
 
 { #category : #accessing }
