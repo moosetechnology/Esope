@@ -124,22 +124,26 @@ FortranProjectImporterTest >> testCollectSrcFilesWithExtensions [
 FortranProjectImporterTest >> testEsopeFileToFortran [
 
 	| srcFile destFile |
-	srcFile := (fileSystem / 'esope.e').
-	srcFile writeStreamDo: [:st | st << '      subroutine rtn
+	srcFile := fileSystem / 'esope.e'.
+	srcFile writeStreamDo: [ :st |
+		st << '      subroutine rtn
       segini p
-      end'].
-	destFile := (fileSystem / 'esope.f').
+      end
+' ].
+	destFile := fileSystem / 'esope.f'.
 
 	importer esopeFile: srcFile toFortran: destFile.
 
 	self assert: destFile exists.
-	self assert: destFile contents equals: '
-      subroutine rtn
-C@_  segini p
-      end'
+	self
+		assert: destFile contents withInternalLineEndings
+		equals: '      subroutine rtn
+c@_   segini p
+      end
+'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - import steps' }
 FortranProjectImporterTest >> testEsopeToFortran [
 
 	| tempFolder |
@@ -159,7 +163,7 @@ FortranProjectImporterTest >> testEsopeToFortran [
 	tempFolder := tempFolder / 'src'.
 	self
 		assertCollection: (tempFolder children collect: #basename)
-		hasSameElements: #( 'f1.fc' 'f2.ec' ).
+		hasSameElements: #( 'f1.f' 'f2.f' ).
 
 ]
 
@@ -267,13 +271,37 @@ FortranProjectImporterTest >> testFolderContainingAmongWithPath [
 	self assert: (importer folderContaining: 'inc/included.h' among: { fileSystem } ) equals: file
 ]
 
+{ #category : #'tests - import steps' }
+FortranProjectImporterTest >> testFortranToJsonAST [
+
+	| tempFolder |
+	self prepareWorkspace.
+
+	importer fortranToJsonAST.
+
+	tempFolder := './tmpJsonImport' asFileReference.
+	self assert: tempFolder exists.
+	self assert: tempFolder children size equals: 1.
+	self assert: tempFolder children anyOne basename equals: 'project'.
+
+	tempFolder := tempFolder / 'project'.
+	self assert: tempFolder children size equals: 1.
+	self assert: tempFolder children anyOne basename equals: 'src'.
+
+	tempFolder := tempFolder / 'src'.
+	self
+		assertCollection: (tempFolder children collect: #basename)
+		hasSameElements: #( 'f3.json' ).
+
+]
+
 { #category : #tests }
 FortranProjectImporterTest >> testGetIncludedFile [
 
 	self assert: (importer getIncludedFileName: '#include  "blah.inc"') equals: 'blah.inc'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - import steps' }
 FortranProjectImporterTest >> testIncludedFilesToEsope [
 
 	| tempFolder |
