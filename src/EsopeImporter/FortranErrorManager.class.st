@@ -27,12 +27,10 @@ FortranErrorManager >> error: anException [
 	stop ifTrue: [ anException pass ].
 
 	errors add: (
-		String streamContents: [ :stream |
-			contexts do: [ :context | stream << context ] separatedBy: [ stream << ' / ' ].
-			stream
-				<< ' -- ' ;
-				<< anException messageText
+		(String streamContents: [ :stream |
+			contexts do: [ :context | stream << context ] separatedBy: [ stream << ' / ' ]
 		])
+		-> 	anException)
 ]
 
 { #category : #accessing }
