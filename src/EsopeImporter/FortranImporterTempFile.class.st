@@ -1,67 +1,26 @@
 Class {
 	#name : #FortranImporterTempFile,
-	#superclass : #Object,
+	#superclass : #FileReference,
 	#instVars : [
-		'name',
-		'srcFolder',
-		'tempFile'
+		'localName'
 	],
 	#category : #'EsopeImporter-Importer'
 }
 
 { #category : #'instance creation' }
-FortranImporterTempFile class >> on: aFileReference [
+FortranImporterTempFile class >> from: aFileReference [
 
-	^self new
-		name: aFileReference basename ;
-		srcFolder: aFileReference path ;
-		yourself
-]
-
-{ #category : #testing }
-FortranImporterTempFile >> matches: aFileReference [
-
-	^self matchesName: aFileReference fullName
-]
-
-{ #category : #testing }
-FortranImporterTempFile >> matchesName: aFilename [
-
-	^self tempFile fullName = aFilename 
+	^self fileSystem: aFileReference fileSystem path: aFileReference path
 ]
 
 { #category : #accessing }
-FortranImporterTempFile >> name [
+FortranImporterTempFile >> localName [
 
-	^ name
+	^ localName
 ]
 
 { #category : #accessing }
-FortranImporterTempFile >> name: anObject [
+FortranImporterTempFile >> localName: anObject [
 
-	name := anObject
-]
-
-{ #category : #accessing }
-FortranImporterTempFile >> srcFolder [
-
-	^ srcFolder
-]
-
-{ #category : #accessing }
-FortranImporterTempFile >> srcFolder: anObject [
-
-	srcFolder := anObject
-]
-
-{ #category : #accessing }
-FortranImporterTempFile >> tempFile [
-
-	^ tempFile
-]
-
-{ #category : #accessing }
-FortranImporterTempFile >> tempFile: anObject [
-
-	tempFile := anObject
+	localName := anObject
 ]
