@@ -128,7 +128,7 @@ FamixFortran77Resolver >> requalifyFunctionDeclaration: external [
 		detect: [ :varDeclaration |
 			varDeclaration name = external name
 		]
-		ifOne: [ :varDeclaration |
+		ifFound: [ :varDeclaration |
 			varDeclaration parentBehaviouralEntity: nil.
 			model remove: varDeclaration.
 		]
@@ -153,7 +153,7 @@ FamixFortran77Resolver >> requalifyParameterDeclaration: param [
 		detect: [ :varDeclaration |
 			varDeclaration name = param name
 		]
-		ifOne: [ :varDeclaration |
+		ifFound: [ :varDeclaration |
 			param declaredType: varDeclaration declaredType.
 			varDeclaration parentBehaviouralEntity: nil.
 			model remove: varDeclaration
