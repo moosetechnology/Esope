@@ -194,12 +194,6 @@ FortranProjectImporter >> extensionsFortran [
 	^#(f for)
 ]
 
-{ #category : #constants }
-FortranProjectImporter >> extensionsTransformedSources [
-
-	^ #( e f )
-]
-
 { #category : #accessing }
 FortranProjectImporter >> f77parser [
 
@@ -355,12 +349,6 @@ FortranProjectImporter >> importSteps [
 	}
 ]
 
-{ #category : #'private - files' }
-FortranProjectImporter >> includeFolderReferences [
-
-	^ self includeFolders collect: #asFileReference
-]
-
 { #category : #accessing }
 FortranProjectImporter >> includeFolders [
 
@@ -381,7 +369,7 @@ FortranProjectImporter >> includeFolders: aCollection [
 { #category : #run }
 FortranProjectImporter >> includedFilesToEsope [
 
-	(self findFiles: self collectIncludedFileNames in: self includeFolderReferences)
+	(self findFiles: self collectIncludedFileNames in: self includeFolders)
 		do: [ :foundFile | self fakeEsopeProgramUnit: foundFile to: self tempEsopeFolder  ]
 ]
 
