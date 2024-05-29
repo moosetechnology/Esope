@@ -56,6 +56,24 @@ FortranProjectImporter >> allLocalizedFilesIn: aFolder [
 ]
 
 { #category : #'private - files' }
+FortranProjectImporter >> appendPath: aPath toParent: aFolder [
+	"aPath may be a relative or absolute path, we want it 'concatenated' to aFolder
+	 to give something like: 'aFolder / aPath' 
+	 Additionaly, we make sure the resulting parent path exist so that if it is a file,
+	 it can be created"
+
+	| parent |
+	(aPath fullName = '.') ifTrue: [ ^aFolder ].
+	(aPath fullName = '/') ifTrue: [ ^aFolder ].
+
+	parent := self appendPath: aPath parent toParent: aFolder.
+	parent ensureCreateDirectory.
+
+	^parent / aPath basename
+
+]
+
+{ #category : #'private - files' }
 FortranProjectImporter >> collectFilesIn: srcFileReference withExtensions: extensions [
 
 	^srcFileReference isDirectory
@@ -85,27 +103,10 @@ FortranProjectImporter >> collectSrcFilesWithExtensions: extensions [
 ]
 
 { #category : #'private - files' }
-FortranProjectImporter >> concatPath: aPath inFolder: aFolder [
-	"aPath may be a relative or absolute path, we want it 'concatenated' to aFolder
-	 similar to: 'aFolder / aPath' 
-	 Additionaly, we make sure the resulting parent path exist so that if it is a file,
-	 it can be created"
-
-	| destPath |
-	destPath := aPath isAbsolute
-		ifTrue: [ aFolder / aPath pathString allButFirst ]
-		ifFalse: [ aFolder / aPath pathString ].
-
-	destPath parent ensureCreateDirectory.
-
-	^ destPath
-]
-
-{ #category : #'private - files' }
 FortranProjectImporter >> copy: aPath to: aFolder [
 
 	aPath asFileReference
-		copyTo: (self concatPath: aPath inFolder: aFolder)
+		copyTo: (self appendPath: aPath toParent: aFolder)
 ]
 
 { #category : #'private - import' }
@@ -113,8 +114,8 @@ FortranProjectImporter >> deEsopify: localPath from: srcFolder to: destFolder [
 	"de-esopify localPath in srcFolder to fortran file in destFolder"
 
 	| srcFile destFile |
-	srcFile := self concatPath: localPath inFolder: srcFolder.
-	destFile := (self concatPath: localPath inFolder: destFolder) withExtension: 'f'.
+	srcFile := self appendPath: localPath toParent: srcFolder.
+	destFile := (self appendPath: localPath toParent: destFolder) withExtension: 'f'.
 
 	self errorHandler
 		handleErrorsFor: 'file:' , localPath fullName
@@ -212,7 +213,7 @@ FortranProjectImporter >> fakeEsopeProgramUnit: includedFile to: workingEsopeFol
 	 Records in originalFileMap the original name of the file and the created fake esope file"
 
 	| destFolder |
-	destFolder := self makeFileReference: includedFile parent localTo: workingEsopeFolder.
+	destFolder := self appendPath: includedFile parent toParent: workingEsopeFolder.
 	destFolder ensureCreateDirectory.
 
 	(destFolder /  (includedFile basename , '.E')) writeStreamDo: [ :tmpStream |
@@ -439,20 +440,6 @@ FortranProjectImporter >> jsonASTToIAST [
 
 			iastEntity
 		]
-
-]
-
-{ #category : #'private - files' }
-FortranProjectImporter >> makeFileReference: aFileReference localTo: aFolder [
-
-	| parent |
-	(aFileReference fullName = '.') ifTrue: [ ^aFolder ].
-	(aFileReference fullName = '/') ifTrue: [ ^aFolder ].
-
-	parent := self makeFileReference: aFileReference parent localTo: aFolder.
-	parent ensureCreateDirectory.
-
-	^parent / aFileReference basename
 
 ]
 
