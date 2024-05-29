@@ -82,7 +82,7 @@ SyntaxAbstractJsonVisitor >> visitArrayDeclarators: aNode [
 SyntaxAbstractJsonVisitor >> visitArrayElementName: aNode [
     <generated>
 
-	^ self visitJsonMap: aNode keys: #( name qualifiers_list )
+	^ self visitJsonMap: aNode keys: #( name start_pos qualifiers_list )
 ]
 
 { #category : #'visiting statement' }
@@ -1105,15 +1105,12 @@ SyntaxAbstractJsonVisitor >> visitType: aNode [
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitTypeReference: aNode [
 
-	| return |
-	return := Dictionary new: 2.
-	return
-		at: #name
-		put: (self visitJsonKey: ((aNode at: 'name') asLowercase capitalized , 'Type') value: aNode).
-	aNode
-		at: #len_specification
-		ifPresent: [ :len | return at: #len_specification put: (self visitLenSpecification: len) ].
-	^return
+	^ (self visitJsonMap: aNode keys: #( start_pos len_specification ))
+		  at: 'name' put: (self
+				   visitJsonKey:
+					   (aNode at: 'name') asLowercase capitalized , 'Type'
+				   value: aNode);
+		  yourself
 ]
 
 { #category : #'visiting statement' }
@@ -1175,14 +1172,6 @@ SyntaxAbstractJsonVisitor >> visitUpperBound: aNode [
 SyntaxAbstractJsonVisitor >> visitValue: aNode [
 
 	^ aNode
-]
-
-{ #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitVar: aNode [
-	"why is this an array ?
-	there should be only one var"
-
-   ^ self visitJsonElement: aNode first
 ]
 
 { #category : #'visiting expression' }
