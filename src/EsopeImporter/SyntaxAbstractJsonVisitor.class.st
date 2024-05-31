@@ -205,7 +205,9 @@ SyntaxAbstractJsonVisitor >> visitComplexType: aNode [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitComputedGotoStatement: aNode [
 
-	^ self visitLabeledStatement: aNode keys: #( var start_pos labels )
+	^ self
+		  visitLabeledStatement: aNode
+		  keys: #( expression start_pos labels )
 ]
 
 { #category : #'visiting expression' }
@@ -340,12 +342,6 @@ SyntaxAbstractJsonVisitor >> visitDeclarators: aNode [
 ]
 
 { #category : #visiting }
-SyntaxAbstractJsonVisitor >> visitDescriptor: aNode [
-
-	^aNode
-]
-
-{ #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitDimensionDeclarator: aNode [
 
 	<generated>
@@ -418,12 +414,6 @@ SyntaxAbstractJsonVisitor >> visitEntryStatement: aNode [
     <generated>
 
 	^ self visitJsonMap: aNode keys: #( name start_pos parameters )
-]
-
-{ #category : #'visiting statement' }
-SyntaxAbstractJsonVisitor >> visitEquivGroup: aCollection [
-
-	^self visitJsonArray: aCollection 
 ]
 
 { #category : #'visiting statement' }
@@ -538,16 +528,15 @@ SyntaxAbstractJsonVisitor >> visitImplicitElements: anImplicitElements [
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitImplicitNoneStatement: aNode [
 
-	^self visitLabeledStatement: aNode keys: #( start_pos )
+	^ self visitLabeledStatement: aNode keys: #( start_pos )
 ]
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitImplicitParameter: anImplicitParameter [
-	
-	^ self visitJsonMap: anImplicitParameter keys: #(type implicit_elements)
-	
-	
-    
+
+	^ self
+		  visitJsonMap: anImplicitParameter
+		  keys: #( start_pos type implicit_elements )
 ]
 
 { #category : #'visiting statement' }
@@ -560,11 +549,10 @@ SyntaxAbstractJsonVisitor >> visitImplicitParameters: parameterCollection [
 
 { #category : #'visiting statement' }
 SyntaxAbstractJsonVisitor >> visitImplicitRange: aNode [
-	
-	^self visitJsonMap: aNode keys: #(implicit_range_lower implicit_range_upper)
-	
-	
-    
+
+	^ self
+		  visitJsonMap: aNode
+		  keys: #( start_pos implicit_range_lower implicit_range_upper )
 ]
 
 { #category : #'visiting statement' }
@@ -857,7 +845,7 @@ SyntaxAbstractJsonVisitor >> visitNegated: aNode [
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitNonrepeatableEditDescriptor: aNode [
 
-	^ aNode at: 'value'
+	^ self visitJsonMap: aNode keys: #(value start_pos)
 ]
 
 { #category : #visiting }
@@ -975,9 +963,8 @@ SyntaxAbstractJsonVisitor >> visitRepeatFactor: aNode [
 
 { #category : #visiting }
 SyntaxAbstractJsonVisitor >> visitRepeatableEditDescriptor: aNode [
-    
-	^ aNode at: 'value'
 
+	^ self visitJsonMap: aNode keys: #( value start_pos )
 ]
 
 { #category : #visiting }
