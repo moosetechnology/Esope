@@ -2,14 +2,25 @@
 Responsible to import an Esope project into a Famix model
 
 To use:
+
+## Build an Esope model
+
+change `/path/to/...` in the importer initialiser, regardless of your project's path
+
+### Initialise the project importer
+```st
+importer := FortranProjectImporter new
+	srcFolders:  { '/path/to/source'. '/path/to/anothersource' };
+ 	includeFolders: { '/path/to/include'. '/path/to/anotherinclude' };
+	yourself.
 ```
-model := FortranProjectImporter new
-	srcFolder: '/path/to/Esope/source/files/' ;
-	import.
+### Construct the model
+```st
+model := importer import.
 ```
 
-This will import all files with a `*.E` (or `*.e`) extension + all included files (`*.inc`)
-This is done in various steps (see `#import`):
+This will import all files with a `*.E` (or `*.ec`) extension + all included files (`*.inc`, `*.seg`,, `*.obg`, ...)
+This is done in various steps (see `#importSteps`):
 - copy Esope files (`*.E`) in a temporary directory (`./Esope/`)
 - create special Esope files for included files (in same directory `./Esope/`)
 - convert Esope files to Fortran files by annotating Esope instruction (in `./Fortran/`)
@@ -18,6 +29,16 @@ This is done in various steps (see `#import`):
 - convert intermediate representation to Famix
 - resolve  symbols in Famix
 
+
+
+
+### Check the importer errors
+
+If an error occurs while importing the project, it will be reported to the importer's `errorHandler` instance variable
+
+```st
+error := importer errorHandler.
+```
 "
 Class {
 	#name : #FortranProjectImporter,
