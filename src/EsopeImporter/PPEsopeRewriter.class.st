@@ -58,7 +58,7 @@ PPEsopeRewriter >> canBeProcessed: aText [
 { #category : #annotations }
 PPEsopeRewriter >> commentAnnotation [
 
-	^ 'c@_   '
+	^ 'c@_'
 ]
 
 { #category : #transformations }
@@ -321,14 +321,33 @@ PPEsopeRewriter >> processLinesInsideSegment: anOrderedCollection [
 
 	anOrderedCollection do: [ :line | "option1"
 		line at: 1 put: (self sanitize: line first).
-		(self contains: line keyword: 'pointeur') ifTrue: [ line at: 1 put: self commentAnnotation ].
+		(self contains: line keyword: 'pointeur') ifTrue: [ line at: 1 put: self commentAnnotation , '   ' ].
 		line do: [ :part | part ifNotNil: [ stream << part value ] ] ]
 ]
 
 { #category : #rules }
 PPEsopeRewriter >> processNodes: nodes [
-
+	"Esope line with label need to be treated in a special way:
+	 put the Esope comment marker, then put the label, then complete with spaces up to 6th column
+	 with 1 space mandatory"
+	
+	| i |
 	stream << self commentAnnotation.
+
+	nodes first first isDigit
+	ifFalse: [ stream << '   ' ]
+	ifTrue: [
+		i := 0.
+		nodes first do: [ :c |
+			c isDigit
+				ifTrue: [
+					i := i + 1.
+					stream << c
+				]
+		].
+		stream << ' '.
+		(6 - self commentAnnotation size - i - 1) timesRepeat: [ stream << ' ' ]].
+
 	^ self copyTokens: nodes from: 2 to: nodes size
 ]
 
