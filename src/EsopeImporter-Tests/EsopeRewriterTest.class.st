@@ -69,6 +69,20 @@ EsopeRewriterTest >> testEsopeDotTransformationInsideInvocationOrArraySubscript 
 		equals: expectedSource
 ]
 
+{ #category : #tests }
+EsopeRewriterTest >> testEsopeLineWithLabel [
+
+	| actualSource expectedSource |
+	actualSource := '40    SEGINI,P
+'.
+	expectedSource := 'c@_40 SEGINI,P
+'.
+
+	self parse: actualSource rule: #segini.
+	self assert: parser generatedCode equals: expectedSource.
+
+]
+
 { #category : #'tests-transformation' }
 EsopeRewriterTest >> testEsopeSlashTransformationInsideInvocationOrArraySubscript [
 
