@@ -48,8 +48,13 @@ PPEsopeGrammar >> anyLine [
 
 { #category : #tokens }
 PPEsopeGrammar >> beginOfLine [
+	"6 spaces, or a tab (with optional spaces), or a label (with spaces)"
 
-	^( '      ' asPParser / Character tab asPParser) flatten
+	^(
+		(#digit asPParser plus , #blank asPParser plus) /
+		(Character tab asPParser) /
+		('      ' asPParser)
+	) flatten
 ]
 
 { #category : #grammar }
