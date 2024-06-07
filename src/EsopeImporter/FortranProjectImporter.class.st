@@ -67,6 +67,22 @@ FortranProjectImporter class >> import [
 		import
 ]
 
+{ #category : #importing }
+FortranProjectImporter class >> parseString: fortranCode [
+
+	| srcFile destFile |
+	srcFile  := './srcCode.f' asFileReference.
+	destFile := './srcCode.json' asFileReference.
+
+	srcFile writeStreamDo: [ :stream | 
+		stream << fortranCode withUnixLineEndings ].
+
+	self new
+		parseFortran77File: srcFile to: destFile.
+
+	^destFile contents
+]
+
 { #category : #'private - files' }
 FortranProjectImporter >> allLocalizedFilesIn: aFolder [
 
@@ -458,22 +474,28 @@ FortranProjectImporter >> parseFortran77: localPath from: srcFolder to: destFold
 	"runs fortran77 parser on localPath in srcFolder to JSON file in destFolder"
 
 	| destFile cmdReturn |
-	destFile := (destFolder / localPath pathString) withExtension: 'json'.
+	destFile := (self appendPath: localPath toParent: destFolder) withExtension: 'json'.
 	destFile parent ensureCreateDirectory.
 
-	cmdReturn := LibC runCommand: (
-		'{1} "{2}" > "{3}" 2>&1'
-		format: {
-			self f77parser .
-			(srcFolder / localPath pathString) fullName .
-			destFile fullName
-		}
-	).
+	cmdReturn := self parseFortran77File: (self appendPath: localPath toParent: srcFolder) to: destFile.
 
 	(cmdReturn = 0)
 		ifFalse: [ 
 			self errorHandler error: 'Error while parsing ' , localPath pathString.
 			destFile ensureDelete  ].
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> parseFortran77File: srcFileReference to: destFileReference [
+
+	^LibC runCommand: (
+		'{1} "{2}" > "{3}" 2>&1'
+		format: {
+			self f77parser .
+			srcFileReference fullName .
+			destFileReference fullName
+		}
+	)
 ]
 
 { #category : #accessing }
