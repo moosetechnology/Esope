@@ -162,6 +162,9 @@ IASTAbstractFamixVisitor >> visitIASTTypeRef: aType [
 	- sourceAnchor: ...
 	- entityName: TypeCharacter
 	- kind: nil"
+	
+	aType ifNil: [ ^nil ].
+
 	^(self retrieveTypeFrom: aType entityName)
 		"sourceAnchor: (self visitIndexedFileAnchor: aType sourceAnchor);"
 		length: aType length;

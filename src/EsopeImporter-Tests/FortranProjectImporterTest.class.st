@@ -132,7 +132,7 @@ FortranProjectImporterTest >> testEsopeFileToFortran [
 ' ].
 	destFile := fileSystem / 'esope.f'.
 
-	importer esopeFile: srcFile toFortran: destFile.
+	importer deEsopify: srcFile from: fileSystem root to: fileSystem root.
 
 	self assert: destFile exists.
 	self

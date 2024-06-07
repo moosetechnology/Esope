@@ -14,7 +14,7 @@ As in Fortran, we are led to have a declarative instruction of the SEGMENT and t
 "
 Class {
 	#name : #FamixEsopeCommand,
-	#superclass : #FamixF77Access,
+	#superclass : #AnObsoleteFamixF77Access,
 	#instVars : [
 		'#commandName => FMProperty'
 	],

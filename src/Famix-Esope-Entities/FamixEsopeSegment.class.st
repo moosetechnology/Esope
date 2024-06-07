@@ -23,7 +23,7 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 "
 Class {
 	#name : #FamixEsopeSegment,
-	#superclass : #FamixF77Type,
+	#superclass : #AnObsoleteFamixF77Type,
 	#traits : 'FamixTWithAttributes',
 	#classTraits : 'FamixTWithAttributes classTrait',
 	#instVars : [
