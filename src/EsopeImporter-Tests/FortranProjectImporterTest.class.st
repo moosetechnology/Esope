@@ -43,7 +43,7 @@ FortranProjectImporterTest >> prepareWorkspace [
 			<< '#include "f1.inc"'; cr
 	].
 
-	importer srcFolders: { fileSystem / '/project/src' }.
+	importer srcFolders: { fileSystem / 'project/src' }.
 	importer includeFolders: { 
 		fileSystem / 'project/inc1'.
 		fileSystem / 'project/inc2' 
