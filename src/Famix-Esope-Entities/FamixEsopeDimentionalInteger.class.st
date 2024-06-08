@@ -3,7 +3,7 @@ Im an 'Entier Dimentionnel'
 "
 Class {
 	#name : #FamixEsopeDimentionalInteger,
-	#superclass : #AnObsoleteFamixF77Variable,
+	#superclass : #FamixF77Variable,
 	#category : #'Famix-Esope-Entities-Entities'
 }
 
