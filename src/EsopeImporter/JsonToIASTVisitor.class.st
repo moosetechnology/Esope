@@ -167,6 +167,7 @@ JsonToIASTVisitor >> visitCallStatement: aCallNode [
 JsonToIASTVisitor >> visitCommonGroup: aCommonGroupNode [
 	| data |
 	data := self visitCommonGroupName: (aCommonGroupNode at: 'name').
+
 	^IASTVariable new
 		sourceAnchor: (self makeIndexedAnchor: data first) ;
 		entityName: (data second) ;
@@ -355,6 +356,13 @@ JsonToIASTVisitor >> visitExternalStatement: anExternalStatementNode [
 ]
 
 { #category : #'visiting statement' }
+JsonToIASTVisitor >> visitFormatStatement: aFormatStatement [
+
+	^nil
+
+]
+
+{ #category : #'visiting statement' }
 JsonToIASTVisitor >> visitFortranComment: aFortranCommentNode [
 	| data |
 	data := super visitFortranComment: aFortranCommentNode.
@@ -395,10 +403,10 @@ JsonToIASTVisitor >> visitFunctionStatement: aFunctionNode [
 		ifFalse: 	[ IASTStFunction new  ].
 
 	fct sourceAnchor: (self makeIndexedAnchor: data first).
-	fct	isWrite: true.
+	fct	isWrite: true.  "why!?!"
 	fct	entities: (data third reject: #isNil).
 
-	^data fourth
+	^data fourth  "body?"
 		ifNil: [ { fct } ]
 		ifNotNil: [ { fct . data fourth } ]
 ]
@@ -496,6 +504,17 @@ JsonToIASTVisitor >> visitInteger: anIntegerNode [
 ]
 
 { #category : #'visiting statement' }
+JsonToIASTVisitor >> visitIntrinsicStatement: anIntrinsicStatement [
+	"span vars"
+	| data |
+
+	data := super visitIntrinsicStatement: anIntrinsicStatement.
+
+	"declare the functions?"
+	^nil
+]
+
+{ #category : #'visiting statement' }
 JsonToIASTVisitor >> visitItems: anImplicitItemsNode [
 	"'items' in implicit statement"
 
@@ -530,6 +549,12 @@ JsonToIASTVisitor >> visitMain: aMainProgramNode [
 { #category : #'visiting prog-unit' }
 JsonToIASTVisitor >> visitMiFilename: aString [
 	f77sourcefile := aString
+]
+
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitOpenStatement: anOpenStatement [ 
+
+	^nil
 ]
 
 { #category : #'visiting prog-unit' }
@@ -593,6 +618,7 @@ JsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 			          IASTSubroutine new
 				          parameters: data third;
 				          yourself ].
+
 	^entity
 		sourceAnchor: (self makeIndexedAnchor: data first) ;
 		entityName: data second ;
@@ -626,7 +652,7 @@ JsonToIASTVisitor >> visitSubscript: aSubscriptNode [
 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #visiting }
 JsonToIASTVisitor >> visitTo: aString [
 	"end of a range for an implicit statement: a string of one character"
 
@@ -672,6 +698,7 @@ JsonToIASTVisitor >> visitVariable: aVariableNode [
 	| data |
 	data := super visitVariable: aVariableNode.
 	self flag: #FIXME. "Adding sourceAnchor ? "
+
 	^IASTVarAccess new
 		isWrite: false ;
 		entityName: data ;

@@ -220,7 +220,10 @@ IASTToFamixFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixF
 	self createSymbolTableFor: progUnit.
 
 	aProgramUnit body ifNotNil: [ :body | 
-			(body deepFlatten reject: #isPoint) do: [ :expr | expr accept: self ]
+			(body deepFlatten
+				reject: [ :each |
+					each isNil or: [
+					each isPoint]]) do: [ :expr | expr accept: self ]
 	].
 
 	stack pop.

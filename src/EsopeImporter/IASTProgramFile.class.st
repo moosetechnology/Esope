@@ -22,6 +22,11 @@ IASTProgramFile >> addProgramUnit: anObject [
 ]
 
 { #category : #accessing }
+IASTProgramFile >> comments [
+	^self localComments 
+]
+
+{ #category : #accessing }
 IASTProgramFile >> filename [
 
 	^ filename
