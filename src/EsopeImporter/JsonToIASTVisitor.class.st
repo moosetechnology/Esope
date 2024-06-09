@@ -504,11 +504,11 @@ JsonToIASTVisitor >> visitInteger: anIntegerNode [
 ]
 
 { #category : #'visiting statement' }
-JsonToIASTVisitor >> visitIntrinsicStatement: anIntrinsicStatement [
+JsonToIASTVisitor >> visitIntrinsic: anIntrinsicStatement [
 	"span vars"
 	| data |
 
-	data := super visitIntrinsicStatement: anIntrinsicStatement.
+	data := super visitIntrinsic: anIntrinsicStatement.
 
 	"declare the functions?"
 	^nil

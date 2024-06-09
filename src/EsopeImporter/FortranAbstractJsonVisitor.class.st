@@ -921,7 +921,7 @@ FortranAbstractJsonVisitor >> visitIntegerLiteralValue: anIntegerLiteralValueNod
 ]
 
 { #category : #'visiting statement' }
-FortranAbstractJsonVisitor >> visitIntrinsicStatement: anIntrinsicStatement [
+FortranAbstractJsonVisitor >> visitIntrinsic: anIntrinsicStatement [
 
 	^self visitJsonMap: anIntrinsicStatement keys: #(span vars)
 ]
