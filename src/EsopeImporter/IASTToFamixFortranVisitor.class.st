@@ -231,9 +231,18 @@ IASTToFamixFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixF
 ]
 
 { #category : #visiting }
-IASTToFamixFortranVisitor >> visitIASTStatementFunction: aStFunctionNode [
+IASTToFamixFortranVisitor >> visitIASTStatementFunction: aStatementFunctionNode [
 
-	self shouldBeImplemented 
+	| function |
+	function := self
+		visitIASTProgramUnit: aStatementFunctionNode
+		toFamix: FamixF77StatementFunction.
+	aStatementFunctionNode parameters do: [ :parameter | 
+		function addParameter: (parameter accept: self) ].
+	
+	stack top addStatementFunction: function.
+
+	^ function
 ]
 
 { #category : #visiting }

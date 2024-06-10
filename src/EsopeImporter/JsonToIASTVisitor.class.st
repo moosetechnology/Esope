@@ -31,6 +31,29 @@ JsonToIASTVisitor >> createEsopeCommand: anEsopeCommentNode [
 		  yourself
 ]
 
+{ #category : #'private - utilities' }
+JsonToIASTVisitor >> createStatementFunctionOrVarAccess: data [
+
+	(self isSpecialEsopeFunctionName: data second entityName)
+	ifTrue: [ ^(IASTVarEso newFrom: data second entityName)
+		entityName: data second entityName ;
+		entities: (data third reject: #isNil) ;
+		isWrite: true ;
+		yourself ].
+
+	(data third anySatisfy: #isNil)
+	ifTrue: [ ^IASTVarAccess new
+		entityName: data second entityName ;
+		isWrite: true ;
+		yourself ].
+
+	^IASTStatementFunction new
+		entityName: data second entityName ;
+		parameters: (self varAccessToParameter: data third) ;
+		body: data fourth ;
+		yourself
+]
+
 { #category : #accessing }
 JsonToIASTVisitor >> currentEsopeSegment [
 	^entityStack top isEsopeSegment
@@ -76,6 +99,16 @@ JsonToIASTVisitor >> model [
 { #category : #accessing }
 JsonToIASTVisitor >> model: aCollection [
 	model := aCollection
+]
+
+{ #category : #'private - utilities' }
+JsonToIASTVisitor >> varAccessToParameter: aCollection [
+
+	^aCollection collect: [ :varAccess |
+		IASTParameter new
+			entityName: varAccess entityName ;
+			yourself
+	]
 ]
 
 { #category : #'visiting prog-unit' }
@@ -393,22 +426,16 @@ JsonToIASTVisitor >> visitFunctionParameters: aParameterList [
 
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitFunctionStatement: aFunctionNode [
-	"for now assuming this is an ESOat/ar/sl function"
-	| data fct fctName |
+	| data entity |
 	data := super visitFunctionStatement: aFunctionNode.
-	
-	fctName := data second entityName.
-	fct := (self isSpecialEsopeFunctionName: fctName)
-		ifTrue: [ IASTVarEso newFrom: fctName ]
-		ifFalse: 	[ IASTStatementFunction new  ].
 
-	fct sourceAnchor: (self makeIndexedAnchor: data first).
-	fct	isWrite: true.  "why!?!"
-	fct	entities: (data third reject: #isNil).
+	entity := self createStatementFunctionOrVarAccess: data.
+
+	entity sourceAnchor: (self makeIndexedAnchor: data first).
 
 	^data fourth  "body?"
-		ifNil: [ { fct } ]
-		ifNotNil: [ { fct . data fourth } ]
+		ifNil: [ { entity } ]
+		ifNotNil: [ { entity . data fourth } ]
 ]
 
 { #category : #'visiting prog-unit' }

@@ -659,8 +659,8 @@ JsonToIASTVisitorTest >> testEsoAtOneArg [
 	| programFile stmt |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:24)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"span":"(2:17)-(2:17)","tag":"value","value":{"contents":["2",null],"tag":"integer"}}],"span":"(2:13)-(2:17)"},"body":{"anno":[],"span":"(2:22)-(2:24)","tag":"value","value":{"contents":[{"exponent":{"letter":"e","num":"0"},"significand":"5.3"},null],"tag":"real"}},"name":{"anno":[],"span":"(2:9)-(2:11)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:24)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
-
 	self assert: programFile progUnits first body first size equals: 1.
+
 	stmt := programFile progUnits first body first first.
 	self assert: stmt class equals: IASTVarEsoAt.
 	self assert: stmt isWrite.

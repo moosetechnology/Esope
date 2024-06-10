@@ -2,7 +2,9 @@ Class {
 	#name : #IASTStatementFunction,
 	#superclass : #IASTVarAccess,
 	#instVars : [
-		'entities'
+		'entities',
+		'body',
+		'parameters'
 	],
 	#category : #'EsopeImporter-AST-IR'
 }
@@ -11,6 +13,18 @@ Class {
 IASTStatementFunction >> accept: aVisitor [
 
 	^ aVisitor visitIASTStatementFunction: self
+]
+
+{ #category : #accessing }
+IASTStatementFunction >> body [
+
+	^ body
+]
+
+{ #category : #accessing }
+IASTStatementFunction >> body: anObject [
+
+	body := anObject
 ]
 
 { #category : #initialization }
@@ -35,4 +49,16 @@ IASTStatementFunction >> initialize [
 { #category : #testing }
 IASTStatementFunction >> isVarAccess [
 	^false
+]
+
+{ #category : #accessing }
+IASTStatementFunction >> parameters [
+
+	^ parameters
+]
+
+{ #category : #accessing }
+IASTStatementFunction >> parameters: anObject [
+
+	parameters := anObject
 ]
