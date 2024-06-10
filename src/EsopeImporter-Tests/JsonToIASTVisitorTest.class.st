@@ -1026,7 +1026,7 @@ JsonToIASTVisitorTest >> testIntegerVariableDeclaration [
 ]
 
 { #category : #'tests-statement' }
-JsonToIASTVisitorTest >> testIntrinsic [
+JsonToIASTVisitorTest >> testIntrinsicStatement [
 "      subroutine hello
       intrinsic SIN, COS
       end
@@ -1035,7 +1035,9 @@ JsonToIASTVisitorTest >> testIntrinsic [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:24)","statement":{"anno":[],"span":"(2:7)-(2:24)","tag":"intrinsic","vars":{"anno":[],"list":[{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"sin","tag":"variable"}},{"anno":[],"span":"(2:22)-(2:24)","tag":"value","value":{"contents":"cos","tag":"variable"}}],"span":"(2:17)-(2:24)"}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 0
+	self assert: programFile progUnits first body size equals: 0.
+
+	"note: currently not declaring the intrinsic sub-prgrams"
 ]
 
 { #category : #'tests-statement' }
