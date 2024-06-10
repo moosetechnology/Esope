@@ -1,5 +1,5 @@
 Class {
-	#name : #IASTStFunction,
+	#name : #IASTStatementFunction,
 	#superclass : #IASTVarAccess,
 	#instVars : [
 		'entities'
@@ -8,31 +8,31 @@ Class {
 }
 
 { #category : #accessing }
-IASTStFunction >> accept: aVisitor [
+IASTStatementFunction >> accept: aVisitor [
 
-	^ aVisitor visitIASTStFunction: self
+	^ aVisitor visitIASTStatementFunction: self
 ]
 
 { #category : #initialization }
-IASTStFunction >> entities [
+IASTStatementFunction >> entities [
 
 	^ entities
 ]
 
 { #category : #initialization }
-IASTStFunction >> entities: anObject [
+IASTStatementFunction >> entities: anObject [
 
 	entities := anObject
 ]
 
 { #category : #initialization }
-IASTStFunction >> initialize [
+IASTStatementFunction >> initialize [
 	super initialize.
 
 	entities := OrderedCollection new
 ]
 
 { #category : #testing }
-IASTStFunction >> isVarAccess [
+IASTStatementFunction >> isVarAccess [
 	^false
 ]
