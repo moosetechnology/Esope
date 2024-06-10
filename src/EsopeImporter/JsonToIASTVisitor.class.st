@@ -400,7 +400,7 @@ JsonToIASTVisitor >> visitFunctionStatement: aFunctionNode [
 	fctName := data second entityName.
 	fct := (self isSpecialEsopeFunctionName: fctName)
 		ifTrue: [ IASTVarEso newFrom: fctName ]
-		ifFalse: 	[ IASTStFunction new  ].
+		ifFalse: 	[ IASTStatementFunction new  ].
 
 	fct sourceAnchor: (self makeIndexedAnchor: data first).
 	fct	isWrite: true.  "why!?!"

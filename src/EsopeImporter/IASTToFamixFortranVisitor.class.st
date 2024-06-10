@@ -231,7 +231,7 @@ IASTToFamixFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixF
 ]
 
 { #category : #visiting }
-IASTToFamixFortranVisitor >> visitIASTStFunction: aStFunctionNode [
+IASTToFamixFortranVisitor >> visitIASTStatementFunction: aStFunctionNode [
 
 	self shouldBeImplemented 
 ]
