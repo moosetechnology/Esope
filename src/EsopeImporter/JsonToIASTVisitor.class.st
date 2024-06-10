@@ -571,6 +571,16 @@ JsonToIASTVisitor >> visitProgramFile: aProgramFileNode [
 		
 ]
 
+{ #category : #'visiting prog-unit' }
+JsonToIASTVisitor >> visitProgram_units: aCollection [
+
+	| data |
+	data := super visitProgram_units: aCollection.
+
+	data do: [ :each | each isProgUnit: true ].
+	^data
+]
+
 { #category : #'visiting expression' }
 JsonToIASTVisitor >> visitReal: aRealNode [
 	^nil

@@ -283,6 +283,7 @@ JsonToIASTVisitorTest >> testCommentOutside [
 	self assert: programFile progUnits size equals: 2.
 	stmt := programFile progUnits first.
 	self assert: stmt class equals: IASTComment.
+	self assert: stmt isProgUnit.
 	self assert: stmt text equals: '     blah'.
 
 ]

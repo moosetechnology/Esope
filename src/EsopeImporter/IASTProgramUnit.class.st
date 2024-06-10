@@ -80,6 +80,19 @@ IASTProgramUnit >> invocations [
 	^self filterBodyWith: [ :entity | entity isInvocation ]
 ]
 
+{ #category : #testing }
+IASTProgramUnit >> isProgUnit [
+
+	^true
+]
+
+{ #category : #testing }
+IASTProgramUnit >> isProgUnit: anObject [
+
+	"ignored
+	 polymorphism with IASTComment"
+]
+
 { #category : #accessing }
 IASTProgramUnit >> localComments [
 	^self filterBodyWith: [ :entity | entity isComment ]
