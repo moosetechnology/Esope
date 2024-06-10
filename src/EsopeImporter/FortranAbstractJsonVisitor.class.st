@@ -920,6 +920,12 @@ FortranAbstractJsonVisitor >> visitIntegerLiteralValue: anIntegerLiteralValueNod
 	^anIntegerLiteralValueNode first
 ]
 
+{ #category : #visiting }
+FortranAbstractJsonVisitor >> visitIntrinsic: anIntrinsicIdentifier [
+	^anIntrinsicIdentifier at: 'contents'
+
+]
+
 { #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitIntrinsicStatement: anIntrinsicStatement [
 
