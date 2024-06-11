@@ -19,7 +19,7 @@ FamixF77ProgramUnit >> dicImplicit [
 { #category : #'*EsopeImporter' }
 FamixF77ProgramUnit >> implicits [
 
-	^ self attributeAt: #implicits ifAbsent: [  ]
+	^ self attributeAt: #implicits ifAbsent: [ #() ]
 ]
 
 { #category : #'*EsopeImporter' }

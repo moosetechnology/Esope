@@ -31,6 +31,29 @@ IASTToFamixFortranVisitor >> f77sourcefile: anObject [
 	f77sourcefile := anObject
 ]
 
+{ #category : #visiting }
+IASTToFamixFortranVisitor >> iASTProgramUnit: aProgramUnit toFamix: aFamixFortranClass [
+
+	| progUnit |
+	progUnit := (self newEntity: aFamixFortranClass)
+		            sourceAnchor:
+			            (self visitIndexedFileAnchor: aProgramUnit sourceAnchor);
+		            name: aProgramUnit entityName;
+		            yourself.
+	stack push: progUnit.
+
+	self createSymbolTableFor: progUnit.
+
+	aProgramUnit body ifNotNil: [ :body | 
+		body deepFlatten do: [ :each |
+			(each isNil or: [ each isPoint])
+			ifFalse: [ each accept: self] ]
+	].
+
+	stack pop.
+	^ progUnit
+]
+
 { #category : #initialization }
 IASTToFamixFortranVisitor >> initialize [
 
@@ -124,7 +147,7 @@ IASTToFamixFortranVisitor >> visitIASTFunction: aFunction [
 
 	| function |
 	function := self
-		            visitIASTProgramUnit: aFunction
+		            iASTProgramUnit: aFunction
 		            toFamix: FamixF77PUFunction.
 	aFunction parameters do: [ :parameter | 
 		function addParameter: (parameter accept: self) ].
@@ -164,7 +187,7 @@ IASTToFamixFortranVisitor >> visitIASTIncludedFile: anIncludedFile [
 		endLine: anIncludedFile sourceAnchor endLine - 1.
 
 	^ self
-		  visitIASTProgramUnit: anIncludedFile
+		  iASTProgramUnit: anIncludedFile
 		  toFamix: FamixF77IncludedFile
 ]
 
@@ -183,7 +206,7 @@ IASTToFamixFortranVisitor >> visitIASTInvocation: anInvocation [
 IASTToFamixFortranVisitor >> visitIASTMainProgram: aMainProgram [
 
 	^ self
-		  visitIASTProgramUnit: aMainProgram
+		  iASTProgramUnit: aMainProgram
 		  toFamix: FamixF77PUMain
 ]
 
@@ -207,35 +230,11 @@ IASTToFamixFortranVisitor >> visitIASTProgramFile: aProgramFile [
 ]
 
 { #category : #visiting }
-IASTToFamixFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixFortranClass [
-
-	| progUnit |
-	progUnit := (self newEntity: aFamixFortranClass)
-		            sourceAnchor:
-			            (self visitIndexedFileAnchor: aProgramUnit sourceAnchor);
-		            name: aProgramUnit entityName;
-		            yourself.
-	stack push: progUnit.
-
-	self createSymbolTableFor: progUnit.
-
-	aProgramUnit body ifNotNil: [ :body | 
-			(body deepFlatten
-				reject: [ :each |
-					each isNil or: [
-					each isPoint]]) do: [ :expr | expr accept: self ]
-	].
-
-	stack pop.
-	^ progUnit
-]
-
-{ #category : #visiting }
 IASTToFamixFortranVisitor >> visitIASTStatementFunction: aStatementFunctionNode [
 
 	| function |
 	function := self
-		visitIASTProgramUnit: aStatementFunctionNode
+		iASTProgramUnit: aStatementFunctionNode
 		toFamix: FamixF77StatementFunction.
 	aStatementFunctionNode parameters do: [ :parameter | 
 		function addParameter: (parameter accept: self) ].
@@ -250,7 +249,7 @@ IASTToFamixFortranVisitor >> visitIASTSubroutine: aSubroutine [
 
 	| subroutine |
 	subroutine := self
-		              visitIASTProgramUnit: aSubroutine
+		              iASTProgramUnit: aSubroutine
 		              toFamix: FamixF77PUSubroutine.
 	aSubroutine parameters do: [ :parameter | 
 		subroutine addParameter: (parameter accept: self) ].
