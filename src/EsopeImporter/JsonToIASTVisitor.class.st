@@ -50,7 +50,7 @@ JsonToIASTVisitor >> createStatementFunctionOrVarAccess: data [
 	^IASTStatementFunction new
 		entityName: data second entityName ;
 		parameters: (self varAccessToParameter: data third) ;
-		body: data fourth ;
+		body: (data fourth isCollection ifTrue: [ data fourth ] ifFalse: [ { data fourth } ]) ;
 		yourself
 ]
 
