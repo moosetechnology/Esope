@@ -67,6 +67,12 @@ FortranProjectImporter class >> import [
 		import
 ]
 
+{ #category : #testing }
+FortranProjectImporter class >> isDummySubroutine: aName [
+	"name matches: @ + a sequence of at least one character + @"
+	^ '@#*@' match: aName
+]
+
 { #category : #importing }
 FortranProjectImporter class >> parseString: fortranCode [
 

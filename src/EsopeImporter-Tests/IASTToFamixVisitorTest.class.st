@@ -215,7 +215,7 @@ IASTToFamixVisitorTest >> testComment [
 IASTToFamixVisitorTest >> testCreateDummyFamixFortran77Subroutine [
 
 	"
-      subroutine __$__
+      subroutine @aFile_inc@
       integer l
 c@_   segment point
       real abs, ord
@@ -230,7 +230,7 @@ c@_   end segment
 			           (#ord -> #real) }.
 
 	programFile progUnits: { (IASTIncludedFile new
-			 entityName: 'point.seg';
+			 entityName: '@aFile_inc@';
 			 sourceAnchor: self defaultAnchor;
 			 body: { 
 					 l.
@@ -243,7 +243,7 @@ c@_   end segment
 
 	entity := entity programUnits first.
 	self assert: entity class equals: FamixF77IncludedFile.
-	self assert: entity name equals: 'point.seg'.
+	self assert: entity name equals: '@aFile_inc@'.
 
 	self assert: entity programFile isNotNil.
 	self assert: entity inclusions isEmpty.
