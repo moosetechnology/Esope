@@ -11,6 +11,14 @@ As in Fortran, we are led to have a declarative instruction of the SEGMENT and t
     - `segact`: ACTivate a segment
     - `segadj`: ADJust the size of a segment.	
 
+
+## Properties
+======================
+
+| Name | Type | Default value | Comment |
+|---|
+| `commandName` | `String` | nil | Carrying the actual name of the esope command. 		 		Instead of using a property to distinguish esope's commands, 		it can be a better solution to use inheritance.|
+
 "
 Class {
 	#name : #FamixEsopeCommand,

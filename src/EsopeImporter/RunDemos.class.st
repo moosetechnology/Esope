@@ -141,7 +141,7 @@ RunDemos class >> runner: anEsopeSourceCode [
 	defVisitor model
 		rootFolder: FileSystem workingDirectory;
 		name: 'mooseModelF77-' , self counter asString.
-	refVisitor := FamixFortran77Resolver newFrom: defVisitor model.
+	refVisitor := FamixEsopeResolver newFrom: defVisitor model.
 
 	(iast accept: defVisitor) accept: refVisitor.
 

@@ -280,7 +280,7 @@ FortranProjectImporter >> famixModel: anObject [
 { #category : #run }
 FortranProjectImporter >> famixResolve [
 
-	(FamixFortran77Resolver on: famixModel)
+	(FamixEsopeResolver on: famixModel)
 		errorHandler: errorHandler ;
 		resolve.
 

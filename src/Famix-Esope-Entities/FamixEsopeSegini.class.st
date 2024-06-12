@@ -71,6 +71,8 @@ Remarks :
 ESOPE offers the possibility to free the memory space occupied by the segment. The segment can either be deleted or deactivated.
 
 
+
+
 "
 Class {
 	#name : #FamixEsopeSegini,

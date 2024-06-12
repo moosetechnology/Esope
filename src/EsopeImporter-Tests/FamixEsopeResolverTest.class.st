@@ -1,5 +1,5 @@
 Class {
-	#name : #FamixFortran77ResolverTest,
+	#name : #FamixEsopeResolverTest,
 	#superclass : #TestCase,
 	#instVars : [
 		'mooseModel',
@@ -10,7 +10,7 @@ Class {
 }
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> anchorFrom: startPoint to: endPoint [
+FamixEsopeResolverTest >> anchorFrom: startPoint to: endPoint [
 
 	^ FamixF77IndexedFileAnchor new
 		  mooseModel: mooseModel;
@@ -23,7 +23,7 @@ FamixFortran77ResolverTest >> anchorFrom: startPoint to: endPoint [
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultAccess: varName [
+FamixEsopeResolverTest >> defaultAccess: varName [
 
 	^ FamixF77Access new
 		  mooseModel: mooseModel ;
@@ -34,13 +34,13 @@ FamixFortran77ResolverTest >> defaultAccess: varName [
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultAnchor [
+FamixEsopeResolverTest >> defaultAnchor [
 
 	^ self anchorFrom: 1 @ 7 to: 2 @ 10
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultAttribute: varName withType: typeName [
+FamixEsopeResolverTest >> defaultAttribute: varName withType: typeName [
 
 	^ (self newEntity: FamixFortranAttribute)
 		  sourceAnchor: (self anchorFrom: 2 @ 7 to: 2 @ 19);
@@ -49,14 +49,14 @@ FamixFortran77ResolverTest >> defaultAttribute: varName withType: typeName [
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultFunction: name [
+FamixEsopeResolverTest >> defaultFunction: name [
 
 	^ (self newNamedEntity: name toFamix: FamixF77PUFunction) 
 		  programFile: famixProgFile
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultIASTEsopeCommand: commandName name: entityName [
+FamixEsopeResolverTest >> defaultIASTEsopeCommand: commandName name: entityName [
 
 	^ IASTEsopeSegCommand new
 		  esopeCommand: commandName;
@@ -66,7 +66,7 @@ FamixFortran77ResolverTest >> defaultIASTEsopeCommand: commandName name: entityN
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultIASTInvocation: name [
+FamixEsopeResolverTest >> defaultIASTInvocation: name [
 
 	^ IASTInvocation new
 		  entityName: name;
@@ -74,7 +74,7 @@ FamixFortran77ResolverTest >> defaultIASTInvocation: name [
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultIASTVarAccess: name [
+FamixEsopeResolverTest >> defaultIASTVarAccess: name [
 
 	^ IASTVarAccess new
 		  entityName: name ;
@@ -83,13 +83,13 @@ FamixFortran77ResolverTest >> defaultIASTVarAccess: name [
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultImplicitNone [
+FamixEsopeResolverTest >> defaultImplicitNone [
 
 	^ IASTImplicitTypingRule new
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultInvocation: name [
+FamixEsopeResolverTest >> defaultInvocation: name [
 
 	^ FamixF77Invocation new
 		  mooseModel: mooseModel;
@@ -99,20 +99,20 @@ FamixFortran77ResolverTest >> defaultInvocation: name [
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultMain: name [
+FamixEsopeResolverTest >> defaultMain: name [
 
 	^ (self newNamedEntity: name toFamix: FamixF77PUMain) 
 		  programFile: famixProgFile
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultParameter: name [
+FamixEsopeResolverTest >> defaultParameter: name [
 
 	^ self newNamedEntity: name toFamix: FamixF77Parameter
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultProgramFile: aFilename [
+FamixEsopeResolverTest >> defaultProgramFile: aFilename [
 
 	^ (self newNamedEntity: aFilename toFamix: FamixF77ProgramFile)
 		  filename: aFilename;
@@ -120,14 +120,14 @@ FamixFortran77ResolverTest >> defaultProgramFile: aFilename [
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultProgramUnit: name forType: aFamixClass belongsTo: aFamixProgramFile [
+FamixEsopeResolverTest >> defaultProgramUnit: name forType: aFamixClass belongsTo: aFamixProgramFile [
 
 	^ (self newNamedEntity: name toFamix: aFamixClass) programFile:
 		  aFamixProgramFile
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultSegment: segmentName with: dictDeclarations [
+FamixEsopeResolverTest >> defaultSegment: segmentName with: dictDeclarations [
 
 	^ (self newEntity: FamixEsopeSegment)
 		  name: segmentName;
@@ -138,21 +138,21 @@ FamixFortran77ResolverTest >> defaultSegment: segmentName with: dictDeclarations
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultSubroutine: name [
+FamixEsopeResolverTest >> defaultSubroutine: name [
 
 	^ (self newNamedEntity: name toFamix: FamixF77PUSubroutine) 
 		  programFile: famixProgFile
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultSubroutine: name belongsTo: aFamixProgramFile [
+FamixEsopeResolverTest >> defaultSubroutine: name belongsTo: aFamixProgramFile [
 
 	^ (self newNamedEntity: name toFamix: FamixF77PUSubroutine) 
 		  programFile: aFamixProgramFile
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultType: anIntrinsicFortranType [
+FamixEsopeResolverTest >> defaultType: anIntrinsicFortranType [
 
 	^FamixF77TypeIntrinsic new
 		  name: anIntrinsicFortranType;
@@ -161,20 +161,20 @@ FamixFortran77ResolverTest >> defaultType: anIntrinsicFortranType [
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> defaultVariable: name withType: type [
+FamixEsopeResolverTest >> defaultVariable: name withType: type [
 
 	^ (self newNamedEntity: name toFamix: FamixF77Variable) 
 		  declaredType: (self defaultType: type)
 ]
 
 { #category : #tests }
-FamixFortran77ResolverTest >> externalDeclaration: name [
+FamixEsopeResolverTest >> externalDeclaration: name [
 
 	^self newNamedEntity: name toFamix: FamixF77ExternalDeclaration
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> iastTypeRef: typeName [
+FamixEsopeResolverTest >> iastTypeRef: typeName [
 
 	^ IASTTypeRef new
 		  entityName: typeName;
@@ -183,7 +183,7 @@ FamixFortran77ResolverTest >> iastTypeRef: typeName [
 ]
 
 { #category : #'default values' }
-FamixFortran77ResolverTest >> implicitRule: typeName range: ranges [
+FamixEsopeResolverTest >> implicitRule: typeName range: ranges [
 
 	^ IASTImplicitTypingRule new
 		  forType: (self iastTypeRef: typeName);
@@ -192,7 +192,7 @@ FamixFortran77ResolverTest >> implicitRule: typeName range: ranges [
 ]
 
 { #category : #running }
-FamixFortran77ResolverTest >> newEntity: aFamixClass [
+FamixEsopeResolverTest >> newEntity: aFamixClass [
 
 	^ aFamixClass new
 		  mooseModel: mooseModel;
@@ -201,31 +201,31 @@ FamixFortran77ResolverTest >> newEntity: aFamixClass [
 ]
 
 { #category : #running }
-FamixFortran77ResolverTest >> newNamedEntity: aName toFamix: aFamixClass [
+FamixEsopeResolverTest >> newNamedEntity: aName toFamix: aFamixClass [
 
 	^ (self newEntity: aFamixClass)
 		name: aName
 ]
 
 { #category : #running }
-FamixFortran77ResolverTest >> newPU: aName [
+FamixEsopeResolverTest >> newPU: aName [
 	^(self newNamedEntity: aName toFamix: FamixF77PUSubroutine)
 		programFile: famixProgFile ;
 		yourself
 ]
 
 { #category : #running }
-FamixFortran77ResolverTest >> setUp [
+FamixEsopeResolverTest >> setUp [
 
 	super setUp.
 
 	mooseModel := FamixEsopeModel new.
-	resolver := FamixFortran77Resolver on: mooseModel.
+	resolver := FamixEsopeResolver on: mooseModel.
 	famixProgFile  := self defaultProgramFile: './main.f'.
 ]
 
 { #category : #'test - implicit' }
-FamixFortran77ResolverTest >> testRegisterImplicitDefault [
+FamixEsopeResolverTest >> testRegisterImplicitDefault [
 
 	"
 	      subroutine rtn
@@ -246,7 +246,7 @@ FamixFortran77ResolverTest >> testRegisterImplicitDefault [
 ]
 
 { #category : #'test - implicit' }
-FamixFortran77ResolverTest >> testRegisterImplicitMultiple [
+FamixEsopeResolverTest >> testRegisterImplicitMultiple [
 	"
       subroutine rtn
       implicit integer(a,d-e)
@@ -275,7 +275,7 @@ FamixFortran77ResolverTest >> testRegisterImplicitMultiple [
 ]
 
 { #category : #'test - implicit' }
-FamixFortran77ResolverTest >> testRegisterImplicitNone [
+FamixEsopeResolverTest >> testRegisterImplicitNone [
 
 	"
 	      subroutine rtn
@@ -295,7 +295,7 @@ FamixFortran77ResolverTest >> testRegisterImplicitNone [
 ]
 
 { #category : #'test - implicit' }
-FamixFortran77ResolverTest >> testRegisterImplicitRange [
+FamixEsopeResolverTest >> testRegisterImplicitRange [
 	"
       subroutine rtn
       implicit integer(a-c)
@@ -320,7 +320,7 @@ FamixFortran77ResolverTest >> testRegisterImplicitRange [
 ]
 
 { #category : #'test - implicit' }
-FamixFortran77ResolverTest >> testRegisterImplicitSimple [
+FamixEsopeResolverTest >> testRegisterImplicitSimple [
 	"
       subroutine rtn
       implicit integer(a)
@@ -343,7 +343,7 @@ FamixFortran77ResolverTest >> testRegisterImplicitSimple [
 ]
 
 { #category : #tests }
-FamixFortran77ResolverTest >> testRequalifyParameterNoVariableDeclaration [
+FamixEsopeResolverTest >> testRequalifyParameterNoVariableDeclaration [
 
 	"
       subroutine sub(var)
@@ -367,7 +367,7 @@ FamixFortran77ResolverTest >> testRequalifyParameterNoVariableDeclaration [
 ]
 
 { #category : #tests }
-FamixFortran77ResolverTest >> testRequalifyVariableDeclarationAsFunction [
+FamixEsopeResolverTest >> testRequalifyVariableDeclarationAsFunction [
 
 	"
       subroutine sub
@@ -396,7 +396,7 @@ FamixFortran77ResolverTest >> testRequalifyVariableDeclarationAsFunction [
 ]
 
 { #category : #tests }
-FamixFortran77ResolverTest >> testRequalifyVariableDeclarationAsParameter [
+FamixEsopeResolverTest >> testRequalifyVariableDeclarationAsParameter [
 
 	"
       subroutine sub(var)
@@ -425,7 +425,7 @@ FamixFortran77ResolverTest >> testRequalifyVariableDeclarationAsParameter [
 ]
 
 { #category : #'test-todo' }
-FamixFortran77ResolverTest >> testResolveAccessAttributeDeclaredPointer [
+FamixEsopeResolverTest >> testResolveAccessAttributeDeclaredPointer [
 
 	| main access access2 varP typePoint |
 	"
@@ -475,7 +475,7 @@ FamixFortran77ResolverTest >> testResolveAccessAttributeDeclaredPointer [
 ]
 
 { #category : #'test-todo' }
-FamixFortran77ResolverTest >> testResolveAccessAttributeNoPointer [
+FamixEsopeResolverTest >> testResolveAccessAttributeNoPointer [
 
 	| subrtn access type |
 	"
@@ -510,7 +510,7 @@ FamixFortran77ResolverTest >> testResolveAccessAttributeNoPointer [
 ]
 
 { #category : #'test-todo' }
-FamixFortran77ResolverTest >> testResolveAccessDeclaredLocalVariable [
+FamixEsopeResolverTest >> testResolveAccessDeclaredLocalVariable [
 	"program main
 	 integer var
 	 var
@@ -533,7 +533,7 @@ FamixFortran77ResolverTest >> testResolveAccessDeclaredLocalVariable [
 ]
 
 { #category : #'test-todo' }
-FamixFortran77ResolverTest >> testResolveAccessDeclaredPointerVariable [
+FamixEsopeResolverTest >> testResolveAccessDeclaredPointerVariable [
 
 	| main access var |
 	"
@@ -570,7 +570,7 @@ FamixFortran77ResolverTest >> testResolveAccessDeclaredPointerVariable [
 ]
 
 { #category : #'test-todo' }
-FamixFortran77ResolverTest >> testResolveAccessImplicitLocalVariable [
+FamixEsopeResolverTest >> testResolveAccessImplicitLocalVariable [
 	"program main
 	 var
 	 end
@@ -601,7 +601,7 @@ FamixFortran77ResolverTest >> testResolveAccessImplicitLocalVariable [
 ]
 
 { #category : #'test-todo' }
-FamixFortran77ResolverTest >> testResolveAccessImplicitPointerVariable [
+FamixEsopeResolverTest >> testResolveAccessImplicitPointerVariable [
 
 	| subrtn access var |
 	"
@@ -638,7 +638,7 @@ FamixFortran77ResolverTest >> testResolveAccessImplicitPointerVariable [
 ]
 
 { #category : #'test-todo' }
-FamixFortran77ResolverTest >> testResolveAccessToParameter [
+FamixEsopeResolverTest >> testResolveAccessToParameter [
 
 	| subrtn access |
 	"
@@ -666,7 +666,7 @@ FamixFortran77ResolverTest >> testResolveAccessToParameter [
 ]
 
 { #category : #tests }
-FamixFortran77ResolverTest >> testResolveEsopeVariables [
+FamixEsopeResolverTest >> testResolveEsopeVariables [
 
 	| sub entity type var |
 	"
@@ -697,7 +697,7 @@ FamixFortran77ResolverTest >> testResolveEsopeVariables [
 ]
 
 { #category : #tests }
-FamixFortran77ResolverTest >> testResolveFunctionImplicit [
+FamixEsopeResolverTest >> testResolveFunctionImplicit [
 	"
       function fct()
       implicit charcater(f)
@@ -718,7 +718,7 @@ FamixFortran77ResolverTest >> testResolveFunctionImplicit [
 ]
 
 { #category : #tests }
-FamixFortran77ResolverTest >> testResolveFunctionImplicitWrongParameters [
+FamixEsopeResolverTest >> testResolveFunctionImplicitWrongParameters [
 	"
       function fct()
       implicit character(f)
@@ -740,7 +740,7 @@ FamixFortran77ResolverTest >> testResolveFunctionImplicitWrongParameters [
 ]
 
 { #category : #'test - implicit' }
-FamixFortran77ResolverTest >> testResolveImplicitParameter [
+FamixEsopeResolverTest >> testResolveImplicitParameter [
 
 	"
 	      function fct(iparam)
@@ -763,7 +763,7 @@ FamixFortran77ResolverTest >> testResolveImplicitParameter [
 ]
 
 { #category : #'test - implicit' }
-FamixFortran77ResolverTest >> testResolveImplicitParameterNone [
+FamixEsopeResolverTest >> testResolveImplicitParameterNone [
 
 	"
 	      subroutine sub(param)
@@ -787,7 +787,7 @@ FamixFortran77ResolverTest >> testResolveImplicitParameterNone [
 ]
 
 { #category : #'test - implicit' }
-FamixFortran77ResolverTest >> testResolveImplicitParameterRange [
+FamixEsopeResolverTest >> testResolveImplicitParameterRange [
 	"
       subroutine sub(var)
       implicit charcater(u-w)
@@ -814,7 +814,7 @@ FamixFortran77ResolverTest >> testResolveImplicitParameterRange [
 ]
 
 { #category : #'test-todo' }
-FamixFortran77ResolverTest >> testResolveIncludeDirective [
+FamixEsopeResolverTest >> testResolveIncludeDirective [
 
 	"
 +------ point.seg ----------------------------------+
@@ -860,7 +860,7 @@ FamixFortran77ResolverTest >> testResolveIncludeDirective [
 ]
 
 { #category : #tests }
-FamixFortran77ResolverTest >> testResolveInvocations [
+FamixEsopeResolverTest >> testResolveInvocations [
 	| invocation callee caller |
 	
 	caller := (self defaultMain: 'main')
@@ -882,7 +882,7 @@ FamixFortran77ResolverTest >> testResolveInvocations [
 ]
 
 { #category : #tests }
-FamixFortran77ResolverTest >> testResolveInvocationsWrongArgumentNumber [
+FamixEsopeResolverTest >> testResolveInvocationsWrongArgumentNumber [
 	| invocation callee caller |
 	
 	caller := (self defaultMain: 'main')

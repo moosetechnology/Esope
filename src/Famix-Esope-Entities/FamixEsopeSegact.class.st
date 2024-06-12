@@ -76,6 +76,8 @@ In `LHJ` is the value of the ith dimension of the array `NOMB`. String arrays ar
 
 In a subprogram, it is possible to know the dimension of an array and Esope allows to change its dimension. 
 
+
+
 "
 Class {
 	#name : #FamixEsopeSegact,
