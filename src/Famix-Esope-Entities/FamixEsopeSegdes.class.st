@@ -6,6 +6,8 @@ As a general rule, at the end of a Fortran sub-program or as soon as possible, t
 
 Waiting on the working disk will only be done if the memory requests require it and if the disk space allows it. In any case, once a segment is deactivated, it will need to be reactivated before it can be used again.
 
+
+
 "
 Class {
 	#name : #FamixEsopeSegdes,

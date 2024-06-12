@@ -1,6 +1,8 @@
 "
 Im an implicit pointer, Im created when a segment is defined.
 	
+
+
 "
 Class {
 	#name : #FamixEsopeImplicitPointer,
