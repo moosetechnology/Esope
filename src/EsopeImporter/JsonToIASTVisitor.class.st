@@ -649,7 +649,7 @@ JsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 	| data entity |
 	data := super visitSubroutine: aSubroutineNode.
 
-	entity := data second = '__$__'
+	entity := (FortranProjectImporter isDummySubroutine: data second)
 		          ifTrue: [ IASTIncludedFile new ]
 		          ifFalse: [ 
 			          IASTSubroutine new

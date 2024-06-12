@@ -818,7 +818,7 @@ FamixFortran77ResolverTest >> testResolveIncludeDirective [
 
 	"
 +------ point.seg ----------------------------------+
-|      subroutine __$__                             |
+|      subroutine @point_seg@                       |
 |      segment point                                |
 |      end segment                                  |
 |      end                                          |
@@ -834,7 +834,7 @@ FamixFortran77ResolverTest >> testResolveIncludeDirective [
 	includedFile := self defaultProgramFile: 'point.seg.f'.
 	mainFile := self defaultProgramFile: 'main.f'.
 
-	sub := (self newNamedEntity: 'point.seg' toFamix: FamixF77IncludedFile)
+	sub := (self newNamedEntity: '@point_seg@' toFamix: FamixF77IncludedFile)
 		programFile: includedFile ;
 		types: { self newNamedEntity: 'point' toFamix: FamixEsopeSegment } ;
 		yourself.

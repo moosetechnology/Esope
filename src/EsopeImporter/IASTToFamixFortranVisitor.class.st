@@ -62,12 +62,6 @@ IASTToFamixFortranVisitor >> initialize [
 	f77sourcefile := ''
 ]
 
-{ #category : #testing }
-IASTToFamixFortranVisitor >> isDummySubroutine: name [
-
-	^ name sameAs: '__$__'
-]
-
 { #category : #visiting }
 IASTToFamixFortranVisitor >> visit: anIASTModel [
 
