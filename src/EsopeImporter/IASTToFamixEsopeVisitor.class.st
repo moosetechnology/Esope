@@ -18,10 +18,7 @@ IASTToFamixEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
 	| varsNames |
 	varsNames := aPointerVar entityName substrings: '.'.
 	varsNames size < 2 ifTrue: [ ^ self ].
-	"declaredType:
-			  (self
-				   newType: varsNames second
-				   sourceAnchor: aPointerVar sourceAnchor);"
+
 	^ (self model newVariableNamed: varsNames first)
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: aPointerVar sourceAnchor);

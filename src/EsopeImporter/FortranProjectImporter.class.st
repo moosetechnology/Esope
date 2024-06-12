@@ -391,7 +391,8 @@ FortranProjectImporter >> importSteps [
 
 		'JSon AST to Intermediary AST' -> #jsonASTToIAST .
 		'Intermediary AST to Famix' -> #iASTToFamix .
-		'Famix symbol resolution' -> #famixResolve
+		'Famix symbol resolution' -> #famixResolve .
+		'Pointer variables type propagation' -> #propagatePointerType .
 	}
 ]
 
@@ -477,6 +478,16 @@ FortranProjectImporter >> jsonASTToIAST [
 
 ]
 
+{ #category : #'as yet unclassified' }
+FortranProjectImporter >> makePointerFromVariable: esopeCmd [
+	"esopeCmd is a kind of Access where the variable is an Esope pointeur
+	 We need to:
+	 - set #isEsope indicator to true
+	 - "
+
+	esopeCmd variable isEsope: true.
+]
+
 { #category : #'private - import' }
 FortranProjectImporter >> parseFortran77: localPath from: srcFolder to: destFolder [
 	"runs fortran77 parser on localPath in srcFolder to JSON file in destFolder"
@@ -504,6 +515,15 @@ FortranProjectImporter >> parseFortran77File: srcFileReference to: destFileRefer
 			destFileReference fullName
 		}
 	)
+]
+
+{ #category : #'as yet unclassified' }
+FortranProjectImporter >> propagatePointerType [
+
+	(famixModel allWithType: FamixEsopeCommand) do: [ :esopeCmd |
+		esopeCmd variable isEsope
+		ifFalse: [ self makePointerFromVariable: esopeCmd ]
+	]
 ]
 
 { #category : #accessing }
