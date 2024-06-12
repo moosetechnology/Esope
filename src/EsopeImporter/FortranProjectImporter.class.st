@@ -250,10 +250,12 @@ FortranProjectImporter >> fakeEsopeProgramUnit: includedFile to: workingEsopeFol
 
 	(destFolder /  (includedFile basename , '.E')) writeStreamDo: [ :tmpStream |
 		tmpStream
-			<< '      subroutine __$__';
-			cr;
-			<< includedFile contents;
-			<< '      end';
+			<< '      subroutine $' ;
+			<< (includedFile basename copy replaceAll: $. with: $_) ;
+			<< $$ ;
+			cr ;
+			<< includedFile contents ;
+			<< '      end' ;
 			cr ]
 ]
 
