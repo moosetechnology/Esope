@@ -2,7 +2,7 @@
 For symbol resolution
 "
 Class {
-	#name : #FamixFortran77Resolver,
+	#name : #FamixEsopeResolver,
 	#superclass : #Object,
 	#instVars : [
 		'model',
@@ -12,7 +12,7 @@ Class {
 }
 
 { #category : #'private-helper' }
-FamixFortran77Resolver class >> on: aMooseModel [
+FamixEsopeResolver class >> on: aMooseModel [
 	"Answer an instance with same model as aMooseModel."
 	^self new
 		  model: aMooseModel;
@@ -20,19 +20,19 @@ FamixFortran77Resolver class >> on: aMooseModel [
 ]
 
 { #category : #accessing }
-FamixFortran77Resolver >> errorHandler [
+FamixEsopeResolver >> errorHandler [
 
 	^errorHandler ifNil: [ errorHandler := FortranErrorManager new ]
 ]
 
 { #category : #accessing }
-FamixFortran77Resolver >> errorHandler: anErrorHandler [
+FamixEsopeResolver >> errorHandler: anErrorHandler [
 
 	errorHandler := anErrorHandler
 ]
 
 { #category : #'private - utility' }
-FamixFortran77Resolver >> findEntity: entityName inList: famixEntities [
+FamixEsopeResolver >> findEntity: entityName inList: famixEntities [
 
 	^ famixEntities
 		  detect: [ :entity | entity name = entityName ]
@@ -40,33 +40,33 @@ FamixFortran77Resolver >> findEntity: entityName inList: famixEntities [
 ]
 
 { #category : #'private - utility' }
-FamixFortran77Resolver >> implicitTypeFor: name inProgramUnit: programUnit [
+FamixEsopeResolver >> implicitTypeFor: name inProgramUnit: programUnit [
 	"find a type according to the first letter of the variable's name"
 
 	^ programUnit dicImplicit at: name first ifAbsent: [ FamixF77TypeUnknown defaultName ]
 ]
 
 { #category : #accessing }
-FamixFortran77Resolver >> model [
+FamixEsopeResolver >> model [
 
 	^ model
 ]
 
 { #category : #accessing }
-FamixFortran77Resolver >> model: anObject [
+FamixEsopeResolver >> model: anObject [
 
 	model := anObject
 ]
 
 { #category : #'private-creation' }
-FamixFortran77Resolver >> newEntity: aFamixClass [
+FamixEsopeResolver >> newEntity: aFamixClass [
 	^aFamixClass new
 		mooseModel: model;
 		yourself
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> registerImplicitForPU: programUnit range: aRange forType: iASTTypeRef [
+FamixEsopeResolver >> registerImplicitForPU: programUnit range: aRange forType: iASTTypeRef [
 
 	(aRange size = 1)
 	ifTrue: [ programUnit dicImplicit at: aRange first put: iASTTypeRef entityName asSymbol ]
@@ -78,7 +78,7 @@ FamixFortran77Resolver >> registerImplicitForPU: programUnit range: aRange forTy
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> registerImplicitsDeclarations [
+FamixEsopeResolver >> registerImplicitsDeclarations [
 
 	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :programUnit |
 		self errorHandler enterContext: programUnit name.
@@ -88,7 +88,7 @@ FamixFortran77Resolver >> registerImplicitsDeclarations [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> registerImplicitsForPU: programUnit [
+FamixEsopeResolver >> registerImplicitsForPU: programUnit [
 
 	(programUnit attributeAt: #implicits ifAbsent: [ #() ])
 	do: [ :implicitDeclaration | 
@@ -102,12 +102,12 @@ FamixFortran77Resolver >> registerImplicitsForPU: programUnit [
 ]
 
 { #category : #'private - utility' }
-FamixFortran77Resolver >> removeStoredIAST: anEntity [
+FamixEsopeResolver >> removeStoredIAST: anEntity [
 	^self removeStoredIAST: anEntity forSymbol: #entity
 ]
 
 { #category : #'private - utility' }
-FamixFortran77Resolver >> removeStoredIAST: anEntity forSymbol: aSymbol [
+FamixEsopeResolver >> removeStoredIAST: anEntity forSymbol: aSymbol [
 
 	| entity |
 	entity := anEntity 
@@ -120,7 +120,7 @@ FamixFortran77Resolver >> removeStoredIAST: anEntity forSymbol: aSymbol [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyFunctionDeclaration: external [
+FamixEsopeResolver >> requalifyFunctionDeclaration: external [
 	"external decalration of functin followed by a VariableDeclaration of the same function
 	 we simply remove the VariableDeclaration"
 
@@ -135,7 +135,7 @@ FamixFortran77Resolver >> requalifyFunctionDeclaration: external [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyFunctionDeclarations [
+FamixEsopeResolver >> requalifyFunctionDeclarations [
 	"VariableDeclaration that are actually functions are simply removed
 	We know it is a function because there is an 'external' declaration for that name"
 
@@ -145,7 +145,7 @@ FamixFortran77Resolver >> requalifyFunctionDeclarations [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyParameterDeclaration: param [
+FamixEsopeResolver >> requalifyParameterDeclaration: param [
 	"looks for a VariableDeclaration in the same program unit with the same name"
 
 	
@@ -161,7 +161,7 @@ FamixFortran77Resolver >> requalifyParameterDeclaration: param [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyParameterDeclarations [
+FamixEsopeResolver >> requalifyParameterDeclarations [
 	"For each parameter, try to find a matching VariableDeclaration"
 
 	(model allWithType: FamixF77Parameter) do: [ :param |
@@ -170,7 +170,7 @@ FamixFortran77Resolver >> requalifyParameterDeclarations [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> requalifyVariableDeclarations [
+FamixEsopeResolver >> requalifyVariableDeclarations [
 	"a LocalVariable declaration can be a:
 	- Function
 	- Parameter
@@ -181,7 +181,7 @@ FamixFortran77Resolver >> requalifyVariableDeclarations [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolve [
+FamixEsopeResolver >> resolve [
 
 	#( resolveIncludes
 		registerImplicitsDeclarations
@@ -197,7 +197,7 @@ FamixFortran77Resolver >> resolve [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveAccess: anAccess [
+FamixEsopeResolver >> resolveAccess: anAccess [
 
 	"- ignore access already resolved (may happen in case of attribute access)
 	 - try to find a matching local variable declaration (including parameters)
@@ -236,7 +236,7 @@ FamixFortran77Resolver >> resolveAccess: anAccess [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveAccess: anAccess asImplicitAttribute: accessedVariable [
+FamixEsopeResolver >> resolveAccess: anAccess asImplicitAttribute: accessedVariable [
 
 	^self
 		findEntity: accessedVariable entityName
@@ -244,7 +244,7 @@ FamixFortran77Resolver >> resolveAccess: anAccess asImplicitAttribute: accessedV
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveAccess: anAccess asImplicitPointer: variableAccessed [
+FamixEsopeResolver >> resolveAccess: anAccess asImplicitPointer: variableAccessed [
 	"try to find a segment with the same name as the accessed variable"
 
 	self flag: #FIXME. "Issue with an attribute."
@@ -266,7 +266,7 @@ FamixFortran77Resolver >> resolveAccess: anAccess asImplicitPointer: variableAcc
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveAccess: anAccess asImplicitVariable: variableAccessed [
+FamixEsopeResolver >> resolveAccess: anAccess asImplicitVariable: variableAccessed [
 	"if we are here, we know that the variable was not declared locally
 	 so we create it"
 
@@ -281,7 +281,7 @@ FamixFortran77Resolver >> resolveAccess: anAccess asImplicitVariable: variableAc
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveAccess: anAccess asLocalVariable: accessedVariable [
+FamixEsopeResolver >> resolveAccess: anAccess asLocalVariable: accessedVariable [
 
 	^self
 		findEntity: accessedVariable entityName
@@ -289,7 +289,7 @@ FamixFortran77Resolver >> resolveAccess: anAccess asLocalVariable: accessedVaria
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveAccess: anAccess fromPointer: aPointerVariable [
+FamixEsopeResolver >> resolveAccess: anAccess fromPointer: aPointerVariable [
 
 	| variableAccessed |
 	variableAccessed := self
@@ -305,14 +305,14 @@ FamixFortran77Resolver >> resolveAccess: anAccess fromPointer: aPointerVariable 
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveAccesses [
+FamixEsopeResolver >> resolveAccesses [
 
 	(self model allWithSubTypesOf: FamixF77Access) do: [ :access |
 		self resolveAccess: access ]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveEsopeVariable: esopeVariable [
+FamixEsopeResolver >> resolveEsopeVariable: esopeVariable [
 
 	| segments |
 	segments := self model allWithType: FamixEsopeSegment.
@@ -322,7 +322,7 @@ FamixFortran77Resolver >> resolveEsopeVariable: esopeVariable [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveEsopeVariables [
+FamixEsopeResolver >> resolveEsopeVariables [
 	self flag: #FIXME. "Some Esope variables are not labelled as such"
 	
 	(self model allWithSubTypesOf: FamixF77Variable) 
@@ -332,7 +332,7 @@ FamixFortran77Resolver >> resolveEsopeVariables [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicitFunction: function [
+FamixEsopeResolver >> resolveImplicitFunction: function [
 
 	function declaredType:
 		(self resolveTypeName:
@@ -341,7 +341,7 @@ FamixFortran77Resolver >> resolveImplicitFunction: function [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicitVariableType: aVariable [
+FamixEsopeResolver >> resolveImplicitVariableType: aVariable [
 
 	^self resolveTypeName:
 		(self
@@ -351,7 +351,7 @@ FamixFortran77Resolver >> resolveImplicitVariableType: aVariable [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveImplicits [
+FamixEsopeResolver >> resolveImplicits [
 
 	(model allWithType: FamixF77Parameter) do: [ :param |
 		param declaredType ifNil: [
@@ -367,7 +367,7 @@ FamixFortran77Resolver >> resolveImplicits [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveIncludes [
+FamixEsopeResolver >> resolveIncludes [
 	"puts FamixF77IncludedFile into the FamixF77Include that include them"
 
 	(self model allWithType: FamixF77Include) 
@@ -380,7 +380,7 @@ FamixFortran77Resolver >> resolveIncludes [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveInvocables: invocable [
+FamixEsopeResolver >> resolveInvocables: invocable [
 
 	(model allWithSubTypesOf: FamixF77PUProcedure)
 		do: [ :entity |
@@ -392,7 +392,7 @@ FamixFortran77Resolver >> resolveInvocables: invocable [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveInvocation: anInvocation [
+FamixEsopeResolver >> resolveInvocation: anInvocation [
 
 	| invocated |
 
@@ -404,14 +404,14 @@ FamixFortran77Resolver >> resolveInvocation: anInvocation [
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveInvocations [
+FamixEsopeResolver >> resolveInvocations [
 
 	(self model allWithType: FamixF77Invocation) do: [ :invocation |
 		self resolveInvocation: invocation ]
 ]
 
 { #category : #'symbols resolution' }
-FamixFortran77Resolver >> resolveTypeName: aName [
+FamixEsopeResolver >> resolveTypeName: aName [
 
 	self flag: 'should test the referring PU (ex: for an included segment)'.
 
