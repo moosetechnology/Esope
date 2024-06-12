@@ -1,9 +1,23 @@
 "
 Im an 'Entier Dimentionnel'
+
+## Relations
+======================
+
+### Parents
+| Relation | Origin | Opposite | Type | Comment |
+|---|
+| `segment` | `FamixEsopeDimentionalInteger` | `dimentionalIntegers` | `FamixEsopeSegment` | |
+
+
+
 "
 Class {
 	#name : #FamixEsopeDimentionalInteger,
 	#superclass : #FamixF77Variable,
+	#instVars : [
+		'#segment => FMOne type: #FamixEsopeSegment opposite: #dimentionalIntegers'
+	],
 	#category : #'Famix-Esope-Entities-Entities'
 }
 
