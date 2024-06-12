@@ -69,8 +69,9 @@ FortranProjectImporter class >> import [
 
 { #category : #testing }
 FortranProjectImporter class >> isDummySubroutine: aName [
-	"name matches: @ + a sequence of at least one character + @"
-	^ '@#*@' match: aName
+	"name matches: _$ + a sequence of at least one character"
+
+	^ '_$#*' match: aName
 ]
 
 { #category : #importing }
@@ -256,9 +257,8 @@ FortranProjectImporter >> fakeEsopeProgramUnit: includedFile to: workingEsopeFol
 
 	(destFolder /  (includedFile basename , '.E')) writeStreamDo: [ :tmpStream |
 		tmpStream
-			<< '      subroutine $' ;
+			<< '      subroutine _$' ;
 			<< (includedFile basename copy replaceAll: $. with: $_) ;
-			<< $$ ;
 			cr ;
 			<< includedFile contents ;
 			<< '      end' ;

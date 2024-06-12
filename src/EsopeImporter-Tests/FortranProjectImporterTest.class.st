@@ -180,7 +180,7 @@ FortranProjectImporterTest >> testFakeEsopeProgramUnitTo [
 	resultFile := fileSystem / 'tmpEsope' / 'inc' / 'included.h.E'.
 
 	self assert: resultFile exists.
-	self assert: resultFile contents equals: '      subroutine $included_h$
+	self assert: resultFile contents equals: '      subroutine _$included_h
 a line
       end
 '
