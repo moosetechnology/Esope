@@ -478,7 +478,7 @@ FortranProjectImporter >> jsonASTToIAST [
 
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #'private - import' }
 FortranProjectImporter >> makePointerFromVariable: esopeCmd [
 	"esopeCmd is a kind of Access where the variable is an Esope pointeur
 	 We need to:
@@ -517,7 +517,7 @@ FortranProjectImporter >> parseFortran77File: srcFileReference to: destFileRefer
 	)
 ]
 
-{ #category : #'as yet unclassified' }
+{ #category : #run }
 FortranProjectImporter >> propagatePointerType [
 
 	(famixModel allWithType: FamixEsopeCommand) do: [ :esopeCmd |
