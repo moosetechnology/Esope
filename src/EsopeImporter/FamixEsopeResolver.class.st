@@ -301,6 +301,17 @@ FamixEsopeResolver >> resolveAsLocalVariable: variableName in: anAccessor [
 		inList: anAccessor allLocalVariables
 ]
 
+{ #category : #run }
+FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
+	
+	self flag: #FIXME. "Some Esope variables are not labelled as such"
+	
+	(self model allWithSubTypesOf: FamixF77Variable) 
+		do: [ :var | 
+			var isEsope ifTrue: [ self resolveEsopeVariable: var ]
+		]
+]
+
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveEsopeVariable: esopeVariable [
 	"sets the declaredType of declared pointer esopeVariable"
@@ -310,16 +321,6 @@ FamixEsopeResolver >> resolveEsopeVariable: esopeVariable [
 	segments
 		detect: [ :segment | segment name = esopeVariable segment ]
 		ifFound: [ :segment | esopeVariable declaredType: segment ]
-]
-
-{ #category : #run }
-FamixEsopeResolver >> resolveEsopeVariables [
-	self flag: #FIXME. "Some Esope variables are not labelled as such"
-	
-	(self model allWithSubTypesOf: FamixF77Variable) 
-		do: [ :var | 
-			var isEsope ifTrue: [ self resolveEsopeVariable: var ]
-		]
 ]
 
 { #category : #'symbols resolution' }
@@ -434,7 +435,7 @@ FamixEsopeResolver >> resolvingSteps [
 		  registerImplicitsDeclarations
 	     requalifyVariableDeclarations
 		  resolveImplicits
-		  resolveEsopeVariables
+		  #resolveDeclaredTypeOfPointers
 	     resolveInvocations
 		  resolveAccesses )
 ]

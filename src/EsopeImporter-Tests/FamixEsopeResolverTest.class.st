@@ -666,7 +666,7 @@ FamixEsopeResolverTest >> testResolveAccessToParameter [
 ]
 
 { #category : #tests }
-FamixEsopeResolverTest >> testResolveEsopeVariables [
+FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointers [
 
 	| sub entity type var |
 	"
@@ -676,19 +676,19 @@ FamixEsopeResolverTest >> testResolveEsopeVariables [
       pointeur p.point
       end
 	"
-	type := self newNamedEntity: 'point' toFamix: FamixEsopeSegment.
-	type attributes: #(  ).
+	type := self newEntity: FamixEsopeSegment named: 'point'.
+	type attributes: #().
 
-	var := self newNamedEntity: 'p' toFamix: FamixF77Variable.
+	var := self newEntity: FamixF77Variable named: 'p'.
 	var segment: 'point'.
 	var isEsope: true.
 
 	sub := (self newPU: 'demo')
-		       addType: type;
-		       addLocalVariable: var;
-		       yourself.
+		addType: type;
+		addLocalVariable: var;
+		yourself.
 
-	resolver resolve.
+	resolver resolveDeclaredTypeOfPointers.
 
 	self assert: sub localVariables size equals: 1.
 
