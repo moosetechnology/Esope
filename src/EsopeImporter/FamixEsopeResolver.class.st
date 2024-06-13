@@ -19,6 +19,21 @@ FamixEsopeResolver class >> on: aMooseModel [
 		  yourself
 ]
 
+{ #category : #'symbols resolution' }
+FamixEsopeResolver >> createImplicitVariable: variableName in: anAccessor [
+	"if we are here, we know that the variable was not declared locally
+	 so we create it"
+
+	| implicitVariable |
+	implicitVariable := self newEntity: FamixF77Variable.
+	implicitVariable name: variableName.
+	implicitVariable parentBehaviouralEntity: anAccessor.
+	implicitVariable declaredType: (self resolveImplicitVariableType: implicitVariable).
+
+	^implicitVariable
+
+]
+
 { #category : #accessing }
 FamixEsopeResolver >> errorHandler [
 
@@ -29,14 +44,6 @@ FamixEsopeResolver >> errorHandler [
 FamixEsopeResolver >> errorHandler: anErrorHandler [
 
 	errorHandler := anErrorHandler
-]
-
-{ #category : #'private - utility' }
-FamixEsopeResolver >> findEntity: entityName inList: famixEntities [
-
-	^ famixEntities
-		  detect: [ :entity | entity name = entityName ]
-		  ifNone: [ nil ]
 ]
 
 { #category : #'private - utility' }
@@ -188,17 +195,17 @@ FamixEsopeResolver >> requalifyFunctionDeclarations [
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> requalifyParameterDeclaration: param [
-	"looks for a VariableDeclaration in the same program unit with the same name"
+	"looks for a VariableDeclaration in the same program unit with the same name
+	 then merge the VariableDeclaration into param, but keeping the declaredType
+	 of the VariableDeclaration"
 
-	
-	param parentBehaviouralEntity localVariables
-		detect: [ :varDeclaration |
-			varDeclaration name = param name
-		]
-		ifFound: [ :varDeclaration |
-			param declaredType: varDeclaration declaredType.
-			varDeclaration parentBehaviouralEntity: nil.
-			model remove: varDeclaration
+	(self resolveAsLocalVariable: param name in: param parentBehaviouralEntity)
+		do: [ :varDeclaration |
+			(varDeclaration = param)
+			ifFalse: [
+				param declaredType: varDeclaration declaredType.
+				self mergeVariable: varDeclaration into: param
+			]
 		]
 ]
 
@@ -281,9 +288,8 @@ FamixEsopeResolver >> resolveAccesses [
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveAsImplicitAttribute: variableName in: anAccessor [
 
-	^self
-		findEntity: variableName
-		inList: (anAccessor allTypes flatCollect: [ :type | type attributes ])
+	^(anAccessor allTypes flatCollect: [ :type | type attributes ])
+		select: [ :entity | entity name = variableName ]
 ]
 
 { #category : #'symbols resolution' }
@@ -293,42 +299,24 @@ FamixEsopeResolver >> resolveAsImplicitPointer: variableName in: anAccessor [
 	self flag: #FIXME. "Issue with an attribute."
 
 	^anAccessor allTypes
-		detect: [ :type |
+		select: [ :type |
 			(type class = FamixEsopeSegment) and: 
 			[ type name = variableName ]
 		]
-		ifOne: [ :type |
+		thenCollect: [ :type |
 			(self newEntity: FamixF77Variable)
 				name: variableName ;
 				parentBehaviouralEntity: anAccessor ;
 				declaredType: type ;
 				yourself
 		]
-		ifNone: [ nil ].
-
-]
-
-{ #category : #'symbols resolution' }
-FamixEsopeResolver >> resolveAsImplicitVariable: variableName in: anAccessor [
-	"if we are here, we know that the variable was not declared locally
-	 so we create it"
-
-	| implicitVariable |
-	implicitVariable := self newEntity: FamixF77Variable.
-	implicitVariable name: variableName.
-	implicitVariable parentBehaviouralEntity: anAccessor.
-	implicitVariable declaredType: (self resolveImplicitVariableType: implicitVariable).
-
-	^implicitVariable
-
 ]
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveAsLocalVariable: variableName in: anAccessor [
 
-	^self
-		findEntity: variableName
-		inList: anAccessor allLocalVariables
+	^anAccessor allLocalVariables
+		select: [ :entity | entity name = variableName ]
 ]
 
 { #category : #run }
@@ -446,16 +434,23 @@ FamixEsopeResolver >> resolveTypeName: aName [
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveVariableNamed: variableName in: accessor [
 
-	(self resolveAsLocalVariable: variableName in: accessor)
-	  ifNotNil: [ :localVariable | ^localVariable ].
+	| found inCaseOfError |
+	inCaseOfError := Notification new
+		messageText: 'several variables named ', variableName , ' in ' , accessor name.
 
-  (self resolveAsImplicitPointer: variableName in: accessor)
-		ifNotNil: [ :implicitPointer | ^implicitPointer ].
+	found := self resolveAsLocalVariable: variableName in: accessor.
+	(found size > 1) ifTrue: [ inCaseOfError signal ].
+	(found size = 1) ifTrue: [ ^found anyOne ].
 
-	(self resolveAsImplicitAttribute: variableName in: accessor)
-		ifNotNil: [ :implicitAttribute | ^implicitAttribute ].
+  found := self resolveAsImplicitPointer: variableName in: accessor.
+	(found size > 1) ifTrue: [ inCaseOfError signal ].
+	(found size = 1) ifTrue: [ ^found anyOne ].
 
-  ^self resolveAsImplicitVariable: variableName in: accessor
+	found := self resolveAsImplicitAttribute: variableName in: accessor.
+	(found size > 1) ifTrue: [ inCaseOfError signal ].
+	(found size = 1) ifTrue: [ ^found anyOne ].
+
+	^self createImplicitVariable: variableName in: accessor
 ]
 
 { #category : #run }
