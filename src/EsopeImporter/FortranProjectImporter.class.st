@@ -279,8 +279,9 @@ FortranProjectImporter >> famixModel: anObject [
 
 { #category : #run }
 FortranProjectImporter >> famixResolve [
+	"creates a resolver and resolve all pending names"
 
-	(FamixEsopeResolver on: famixModel)
+	(resolver := FamixEsopeResolver on: famixModel)
 		errorHandler: errorHandler ;
 		resolve.
 
@@ -474,10 +475,37 @@ FortranProjectImporter >> jsonASTToIAST [
 FortranProjectImporter >> makePointerFromVariable: esopeCmd [
 	"esopeCmd is a kind of Access where the variable is an Esope pointeur
 	 We need to:
-	 - set #isEsope indicator to true
+	 - set variable name to lowercase
 	 - "
 
-	esopeCmd variable isEsope: true.
+	(resolver
+		resolveVariableNamed: esopeCmd variable name asLowercase
+		in: esopeCmd accessor)
+		ifNotNil: [ :variable | self mergeVariable: esopeCmd variable with: variable ]
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> mergeVariable: variable1 with: variable2 [
+	"merge meaningfull properties from variable2 into variable1
+	 then remove variable2 from model
+
+	 properties of FamixF77Varibale are:
+	 - mooseName :						ignore, should be the same (ignoring upper/lower case)
+	 - cache :							ignore, should be empty
+	 - entityAttributes :				ignore, should be empty
+	 - mooseModel :						ignore, should be the same
+	 - isEsope :							ignore, keep value of variable1
+	 - parentBehaviouralEntity :	ignore, should be the same
+	 - incomingAccesses :				merge
+	 - name :								ignore, should be the same
+	 - isStub :							ignore
+	 - sourceAnchor :					merge, keep the first one
+	 - declaredType :					ignore, keep value of variable1"
+
+	variable2 incomingAccesses do: [ :access |
+		access variable: variable1 ].
+
+	famixModel removeEntity: variable2
 ]
 
 { #category : #'private - import' }
@@ -513,8 +541,7 @@ FortranProjectImporter >> parseFortran77File: srcFileReference to: destFileRefer
 FortranProjectImporter >> propagatePointerType [
 
 	(famixModel allWithType: FamixEsopeCommand) do: [ :esopeCmd |
-		esopeCmd variable isEsope
-		ifFalse: [ self makePointerFromVariable: esopeCmd ]
+		self makePointerFromVariable: esopeCmd
 	]
 ]
 
