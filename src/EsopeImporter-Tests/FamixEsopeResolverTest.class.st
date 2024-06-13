@@ -51,8 +51,8 @@ FamixEsopeResolverTest >> defaultAttribute: varName withType: typeName [
 { #category : #'default values' }
 FamixEsopeResolverTest >> defaultFunction: name [
 
-	^ (self newNamedEntity: name toFamix: FamixF77PUFunction) 
-		  programFile: famixProgFile
+	^ (self newEntity: FamixF77PUFunction named: name) programFile:
+		  famixProgFile
 ]
 
 { #category : #'default values' }
@@ -101,20 +101,20 @@ FamixEsopeResolverTest >> defaultInvocation: name [
 { #category : #'default values' }
 FamixEsopeResolverTest >> defaultMain: name [
 
-	^ (self newNamedEntity: name toFamix: FamixF77PUMain) 
-		  programFile: famixProgFile
+	^ (self newEntity: FamixF77PUMain named: name) programFile:
+		  famixProgFile
 ]
 
 { #category : #'default values' }
 FamixEsopeResolverTest >> defaultParameter: name [
 
-	^ self newNamedEntity: name toFamix: FamixF77Parameter
+	^ self newEntity: FamixF77Parameter named: name
 ]
 
 { #category : #'default values' }
 FamixEsopeResolverTest >> defaultProgramFile: aFilename [
 
-	^ (self newNamedEntity: aFilename toFamix: FamixF77ProgramFile)
+	^ (self newEntity: FamixF77ProgramFile named: aFilename)
 		  filename: aFilename;
 		  yourself
 ]
@@ -122,7 +122,7 @@ FamixEsopeResolverTest >> defaultProgramFile: aFilename [
 { #category : #'default values' }
 FamixEsopeResolverTest >> defaultProgramUnit: name forType: aFamixClass belongsTo: aFamixProgramFile [
 
-	^ (self newNamedEntity: name toFamix: aFamixClass) programFile:
+	^ (self newEntity: aFamixClass named: name) programFile:
 		  aFamixProgramFile
 ]
 
@@ -140,15 +140,15 @@ FamixEsopeResolverTest >> defaultSegment: segmentName with: dictDeclarations [
 { #category : #'default values' }
 FamixEsopeResolverTest >> defaultSubroutine: name [
 
-	^ (self newNamedEntity: name toFamix: FamixF77PUSubroutine) 
-		  programFile: famixProgFile
+	^ (self newEntity: FamixF77PUSubroutine named: name) programFile:
+		  famixProgFile
 ]
 
 { #category : #'default values' }
 FamixEsopeResolverTest >> defaultSubroutine: name belongsTo: aFamixProgramFile [
 
-	^ (self newNamedEntity: name toFamix: FamixF77PUSubroutine) 
-		  programFile: aFamixProgramFile
+	^ (self newEntity: FamixF77PUSubroutine named: name) programFile:
+		  aFamixProgramFile
 ]
 
 { #category : #'default values' }
@@ -163,14 +163,14 @@ FamixEsopeResolverTest >> defaultType: anIntrinsicFortranType [
 { #category : #'default values' }
 FamixEsopeResolverTest >> defaultVariable: name withType: type [
 
-	^ (self newNamedEntity: name toFamix: FamixF77Variable) 
-		  declaredType: (self defaultType: type)
+	^ (self newEntity: FamixF77Variable named: name) declaredType:
+		  (self defaultType: type)
 ]
 
-{ #category : #tests }
+{ #category : #'default values' }
 FamixEsopeResolverTest >> externalDeclaration: name [
 
-	^self newNamedEntity: name toFamix: FamixF77ExternalDeclaration
+	^ self newEntity: FamixF77ExternalDeclaration named: name
 ]
 
 { #category : #'default values' }
@@ -201,7 +201,7 @@ FamixEsopeResolverTest >> newEntity: aFamixClass [
 ]
 
 { #category : #running }
-FamixEsopeResolverTest >> newNamedEntity: aName toFamix: aFamixClass [
+FamixEsopeResolverTest >> newEntity: aFamixClass named: aName [
 
 	^ (self newEntity: aFamixClass)
 		name: aName
@@ -209,9 +209,10 @@ FamixEsopeResolverTest >> newNamedEntity: aName toFamix: aFamixClass [
 
 { #category : #running }
 FamixEsopeResolverTest >> newPU: aName [
-	^(self newNamedEntity: aName toFamix: FamixF77PUSubroutine)
-		programFile: famixProgFile ;
-		yourself
+
+	^ (self newEntity: FamixF77PUSubroutine named: aName)
+		  programFile: famixProgFile;
+		  yourself
 ]
 
 { #category : #running }
