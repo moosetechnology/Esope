@@ -281,8 +281,7 @@ FortranProjectImporter >> famixModel: anObject [
 FortranProjectImporter >> famixResolve [
 	"creates a resolver and resolve all pending names"
 
-	(resolver := FamixEsopeResolver on: famixModel)
-		errorHandler: errorHandler ;
+	self newResolver
 		resolve.
 
 ]
@@ -484,6 +483,13 @@ FortranProjectImporter >> makePointerFromVariable: esopeCmd [
 		 in: esopeCmd accessor) ifNotNil: [ :variable |
 		variable = esopeCmd variable ifFalse: [
 			resolver mergeVariable: variable into: esopeCmd variable ] ]
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> newResolver [
+
+	^resolver := (FamixEsopeResolver  on: famixModel)
+		errorHandler: errorHandler
 ]
 
 { #category : #'private - import' }
