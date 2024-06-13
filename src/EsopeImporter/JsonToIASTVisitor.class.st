@@ -25,9 +25,9 @@ JsonToIASTVisitor >> createEsopeCommand: anEsopeCommentNode [
 	| data |
 	data := self processEsopeComment: anEsopeCommentNode.
 	^ IASTEsopeSegCommand new
-		  sourceAnchor: (self makeIndexedAnchor: data second);
-		  esopeCommand: data third;
-		  entityName: data fourth;
+		  sourceAnchor: (self makeIndexedAnchor: data second) ;
+		  esopeCommand: data third asLowercase ;
+		  entityName: data fourth asLowercase ;
 		  yourself
 ]
 
