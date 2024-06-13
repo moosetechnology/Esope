@@ -170,8 +170,13 @@ FamixEsopeResolver >> removeStoredIAST: anEntity forSymbol: aSymbol [
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> requalifyFunctionDeclaration: external [
-	"external decalration of functin followed by a VariableDeclaration of the same function
-	 we simply remove the VariableDeclaration"
+	"external declaration of function followed by a VariableDeclaration of the same function
+	 we simply remove the VariableDeclaration
+	 We remove links with other entities (associations are bi-directional, this remove the
+	 variable from the other entities):
+	 - parentBehaviouralEntity:
+	 - declaredType -- probably useless, varDeclaration should have no declaredType
+	 - incomingAccesses -- probably useless, varDeclaration should have no incomingAccesses"
 
 	external programUnit localVariables
 		detect: [ :varDeclaration |
@@ -179,6 +184,8 @@ FamixEsopeResolver >> requalifyFunctionDeclaration: external [
 		]
 		ifFound: [ :varDeclaration |
 			varDeclaration parentBehaviouralEntity: nil.
+			varDeclaration declaredType: nil.
+			varDeclaration incomingAccesses: #().
 			model remove: varDeclaration.
 		]
 ]
