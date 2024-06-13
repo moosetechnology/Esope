@@ -479,10 +479,12 @@ FortranProjectImporter >> makePointerFromVariable: esopeCmd [
 	 - if so, merge the 2 variables into one"
 
 	(resolver
-		 resolveVariableNamed: esopeCmd variable name
-		 in: esopeCmd accessor) ifNotNil: [ :variable |
-		variable = esopeCmd variable ifFalse: [
-			resolver mergeVariable: variable into: esopeCmd variable ] ]
+		 resolveAllVariablesNamed: esopeCmd variable name
+		 in: esopeCmd accessor)
+
+		do: [ :variable |
+			variable = esopeCmd variable
+				ifFalse: [ resolver mergeVariable: variable into: esopeCmd variable ] ]
 ]
 
 { #category : #'private - import' }

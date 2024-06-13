@@ -22,19 +22,21 @@ FortranProjectImporterTest >> setUp [
 FortranProjectImporterTest >> testMakePointerFromVariable [
 	"We have a pointer variable and a normal variable with the same name
 	 the 2nd should be merged into the 1st which keeps its declared type and
-	gets the accesses of the 2nd"
+	 gets the accesses of the 2nd"
 
 	| subroutine variable pointer esopeCommand |
 
-	subroutine := importer famixModel newPUSubroutine name: 'sub1'.
+	subroutine := importer famixModel newPUSubroutine name: 'sub'.
+
 	variable := importer famixModel newVariable
-		name: 'pointerToSegment' ;
+		name: 'pointerForASegment' ;
 		declaredType: FamixF77TypeIntrinsic new ;
 		parentBehaviouralEntity: subroutine.
 	pointer  := importer famixModel newVariable
-		name: 'pointerToSegment' ;
+		name: 'pointerForASegment' ;
 		declaredType: FamixEsopeSegment new ;
 		parentBehaviouralEntity: subroutine.
+
 	importer famixModel newAccess
 		accessor: subroutine ;
 		variable: variable.

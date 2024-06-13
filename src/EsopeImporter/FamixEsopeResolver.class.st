@@ -293,6 +293,19 @@ FamixEsopeResolver >> resolveAccesses [
 ]
 
 { #category : #'symbols resolution' }
+FamixEsopeResolver >> resolveAllVariablesNamed: variableName in: accessor [
+
+	| found  |
+	found := OrderedCollection new.
+
+	found addAll: (self resolveAsLocalVariable: variableName in: accessor).
+	found addAll: (self resolveAsImplicitPointer: variableName in: accessor).
+	found addAll: (self resolveAsImplicitAttribute: variableName in: accessor).
+
+	^found
+]
+
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveAsImplicitAttribute: variableName in: anAccessor [
 
 	^(anAccessor allTypes flatCollect: [ :type | type attributes ])
@@ -446,21 +459,10 @@ FamixEsopeResolver >> resolveTypeName: aName [
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveVariableNamed: variableName in: accessor [
+	| found |
+	found := self resolveAllVariablesNamed: variableName in: accessor.
 
-	| found inCaseOfError |
-	inCaseOfError := Notification new
-		messageText: 'several variables named ', variableName , ' in ' , accessor name.
-
-	found := self resolveAsLocalVariable: variableName in: accessor.
-	(found size > 1) ifTrue: [ inCaseOfError signal ].
-	(found size = 1) ifTrue: [ ^found anyOne ].
-
-  found := self resolveAsImplicitPointer: variableName in: accessor.
-	(found size > 1) ifTrue: [ inCaseOfError signal ].
-	(found size = 1) ifTrue: [ ^found anyOne ].
-
-	found := self resolveAsImplicitAttribute: variableName in: accessor.
-	(found size > 1) ifTrue: [ inCaseOfError signal ].
+	(found size > 1) ifTrue: [ Exception signal: 'several variables named "', variableName , '" in "' , accessor name , '"' ].
 	(found size = 1) ifTrue: [ ^found anyOne ].
 
 	^self createImplicitVariable: variableName in: accessor
