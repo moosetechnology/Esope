@@ -52,10 +52,10 @@ Class {
 		'errorHandler',
 		'stopOnError',
 		'includedFiles',
-		'tempFiles',
 		'tempEsopeFolder',
 		'tempFortranFolder',
-		'tempJsonFolder'
+		'tempJsonFolder',
+		'resolver'
 	],
 	#category : #'EsopeImporter-Importer'
 }
@@ -436,14 +436,6 @@ FortranProjectImporter >> includedNamesIn: srcFileReference [
 				]
 		]
 
-]
-
-{ #category : #initialization }
-FortranProjectImporter >> initialize [
-
-	super initialize.
-
-	tempFiles := FortranImporterFileMap new.
 ]
 
 { #category : #'private - files' }
