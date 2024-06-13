@@ -1,10 +1,13 @@
+"
+I am a ""de-esopifier"", I make Fortran source code from Esope source by ""removing"" Esope specific constructs
+"
 Class {
 	#name : #PPEsopeRewriter,
 	#superclass : #PPEsopeGrammar,
 	#instVars : [
 		'stream'
 	],
-	#category : #'EsopeImporter-Rewriter'
+	#category : #'EsopeImporter-Importer'
 }
 
 { #category : #accessing }

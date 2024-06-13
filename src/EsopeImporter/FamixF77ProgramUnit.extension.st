@@ -11,9 +11,9 @@ FamixF77ProgramUnit >> defaultImplicit [
 ]
 
 { #category : #'*EsopeImporter' }
-FamixF77ProgramUnit >> dicImplicit [
+FamixF77ProgramUnit >> implicitDictionary [
 
-	^ self attributeAt: #dicImplicit ifAbsentPut: [ self defaultImplicit ]
+	^ self attributeAt: #implicitDictionary ifAbsentPut: [ self defaultImplicit ]
 ]
 
 { #category : #'*EsopeImporter' }

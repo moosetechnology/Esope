@@ -1,3 +1,6 @@
+"
+I register errors during the import process and allow to proceed, ignoring them
+"
 Class {
 	#name : #FortranErrorManager,
 	#superclass : #Object,

@@ -23,7 +23,7 @@ IASTAbstractFamixVisitor >> createFamixF77Access: anIastObject [
 { #category : #'private-creation' }
 IASTAbstractFamixVisitor >> createImplicitsDictionaryFor: anEntity [
 
-	anEntity attributeAt: #dicImplicit put: self defaultImplicit
+	anEntity attributeAt: #implicitDictionary put: self defaultImplicit
 ]
 
 { #category : #'private-creation' }

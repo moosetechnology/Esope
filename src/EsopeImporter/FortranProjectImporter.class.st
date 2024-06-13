@@ -52,10 +52,10 @@ Class {
 		'errorHandler',
 		'stopOnError',
 		'includedFiles',
-		'tempFiles',
 		'tempEsopeFolder',
 		'tempFortranFolder',
-		'tempJsonFolder'
+		'tempJsonFolder',
+		'resolver'
 	],
 	#category : #'EsopeImporter-Importer'
 }
@@ -195,13 +195,13 @@ FortranProjectImporter >> ensureEmptyFolder: folder [
 	^folder
 ]
 
-{ #category : #accessing }
+{ #category : #'error management' }
 FortranProjectImporter >> errorHandler [
 
 	^ errorHandler
 ]
 
-{ #category : #accessing }
+{ #category : #'error management' }
 FortranProjectImporter >> errorHandler: anObject [
 
 	errorHandler := anObject
@@ -279,9 +279,9 @@ FortranProjectImporter >> famixModel: anObject [
 
 { #category : #run }
 FortranProjectImporter >> famixResolve [
+	"creates a resolver and resolve all pending names"
 
-	(FamixEsopeResolver on: famixModel)
-		errorHandler: errorHandler ;
+	self newResolver
 		resolve.
 
 ]
@@ -365,6 +365,7 @@ FortranProjectImporter >> import [
 		Warning signal: 'Set source folders first' ].
 
 	errorHandler := FortranErrorManager new.
+	errorHandler stopOnError: self stopOnError.
 
 	UIManager default displayProgress: ''
 		from: 0 to: (self importSteps size - 1)
@@ -391,7 +392,8 @@ FortranProjectImporter >> importSteps [
 
 		'JSon AST to Intermediary AST' -> #jsonASTToIAST .
 		'Intermediary AST to Famix' -> #iASTToFamix .
-		'Famix symbol resolution' -> #famixResolve
+		'Famix symbol resolution' -> #famixResolve .
+		'Pointer variables type propagation' -> #propagatePointerType .
 	}
 ]
 
@@ -437,14 +439,6 @@ FortranProjectImporter >> includedNamesIn: srcFileReference [
 
 ]
 
-{ #category : #initialization }
-FortranProjectImporter >> initialize [
-
-	super initialize.
-
-	tempFiles := FortranImporterFileMap new.
-]
-
 { #category : #'private - files' }
 FortranProjectImporter >> isIncludeLine: aString [
 
@@ -478,6 +472,29 @@ FortranProjectImporter >> jsonASTToIAST [
 ]
 
 { #category : #'private - import' }
+FortranProjectImporter >> makePointerFromVariable: esopeCmd [
+	"esopeCmd is a kind of Access where the variable is an Esope pointeur
+	 We need to:
+	 - check if there is another variable with the same name in the owner
+	 - if so, merge the 2 variables into one"
+
+	(resolver
+		 resolveAllVariablesNamed: esopeCmd variable name
+		 in: esopeCmd accessor)
+
+		do: [ :variable |
+			variable = esopeCmd variable
+				ifFalse: [ resolver mergeVariable: variable into: esopeCmd variable ] ]
+]
+
+{ #category : #'private - import' }
+FortranProjectImporter >> newResolver [
+
+	^resolver := (FamixEsopeResolver  on: famixModel)
+		errorHandler: errorHandler
+]
+
+{ #category : #'private - import' }
 FortranProjectImporter >> parseFortran77: localPath from: srcFolder to: destFolder [
 	"runs fortran77 parser on localPath in srcFolder to JSON file in destFolder"
 
@@ -506,6 +523,14 @@ FortranProjectImporter >> parseFortran77File: srcFileReference to: destFileRefer
 	)
 ]
 
+{ #category : #run }
+FortranProjectImporter >> propagatePointerType [
+
+	(famixModel allWithType: FamixEsopeCommand) do: [ :esopeCmd |
+		self makePointerFromVariable: esopeCmd
+	]
+]
+
 { #category : #accessing }
 FortranProjectImporter >> srcFolders [
 
@@ -521,6 +546,18 @@ FortranProjectImporter >> srcFolders: aCollection [
 			ifTrue: [ folder asFileReference ]
 			ifFalse: [ folder ]
 	]
+]
+
+{ #category : #'error management' }
+FortranProjectImporter >> stopOnError [
+
+	^ stopOnError ifNil: [ false ]
+]
+
+{ #category : #'error management' }
+FortranProjectImporter >> stopOnError: anObject [
+
+	stopOnError := anObject
 ]
 
 { #category : #accessing }
