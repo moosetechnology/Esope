@@ -31,7 +31,7 @@ Class {
 		'commentLine',
 		'anyLine'
 	],
-	#category : #'EsopeImporter-Rewriter'
+	#category : #'EsopeImporter-Importer'
 }
 
 { #category : #utility }

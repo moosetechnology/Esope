@@ -8,7 +8,7 @@ Class {
 		'model',
 		'errorHandler'
 	],
-	#category : #'EsopeImporter-Resolver'
+	#category : #'EsopeImporter-Importer'
 }
 
 { #category : #'private-helper' }

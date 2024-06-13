@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'stream'
 	],
-	#category : #'EsopeImporter-Rewriter'
+	#category : #'EsopeImporter-Importer'
 }
 
 { #category : #accessing }
