@@ -46,6 +46,36 @@ FamixEsopeResolver >> implicitTypeFor: name inProgramUnit: programUnit [
 	^ programUnit implicitDictionary at: name first ifAbsent: [ FamixF77TypeUnknown defaultName ]
 ]
 
+{ #category : #'private - import' }
+FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
+	"merge meaningfull properties from variableToRemove into variableToKeep
+	 then remove links between variableToRemove and other entities (associations are
+	 bi-directional, so we actually remove variableToRemove from the other entities),
+	 finally remove variableToRemove from model
+
+	 properties of FamixF77Varibale are:
+	 - mooseName :						ignore, should be the same (ignoring upper/lower case)
+	 - cache :							ignore, should be empty
+	 - entityAttributes :				ignore, should be empty
+	 - mooseModel :						ignore, should be the same
+	 - isEsope :							ignore, keep value of variable1
+	 - parentBehaviouralEntity :	ignore, should be the same (clear it in variableToRemove)
+	 - incomingAccesses :				merge
+	 - name :								ignore, should be the same
+	 - isStub :							ignore
+	 - sourceAnchor :					merge, keep the first one (clear it in variableToRemove)
+	 - declaredType :					ignore, keep value of variableToKeep (clear it in variableToRemove)"
+
+	variableToRemove incomingAccesses do: [ :access |
+		access variable: variableToKeep ].
+
+	variableToRemove parentBehaviouralEntity: nil.
+	variableToRemove sourceAnchor: nil.
+	variableToRemove declaredType: nil.
+
+	model removeEntity: variableToRemove
+]
+
 { #category : #accessing }
 FamixEsopeResolver >> model [
 

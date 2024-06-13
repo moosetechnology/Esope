@@ -480,42 +480,10 @@ FortranProjectImporter >> makePointerFromVariable: esopeCmd [
 	 - if so, merge the 2 variables into one"
 
 	(resolver
-		resolveVariableNamed: esopeCmd variable name
-		in: esopeCmd accessor)
-
-		ifNotNil: [ :variable |
-			(variable = esopeCmd variable)
-				ifFalse: [self mergeVariable: esopeCmd variable with: variable ]	
-		]
-]
-
-{ #category : #'private - import' }
-FortranProjectImporter >> mergeVariable: variable1 with: variable2 [
-	"merge meaningfull properties from variable2 into variable1
-	 then remove links between variable2 and other entities (associations are bi-directional,
-	 so we actually remove variable2 from the other entities), finally remove variable2 from model
-
-	 properties of FamixF77Varibale are:
-	 - mooseName :						ignore, should be the same (ignoring upper/lower case)
-	 - cache :							ignore, should be empty
-	 - entityAttributes :				ignore, should be empty
-	 - mooseModel :						ignore, should be the same
-	 - isEsope :							ignore, keep value of variable1
-	 - parentBehaviouralEntity :	ignore, should be the same (clear it in variable2)
-	 - incomingAccesses :				merge
-	 - name :								ignore, should be the same
-	 - isStub :							ignore
-	 - sourceAnchor :					merge, keep the first one (clear it in variable2)
-	 - declaredType :					ignore, keep value of variable1 (clear it in variable2)"
-
-	variable2 incomingAccesses do: [ :access |
-		access variable: variable1 ].
-
-	variable2 parentBehaviouralEntity: nil.
-	variable2 sourceAnchor: nil.
-	variable2 declaredType: nil.
-
-	famixModel removeEntity: variable2
+		 resolveVariableNamed: esopeCmd variable name
+		 in: esopeCmd accessor) ifNotNil: [ :variable |
+		variable = esopeCmd variable ifFalse: [
+			resolver mergeVariable: variable into: esopeCmd variable ] ]
 ]
 
 { #category : #'private - import' }
