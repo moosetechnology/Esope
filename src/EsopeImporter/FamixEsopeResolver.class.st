@@ -362,18 +362,24 @@ FamixEsopeResolver >> resolveImplicitVariableType: aVariable [
 
 { #category : #run }
 FamixEsopeResolver >> resolveImplicits [
+	"put a declaredType based on IMPLICIT declarations for all variables with no declaredType"
 
 	(model allWithType: FamixF77Parameter) do: [ :param |
-		param declaredType ifNil: [
-			param 	declaredType: (self resolveImplicitVariableType: param)
-		]
+		self setImplicitDeclaredType: param in: param parentBehaviouralEntity
+	].
+
+	(model allWithType: FamixF77Variable) do: [ :var |
+		self setImplicitDeclaredType: var in: var parentBehaviouralEntity
+	].
+
+	(model allWithType: FamixF77StatementFunction) do: [ :func |
+		self setImplicitDeclaredType: func in: func parentEntity
 	].
 
 	(model allWithType: FamixF77PUFunction) do: [ :func |
-		func declaredType ifNil: [
-			self resolveImplicitFunction: func
-		]
+		self setImplicitDeclaredType: func in: func
 	] 
+
 ]
 
 { #category : #run }
@@ -463,4 +469,19 @@ FamixEsopeResolver >> resolvingSteps [
 		  #resolveDeclaredTypeOfPointers
 	     resolveInvocations
 		  resolveAccesses )
+]
+
+{ #category : #run }
+FamixEsopeResolver >> setImplicitDeclaredType: anEntity in: owner [
+	"put a declaredType to anEntity based on IMPLICIT declarations in owner
+	 Note: implicit types are intrinsic types so we could simplify the use of #resolveTypeName:
+	 (which looks in all the types)"
+
+	anEntity declaredType
+		ifNil: [
+			anEntity declaredType: 
+				(self resolveTypeName:
+					(self implicitTypeFor: anEntity name inProgramUnit: owner))
+		]
+
 ]
