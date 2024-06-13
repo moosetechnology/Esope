@@ -43,7 +43,7 @@ FamixEsopeResolver >> findEntity: entityName inList: famixEntities [
 FamixEsopeResolver >> implicitTypeFor: name inProgramUnit: programUnit [
 	"find a type according to the first letter of the variable's name"
 
-	^ programUnit dicImplicit at: name first ifAbsent: [ FamixF77TypeUnknown defaultName ]
+	^ programUnit implicitDictionary at: name first ifAbsent: [ FamixF77TypeUnknown defaultName ]
 ]
 
 { #category : #accessing }
@@ -67,12 +67,17 @@ FamixEsopeResolver >> newEntity: aFamixClass [
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> registerImplicitForPU: programUnit range: aRange forType: iASTTypeRef [
+	"for letters in aRange register in implicit dictionary the corresponding iASTTypeRef"
 
 	(aRange size = 1)
-	ifTrue: [ programUnit dicImplicit at: aRange first put: iASTTypeRef entityName asSymbol ]
+	ifTrue: [ programUnit implicitDictionary
+		at: aRange first
+		put: iASTTypeRef entityName asSymbol ]
 	ifFalse: [ 
 		(aRange first to: aRange second) do: [ :letter |
-			programUnit dicImplicit at: letter put: iASTTypeRef entityName asSymbol
+			programUnit implicitDictionary 
+				at: letter
+				put: iASTTypeRef entityName asSymbol
 		]
 	]
 ]
@@ -89,15 +94,20 @@ FamixEsopeResolver >> registerImplicitsDeclarations [
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> registerImplicitsForPU: programUnit [
+	"find all IMPLICIT declaration statement in programUnit and register them
+	 in the implicitDictionary of this program-unit"
 
 	(programUnit attributeAt: #implicits ifAbsent: [ #() ])
 	do: [ :implicitDeclaration | 
 		implicitDeclaration ranges
-			ifNotNil: [ 
-				implicitDeclaration ranges do: [ :aRange | 
-					self registerImplicitForPU: programUnit range: aRange forType: implicitDeclaration forType] ]
+			ifNotNil: [ :ranges |
+				ranges do: [ :aRange | 
+					self
+						registerImplicitForPU: programUnit
+						range: aRange
+						forType: implicitDeclaration forType] ]
 			ifNil: [ "implicit none"
-				programUnit dicImplicit removeAll ]
+				programUnit implicitDictionary removeAll ]
 	]
 ]
 

@@ -13,7 +13,7 @@ FamixF77StatementFunction >> allTypes [
 ]
 
 { #category : #'*EsopeImporter' }
-FamixF77StatementFunction >> dicImplicit [
+FamixF77StatementFunction >> implicitDictionary [
 
-	^parentEntity dicImplicit
+	^parentEntity implicitDictionary
 ]

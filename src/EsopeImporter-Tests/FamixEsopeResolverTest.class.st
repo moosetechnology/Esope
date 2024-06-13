@@ -6,7 +6,7 @@ Class {
 		'resolver',
 		'famixProgFile'
 	],
-	#category : #'EsopeImporter-Tests-Resolver'
+	#category : #'EsopeImporter-Tests-Importer'
 }
 
 { #category : #'default values' }
@@ -238,11 +238,11 @@ FamixEsopeResolverTest >> testRegisterImplicitDefault [
 
 	resolver registerImplicitsForPU: pu.
 
-	self assert: pu dicImplicit size equals: 26.
+	self assert: pu implicitDictionary size equals: 26.
 	
 	"testing a few of them"
-	self assert: (pu dicImplicit at: $a) equals: 'real'.
-	self assert: (pu dicImplicit at: $i) equals: 'integer'.
+	self assert: (pu implicitDictionary at: $a) equals: 'real'.
+	self assert: (pu implicitDictionary at: $i) equals: 'integer'.
 ]
 
 { #category : #'test - implicit' }
@@ -265,13 +265,13 @@ FamixEsopeResolverTest >> testRegisterImplicitMultiple [
 
 	resolver registerImplicitsForPU: pu.
 
-	self assert: pu dicImplicit size equals: 26.
+	self assert: pu implicitDictionary size equals: 26.
 
-	self assert: (pu dicImplicit at: $a) equals: 'integer'.
-	self assert: (pu dicImplicit at: $b) equals: 'real'.
-	self assert: (pu dicImplicit at: $c) equals: 'integer'.
-	self assert: (pu dicImplicit at: $d) equals: 'integer'.
-	self assert: (pu dicImplicit at: $e) equals: 'real'
+	self assert: (pu implicitDictionary at: $a) equals: 'integer'.
+	self assert: (pu implicitDictionary at: $b) equals: 'real'.
+	self assert: (pu implicitDictionary at: $c) equals: 'integer'.
+	self assert: (pu implicitDictionary at: $d) equals: 'integer'.
+	self assert: (pu implicitDictionary at: $e) equals: 'real'
 ]
 
 { #category : #'test - implicit' }
@@ -291,7 +291,7 @@ FamixEsopeResolverTest >> testRegisterImplicitNone [
 
 	resolver registerImplicitsForPU: pu.
 
-	self assert: pu dicImplicit isEmpty
+	self assert: pu implicitDictionary isEmpty
 ]
 
 { #category : #'test - implicit' }
@@ -311,12 +311,12 @@ FamixEsopeResolverTest >> testRegisterImplicitRange [
 
 	resolver registerImplicitsForPU: pu.
 
-	self assert: pu dicImplicit size equals: 26.
+	self assert: pu implicitDictionary size equals: 26.
 
-	self assert: (pu dicImplicit at: $a) equals: 'integer'.
-	self assert: (pu dicImplicit at: $b) equals: 'integer'.
-	self assert: (pu dicImplicit at: $c) equals: 'integer'.
-	self assert: (pu dicImplicit at: $d) equals: 'real'
+	self assert: (pu implicitDictionary at: $a) equals: 'integer'.
+	self assert: (pu implicitDictionary at: $b) equals: 'integer'.
+	self assert: (pu implicitDictionary at: $c) equals: 'integer'.
+	self assert: (pu implicitDictionary at: $d) equals: 'real'
 ]
 
 { #category : #'test - implicit' }
@@ -336,10 +336,10 @@ FamixEsopeResolverTest >> testRegisterImplicitSimple [
 
 	resolver registerImplicitsForPU: pu.
 
-	self assert: pu dicImplicit size equals: 26.
+	self assert: pu implicitDictionary size equals: 26.
 
-	self assert: (pu dicImplicit at: $a) equals: 'integer'.
-	self assert: (pu dicImplicit at: $b) equals: 'real'
+	self assert: (pu implicitDictionary at: $a) equals: 'integer'.
+	self assert: (pu implicitDictionary at: $b) equals: 'real'
 ]
 
 { #category : #tests }
