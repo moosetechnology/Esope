@@ -195,13 +195,13 @@ FortranProjectImporter >> ensureEmptyFolder: folder [
 	^folder
 ]
 
-{ #category : #accessing }
+{ #category : #'error management' }
 FortranProjectImporter >> errorHandler [
 
 	^ errorHandler
 ]
 
-{ #category : #accessing }
+{ #category : #'error management' }
 FortranProjectImporter >> errorHandler: anObject [
 
 	errorHandler := anObject
@@ -366,6 +366,7 @@ FortranProjectImporter >> import [
 		Warning signal: 'Set source folders first' ].
 
 	errorHandler := FortranErrorManager new.
+	errorHandler stopOnError: self stopOnError.
 
 	UIManager default displayProgress: ''
 		from: 0 to: (self importSteps size - 1)
@@ -560,6 +561,18 @@ FortranProjectImporter >> srcFolders: aCollection [
 			ifTrue: [ folder asFileReference ]
 			ifFalse: [ folder ]
 	]
+]
+
+{ #category : #'error management' }
+FortranProjectImporter >> stopOnError [
+
+	^ stopOnError ifNil: [ false ]
+]
+
+{ #category : #'error management' }
+FortranProjectImporter >> stopOnError: anObject [
+
+	stopOnError := anObject
 ]
 
 { #category : #accessing }
