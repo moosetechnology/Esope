@@ -84,9 +84,11 @@ FamixEsopeResolver >> registerImplicitForPU: programUnit range: aRange forType: 
 
 { #category : #run }
 FamixEsopeResolver >> registerImplicitsDeclarations [
+	"find IMPLICIT declaration statements in all program units and register them
+	 in the respective implicitDictionary"
 
 	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :programUnit |
-		self errorHandler enterContext: programUnit name.
+		self errorHandler enterContext: 'on file ' , programUnit name.
 		self registerImplicitsForPU: programUnit.
 		self errorHandler leaveContext
 	]
@@ -172,7 +174,7 @@ FamixEsopeResolver >> requalifyParameterDeclaration: param [
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> requalifyParameterDeclarations [
-	"For each parameter, try to find a matching VariableDeclaration"
+	"For each parameter, try to find a matching VariableDeclaration to merge them together"
 
 	(model allWithType: FamixF77Parameter) do: [ :param |
 		self requalifyParameterDeclaration: param
@@ -181,10 +183,8 @@ FamixEsopeResolver >> requalifyParameterDeclarations [
 
 { #category : #run }
 FamixEsopeResolver >> requalifyVariableDeclarations [
-	"a LocalVariable declaration can be a:
-	- Function
-	- Parameter
-	- LocalVariable"
+	"some LocalVariable entities are actually Functions
+	 for some other, there is a Parameter and a LocalVariable for the same Fortran entity"
 
 	self requalifyParameterDeclarations.
 	self requalifyFunctionDeclarations.
@@ -230,8 +230,8 @@ FamixEsopeResolver >> resolveAccess: anAccess fromPointer: aPointerVariable [
 
 	| variableAccessed |
 	variableAccessed := self
-		                    removeStoredIAST: anAccess
-		                    forSymbol: #entity.
+		removeStoredIAST: anAccess
+		forSymbol: #entity.
 	self assert: variableAccessed isNotNil.
 
 	aPointerVariable declaredType attributes
@@ -303,6 +303,7 @@ FamixEsopeResolver >> resolveAsLocalVariable: variableName in: anAccessor [
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveEsopeVariable: esopeVariable [
+	"sets the declaredType of declared pointer esopeVariable"
 
 	| segments |
 	segments := self model allWithType: FamixEsopeSegment.
@@ -358,14 +359,15 @@ FamixEsopeResolver >> resolveImplicits [
 
 { #category : #run }
 FamixEsopeResolver >> resolveIncludes [
-	"puts FamixF77IncludedFile into the FamixF77Include that include them"
+	"links FamixF77IncludedFile with the FamixF77Include_s that concern them"
 
 	(self model allWithType: FamixF77Include) 
 	do: [ :include |
 		(self model allWithType: FamixF77IncludedFile)
-			detect: [ :includedFile | includedFile programFile filename asPath basename beginsWith: include filename ]
+			detect: [ :includedFile |
+				includedFile programFile filename asPath basename beginsWith: include filename ]
 			ifFound: [ :includedFile | include included: includedFile ]
-			ifNone: [ Notification signal: 'IncludedFile: No such file or directory' ]
+			ifNone: [ Notification signal: ' no such file' , include filename ]
 	]
 ]
 
