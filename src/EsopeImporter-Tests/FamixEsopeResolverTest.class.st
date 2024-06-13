@@ -225,6 +225,43 @@ FamixEsopeResolverTest >> setUp [
 	famixProgFile  := self defaultProgramFile: './main.f'.
 ]
 
+{ #category : #tests }
+FamixEsopeResolverTest >> testMergeVariableInto [
+	"We have 2 variables with the same name one should be merged into the other which keeps its
+	 declared type and	gets the accesses of the 1st"
+
+	| variable1 variable2 sub1 sub2 |
+
+	sub1 := self defaultSubroutine: 'sub1'.
+	sub2 := self defaultSubroutine: 'sub2'.
+
+	variable1 := (self defaultVariable: 'var1' withType: 'INTEGER')
+		parentBehaviouralEntity: sub1.
+	variable2 := (self defaultVariable: 'var1' withType: 'REAL')
+		parentBehaviouralEntity: sub2.
+
+	resolver model newAccess
+		accessor: sub1 ;
+		variable: variable1.
+	resolver model newAccess
+		accessor: sub2 ;
+		variable: variable2.
+
+	self assert: variable1 incomingAccesses size equals: 1.
+	self assert: sub1 localVariables size equals: 1.
+	self assert: variable2 incomingAccesses size equals: 1.
+	self assert: sub2 localVariables size equals: 1.
+
+	resolver mergeVariable: variable2 into: variable1.
+
+	self assert: variable1 incomingAccesses size equals: 2.
+	self assert: sub1 localVariables size equals: 1.
+	self assert: variable2 incomingAccesses size equals: 0.
+	self assert: sub2 localVariables size equals: 0.
+
+	self assert: variable1 declaredType name equals: 'INTEGER'
+]
+
 { #category : #'test - implicit' }
 FamixEsopeResolverTest >> testRegisterImplicitDefault [
 
