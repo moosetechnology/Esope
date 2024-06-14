@@ -584,6 +584,23 @@ JsonToIASTVisitor >> visitOpenStatement: anOpenStatement [
 	^nil
 ]
 
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitParameterStatement: aParameterStatementNode [ 
+	"span declarators
+	 Variable in PARAMETER statement will come back as IASTVariable-s
+	 We need them to be IASTVarAccess"
+
+	| data |
+	data := super visitParameterStatement: aParameterStatementNode.
+
+	^data second collect: [ :v |
+		IASTVarAccess new
+			isWrite: true ;
+			entityName: v entityName ;
+			yourself
+	]
+]
+
 { #category : #'visiting prog-unit' }
 JsonToIASTVisitor >> visitProgramFile: aProgramFileNode [
 	| programFile data |
