@@ -1,6 +1,34 @@
 Extension { #name : #FamixF77ProgramUnit }
 
 { #category : #'*EsopeImporter' }
+FamixF77ProgramUnit >> allLocalVariables [
+
+	^self localVariables
+	  ,
+	(self includes
+		flatCollect: [ :include | 
+			   include included ifNotNil: [ :included | included localVariables ] ]
+	)
+]
+
+{ #category : #'*EsopeImporter' }
+FamixF77ProgramUnit >> createUnresolveVariable: variableName with: resolver [
+
+	| implicitVariable |
+
+	implicitVariable := mooseModel newVariable
+		name: variableName ;
+		parentBehaviouralEntity: self ;
+		yourself.
+
+	implicitVariable declaredType:
+		(resolver resolveImplicitVariableType: implicitVariable).
+
+	^implicitVariable
+
+]
+
+{ #category : #'*EsopeImporter' }
 FamixF77ProgramUnit >> defaultImplicit [
 
 	^ (($a to: $z) collect: [ :char | 
@@ -38,6 +66,15 @@ FamixF77ProgramUnit >> isSubroutine [
 FamixF77ProgramUnit >> localVariableClass [
 
 	^FamixF77Variable
+]
+
+{ #category : #'*EsopeImporter' }
+FamixF77ProgramUnit >> resolveVariable: variableName with: resolver [
+
+	^(resolver resolveVariableNamed: variableName in: self)
+		ifNotNil: [ :localVar | localVar ]
+		ifNil: [ self createUnresolveVariable: variableName with: resolver ]
+
 ]
 
 { #category : #'*EsopeImporter' }
