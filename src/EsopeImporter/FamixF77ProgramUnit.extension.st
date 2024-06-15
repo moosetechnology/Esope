@@ -44,7 +44,7 @@ FamixF77ProgramUnit >> defaultImplicit [
 { #category : #'*EsopeImporter' }
 FamixF77ProgramUnit >> famixImportSanityCheck [
 
-	self assert: programFile isNotNil description: 'ProgramUnit without parent ProgramFile'.
+	self assert: programFile isNotNil description: name , ' without parent ProgramFile'.
 ]
 
 { #category : #'*EsopeImporter' }
