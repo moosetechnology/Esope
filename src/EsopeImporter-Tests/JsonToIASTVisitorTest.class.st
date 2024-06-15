@@ -826,22 +826,18 @@ JsonToIASTVisitorTest >> testFunctionWithFunctionInvocation [
       end
 "
 
-	| programFile fct |
+	| programFile stmt |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:22)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:18)-(2:18)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:18)-(2:18)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:21)-(2:21)","tag":"value","value":{"contents":"j","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:21)-(2:21)"}],"span":"(2:18)-(2:21)"},"function":{"anno":[],"span":"(2:11)-(2:15)","tag":"value","value":{"contents":"ifunc","tag":"variable"}},"span":"(2:11)-(2:22)","tag":"function_call"},"span":"(2:7)-(2:22)","tag":"assign_expression","target":{"anno":[],"span":"(2:7)-(2:7)","tag":"value","value":{"contents":"i","tag":"variable"}}},"tag":"statement"}],"name":"efunc","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
 
 
 	self assert: programFile progUnits size equals: 1.
 	
-	fct := programFile progUnits first.
+	stmt := programFile progUnits first body first.
+	self assert: stmt second class equals: IASTInvocation.
+	self assert: stmt second entityName equals: 'ifunc'.
+	self assert: stmt second arguments size equals: 2.
+	self assert: stmt second sourceAnchor isNotNil.
 
-	self assert: fct class equals: IASTFunction.
-	self assert: fct entityName equals: 'efunc'.
-	self assert: fct body first size equals: 2.
-	self assert: fct sourceAnchor startLine equals: 1.
-	self assert: fct sourceAnchor startColumn equals: 7.
-	self assert: fct sourceAnchor endLine equals: 3.
-	self assert: fct sourceAnchor endColumn equals: 10.
-	
 ]
 
 { #category : #'tests-statement' }

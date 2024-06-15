@@ -212,7 +212,7 @@ IASTToFamixVisitorTest >> testComment [
 ]
 
 { #category : #'tests-esope' }
-IASTToFamixVisitorTest >> testCreateDummyFamixFortran77Subroutine [
+IASTToFamixVisitorTest >> testDummyFamixFortran77Subroutine [
 
 	"
       subroutine _$aFile_inc
@@ -260,7 +260,7 @@ c@_   end segment
 ]
 
 { #category : #'tests-esope' }
-IASTToFamixVisitorTest >> testCreateFamixEsopeAccessors [
+IASTToFamixVisitorTest >> testFamixEsopeAccessors [
 
 	"
 	d__(ptr,attr)
@@ -296,7 +296,7 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessors [
 ]
 
 { #category : #'tests-esope' }
-IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArg [
+IASTToFamixVisitorTest >> testFamixEsopeAccessorsWithArg [
 
 	"
 	d__(ptr,attr(i))
@@ -345,7 +345,7 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArg [
 ]
 
 { #category : #'tests-esope' }
-IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArgsWithDot [
+IASTToFamixVisitorTest >> testFamixEsopeAccessorsWithArgsWithDot [
 
 	"
 	d__(ptr,attr(i,d__(p,j)))
@@ -388,7 +388,7 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArgsWithDot [
 ]
 
 { #category : #'tests-esope' }
-IASTToFamixVisitorTest >> testCreateFamixEsopeCommandSegini [
+IASTToFamixVisitorTest >> testFamixEsopeCommandSegini [
 
 	"
 	segini ptr
@@ -412,7 +412,7 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeCommandSegini [
 ]
 
 { #category : #'tests-esope' }
-IASTToFamixVisitorTest >> testCreateFamixEsopePointerDeclaration [
+IASTToFamixVisitorTest >> testFamixEsopePointerDeclaration [
 "      program main
       segment, pers
       end segment
@@ -438,7 +438,7 @@ IASTToFamixVisitorTest >> testCreateFamixEsopePointerDeclaration [
 ]
 
 { #category : #'tests-esope' }
-IASTToFamixVisitorTest >> testCreateFamixEsopeSegment [
+IASTToFamixVisitorTest >> testFamixEsopeSegment [
 
 	"
 	segment myseg
@@ -487,7 +487,7 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeSegment [
 ]
 
 { #category : #'tests-esope' }
-IASTToFamixVisitorTest >> testCreateFamixEsopeSlashWithLitteralDim [
+IASTToFamixVisitorTest >> testFamixEsopeSlashWithLitteralDim [
 
 	"
 c  ptr.attr(/1)
@@ -532,7 +532,7 @@ c  ptr.attr(/1)
 ]
 
 { #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77 [
+IASTToFamixVisitorTest >> testFamixFortran77 [
 
 	| entity |
 	programFile progUnits: { IASTSubroutine new
@@ -557,7 +557,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77 [
 ]
 
 { #category : #'tests-esope' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77ESOAtWithArrayArgument [
+IASTToFamixVisitorTest >> testFamixFortran77ESOAtWithArrayArgument [
 "Special case of a D__ function call with an array as argument
 
       subroutine hello
@@ -576,7 +576,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77ESOAtWithArrayArgument [
 ]
 
 { #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77Invocation [
+IASTToFamixVisitorTest >> testFamixFortran77Invocation [
 	| entity invocation caller callee |
 
 	callee := IASTSubroutine new
@@ -604,7 +604,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77Invocation [
 ]
 
 { #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77LocalVariable [
+IASTToFamixVisitorTest >> testFamixFortran77LocalVariable [
 
 	| entity var |
 	programFile progUnits: { IASTSubroutine new
@@ -629,7 +629,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77LocalVariable [
 ]
 
 { #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77PUBlockdata [
+IASTToFamixVisitorTest >> testFamixFortran77PUBlockdata [
 
 	| entity |
 	programFile progUnits: { IASTBlockData new
@@ -648,7 +648,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUBlockdata [
 ]
 
 { #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77PUComment [
+IASTToFamixVisitorTest >> testFamixFortran77PUComment [
 	| entity |
 	programFile progUnits: { IASTComment new
 		text: ' a comment' ;
@@ -667,7 +667,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUComment [
 ]
 
 { #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77PUFunction [
+IASTToFamixVisitorTest >> testFamixFortran77PUFunction [
 
 	| entity |
 	programFile progUnits: { IASTFunction new
@@ -685,7 +685,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUFunction [
 ]
 
 { #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77PUFunctionWithParameter [
+IASTToFamixVisitorTest >> testFamixFortran77PUFunctionWithParameter [
 
 	| entity param |
 	programFile progUnits: { IASTFunction new
@@ -710,7 +710,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUFunctionWithParameter [
 ]
 
 { #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77PUMain [
+IASTToFamixVisitorTest >> testFamixFortran77PUMain [
 
 	| entity |
 	programFile progUnits: { IASTMainProgram new
@@ -728,7 +728,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77PUMain [
 ]
 
 { #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77ProgramFile [
+IASTToFamixVisitorTest >> testFamixFortran77ProgramFile [
 	| entity |
 	programFile accept: visitor.
 
@@ -744,7 +744,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77ProgramFile [
 ]
 
 { #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77SourceAnchor [
+IASTToFamixVisitorTest >> testFamixFortran77SourceAnchor [
 	| entity |
 	entity := self defaultAnchor accept: visitor.
 	
@@ -757,7 +757,7 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77SourceAnchor [
 ]
 
 { #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testCreateFamixFortran77Subroutine [
+IASTToFamixVisitorTest >> testFamixFortran77Subroutine [
 
 	| entity |
 	programFile progUnits: { IASTSubroutine new
@@ -773,40 +773,6 @@ IASTToFamixVisitorTest >> testCreateFamixFortran77Subroutine [
 	self assert: entity name equals: 'sub'.
 	self assert: entity programFile isNotNil.
 	self assert: entity parameters size equals: 0
-]
-
-{ #category : #'tests-esope' }
-IASTToFamixVisitorTest >> testCreateIncludeFamixFortran77Subroutine [
-
-	"
-      subroutine test
-c@_#include ""point.seg""
-      end
-	"
-
-	| pf sub include includeStmt |
-	includeStmt := IASTInclude new
-		               includeCommand: '#include';
-		               entityName: 'point.seg';
-		               yourself.
-	programFile progUnits: { (IASTSubroutine new
-			 entityName: 'test';
-			 body: { includeStmt };
-			 yourself) }.
-
-	pf := programFile accept: visitor.
-
-	self assert: pf programUnits size equals: 1.
-
-	sub := pf programUnits first.
-	self assert: sub class equals: FamixF77PUSubroutine.
-	self assert: sub includes size equals: 1.
-
-	include := sub includes first.
-	self assert: include class equals: FamixF77Include.
-	self assert: include filename equals: 'point.seg'.
-	self assert: include includedBy equals: sub "
-	self assert: include source equals: programFile."
 ]
 
 { #category : #'tests-fortran' }
@@ -837,6 +803,40 @@ IASTToFamixVisitorTest >> testImplicitWithRange [
 	self assert: entity size equals: 2.
 	self assert: entity first equals: $c.
 	self assert: entity second equals: $f
+]
+
+{ #category : #'tests-esope' }
+IASTToFamixVisitorTest >> testIncludeFamixFortran77Subroutine [
+
+	"
+      subroutine test
+c@_#include ""point.seg""
+      end
+	"
+
+	| pf sub include includeStmt |
+	includeStmt := IASTInclude new
+		               includeCommand: '#include';
+		               entityName: 'point.seg';
+		               yourself.
+	programFile progUnits: { (IASTSubroutine new
+			 entityName: 'test';
+			 body: { includeStmt };
+			 yourself) }.
+
+	pf := programFile accept: visitor.
+
+	self assert: pf programUnits size equals: 1.
+
+	sub := pf programUnits first.
+	self assert: sub class equals: FamixF77PUSubroutine.
+	self assert: sub includes size equals: 1.
+
+	include := sub includes first.
+	self assert: include class equals: FamixF77Include.
+	self assert: include filename equals: 'point.seg'.
+	self assert: include includedBy equals: sub "
+	self assert: include source equals: programFile."
 ]
 
 { #category : #'tests-fortran' }

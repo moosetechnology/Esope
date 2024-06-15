@@ -151,12 +151,6 @@ FamixEsopeResolver >> removeAttribute: aSymbol fromEntity: anEntity [
 	^entity
 ]
 
-{ #category : #'private - utility' }
-FamixEsopeResolver >> removeStoredIAST: anEntity [
-
-	^anEntity getAndRemoveAttribute: #entity 
-]
-
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> requalifyFunctionDeclaration: external [
 	"external declaration of function followed by a VariableDeclaration of the same function
@@ -347,7 +341,7 @@ FamixEsopeResolver >> resolveEsopeVariable: esopeVariable [
 ]
 
 { #category : #'symbols resolution' }
-FamixEsopeResolver >> resolveImplicitFunction: function [
+FamixEsopeResolver >> resolveImplicitFunctionType: function [
 
 	function declaredType:
 		(self resolveTypeName:
@@ -397,7 +391,7 @@ FamixEsopeResolver >> resolveIncludes [
 			detect: [ :includedFile |
 				includedFile programFile filename asPath basename beginsWith: include filename ]
 			ifFound: [ :includedFile | include included: includedFile ]
-			ifNone: [ Notification signal: ' no such file' , include filename ]
+			ifNone: [ Notification signal: ' no such file ' , include filename ]
 	]
 ]
 
@@ -418,7 +412,7 @@ FamixEsopeResolver >> resolveInvocation: anInvocation [
 
 	| invocated |
 
-	invocated := self removeStoredIAST: anInvocation.
+	invocated := anInvocation getAndRemoveAttribute: #entity .
 
 	(self resolveInvocables: invocated)
 		ifNotNil: [ :invocatedFound |
@@ -429,7 +423,10 @@ FamixEsopeResolver >> resolveInvocation: anInvocation [
 FamixEsopeResolver >> resolveInvocations [
 
 	(self model allWithType: FamixF77Invocation) do: [ :invocation |
-		self resolveInvocation: invocation ]
+		self errorHandler enterContext: ('invocation: ' , invocation signature).
+		self resolveInvocation: invocation.
+		self errorHandler leaveContext
+	]
 ]
 
 { #category : #'symbols resolution' }
