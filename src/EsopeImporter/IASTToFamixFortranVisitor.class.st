@@ -189,11 +189,12 @@ IASTToFamixFortranVisitor >> visitIASTIncludedFile: anIncludedFile [
 IASTToFamixFortranVisitor >> visitIASTInvocation: anInvocation [
 
 	^ self model newInvocation
-		  sourceAnchor:
-			  (self visitIndexedFileAnchor: anInvocation sourceAnchor);
-		  attributeAt: #entity put: anInvocation;
-		  sender: stack top;
-		  yourself
+		sourceAnchor:
+			(self visitIndexedFileAnchor: anInvocation sourceAnchor);
+		attributeAt: #entity put: anInvocation;
+		signature: anInvocation entityName ;
+		sender: stack top;
+		yourself
 ]
 
 { #category : #visiting }
