@@ -429,7 +429,10 @@ FamixEsopeResolver >> resolveInvocation: anInvocation [
 FamixEsopeResolver >> resolveInvocations [
 
 	(self model allWithType: FamixF77Invocation) do: [ :invocation |
-		self resolveInvocation: invocation ]
+		self errorHandler enterContext: ('invocation: ' , invocation signature).
+		self resolveInvocation: invocation.
+		self errorHandler leaveContext
+	]
 ]
 
 { #category : #'symbols resolution' }
