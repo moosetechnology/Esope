@@ -89,7 +89,6 @@ IASTToFamixEsopeVisitor >> visitIASTVarEsoAt: aVarEsoAt [
 
 	attributeAccess := (aVarEsoAt entities second) accept: self.
 	attributeAccess attributeAt: #parentAccess put: famixAccess.
-	famixAccess attributeAt: #attributeAccess put: attributeAccess.
 
 	^famixAccess
 ]

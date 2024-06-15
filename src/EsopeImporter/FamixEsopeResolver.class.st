@@ -248,7 +248,7 @@ FamixEsopeResolver >> resolveAccess: anAccess [
 			self resolveAccess: anAccess fromPointer: pointerAccess variable.
 			^self
 		].
-
+ 
 	variableName := (anAccess getAndRemoveAttribute: #entity)
 		entityName.
 	self assert: variableName isNotNil.
