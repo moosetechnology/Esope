@@ -470,7 +470,8 @@ FortranProjectImporter >> jsonASTToIAST [
 			errorHandler enterContext: jsonFile fullName.
 			iastEntity := visitor visitProgramFile:
 				(NeoJSONReader fromString: jsonFile contents).
-			errorHandler leaveContext
+			errorHandler leaveContext.
+			iastEntity
 		]
 
 ]
