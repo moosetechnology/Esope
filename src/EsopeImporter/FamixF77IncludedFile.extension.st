@@ -14,3 +14,11 @@ FamixF77IncludedFile >> createUnresolveVariable: variableName with: resolver [
 	^mooseModel newUnknownVariableNamed: variableName
 
 ]
+
+{ #category : #'*EsopeImporter' }
+FamixF77IncludedFile >> famixImportSanityCheck [
+
+	super famixImportSanityCheck.
+
+	self assert: inclusions isNotEmpty description: 'IncludedFile without inclusions'.
+]

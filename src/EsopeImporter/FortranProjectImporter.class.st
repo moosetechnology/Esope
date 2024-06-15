@@ -55,7 +55,8 @@ Class {
 		'tempEsopeFolder',
 		'tempFortranFolder',
 		'tempJsonFolder',
-		'resolver'
+		'resolver',
+		'withSanityChecks'
 	],
 	#category : #'EsopeImporter-Importer'
 }
@@ -162,13 +163,13 @@ FortranProjectImporter >> deEsopify: localPath from: srcFolder to: destFolder [
 	srcFile := self appendPath: localPath toParent: srcFolder.
 	destFile := (self appendPath: localPath toParent: destFolder) withExtension: 'f'.
 
-	self errorHandler
-		handleErrorsFor: 'file:' , localPath fullName
-		running: [
-			PPEsopeRewriter
-				rewriteFrom: (srcFile readStreamEncoded: self defaultFileEncoding)
-				to: destFile
-		]
+	errorHandler enterContext: 'file:' , localPath fullName.
+
+	PPEsopeRewriter
+		rewriteFrom: (srcFile readStreamEncoded: self defaultFileEncoding)
+		to: destFile.
+
+	errorHandler leaveContext
 ]
 
 { #category : #accessing }
@@ -348,9 +349,9 @@ FortranProjectImporter >> iASTToFamix [
 	visitor := IASTToFamixFortranVisitor new.
 
 	iastmodel do: [ :iastProgramFile |
-		errorHandler
-			handleErrorsFor: 'file:' , iastProgramFile filename
-			running: [ iastProgramFile accept: visitor ]
+		errorHandler enterContext: ('file:' , iastProgramFile filename).
+		iastProgramFile accept: visitor.
+		errorHandler leaveContext
 	].
 
 	famixModel := visitor model
@@ -394,6 +395,8 @@ FortranProjectImporter >> importSteps [
 		'Intermediary AST to Famix' -> #iASTToFamix .
 		'Famix symbol resolution' -> #famixResolve .
 		'Pointer variables type propagation' -> #propagatePointerType .
+
+		'Post import sanity checks' -> #postImportChecks
 	}
 ]
 
@@ -418,24 +421,31 @@ FortranProjectImporter >> includeFolders: aCollection [
 FortranProjectImporter >> includedFilesToEsope [
 
 	(self findFiles: self collectIncludedFileNames in: self includeFolders)
-		do: [ :foundFile | self fakeEsopeProgramUnit: foundFile to: self tempEsopeFolder  ]
+		do: [ :foundFile |
+			errorHandler enterContext: foundFile basename.
+			self fakeEsopeProgramUnit: foundFile to: self tempEsopeFolder.
+			errorHandler leaveContext
+		]
 ]
 
 { #category : #'private - files' }
 FortranProjectImporter >> includedNamesIn: srcFileReference [
 	"finds all file inclusions from srcFileReference"
 
-	^self errorHandler
-		handleErrorsFor: 'file:' , srcFileReference fullName
-		running: [
-			srcFileReference
-				readStreamEncoded: self defaultFileEncoding
-				do: [ :stream |
-					stream contents lines
-						select: [ :line | self isIncludeLine: line]
-						thenCollect: [ :line | self getIncludedFileName: line ]
-				]
-		]
+	| value |
+	errorHandler	enterContext: 'file:' , srcFileReference fullName.
+
+	value := srcFileReference
+		readStreamEncoded: self defaultFileEncoding
+		do: [ :stream |
+			stream contents lines
+				select: [ :line | self isIncludeLine: line]
+				thenCollect: [ :line | self getIncludedFileName: line ]
+		].
+
+	errorHandler leaveContext.
+	
+	^value
 
 ]
 
@@ -457,16 +467,10 @@ FortranProjectImporter >> jsonASTToIAST [
 
 	iastmodel := (self tempJsonFolder allFiles) 
 		collect: [ :jsonFile | 
-			errorHandler
-				handleErrorsFor: 'file:' , jsonFile fullName
-				running: [ 
-					iastEntity := visitor visitProgramFile:
-						(NeoJSONReader fromString: jsonFile contents) ]
-				onErrorDo: [ :err |
-					iastEntity := IASTErrorEntity new filename: jsonFile fullName ; yourself
-				].
-
-			iastEntity
+			errorHandler enterContext: jsonFile fullName.
+			iastEntity := visitor visitProgramFile:
+				(NeoJSONReader fromString: jsonFile contents).
+			errorHandler leaveContext
 		]
 
 ]
@@ -504,10 +508,11 @@ FortranProjectImporter >> parseFortran77: localPath from: srcFolder to: destFold
 
 	cmdReturn := self parseFortran77File: (self appendPath: localPath toParent: srcFolder) to: destFile.
 
-	(cmdReturn = 0)
-		ifFalse: [ 
-			self errorHandler error: 'Error while parsing ' , localPath pathString.
-			destFile ensureDelete  ].
+	(cmdReturn = 0) ifTrue: [ ^self ].
+
+	errorHandler error: 'Error while parsing ' , localPath pathString.
+	destFile ensureDelete
+
 ]
 
 { #category : #'private - import' }
@@ -524,10 +529,24 @@ FortranProjectImporter >> parseFortran77File: srcFileReference to: destFileRefer
 ]
 
 { #category : #run }
+FortranProjectImporter >> postImportChecks [
+
+	withSanityChecks ifTrue: [
+		famixModel entities do: [ :entity |
+			errorHandler enterContext: entity asString.
+			entity famixImportSanityCheck.
+			errorHandler leaveContext
+		]
+	]
+]
+
+{ #category : #run }
 FortranProjectImporter >> propagatePointerType [
 
 	(famixModel allWithType: FamixEsopeCommand) do: [ :esopeCmd |
-		self makePointerFromVariable: esopeCmd
+		errorHandler enterContext: esopeCmd commandName.
+		self makePointerFromVariable: esopeCmd.
+		errorHandler leaveContext
 	]
 ]
 
@@ -597,6 +616,18 @@ FortranProjectImporter >> unquoteIncludedFile: fileName [
 	^(#( $" $< ) includes: fileName first)
 		ifTrue: [ fileName copyFrom: 2 to: fileName size -1 ]
 		ifFalse: [ fileName ]
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> withSanityChecks [
+
+	^ withSanityChecks
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> withSanityChecks: anObject [
+
+	withSanityChecks := anObject
 ]
 
 { #category : #constants }

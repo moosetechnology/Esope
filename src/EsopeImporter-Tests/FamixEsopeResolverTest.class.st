@@ -674,6 +674,67 @@ FamixEsopeResolverTest >> testResolveAccessesForAnAttribute [
 ]
 
 { #category : #'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveAccessesFromStatementFunctionToParameter [
+	"program main
+	 identity(x) = x
+	 end
+	"
+
+	| fct access  var |
+
+	fct := self newEntity: FamixF77StatementFunction named: 'identity'.
+	fct
+		parentEntity: (self defaultMain: 'main') ;
+		addParameter: (self newEntity: FamixF77Parameter named: 'x') ;
+		addAccess: (self defaultAccess: 'x').
+
+ 	resolver resolveAccesses.
+
+	self assert: fct parameters size equals: 1.
+	var := fct parameters anyOne.
+	self assert: var name equals: 'x'.
+
+	self assert: fct accesses size equals: 1.
+
+	access := fct accesses anyOne.
+	self assert: access variable equals: var.
+
+]
+
+{ #category : #'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveAccessesFromStatementFunctionToParentLocalVariable [
+	"program main
+	 var = 1
+	 constant(x) = var
+	 end
+	"
+
+	| main fct var |
+
+	main := (self defaultMain: 'main')
+		addLocalVariable: (self defaultVariable: 'var' withType: #integer);
+		addAccess: (self defaultAccess: 'var');
+		yourself.
+
+	fct := self newEntity: FamixF77StatementFunction named: 'constant'.
+	fct
+		parentEntity: main ;
+		addParameter: (self newEntity: FamixF77Parameter named: 'x') ;
+		addAccess: (self defaultAccess: 'var').
+
+ 	resolver resolveAccesses.
+
+	self assert: fct localVariables size equals: 0.
+
+	var := fct parameters anyOne.
+	self assert: var incomingAccesses size equals: 0.
+
+	var := main localVariables anyOne.
+	self assert: var incomingAccesses size equals: 2.
+	self assert: fct accesses anyOne variable equals: var.
+]
+
+{ #category : #'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesInIncludedFileToInside [
 	"Resolve accesses from includedFile to variable declared in the same includedIile
 
