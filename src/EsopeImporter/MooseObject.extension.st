@@ -1,7 +1,7 @@
 Extension { #name : #MooseObject }
 
 { #category : #'*EsopeImporter' }
-MooseObject >> removeAttributeAt: aSymbol [
+MooseObject >> getAndRemoveAttribute: aSymbol [
 
 	| value |
 	value := self attributeAt: aSymbol ifAbsent: [ nil ].

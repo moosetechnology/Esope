@@ -266,7 +266,7 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessors [
 	d__(ptr,attr)
 	"
 
-	| d__ entity access var |
+	| d__ entity pointerAccess attributeAccess var |
 	d__ := self defaultVarEsoAt: #( #ptr #attr ).
 
 	entity := (FamixF77PUSubroutine new).
@@ -276,17 +276,22 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessors [
 
 	self assert: entity accesses size equals: 2.
 
-	access := entity accesses detect: [:acc | (acc attributeAt: #parentAccess ifAbsent: [ nil ]) isNil ].
+	entity accesses do: [ :access |
+		var := access attributeAt: #entity ifAbsent: [ nil ].
+		self assert: var isNotNil.
+		(var entityName = 'ptr')
+			ifTrue: [ pointerAccess := access ]
+			ifFalse: [ attributeAccess := access ]
+	].
 
-	var := access attributeAt: #entity ifAbsent: [ nil ].
-	self assert: var isNotNil.
-	self assert: var entityName equals: 'ptr'.
+	self assert: pointerAccess isNotNil.
+	self assert: (pointerAccess attributeAt: #parentAccess ifAbsent: [ nil ]) isNil.
 
-	access := access attributeAt: #attributeAccess ifAbsent: [ nil ].
-	self assert: access isNotNil.
-
-	var := access attributeAt: #entity ifAbsent: [ nil ].
-	self assert: var isNotNil.
+	self assert: attributeAccess isNotNil.
+	self
+		assert: (attributeAccess attributeAt: #parentAccess ifAbsent: [ nil ])
+		equals: pointerAccess.
+	var := attributeAccess attributeAt: #entity ifAbsent: [ nil ].
 	self assert: var entityName equals: 'attr'.
 ]
 
@@ -297,7 +302,7 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArg [
 	d__(ptr,attr(i))
 	"
 
-	| d__ entity access var |
+	| d__ entity var pointerAccess attributeAccess indiceAccess |
 	d__ := (self defaultNamedEntity: 'd__' for: IASTVarEsoAt) entities:
 		       { 
 			       (self defaultNamedEntity: 'ptr' for: IASTVarAccess).
@@ -312,23 +317,29 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArg [
 
 	self assert: entity accesses size equals: 3.
 
-	access := entity accesses detect: [:acc | (acc attributeAt: #attributeAccess ifAbsent: [ nil ]) isNotNil ].
-	
-	var := access attributeAt: #entity ifAbsent: [ nil ].
-	self assert: var entityName equals: 'ptr'.
+	entity accesses do: [ :access |
+		var := access attributeAt: #entity ifAbsent: [ nil ].
+		self assert: var isNotNil.
+		(var entityName = 'ptr')
+			ifTrue: [ pointerAccess := access ]
+			ifFalse: [
+				(var entityName = 'attr')
+					ifTrue: [ attributeAccess := access ]
+					ifFalse: [ indiceAccess := access ]
+			]
+	].
 
-	access := access attributeAt: #attributeAccess ifAbsent: [ nil ].
-	self assert: access isNotNil.
+	self assert: pointerAccess isNotNil.
+	self assert: (pointerAccess attributeAt: #parentAccess ifAbsent: [ nil ]) isNil.
 
-	var := access attributeAt: #entity ifAbsent: [ nil ].
-	self assert: var isNotNil.
-	self assert: var entityName equals: 'attr'.
+	self assert: attributeAccess isNotNil.
+	self
+		assert: (attributeAccess attributeAt: #parentAccess ifAbsent: [ nil ])
+		equals: pointerAccess.
 
-	access := entity accesses detect: [:acc |
-		(acc attributeAt: #attributeAccess ifAbsent: [ nil ]) isNil and: 
-		[ (acc attributeAt: #parentAccess ifAbsent: [ nil ]) isNil ] ].
-	
-	var := access attributeAt: #entity ifAbsent: [ nil ].
+	self assert: indiceAccess isNotNil.
+	self assert: (indiceAccess attributeAt: #parentAccess ifAbsent: [ nil ]) isNil.
+	var := indiceAccess attributeAt: #entity ifAbsent: [ nil ].
 	self assert: var entityName equals: 'i'.
 
 ]
@@ -340,7 +351,7 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArgsWithDot [
 	d__(ptr,attr(i,d__(p,j)))
 	"
 
-	| d__ entity accesses var |
+	| d__ entity pAccess jAccess var |
 	d__ := (self defaultNamedEntity: 'd__' for: IASTVarEsoAt) entities:
 		       { 
 			       (self defaultNamedEntity: 'ptr' for: IASTVarAccess).
@@ -359,32 +370,20 @@ IASTToFamixVisitorTest >> testCreateFamixEsopeAccessorsWithArgsWithDot [
 
 	self assert: entity accesses size equals: 5.
 
-	accesses := entity accesses select: [:acc | (acc attributeAt: #attributeAccess ifAbsent: [ nil ]) isNotNil ].
-
-	self assert: accesses size equals: 2.
-	accesses do: [ :acc |
-		var := acc attributeAt: #entity ifAbsent: [ nil ].
-		self assert: ((var entityName = 'ptr') or: (var entityName = 'p')).
-		self assert: (acc attributeAt: #parentAccess ifAbsent: [ nil ]) isNil.
+	entity accesses do: [ :access |
+		var := access attributeAt: #entity ifAbsent: [ nil ].
+		self assert: var isNotNil.
+		(var entityName = 'p') ifTrue: [ pAccess := access ].
+		(var entityName = 'j') ifTrue: [ jAccess := access ].
 	].
 
-	accesses := entity accesses select: [:acc | (acc attributeAt: #parentAccess ifAbsent: [ nil ]) isNotNil ].
+	self assert: pAccess isNotNil.
+	self assert: (pAccess attributeAt: #parentAccess ifAbsent: [ nil ]) isNil.
 
-	self assert: accesses size equals: 2.
-	accesses do: [ :acc |
-		var := acc attributeAt: #entity ifAbsent: [ nil ].
-		self assert: ((var entityName = 'attr') or: (var entityName = 'j')).
-		self assert: (acc attributeAt: #attributeAccess ifAbsent: [ nil ]) isNil.
-	].
-
-	accesses := entity accesses select: [:acc |
-		(acc attributeAt: #attributeAccess ifAbsent: [ nil ]) isNil and: 
-		[ (acc attributeAt: #parentAccess ifAbsent: [ nil ]) isNil ] ].
-	
-	self assert: accesses size equals: 1.
-	var := accesses anyOne attributeAt: #entity ifAbsent: [ nil ].
-	self assert: var isNotNil.
-	self assert: var entityName equals: 'i'
+	self assert: jAccess isNotNil.
+	self
+		assert: (jAccess attributeAt: #parentAccess ifAbsent: [ nil ])
+		equals: pAccess.
 
 ]
 

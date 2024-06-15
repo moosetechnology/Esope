@@ -542,8 +542,6 @@ FamixEsopeResolverTest >> testResolveAccessesForAPointerDotAttribute [
 
 	access2 := self newEntity: FamixF77Access.
 	access2 attributeAt: #entity put: (self defaultIASTVarAccess: 'x').
-
-	access attributeAt: #attributeAccess put: access2.
 	access2 attributeAt: #parentAccess put: access.
 
 	main := (self defaultMain: 'main')
