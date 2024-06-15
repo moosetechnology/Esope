@@ -42,6 +42,12 @@ FamixF77ProgramUnit >> defaultImplicit [
 ]
 
 { #category : #'*EsopeImporter' }
+FamixF77ProgramUnit >> famixImportSanityCheck [
+
+	self assert: programFile isNotNil description: 'ProgramUnit without parent ProgramFile'.
+]
+
+{ #category : #'*EsopeImporter' }
 FamixF77ProgramUnit >> implicitDictionary [
 
 	^ self attributeAt: #implicitDictionary ifAbsentPut: [ self defaultImplicit ]

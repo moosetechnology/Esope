@@ -13,6 +13,14 @@ FamixF77StatementFunction >> allTypes [
 ]
 
 { #category : #'*EsopeImporter' }
+FamixF77StatementFunction >> famixImportSanityCheck [
+
+	super famixImportSanityCheck.
+
+	self assert: parentEntity isNotNil description: 'StatementFunction without parentEntity'.
+]
+
+{ #category : #'*EsopeImporter' }
 FamixF77StatementFunction >> implicitDictionary [
 
 	^parentEntity implicitDictionary
