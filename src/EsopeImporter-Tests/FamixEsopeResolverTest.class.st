@@ -643,7 +643,7 @@ FamixEsopeResolverTest >> testResolveAccessesForAPointerVariableImplicit [
 ]
 
 { #category : #'test - resolveAccess' }
-FamixEsopeResolverTest >> testResolveAccessesforAnAttribute [
+FamixEsopeResolverTest >> testResolveAccessesForAnAttribute [
 
 	| subrtn access type |
 	"
@@ -673,6 +673,54 @@ FamixEsopeResolverTest >> testResolveAccessesforAnAttribute [
 	self assert: access variable class equals: FamixFortranAttribute.
 	self assert: access variable parentType equals: type.
 	self assert: access accessor equals: subrtn
+]
+
+{ #category : #'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveAccessesInIncludedFileToInside [
+	"Resolve accesses from includedFile to variable declared in the same includedIile
+
+      subroutine _$file_inc
+      integer var
+      var = 2
+      end
+	"
+
+	| accessor access  |
+	accessor := self newEntity: FamixF77IncludedFile named: 'file.inc'.
+	accessor
+		addLocalVariable: (self defaultVariable: 'var' withType: #integer);
+		addAccess: (self defaultAccess: 'var').
+
+ 	resolver resolveAccesses.
+
+	self assert: accessor accesses size equals: 1.
+	access := accessor accesses first.
+
+	self assert: access variable equals: accessor localVariables first.
+]
+
+{ #category : #'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveAccessesInIncludedFileToOutside [
+	"Do not resolve accesses from includedFile to variable declared outside the same includedIile
+	 (because resolution depends on where the file is included)
+
+      subroutine _$file_inc
+      var = 2
+      end
+	"
+
+	| accessor access  |
+	accessor := self newEntity: FamixF77IncludedFile named: 'file.inc'.
+	accessor
+		addAccess: (self defaultAccess: 'var').
+
+ 	resolver resolveAccesses.
+
+	self assert: accessor accesses size equals: 1.
+	access := accessor accesses first.
+
+	self assert: access variable class equals: FamixF77UnknownVariable.
+	self assert: access variable name equals: 'var'.
 ]
 
 { #category : #tests }

@@ -19,21 +19,6 @@ FamixEsopeResolver class >> on: aMooseModel [
 		  yourself
 ]
 
-{ #category : #'symbols resolution' }
-FamixEsopeResolver >> createImplicitVariable: variableName in: anAccessor [
-	"if we are here, we know that the variable was not declared locally
-	 so we create it"
-
-	| implicitVariable |
-	implicitVariable := self newEntity: FamixF77Variable.
-	implicitVariable name: variableName.
-	implicitVariable parentBehaviouralEntity: anAccessor.
-	implicitVariable declaredType: (self resolveImplicitVariableType: implicitVariable).
-
-	^implicitVariable
-
-]
-
 { #category : #accessing }
 FamixEsopeResolver >> errorHandler [
 
@@ -125,9 +110,12 @@ FamixEsopeResolver >> registerImplicitsDeclarations [
 	 in the respective implicitDictionary"
 
 	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :programUnit |
-		self errorHandler enterContext: 'on file ' , programUnit name.
-		self registerImplicitsForPU: programUnit.
-		self errorHandler leaveContext
+		(programUnit isKindOf: FamixF77PUComment)
+			ifFalse: [
+				self errorHandler enterContext: 'on file ' , programUnit name.
+				self registerImplicitsForPU: programUnit.
+				self errorHandler leaveContext
+			]
 	]
 ]
 
@@ -151,12 +139,7 @@ FamixEsopeResolver >> registerImplicitsForPU: programUnit [
 ]
 
 { #category : #'private - utility' }
-FamixEsopeResolver >> removeStoredIAST: anEntity [
-	^self removeStoredIAST: anEntity forSymbol: #entity
-]
-
-{ #category : #'private - utility' }
-FamixEsopeResolver >> removeStoredIAST: anEntity forSymbol: aSymbol [
+FamixEsopeResolver >> removeAttribute: aSymbol fromEntity: anEntity [
 
 	| entity |
 	entity := anEntity 
@@ -166,6 +149,12 @@ FamixEsopeResolver >> removeStoredIAST: anEntity forSymbol: aSymbol [
 	anEntity attributeAt: aSymbol put: nil.
 
 	^entity
+]
+
+{ #category : #'private - utility' }
+FamixEsopeResolver >> removeStoredIAST: anEntity [
+
+	^anEntity removeAttributeAt: #entity 
 ]
 
 { #category : #'symbols resolution' }
@@ -245,7 +234,8 @@ FamixEsopeResolver >> resolve [
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveAccess: anAccess [
-	"- ignore access already resolved (may happen in case of attribute access)
+	"- ignore accesses already resolved (may happen in case of attribute access)
+	 - ignore accesses from includedFile to var not defined in the same file
 	 - try to find a matching local variable declaration (including parameters)
 	 - if not, try to resolve as an implict pointer 
 	 - try to find a segment with that attribute (implicitAttribute)
@@ -254,35 +244,34 @@ FamixEsopeResolver >> resolveAccess: anAccess [
 	After that, if the variable resolved to a pointer, resolve its attribute access"
 
 	| variableName |
-	anAccess variable ifNotNil: [ ^ self ].
-	(anAccess attributeAt: #parentAccess ifAbsent: [ nil ]) ifNotNil: [ "there is a #parentAccess"
-		^ self ].
+	anAccess variable ifNotNil: [ ^self ].
 
-	variableName := (self removeStoredIAST: anAccess forSymbol: #entity)
-		                entityName.
+	(anAccess attributeAt: #parentAccess ifAbsent: [ nil ])
+		ifNotNil: [ :pointerAccess |
+			self resolveAccess: pointerAccess.
+			self resolveAccess: anAccess fromPointer: pointerAccess variable.
+			^self
+		].
 
-	anAccess variable:
-		(self resolveVariableNamed: variableName in: anAccess accessor).
+	variableName := (anAccess removeAttributeAt: #entity)
+		entityName.
+	self assert: variableName isNotNil.
 
-	(self removeStoredIAST: anAccess forSymbol: #attributeAccess)
-		ifNotNil: [ :attributeAccess |
-			self resolveAccess: attributeAccess fromPointer: anAccess variable ]
+	anAccess variable: (anAccess accessor resolveVariable: variableName with: self)
 ]
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveAccess: anAccess fromPointer: aPointerVariable [
 
 	| variableAccessed |
-	variableAccessed := self
-		removeStoredIAST: anAccess
-		forSymbol: #entity.
+	variableAccessed := anAccess removeAttributeAt: #entity.
 	self assert: variableAccessed isNotNil.
 
 	aPointerVariable declaredType attributes
 		detect: [ :att | att name = variableAccessed entityName ]
 		ifFound: [ :att | anAccess variable: att ].
 
-	self removeStoredIAST: anAccess forSymbol: #parentAccess
+	anAccess removeAttributeAt: #parentAccess
 ]
 
 { #category : #run }
@@ -465,7 +454,7 @@ FamixEsopeResolver >> resolveVariableNamed: variableName in: accessor [
 	(found size > 1) ifTrue: [ Exception signal: 'several variables named "', variableName , '" in "' , accessor name , '"' ].
 	(found size = 1) ifTrue: [ ^found anyOne ].
 
-	^self createImplicitVariable: variableName in: accessor
+	^nil
 ]
 
 { #category : #run }
