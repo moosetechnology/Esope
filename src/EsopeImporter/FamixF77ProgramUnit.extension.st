@@ -7,7 +7,10 @@ FamixF77ProgramUnit >> allLocalVariables [
 	  ,
 	(self includes
 		flatCollect: [ :include | 
-			   include included ifNotNil: [ :included | included localVariables ] ]
+			include included
+				ifNil: [#()]
+				ifNotNil: [ :included | included localVariables ]
+		]
 	)
 ]
 
