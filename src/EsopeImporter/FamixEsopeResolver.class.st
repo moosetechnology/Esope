@@ -154,7 +154,7 @@ FamixEsopeResolver >> removeAttribute: aSymbol fromEntity: anEntity [
 { #category : #'private - utility' }
 FamixEsopeResolver >> removeStoredIAST: anEntity [
 
-	^anEntity removeAttributeAt: #entity 
+	^anEntity getAndRemoveAttribute: #entity 
 ]
 
 { #category : #'symbols resolution' }
@@ -235,25 +235,21 @@ FamixEsopeResolver >> resolve [
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveAccess: anAccess [
 	"- ignore accesses already resolved (may happen in case of attribute access)
-	 - ignore accesses from includedFile to var not defined in the same file
-	 - try to find a matching local variable declaration (including parameters)
-	 - if not, try to resolve as an implict pointer 
-	 - try to find a segment with that attribute (implicitAttribute)
-	 - if not, resolve as an implicit variable
-	 
-	After that, if the variable resolved to a pointer, resolve its attribute access"
+	 - if access is of an attribute in a structure, resolve the parent pointer first,
+	   then the attribute in the pointer's type
+	 - otherwise let the accessor resolve the variable in itself"
 
 	| variableName |
 	anAccess variable ifNotNil: [ ^self ].
 
-	(anAccess attributeAt: #parentAccess ifAbsent: [ nil ])
+	(anAccess getAndRemoveAttribute: #parentAccess)
 		ifNotNil: [ :pointerAccess |
 			self resolveAccess: pointerAccess.
 			self resolveAccess: anAccess fromPointer: pointerAccess variable.
 			^self
 		].
 
-	variableName := (anAccess removeAttributeAt: #entity)
+	variableName := (anAccess getAndRemoveAttribute: #entity)
 		entityName.
 	self assert: variableName isNotNil.
 
@@ -264,14 +260,13 @@ FamixEsopeResolver >> resolveAccess: anAccess [
 FamixEsopeResolver >> resolveAccess: anAccess fromPointer: aPointerVariable [
 
 	| variableAccessed |
-	variableAccessed := anAccess removeAttributeAt: #entity.
+	variableAccessed := anAccess getAndRemoveAttribute: #entity.
 	self assert: variableAccessed isNotNil.
 
 	aPointerVariable declaredType attributes
 		detect: [ :att | att name = variableAccessed entityName ]
 		ifFound: [ :att | anAccess variable: att ].
 
-	anAccess removeAttributeAt: #parentAccess
 ]
 
 { #category : #run }
