@@ -55,7 +55,8 @@ Class {
 		'tempEsopeFolder',
 		'tempFortranFolder',
 		'tempJsonFolder',
-		'resolver'
+		'resolver',
+		'withSanityChecks'
 	],
 	#category : #'EsopeImporter-Importer'
 }
@@ -394,6 +395,8 @@ FortranProjectImporter >> importSteps [
 		'Intermediary AST to Famix' -> #iASTToFamix .
 		'Famix symbol resolution' -> #famixResolve .
 		'Pointer variables type propagation' -> #propagatePointerType .
+
+		'Post import sanity checks' -> #postImportChecks
 	}
 ]
 
@@ -418,7 +421,11 @@ FortranProjectImporter >> includeFolders: aCollection [
 FortranProjectImporter >> includedFilesToEsope [
 
 	(self findFiles: self collectIncludedFileNames in: self includeFolders)
-		do: [ :foundFile | self fakeEsopeProgramUnit: foundFile to: self tempEsopeFolder  ]
+		do: [ :foundFile |
+			errorHandler enterContext: foundFile basename.
+			self fakeEsopeProgramUnit: foundFile to: self tempEsopeFolder.
+			errorHandler leaveContext
+		]
 ]
 
 { #category : #'private - files' }
@@ -457,16 +464,10 @@ FortranProjectImporter >> jsonASTToIAST [
 
 	iastmodel := (self tempJsonFolder allFiles) 
 		collect: [ :jsonFile | 
-			errorHandler
-				handleErrorsFor: 'file:' , jsonFile fullName
-				running: [ 
-					iastEntity := visitor visitProgramFile:
-						(NeoJSONReader fromString: jsonFile contents) ]
-				onErrorDo: [ :err |
-					iastEntity := IASTErrorEntity new filename: jsonFile fullName ; yourself
-				].
-
-			iastEntity
+			errorHandler enterContext: jsonFile fullName.
+			iastEntity := visitor visitProgramFile:
+				(NeoJSONReader fromString: jsonFile contents).
+			errorHandler leaveContext
 		]
 
 ]
@@ -524,10 +525,24 @@ FortranProjectImporter >> parseFortran77File: srcFileReference to: destFileRefer
 ]
 
 { #category : #run }
+FortranProjectImporter >> postImportChecks [
+
+	withSanityChecks ifTrue: [
+		famixModel entities do: [ :entity |
+			errorHandler enterContext: entity asString.
+			entity famixImportSanityCheck.
+			errorHandler leaveContext
+		]
+	]
+]
+
+{ #category : #run }
 FortranProjectImporter >> propagatePointerType [
 
 	(famixModel allWithType: FamixEsopeCommand) do: [ :esopeCmd |
-		self makePointerFromVariable: esopeCmd
+		errorHandler enterContext: esopeCmd commandName.
+		self makePointerFromVariable: esopeCmd.
+		errorHandler leaveContext
 	]
 ]
 
@@ -597,6 +612,18 @@ FortranProjectImporter >> unquoteIncludedFile: fileName [
 	^(#( $" $< ) includes: fileName first)
 		ifTrue: [ fileName copyFrom: 2 to: fileName size -1 ]
 		ifFalse: [ fileName ]
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> withSanityChecks [
+
+	^ withSanityChecks
+]
+
+{ #category : #accessing }
+FortranProjectImporter >> withSanityChecks: anObject [
+
+	withSanityChecks := anObject
 ]
 
 { #category : #constants }
