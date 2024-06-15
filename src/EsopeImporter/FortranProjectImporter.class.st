@@ -78,8 +78,8 @@ FortranProjectImporter class >> isDummySubroutine: aName [
 FortranProjectImporter class >> parseString: fortranCode [
 
 	| srcFile destFile |
-	srcFile  := './srcCode.f' asFileReference.
-	destFile := './srcCode.json' asFileReference.
+	srcFile  := './srcCode.f' asFileReference ensureDelete.
+	destFile := './srcCode.json' asFileReference ensureDelete.
 
 	srcFile writeStreamDo: [ :stream | 
 		stream << fortranCode withUnixLineEndings ].
