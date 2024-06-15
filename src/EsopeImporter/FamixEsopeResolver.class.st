@@ -347,7 +347,7 @@ FamixEsopeResolver >> resolveEsopeVariable: esopeVariable [
 ]
 
 { #category : #'symbols resolution' }
-FamixEsopeResolver >> resolveImplicitFunction: function [
+FamixEsopeResolver >> resolveImplicitFunctionType: function [
 
 	function declaredType:
 		(self resolveTypeName:
