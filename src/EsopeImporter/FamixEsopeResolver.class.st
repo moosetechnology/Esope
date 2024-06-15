@@ -397,7 +397,7 @@ FamixEsopeResolver >> resolveIncludes [
 			detect: [ :includedFile |
 				includedFile programFile filename asPath basename beginsWith: include filename ]
 			ifFound: [ :includedFile | include included: includedFile ]
-			ifNone: [ Notification signal: ' no such file' , include filename ]
+			ifNone: [ Notification signal: ' no such file ' , include filename ]
 	]
 ]
 
