@@ -163,13 +163,13 @@ FortranProjectImporter >> deEsopify: localPath from: srcFolder to: destFolder [
 	srcFile := self appendPath: localPath toParent: srcFolder.
 	destFile := (self appendPath: localPath toParent: destFolder) withExtension: 'f'.
 
-	self errorHandler
-		handleErrorsFor: 'file:' , localPath fullName
-		running: [
-			PPEsopeRewriter
-				rewriteFrom: (srcFile readStreamEncoded: self defaultFileEncoding)
-				to: destFile
-		]
+	errorHandler enterContext: 'file:' , localPath fullName.
+
+	PPEsopeRewriter
+		rewriteFrom: (srcFile readStreamEncoded: self defaultFileEncoding)
+		to: destFile.
+
+	errorHandler leaveContext
 ]
 
 { #category : #accessing }
@@ -349,9 +349,9 @@ FortranProjectImporter >> iASTToFamix [
 	visitor := IASTToFamixFortranVisitor new.
 
 	iastmodel do: [ :iastProgramFile |
-		errorHandler
-			handleErrorsFor: 'file:' , iastProgramFile filename
-			running: [ iastProgramFile accept: visitor ]
+		errorHandler enterContext: ('file:' , iastProgramFile filename).
+		iastProgramFile accept: visitor.
+		errorHandler leaveContext
 	].
 
 	famixModel := visitor model
@@ -432,17 +432,20 @@ FortranProjectImporter >> includedFilesToEsope [
 FortranProjectImporter >> includedNamesIn: srcFileReference [
 	"finds all file inclusions from srcFileReference"
 
-	^self errorHandler
-		handleErrorsFor: 'file:' , srcFileReference fullName
-		running: [
-			srcFileReference
-				readStreamEncoded: self defaultFileEncoding
-				do: [ :stream |
-					stream contents lines
-						select: [ :line | self isIncludeLine: line]
-						thenCollect: [ :line | self getIncludedFileName: line ]
-				]
-		]
+	| value |
+	errorHandler	enterContext: 'file:' , srcFileReference fullName.
+
+	value := srcFileReference
+		readStreamEncoded: self defaultFileEncoding
+		do: [ :stream |
+			stream contents lines
+				select: [ :line | self isIncludeLine: line]
+				thenCollect: [ :line | self getIncludedFileName: line ]
+		].
+
+	errorHandler leaveContext.
+	
+	^value
 
 ]
 
@@ -505,10 +508,11 @@ FortranProjectImporter >> parseFortran77: localPath from: srcFolder to: destFold
 
 	cmdReturn := self parseFortran77File: (self appendPath: localPath toParent: srcFolder) to: destFile.
 
-	(cmdReturn = 0)
-		ifFalse: [ 
-			self errorHandler error: 'Error while parsing ' , localPath pathString.
-			destFile ensureDelete  ].
+	(cmdReturn = 0) ifTrue: [ ^self ].
+
+	errorHandler error: 'Error while parsing ' , localPath pathString.
+	destFile ensureDelete
+
 ]
 
 { #category : #'private - import' }

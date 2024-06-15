@@ -61,6 +61,8 @@ FortranErrorManager >> handleErrorsFor: context running: runningBlock [
 
 	self leaveContext.
 
+	^value
+
 ]
 
 { #category : #initialization }

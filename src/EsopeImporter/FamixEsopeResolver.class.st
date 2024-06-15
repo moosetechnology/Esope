@@ -229,7 +229,8 @@ FamixEsopeResolver >> resolve [
 	self resolvingSteps do: [ :step |
 		self errorHandler enterContext: step.
 		self perform: step.
-		self errorHandler leaveContext ]
+		self errorHandler leaveContext
+	]
 ]
 
 { #category : #'symbols resolution' }
