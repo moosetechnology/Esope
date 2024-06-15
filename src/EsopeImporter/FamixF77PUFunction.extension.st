@@ -5,5 +5,5 @@ FamixF77PUFunction >> famixImportSanityCheck [
 
 	super famixImportSanityCheck.
 
-	self assert: declaredType isNotNil description: 'Function without declaredType'.
+	self assert: declaredType isNotNil description: name , ' without declaredType'.
 ]
