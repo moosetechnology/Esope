@@ -151,12 +151,6 @@ FamixEsopeResolver >> removeAttribute: aSymbol fromEntity: anEntity [
 	^entity
 ]
 
-{ #category : #'private - utility' }
-FamixEsopeResolver >> removeStoredIAST: anEntity [
-
-	^anEntity getAndRemoveAttribute: #entity 
-]
-
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> requalifyFunctionDeclaration: external [
 	"external declaration of function followed by a VariableDeclaration of the same function
@@ -418,7 +412,7 @@ FamixEsopeResolver >> resolveInvocation: anInvocation [
 
 	| invocated |
 
-	invocated := self removeStoredIAST: anInvocation.
+	invocated := anInvocation getAndRemoveAttribute: #entity .
 
 	(self resolveInvocables: invocated)
 		ifNotNil: [ :invocatedFound |
