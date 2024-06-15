@@ -1072,6 +1072,26 @@ FamixEsopeResolverTest >> testResolveInvocationToIntrinsic [
 ]
 
 { #category : #tests }
+FamixEsopeResolverTest >> testResolveInvocationToWrite [
+	| invocation caller |
+	
+	caller := (self defaultMain: 'main')
+		addOutgoingInvocation: (self defaultInvocation: 'write');
+		yourself.
+
+ 	resolver resolve.
+
+	self assert: caller outgoingInvocations size equals: 1.
+	invocation := caller outgoingInvocations first.
+	
+	self assert: invocation class equals: FamixF77Invocation.
+	self assert: invocation sender equals: caller.
+	
+	self assert: invocation candidates size equals: 1.
+	self assert: invocation candidates first class equals: FamixF77IntrinsicRoutine.
+]
+
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveInvocations [
 	| invocation callee caller |
 	
