@@ -92,10 +92,11 @@ FamixEsopeResolverTest >> defaultImplicitNone [
 FamixEsopeResolverTest >> defaultInvocation: name [
 
 	^ FamixF77Invocation new
-		  mooseModel: mooseModel;
-		  attributeAt: #entity put: (self defaultIASTInvocation: name);
-		  sourceAnchor: self defaultAnchor;
-		  yourself
+		mooseModel: mooseModel ;
+		attributeAt: #entity put: (self defaultIASTInvocation: name) ;
+		signature: name ;
+		sourceAnchor: self defaultAnchor ;
+		yourself
 ]
 
 { #category : #'default values' }
