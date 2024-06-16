@@ -1,6 +1,20 @@
 Extension { #name : #FamixF77ProgramUnit }
 
 { #category : #'*EsopeImporter' }
+FamixF77ProgramUnit >> allDeclaredTypesInMyScope [
+	"returns all types declared directly in receiver or in the files it includes"
+
+	| return |
+	return := Set new.
+	return addAll: self types.
+	self includes do: [ :inclusion |
+		return addAll: inclusion included allDeclaredTypesInMyScope 
+	].
+
+	^return asOrderedCollection
+]
+
+{ #category : #'*EsopeImporter' }
 FamixF77ProgramUnit >> allLocalVariables [
 
 	^self localVariables
