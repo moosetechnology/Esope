@@ -30,6 +30,10 @@ FamixF77ProgramUnit >> allLocalVariables [
 
 { #category : #'*EsopeImporter' }
 FamixF77ProgramUnit >> createUnresolveVariable: variableName with: resolver [
+	"If the variable could not be resolved within an access, it means it is a use of an
+	 implicit variable
+	 - create a LocalVariable within receiver
+	 - tries to set the declaredType to something meaningfull"
 
 	| implicitVariable |
 
