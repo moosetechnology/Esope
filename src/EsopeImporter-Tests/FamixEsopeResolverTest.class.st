@@ -682,6 +682,7 @@ FamixEsopeResolverTest >> testResolveAccessesForAPointerVariableImplicit [
 
 	self assert: subrtn localVariables size equals: 0.
 
+	resolver registerImplicitsDeclarations.
 	resolver resolveAccesses.
 
 	self assert: subrtn localVariables size equals: 1.
