@@ -72,18 +72,36 @@ FamixF77ProgramUnit >> implicitDictionary [
 ]
 
 { #category : #'*EsopeImporter' }
+FamixF77ProgramUnit >> implicitFortranTypeFor: variableName [
+
+	self implicitDictionary
+		at: variableName first
+		ifPresent: [ :typeName | ^typeName ].
+
+	^nil
+]
+
+{ #category : #'*EsopeImporter' }
+FamixF77ProgramUnit >> implicitSegmentTypeFor: variableName [
+
+	self implicitDictionary
+		at: variableName
+		ifPresent: [ :typeName | ^typeName ].
+
+	^nil
+]
+
+{ #category : #'*EsopeImporter' }
 FamixF77ProgramUnit >> implicitTypeFor: variableName [
 	"find a type according to the first letter of the variable's name
 	 - first search for a segment with that (full) name
 	 - then search for a Fortran type from the first letter"
 
-	self implicitDictionary
-		at: variableName
-		ifPresent: [ :typeName | ^typeName ].
-		
-	self implicitDictionary
-		at: variableName first
-		ifPresent: [ :typeName | ^typeName ].
+	(self implicitSegmentTypeFor: variableName)
+		ifNotNil: [ :typeName | ^typeName ].
+
+	(self implicitFortranTypeFor: variableName)
+		ifNotNil: [ :typeName | ^typeName ].
 
 	^FamixF77TypeUnknown defaultName
 ]

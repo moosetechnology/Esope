@@ -286,18 +286,14 @@ FamixEsopeResolver >> resolveAsImplicitPointer: variableName in: anAccessor [
 
 	self flag: #FIXME. "Issue with an attribute."
 
-	^anAccessor allTypes
-		select: [ :type |
-			(type class = FamixEsopeSegment) and: 
-			[ type name = variableName ]
-		]
-		thenCollect: [ :type |
-			(self newEntity: FamixF77Variable)
-				name: variableName ;
-				parentBehaviouralEntity: anAccessor ;
-				declaredType: type ;
-				yourself
-		]
+	(anAccessor implicitSegmentTypeFor: variableName)
+		ifNil: [ #() ].
+
+	^{ (self newEntity: FamixF77Variable)
+			name: variableName ;
+			parentBehaviouralEntity: anAccessor ;
+			declaredType: (self resolveTypeName: variableName) ;
+			yourself }
 ]
 
 { #category : #'symbols resolution' }
