@@ -6,6 +6,12 @@ FamixEsopeSegment >> addLocalVariable: aVariable [
 ]
 
 { #category : #'*EsopeImporter' }
+FamixEsopeSegment >> isEsopeSegment [
+
+	^true
+]
+
+{ #category : #'*EsopeImporter' }
 FamixEsopeSegment >> localVariableClass [
 	^FamixFortranAttribute
 ]

@@ -9,3 +9,8 @@ IASTEsopePointer >> accept: aVisitor [
 
 	^ aVisitor visitIASTEsopePointer: self
 ]
+
+{ #category : #testing }
+IASTEsopePointer >> isEsope [
+	^true
+]

@@ -12,3 +12,9 @@ FamixF77Entity >> assert: aBlock description: aString [
 FamixF77Entity >> famixImportSanityCheck [
 	"nothing special by default"
 ]
+
+{ #category : #'*EsopeImporter' }
+FamixF77Entity >> isEsopeSegment [
+
+	^false
+]

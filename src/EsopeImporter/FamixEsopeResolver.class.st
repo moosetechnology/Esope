@@ -309,24 +309,37 @@ FamixEsopeResolver >> resolveAsLocalVariable: variableName in: anAccessor [
 
 { #category : #run }
 FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
-	
-	self flag: #FIXME. "Some Esope variables are not labelled as such"
-	
+	"sets the declaredType of pointers"
+
 	(self model allWithSubTypesOf: FamixF77Variable) 
 		do: [ :var | 
 			var isEsope ifTrue: [ self resolveEsopeVariable: var ]
-		]
+		].
+
+	(self model allWithSubTypesOf: FamixEsopeCommand) 
+		do: [ :cmd | 
+			(cmd variable declaredType isEsopeSegment)  
+				ifFalse: [
+					cmd variable attributeAt: #segmentName put: nil.
+					self resolveEsopeVariable: cmd variable
+				]
+		].
 ]
 
 { #category : #'symbols resolution' }
-FamixEsopeResolver >> resolveEsopeVariable: esopeVariable [
-	"sets the declaredType of declared pointer esopeVariable"
+FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
+	"sets the declaredType of pointer esopeVariable"
 
 	| segments |
+
 	segments := self model allWithType: FamixEsopeSegment.
 	segments
-		detect: [ :segment | segment name = esopeVariable segment ]
-		ifFound: [ :segment | esopeVariable declaredType: segment ]
+		detect: [ :segment |
+			aFamixVariable segment
+				ifNil: [ segment name = aFamixVariable name ]
+				ifNotNil: [ :declaredSegment | segment name = declaredSegment ]
+		]
+		ifFound: [ :segment | aFamixVariable declaredType: segment ]
 ]
 
 { #category : #'symbols resolution' }
@@ -447,13 +460,19 @@ FamixEsopeResolver >> resolveVariableNamed: variableName in: accessor [
 { #category : #run }
 FamixEsopeResolver >> resolvingSteps [
 
-	^ #( resolveIncludes
-		  registerImplicitsDeclarations
-	     requalifyVariableDeclarations
-		  resolveImplicits
-		  #resolveDeclaredTypeOfPointers
-	     resolveInvocations
-		  resolveAccesses )
+	^ #(
+		#resolveIncludes
+		#registerImplicitsDeclarations
+		#requalifyVariableDeclarations
+
+		#resolveAccesses
+		#resolveImplicits
+	 	#resolveInvocations
+	)
+
+	"#propagatePointerType
+	#resolveDeclaredTypeOfPointers"
+
 ]
 
 { #category : #run }
