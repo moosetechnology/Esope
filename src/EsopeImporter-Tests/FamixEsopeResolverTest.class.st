@@ -306,7 +306,7 @@ FamixEsopeResolverTest >> testRegisterImplicitDefault [
 
 	pu := self defaultSubroutine: 'rtn'.
 
-	resolver registerImplicitsForPU: pu.
+	pu registerImplicits.
 
 	self assert: pu implicitDictionary size equals: 26.
 	
@@ -333,7 +333,7 @@ FamixEsopeResolverTest >> testRegisterImplicitMultiple [
 				       range: #( #( $a ) #( $c $d ) )) };
 		      yourself.
 
-	resolver registerImplicitsForPU: pu.
+	pu registerImplicits.
 
 	self assert: pu implicitDictionary size equals: 26.
 
@@ -359,7 +359,7 @@ FamixEsopeResolverTest >> testRegisterImplicitNone [
 		attributeAt: #implicits put: { self defaultImplicitNone } ;
 		yourself.
 
-	resolver registerImplicitsForPU: pu.
+	pu registerImplicits.
 
 	self assert: pu implicitDictionary isEmpty
 ]
@@ -379,7 +379,7 @@ FamixEsopeResolverTest >> testRegisterImplicitRange [
 		      put: { (self implicitRule: 'integer' range: #( #( $a $c ) )) };
 		      yourself.
 
-	resolver registerImplicitsForPU: pu.
+	pu registerImplicits.
 
 	self assert: pu implicitDictionary size equals: 26.
 
@@ -404,7 +404,7 @@ FamixEsopeResolverTest >> testRegisterImplicitSimple [
 		      put: { (self implicitRule: 'integer' range: #( #( $a ) )) };
 		      yourself.
 
-	resolver registerImplicitsForPU: pu.
+	pu registerImplicits.
 
 	self assert: pu implicitDictionary size equals: 26.
 
