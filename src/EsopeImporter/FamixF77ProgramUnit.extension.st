@@ -184,15 +184,6 @@ FamixF77ProgramUnit >> removeFortranImplicits [
 ]
 
 { #category : #'*EsopeImporter' }
-FamixF77ProgramUnit >> resolveVariable: variableName with: resolver [
-
-	^(resolver resolveVariableNamed: variableName in: self)
-		ifNotNil: [ :localVar | localVar ]
-		ifNil: [ self createUnresolveVariable: variableName with: resolver ]
-
-]
-
-{ #category : #'*EsopeImporter' }
 FamixF77ProgramUnit >> symbolTable [
 
 	^ self attributeAt: #symbolTable ifAbsentPut: [ Dictionary new ]

@@ -25,6 +25,15 @@ FamixEsopeResolver class >> on: aMooseModel [
 		  yourself
 ]
 
+{ #category : #'symbols resolution' }
+FamixEsopeResolver >> ensureVariableNamed: variableName in: famixProgramUnit [
+
+	^(self resolveVariableNamed: variableName in: famixProgramUnit)
+		ifNotNil: [ :localVar | localVar ]
+		ifNil: [ famixProgramUnit createUnresolveVariable: variableName with: self ]
+
+]
+
 { #category : #accessing }
 FamixEsopeResolver >> errorHandler [
 
@@ -232,10 +241,7 @@ FamixEsopeResolver >> resolveAccess: aFamixAccess [
 	iastVariable := aFamixAccess getAndRemoveAttribute: #entity.
 	self assert: iastVariable isNotNil.
 
-	aFamixAccess variable: (aFamixAccess accessor
-		resolveVariable: iastVariable entityName
-		with: self)
-
+	aFamixAccess variable: (self ensureVariableNamed: iastVariable entityName in: aFamixAccess accessor)
 ]
 
 { #category : #'symbols resolution' }
