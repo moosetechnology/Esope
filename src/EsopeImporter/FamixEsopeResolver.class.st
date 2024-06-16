@@ -234,14 +234,23 @@ FamixEsopeResolver >> resolveAccess: aFamixAccess [
 	(aFamixAccess getAndRemoveAttribute: #parentAccess)
 		ifNotNil: [ :famixPointerAccess |
 			self resolveAccess: famixPointerAccess.
-			self resolveAccess: aFamixAccess fromPointer: famixPointerAccess variable.
+			self resolveAttributeAccess: aFamixAccess forPointer: famixPointerAccess variable.
 			^self
 		].
  
 	iastVariable := aFamixAccess getAndRemoveAttribute: #entity.
 	self assert: iastVariable isNotNil.
 
-	aFamixAccess variable: (self ensureVariableNamed: iastVariable entityName in: aFamixAccess accessor)
+	aFamixAccess variable: (self ensureVariableNamed: iastVariable entityName in: aFamixAccess accessor).
+
+	(aFamixAccess class = FamixEsopeCommand)
+	ifTrue: [
+		(aFamixAccess variable declaredType class = FamixEsopeSegment)
+			ifFalse: [
+				aFamixAccess variable declaredType: (self resolveTypeName: aFamixAccess variable name)
+			]
+	]
+
 ]
 
 { #category : #run }
