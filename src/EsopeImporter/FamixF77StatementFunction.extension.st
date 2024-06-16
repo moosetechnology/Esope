@@ -30,6 +30,7 @@ FamixF77StatementFunction >> implicitDictionary [
 FamixF77StatementFunction >> resolveVariable: variableName with: resolver [ 
 	"StatementFunctions have Parameters and no LocalVariable,
 	 but can access LocalVariables of their parentEntity"
+
 	^(resolver resolveVariableNamed: variableName in: self)
 		ifNotNil: [ :localVar | localVar ]
 		ifNil: [ parentEntity resolveVariable: variableName with: resolver  ]

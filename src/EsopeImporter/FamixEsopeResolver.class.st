@@ -122,13 +122,13 @@ FamixEsopeResolver >> propagatePointerType [
 { #category : #run }
 FamixEsopeResolver >> registerImplicitsDeclarations [
 	"find IMPLICIT declaration statements in all program units and register them
-	 in the respective implicitDictionary"
+	 in the respective implicitDictionary-s"
 
-	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :programUnit |
-		(programUnit isKindOf: FamixF77PUComment)
+	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :famixPU |
+		(famixPU isKindOf: FamixF77PUComment)
 			ifFalse: [
-				self errorHandler enterContext: 'on file ' , programUnit name.
-				self registerImplicitsForPU: programUnit.
+				self errorHandler enterContext: 'on file ' , famixPU name.
+				famixPU registerImplicits.
 				self errorHandler leaveContext
 			]
 	]
@@ -211,27 +211,31 @@ FamixEsopeResolver >> resolve [
 ]
 
 { #category : #'symbols resolution' }
-FamixEsopeResolver >> resolveAccess: anAccess [
-	"- ignore accesses already resolved (may happen in case of attribute access)
-	 - if access is of an attribute in a structure, resolve the parent pointer first,
-	   then the attribute in the pointer's type
-	 - otherwise let the accessor resolve the variable in itself"
+FamixEsopeResolver >> resolveAccess: aFamixAccess [
+	"set #variable property of anAccess from the IASTVariable it contains.
+	 Might create a new Famix variable if none is found
 
-	| variableName |
-	anAccess variable ifNotNil: [ ^self ].
+	 - ignore accesses already resolved (may happen in case of attribute access)
+	 - if access is pointer.attribute, resolve the parent pointer first, then the attribute
+	 - otherwise let the accessor resolve the variable within itself"
 
-	(anAccess getAndRemoveAttribute: #parentAccess)
-		ifNotNil: [ :pointerAccess |
-			self resolveAccess: pointerAccess.
-			self resolveAccess: anAccess fromPointer: pointerAccess variable.
+	| iastVariable |
+	aFamixAccess variable ifNotNil: [ ^self ].
+
+	(aFamixAccess getAndRemoveAttribute: #parentAccess)
+		ifNotNil: [ :famixPointerAccess |
+			self resolveAccess: famixPointerAccess.
+			self resolveAccess: aFamixAccess fromPointer: famixPointerAccess variable.
 			^self
 		].
  
-	variableName := (anAccess getAndRemoveAttribute: #entity)
-		entityName.
-	self assert: variableName isNotNil.
+	iastVariable := aFamixAccess getAndRemoveAttribute: #entity.
+	self assert: iastVariable isNotNil.
 
-	anAccess variable: (anAccess accessor resolveVariable: variableName with: self)
+	aFamixAccess variable: (aFamixAccess accessor
+		resolveVariable: iastVariable entityName
+		with: self)
+
 ]
 
 { #category : #'symbols resolution' }
@@ -249,6 +253,8 @@ FamixEsopeResolver >> resolveAccess: anAccess fromPointer: aPointerVariable [
 
 { #category : #run }
 FamixEsopeResolver >> resolveAccesses [
+	"Access-es do not have #variable at this point but an IASTVariable
+	 sets the #variable property of all Access-es"
 
 	(self model allWithSubTypesOf: FamixF77Access) do: [ :access |
 		self resolveAccess: access ]
@@ -328,17 +334,19 @@ FamixEsopeResolver >> resolveImplicitFunctionType: function [
 
 	function declaredType:
 		(self resolveTypeName:
-			(self implicitTypeFor: function name inProgramUnit: function)).
+			(function implicitTypeFor: function name)).
 
 ]
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveImplicitVariableType: aVariable [
+	"Tries to guess the type of an implicitly defined variable
+	 - can be a pointer to an Esope segment
+	 - otherwise uses the implicits declaration of its owner"
 
 	^self resolveTypeName:
-		(self
-			implicitTypeFor: aVariable name
-			inProgramUnit: aVariable parentBehaviouralEntity)
+		(aVariable parentBehaviouralEntity
+			implicitTypeFor: aVariable name)
 
 ]
 
@@ -416,6 +424,7 @@ FamixEsopeResolver >> resolveInvocations [
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveTypeName: aName [
+	"Finds a FamixType from its name"
 
 	self flag: 'should test the referring PU (ex: for an included segment)'.
 
@@ -457,7 +466,7 @@ FamixEsopeResolver >> setImplicitDeclaredType: anEntity in: owner [
 		ifNil: [
 			anEntity declaredType: 
 				(self resolveTypeName:
-					(self implicitTypeFor: anEntity name inProgramUnit: owner))
+					(owner implicitTypeFor: anEntity name))
 		]
 
 ]

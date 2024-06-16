@@ -54,6 +54,23 @@ FamixF77ProgramUnit >> implicitDictionary [
 ]
 
 { #category : #'*EsopeImporter' }
+FamixF77ProgramUnit >> implicitTypeFor: variableName [
+	"find a type according to the first letter of the variable's name
+	 - first search for a segment with that (full) name
+	 - then search for a Fortran type from the first letter"
+
+	self implicitDictionary
+		at: variableName
+		ifPresent: [ :typeName | ^typeName ].
+		
+	self implicitDictionary
+		at: variableName first
+		ifPresent: [ :typeName | ^typeName ].
+
+	^FamixF77TypeUnknown defaultName
+]
+
+{ #category : #'*EsopeImporter' }
 FamixF77ProgramUnit >> implicits [
 
 	^ self attributeAt: #implicits ifAbsent: [ #() ]
