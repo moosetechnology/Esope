@@ -60,18 +60,6 @@ FamixF77ProgramUnit >> implicits [
 ]
 
 { #category : #'*EsopeImporter' }
-FamixF77ProgramUnit >> isInvocable [
-
-	^false
-]
-
-{ #category : #'*EsopeImporter' }
-FamixF77ProgramUnit >> isSubroutine [
-
-	^false
-]
-
-{ #category : #'*EsopeImporter' }
 FamixF77ProgramUnit >> localVariableClass [
 
 	^FamixF77Variable
