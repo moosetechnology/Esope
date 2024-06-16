@@ -185,6 +185,7 @@ FamixF77ProgramUnit >> removeFortranImplicits [
 
 { #category : #'*EsopeImporter' }
 FamixF77ProgramUnit >> symbolTable [
+self flag: 'TO REMOVE?'.
 
 	^ self attributeAt: #symbolTable ifAbsentPut: [ Dictionary new ]
 ]
