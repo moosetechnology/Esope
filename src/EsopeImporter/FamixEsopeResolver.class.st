@@ -244,19 +244,6 @@ FamixEsopeResolver >> resolveAccess: aFamixAccess [
 	aFamixAccess variable: (self ensureVariableNamed: iastVariable entityName in: aFamixAccess accessor)
 ]
 
-{ #category : #'symbols resolution' }
-FamixEsopeResolver >> resolveAccess: anAccess fromPointer: aPointerVariable [
-
-	| variableAccessed |
-	variableAccessed := anAccess getAndRemoveAttribute: #entity.
-	self assert: variableAccessed isNotNil.
-
-	aPointerVariable declaredType attributes
-		detect: [ :att | att name = variableAccessed entityName ]
-		ifFound: [ :att | anAccess variable: att ].
-
-]
-
 { #category : #run }
 FamixEsopeResolver >> resolveAccesses [
 	"Access-es do not have #variable at this point but an IASTVariable
@@ -307,6 +294,20 @@ FamixEsopeResolver >> resolveAsLocalVariable: variableName in: anAccessor [
 
 	^anAccessor allLocalVariables
 		select: [ :entity | entity name = variableName ]
+]
+
+{ #category : #'symbols resolution' }
+FamixEsopeResolver >> resolveAttributeAccess: anAccess forPointer: aPointerVariable [
+	"resolve access to a segment attribute"
+
+	| variableAccessed |
+	variableAccessed := anAccess getAndRemoveAttribute: #entity.
+	self assert: variableAccessed isNotNil.
+
+	aPointerVariable declaredType attributes
+		detect: [ :att | att name = variableAccessed entityName ]
+		ifFound: [ :att | anAccess variable: att ].
+
 ]
 
 { #category : #run }
