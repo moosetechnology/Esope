@@ -269,7 +269,6 @@ FamixEsopeResolver >> resolveAllVariablesNamed: variableName in: accessor [
 	found := OrderedCollection new.
 
 	found addAll: (self resolveAsLocalVariable: variableName in: accessor).
-	found addAll: (self resolveAsImplicitPointer: variableName in: accessor).
 	found addAll: (self resolveAsImplicitAttribute: variableName in: accessor).
 
 	^found
@@ -280,22 +279,6 @@ FamixEsopeResolver >> resolveAsImplicitAttribute: variableName in: anAccessor [
 
 	^(anAccessor allTypes flatCollect: [ :type | type attributes ])
 		select: [ :entity | entity name = variableName ]
-]
-
-{ #category : #'symbols resolution' }
-FamixEsopeResolver >> resolveAsImplicitPointer: variableName in: anAccessor [
-	"try to find a segment with the same name as the accessed variable"
-
-	self flag: #FIXME. "Issue with an attribute."
-
-	(anAccessor implicitSegmentTypeFor: variableName)
-		ifNil: [ #() ].
-
-	^{ (self newEntity: FamixF77Variable)
-			name: variableName ;
-			parentBehaviouralEntity: anAccessor ;
-			declaredType: (self resolveTypeName: variableName) ;
-			yourself }
 ]
 
 { #category : #'symbols resolution' }
