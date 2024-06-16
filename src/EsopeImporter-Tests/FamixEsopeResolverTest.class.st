@@ -227,6 +227,37 @@ FamixEsopeResolverTest >> setUp [
 ]
 
 { #category : #tests }
+FamixEsopeResolverTest >> testMakePointerFromVariable [
+	"We have a pointer variable and a normal variable with the same name
+	 the 2nd should be merged into the 1st which keeps its declared type and
+	 gets the accesses of the 2nd"
+
+	| subroutine variable pointer esopeCommand |
+
+	subroutine := self defaultSubroutine: 'sub'.
+
+	variable := self defaultVariable: 'pointerForASegment' withType: FamixF77TypeIntrinsic new.
+	variable parentBehaviouralEntity: subroutine.
+	pointer  := self defaultVariable: 'pointerForASegment' withType: FamixEsopeSegment new.
+	pointer parentBehaviouralEntity: subroutine.
+
+	resolver model newAccess
+		accessor: subroutine ;
+		variable: variable.
+	esopeCommand := resolver model newCommand
+		accessor: subroutine ;
+		variable: pointer.
+
+	self assert: subroutine accesses size equals: 2.
+	self assert: subroutine localVariables size equals: 2.
+
+	resolver makePointerVariableForEsopeCommand: esopeCommand.
+
+	self assert: subroutine accesses size equals: 2.
+	self assert: subroutine localVariables size equals: 1.
+]
+
+{ #category : #tests }
 FamixEsopeResolverTest >> testMergeVariableInto [
 	"We have 2 variables with the same name one should be merged into the other which keeps its
 	 declared type and	gets the accesses of the 1st"

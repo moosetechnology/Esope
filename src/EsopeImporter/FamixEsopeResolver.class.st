@@ -50,6 +50,23 @@ FamixEsopeResolver >> isIntrinsicRoutine: invocated [
 	^self class intrinsicRoutines includes: invocated entityName
 ]
 
+{ #category : #'symbols resolution' }
+FamixEsopeResolver >> makePointerVariableForEsopeCommand: esopeCmd [
+	"esopeCmd is a kind of Access where the variable is an Esope pointeur
+	 We need to:
+	 - check if there is another variable with the same name in the owner
+	 - if so, merge the 2 variables into one"
+
+	(self
+		resolveAllVariablesNamed: esopeCmd variable name
+		in: esopeCmd accessor)
+
+		do: [ :variable |
+			variable = esopeCmd variable
+				ifFalse: [ self mergeVariable: variable into: esopeCmd variable ] ]
+
+]
+
 { #category : #private }
 FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	"merge meaningfull properties from variableToRemove into variableToKeep
@@ -97,6 +114,16 @@ FamixEsopeResolver >> newEntity: aFamixClass [
 	^aFamixClass new
 		mooseModel: model;
 		yourself
+]
+
+{ #category : #run }
+FamixEsopeResolver >> propagatePointerType [
+
+	(model allWithType: FamixEsopeCommand) do: [ :esopeCmd |
+		errorHandler enterContext: esopeCmd commandName.
+		self makePointerVariableForEsopeCommand: esopeCmd.
+		errorHandler leaveContext
+	]
 ]
 
 { #category : #'symbols resolution' }
