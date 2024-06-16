@@ -390,6 +390,31 @@ FamixEsopeResolverTest >> testRegisterImplicitRange [
 ]
 
 { #category : #'test - implicit' }
+FamixEsopeResolverTest >> testRegisterImplicitSegment [
+
+	"
+      program main
+      segment point
+      end segment
+      end
+	"
+
+	| typePoint main |
+	typePoint := self newEntity: FamixEsopeSegment named: 'point'.
+	typePoint attributes: #().
+
+	main := (self defaultMain: 'main')
+		addType: typePoint;
+		yourself.
+
+	main registerImplicits.
+
+	self assert: main implicitDictionary size equals: 27.
+
+	self assert: (main implicitDictionary at: 'point') equals: 'point'
+]
+
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testRegisterImplicitSimple [
 	"
       subroutine rtn
@@ -917,6 +942,50 @@ FamixEsopeResolverTest >> testResolveImplicitParameterRange [
 		          first parameters first.
 	self assert: entity declaredType class equals: FamixF77TypeIntrinsic.
 	self assert: entity declaredType name equals: 'character'
+]
+
+{ #category : #tests }
+FamixEsopeResolverTest >> testResolveImplicitPointer [
+
+	| sub type var |
+	"
+      subroutine demo
+      segment point
+      end segment
+      segini point
+      end
+	"
+	type := self newEntity: FamixEsopeSegment named: 'point'.
+	type attributes: #().
+
+	sub := (self newPU: 'demo')
+		addType: type;
+		yourself.
+
+	var := self defaultVariable: 'point' withType: (self defaultType: 'real').
+	(self newEntity: FamixEsopeCommand)
+		commandName: 'segini' ;
+		accessor: sub ;
+		variable: var.
+
+	resolver resolveDeclaredTypeOfPointers.
+
+	self assert: var declaredType equals: type
+]
+
+{ #category : #'test - implicit' }
+FamixEsopeResolverTest >> testResolveImplicitType [
+
+	| sub |
+	sub := self defaultSubroutine: 'sub'.
+
+	sub registerImplicitSegment: (self defaultSegment: 'point' with: #()).
+
+	self assert: (sub implicitTypeFor: 'aVar') equals: 'real'.
+	self assert: (sub implicitTypeFor: 'i') equals: 'integer'.
+	self assert: (sub implicitTypeFor: 'x') equals: 'real'.
+	self assert: (sub implicitTypeFor: 'point') equals: 'point'.
+
 ]
 
 { #category : #tests }
