@@ -34,3 +34,11 @@ FamixF77StatementFunction >> implicitDictionary [
 
 	^parentEntity implicitDictionary
 ]
+
+{ #category : #'*EsopeImporter' }
+FamixF77StatementFunction >> implicitTypeFor: variableName [
+	"statementFunction cannot declare IMPLICIT statement or declare SEGMENT, therefore
+	 delegate this message to the parentEntity"
+
+	^parentEntity implicitTypeFor: variableName
+]

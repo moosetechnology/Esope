@@ -989,6 +989,23 @@ FamixEsopeResolverTest >> testResolveImplicitType [
 
 ]
 
+{ #category : #'test - implicit' }
+FamixEsopeResolverTest >> testResolveImplicitTypeInStatementFunction [
+
+	| sub f |
+	sub := self defaultSubroutine: 'sub'.
+	sub registerImplicitSegment: (self defaultSegment: 'point' with: #()).
+
+	f := self newEntity: FamixF77StatementFunction named: 'f'.
+	f parentEntity: sub.
+
+	self assert: (f implicitTypeFor: 'aVar') equals: 'real'.
+	self assert: (f implicitTypeFor: 'i') equals: 'integer'.
+	self assert: (f implicitTypeFor: 'x') equals: 'real'.
+	self assert: (f implicitTypeFor: 'point') equals: 'point'.
+
+]
+
 { #category : #tests }
 FamixEsopeResolverTest >> testResolveImplicits [
 
