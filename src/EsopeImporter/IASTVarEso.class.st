@@ -47,6 +47,11 @@ IASTVarEso >> initialize [
 ]
 
 { #category : #testing }
+IASTVarEso >> isEsope [
+	^true
+]
+
+{ #category : #testing }
 IASTVarEso >> isVarAccess [
 	^false
 ]

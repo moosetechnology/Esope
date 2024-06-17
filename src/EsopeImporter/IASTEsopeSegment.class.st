@@ -58,6 +58,11 @@ IASTEsopeSegment >> entityName: anObject [
 ]
 
 { #category : #testing }
+IASTEsopeSegment >> isEsope [
+	^true
+]
+
+{ #category : #testing }
 IASTEsopeSegment >> isEsopeSegment [
 	^true
 ]

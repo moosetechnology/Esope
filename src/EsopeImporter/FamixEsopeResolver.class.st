@@ -25,6 +25,15 @@ FamixEsopeResolver class >> on: aMooseModel [
 		  yourself
 ]
 
+{ #category : #'symbols resolution' }
+FamixEsopeResolver >> ensureVariableNamed: variableName in: famixProgramUnit [
+
+	^(self resolveVariableNamed: variableName in: famixProgramUnit)
+		ifNotNil: [ :localVar | localVar ]
+		ifNil: [ famixProgramUnit createUnresolveVariable: variableName with: self ]
+
+]
+
 { #category : #accessing }
 FamixEsopeResolver >> errorHandler [
 
@@ -38,16 +47,26 @@ FamixEsopeResolver >> errorHandler: anErrorHandler [
 ]
 
 { #category : #private }
-FamixEsopeResolver >> implicitTypeFor: name inProgramUnit: programUnit [
-	"find a type according to the first letter of the variable's name"
-
-	^ programUnit implicitDictionary at: name first ifAbsent: [ FamixF77TypeUnknown defaultName ]
-]
-
-{ #category : #private }
 FamixEsopeResolver >> isIntrinsicRoutine: invocated [
 
 	^self class intrinsicRoutines includes: invocated entityName
+]
+
+{ #category : #'symbols resolution' }
+FamixEsopeResolver >> makePointerVariableForEsopeCommand: esopeCmd [
+	"esopeCmd is a kind of Access where the variable is an Esope pointeur
+	 We need to:
+	 - check if there is another variable with the same name in the owner
+	 - if so, merge the 2 variables into one"
+
+	(self
+		resolveAllVariablesNamed: esopeCmd variable name
+		in: esopeCmd accessor)
+
+		do: [ :variable |
+			variable = esopeCmd variable
+				ifFalse: [ self mergeVariable: variable into: esopeCmd variable ] ]
+
 ]
 
 { #category : #private }
@@ -99,54 +118,28 @@ FamixEsopeResolver >> newEntity: aFamixClass [
 		yourself
 ]
 
-{ #category : #'symbols resolution' }
-FamixEsopeResolver >> registerImplicitForPU: programUnit range: aRange forType: iASTTypeRef [
-	"for letters in aRange register in implicit dictionary the corresponding iASTTypeRef"
+{ #category : #run }
+FamixEsopeResolver >> propagatePointerType [
 
-	(aRange size = 1)
-	ifTrue: [ programUnit implicitDictionary
-		at: aRange first
-		put: iASTTypeRef entityName asSymbol ]
-	ifFalse: [ 
-		(aRange first to: aRange second) do: [ :letter |
-			programUnit implicitDictionary 
-				at: letter
-				put: iASTTypeRef entityName asSymbol
-		]
+	(model allWithType: FamixEsopeCommand) do: [ :esopeCmd |
+		errorHandler enterContext: esopeCmd commandName.
+		self makePointerVariableForEsopeCommand: esopeCmd.
+		errorHandler leaveContext
 	]
 ]
 
 { #category : #run }
 FamixEsopeResolver >> registerImplicitsDeclarations [
 	"find IMPLICIT declaration statements in all program units and register them
-	 in the respective implicitDictionary"
+	 in the respective implicitDictionary-s"
 
-	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :programUnit |
-		(programUnit isKindOf: FamixF77PUComment)
+	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :famixPU |
+		(famixPU isKindOf: FamixF77PUComment)
 			ifFalse: [
-				self errorHandler enterContext: 'on file ' , programUnit name.
-				self registerImplicitsForPU: programUnit.
+				self errorHandler enterContext: 'on file ' , famixPU name.
+				famixPU registerImplicits.
 				self errorHandler leaveContext
 			]
-	]
-]
-
-{ #category : #'symbols resolution' }
-FamixEsopeResolver >> registerImplicitsForPU: programUnit [
-	"find all IMPLICIT declaration statement in programUnit and register them
-	 in the implicitDictionary of this program-unit"
-
-	(programUnit attributeAt: #implicits ifAbsent: [ #() ])
-	do: [ :implicitDeclaration | 
-		implicitDeclaration ranges
-			ifNotNil: [ :ranges |
-				ranges do: [ :aRange | 
-					self
-						registerImplicitForPU: programUnit
-						range: aRange
-						forType: implicitDeclaration forType] ]
-			ifNil: [ "implicit none"
-				programUnit implicitDictionary removeAll ]
 	]
 ]
 
@@ -227,44 +220,43 @@ FamixEsopeResolver >> resolve [
 ]
 
 { #category : #'symbols resolution' }
-FamixEsopeResolver >> resolveAccess: anAccess [
-	"- ignore accesses already resolved (may happen in case of attribute access)
-	 - if access is of an attribute in a structure, resolve the parent pointer first,
-	   then the attribute in the pointer's type
-	 - otherwise let the accessor resolve the variable in itself"
+FamixEsopeResolver >> resolveAccess: aFamixAccess [
+	"set #variable property of anAccess from the IASTVariable it contains.
+	 Might create a new Famix variable if none is found
 
-	| variableName |
-	anAccess variable ifNotNil: [ ^self ].
+	 - ignore accesses already resolved (may happen in case of attribute access)
+	 - if access is pointer.attribute, resolve the parent pointer first, then the attribute
+	 - otherwise let the accessor resolve the variable within itself"
 
-	(anAccess getAndRemoveAttribute: #parentAccess)
-		ifNotNil: [ :pointerAccess |
-			self resolveAccess: pointerAccess.
-			self resolveAccess: anAccess fromPointer: pointerAccess variable.
+	| iastVariable |
+	aFamixAccess variable ifNotNil: [ ^self ].
+
+	(aFamixAccess getAndRemoveAttribute: #parentAccess)
+		ifNotNil: [ :famixPointerAccess |
+			self resolveAccess: famixPointerAccess.
+			self resolveAttributeAccess: aFamixAccess forPointer: famixPointerAccess variable.
 			^self
 		].
  
-	variableName := (anAccess getAndRemoveAttribute: #entity)
-		entityName.
-	self assert: variableName isNotNil.
+	iastVariable := aFamixAccess getAndRemoveAttribute: #entity.
+	self assert: iastVariable isNotNil.
 
-	anAccess variable: (anAccess accessor resolveVariable: variableName with: self)
-]
+	aFamixAccess variable: (self ensureVariableNamed: iastVariable entityName in: aFamixAccess accessor).
 
-{ #category : #'symbols resolution' }
-FamixEsopeResolver >> resolveAccess: anAccess fromPointer: aPointerVariable [
-
-	| variableAccessed |
-	variableAccessed := anAccess getAndRemoveAttribute: #entity.
-	self assert: variableAccessed isNotNil.
-
-	aPointerVariable declaredType attributes
-		detect: [ :att | att name = variableAccessed entityName ]
-		ifFound: [ :att | anAccess variable: att ].
+	"(aFamixAccess class = FamixEsopeCommand)
+	ifTrue: [
+		(aFamixAccess variable declaredType class = FamixEsopeSegment)
+			ifFalse: [
+				aFamixAccess variable declaredType: (self resolveTypeName: aFamixAccess variable name)
+			]
+	]"
 
 ]
 
 { #category : #run }
 FamixEsopeResolver >> resolveAccesses [
+	"Access-es do not have #variable at this point but an IASTVariable
+	 sets the #variable property of all Access-es"
 
 	(self model allWithSubTypesOf: FamixF77Access) do: [ :access |
 		self resolveAccess: access ]
@@ -277,7 +269,6 @@ FamixEsopeResolver >> resolveAllVariablesNamed: variableName in: accessor [
 	found := OrderedCollection new.
 
 	found addAll: (self resolveAsLocalVariable: variableName in: accessor).
-	found addAll: (self resolveAsImplicitPointer: variableName in: accessor).
 	found addAll: (self resolveAsImplicitAttribute: variableName in: accessor).
 
 	^found
@@ -291,52 +282,59 @@ FamixEsopeResolver >> resolveAsImplicitAttribute: variableName in: anAccessor [
 ]
 
 { #category : #'symbols resolution' }
-FamixEsopeResolver >> resolveAsImplicitPointer: variableName in: anAccessor [
-	"try to find a segment with the same name as the accessed variable"
-
-	self flag: #FIXME. "Issue with an attribute."
-
-	^anAccessor allTypes
-		select: [ :type |
-			(type class = FamixEsopeSegment) and: 
-			[ type name = variableName ]
-		]
-		thenCollect: [ :type |
-			(self newEntity: FamixF77Variable)
-				name: variableName ;
-				parentBehaviouralEntity: anAccessor ;
-				declaredType: type ;
-				yourself
-		]
-]
-
-{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveAsLocalVariable: variableName in: anAccessor [
 
 	^anAccessor allLocalVariables
 		select: [ :entity | entity name = variableName ]
 ]
 
+{ #category : #'symbols resolution' }
+FamixEsopeResolver >> resolveAttributeAccess: anAccess forPointer: aPointerVariable [
+	"resolve access to a segment attribute"
+
+	| variableAccessed |
+	variableAccessed := anAccess getAndRemoveAttribute: #entity.
+	self assert: variableAccessed isNotNil.
+
+	aPointerVariable declaredType attributes
+		detect: [ :att | att name = variableAccessed entityName ]
+		ifFound: [ :att | anAccess variable: att ].
+
+]
+
 { #category : #run }
 FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
-	
-	self flag: #FIXME. "Some Esope variables are not labelled as such"
-	
+	"sets the declaredType of pointers"
+
 	(self model allWithSubTypesOf: FamixF77Variable) 
 		do: [ :var | 
 			var isEsope ifTrue: [ self resolveEsopeVariable: var ]
-		]
+		].
+
+	(self model allWithSubTypesOf: FamixEsopeCommand) 
+		do: [ :cmd | 
+			(cmd variable declaredType isEsopeSegment)  
+				ifFalse: [
+					cmd variable attributeAt: #segmentName put: nil.
+					self resolveEsopeVariable: cmd variable
+				]
+		].
 ]
 
 { #category : #'symbols resolution' }
-FamixEsopeResolver >> resolveEsopeVariable: esopeVariable [
-	"sets the declaredType of declared pointer esopeVariable"
+FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
+	"sets the declaredType of pointer esopeVariable"
 
 	| segments |
+
 	segments := self model allWithType: FamixEsopeSegment.
 	segments
-		detect: [ :segment | segment name = esopeVariable segment ]
-		ifFound: [ :segment | esopeVariable declaredType: segment ]
+		detect: [ :segment |
+			aFamixVariable segment
+				ifNil: [ segment name = aFamixVariable name ]
+				ifNotNil: [ :declaredSegment | segment name = declaredSegment ]
+		]
+		ifFound: [ :segment | aFamixVariable declaredType: segment ]
 ]
 
 { #category : #'symbols resolution' }
@@ -344,17 +342,19 @@ FamixEsopeResolver >> resolveImplicitFunctionType: function [
 
 	function declaredType:
 		(self resolveTypeName:
-			(self implicitTypeFor: function name inProgramUnit: function)).
+			(function implicitTypeFor: function name)).
 
 ]
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveImplicitVariableType: aVariable [
+	"Tries to guess the type of an implicitly defined variable
+	 - can be a pointer to an Esope segment
+	 - otherwise uses the implicits declaration of its owner"
 
 	^self resolveTypeName:
-		(self
-			implicitTypeFor: aVariable name
-			inProgramUnit: aVariable parentBehaviouralEntity)
+		(aVariable parentBehaviouralEntity
+			implicitTypeFor: aVariable name)
 
 ]
 
@@ -432,6 +432,7 @@ FamixEsopeResolver >> resolveInvocations [
 
 { #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveTypeName: aName [
+	"Finds a FamixType from its name"
 
 	self flag: 'should test the referring PU (ex: for an included segment)'.
 
@@ -454,13 +455,19 @@ FamixEsopeResolver >> resolveVariableNamed: variableName in: accessor [
 { #category : #run }
 FamixEsopeResolver >> resolvingSteps [
 
-	^ #( resolveIncludes
-		  registerImplicitsDeclarations
-	     requalifyVariableDeclarations
-		  resolveImplicits
-		  #resolveDeclaredTypeOfPointers
-	     resolveInvocations
-		  resolveAccesses )
+	^ #(
+		#resolveIncludes
+		#registerImplicitsDeclarations
+		#requalifyVariableDeclarations
+
+		#resolveAccesses
+		#resolveImplicits
+	 	#resolveInvocations
+	)
+
+	"#propagatePointerType
+	#resolveDeclaredTypeOfPointers"
+
 ]
 
 { #category : #run }
@@ -473,7 +480,7 @@ FamixEsopeResolver >> setImplicitDeclaredType: anEntity in: owner [
 		ifNil: [
 			anEntity declaredType: 
 				(self resolveTypeName:
-					(self implicitTypeFor: anEntity name inProgramUnit: owner))
+					(owner implicitTypeFor: anEntity name))
 		]
 
 ]

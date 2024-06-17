@@ -227,6 +227,37 @@ FamixEsopeResolverTest >> setUp [
 ]
 
 { #category : #tests }
+FamixEsopeResolverTest >> testMakePointerFromVariable [
+	"We have a pointer variable and a normal variable with the same name
+	 the 2nd should be merged into the 1st which keeps its declared type and
+	 gets the accesses of the 2nd"
+
+	| subroutine variable pointer esopeCommand |
+
+	subroutine := self defaultSubroutine: 'sub'.
+
+	variable := self defaultVariable: 'pointerForASegment' withType: FamixF77TypeIntrinsic new.
+	variable parentBehaviouralEntity: subroutine.
+	pointer  := self defaultVariable: 'pointerForASegment' withType: FamixEsopeSegment new.
+	pointer parentBehaviouralEntity: subroutine.
+
+	resolver model newAccess
+		accessor: subroutine ;
+		variable: variable.
+	esopeCommand := resolver model newCommand
+		accessor: subroutine ;
+		variable: pointer.
+
+	self assert: subroutine accesses size equals: 2.
+	self assert: subroutine localVariables size equals: 2.
+
+	resolver makePointerVariableForEsopeCommand: esopeCommand.
+
+	self assert: subroutine accesses size equals: 2.
+	self assert: subroutine localVariables size equals: 1.
+]
+
+{ #category : #tests }
 FamixEsopeResolverTest >> testMergeVariableInto [
 	"We have 2 variables with the same name one should be merged into the other which keeps its
 	 declared type and	gets the accesses of the 1st"
@@ -275,7 +306,7 @@ FamixEsopeResolverTest >> testRegisterImplicitDefault [
 
 	pu := self defaultSubroutine: 'rtn'.
 
-	resolver registerImplicitsForPU: pu.
+	pu registerImplicits.
 
 	self assert: pu implicitDictionary size equals: 26.
 	
@@ -302,7 +333,7 @@ FamixEsopeResolverTest >> testRegisterImplicitMultiple [
 				       range: #( #( $a ) #( $c $d ) )) };
 		      yourself.
 
-	resolver registerImplicitsForPU: pu.
+	pu registerImplicits.
 
 	self assert: pu implicitDictionary size equals: 26.
 
@@ -328,7 +359,7 @@ FamixEsopeResolverTest >> testRegisterImplicitNone [
 		attributeAt: #implicits put: { self defaultImplicitNone } ;
 		yourself.
 
-	resolver registerImplicitsForPU: pu.
+	pu registerImplicits.
 
 	self assert: pu implicitDictionary isEmpty
 ]
@@ -348,7 +379,7 @@ FamixEsopeResolverTest >> testRegisterImplicitRange [
 		      put: { (self implicitRule: 'integer' range: #( #( $a $c ) )) };
 		      yourself.
 
-	resolver registerImplicitsForPU: pu.
+	pu registerImplicits.
 
 	self assert: pu implicitDictionary size equals: 26.
 
@@ -356,6 +387,31 @@ FamixEsopeResolverTest >> testRegisterImplicitRange [
 	self assert: (pu implicitDictionary at: $b) equals: 'integer'.
 	self assert: (pu implicitDictionary at: $c) equals: 'integer'.
 	self assert: (pu implicitDictionary at: $d) equals: 'real'
+]
+
+{ #category : #'test - implicit' }
+FamixEsopeResolverTest >> testRegisterImplicitSegment [
+
+	"
+      program main
+      segment point
+      end segment
+      end
+	"
+
+	| typePoint main |
+	typePoint := self newEntity: FamixEsopeSegment named: 'point'.
+	typePoint attributes: #().
+
+	main := (self defaultMain: 'main')
+		addType: typePoint;
+		yourself.
+
+	main registerImplicits.
+
+	self assert: main implicitDictionary size equals: 27.
+
+	self assert: (main implicitDictionary at: 'point') equals: 'point'
 ]
 
 { #category : #'test - implicit' }
@@ -373,7 +429,7 @@ FamixEsopeResolverTest >> testRegisterImplicitSimple [
 		      put: { (self implicitRule: 'integer' range: #( #( $a ) )) };
 		      yourself.
 
-	resolver registerImplicitsForPU: pu.
+	pu registerImplicits.
 
 	self assert: pu implicitDictionary size equals: 26.
 
@@ -626,6 +682,7 @@ FamixEsopeResolverTest >> testResolveAccessesForAPointerVariableImplicit [
 
 	self assert: subrtn localVariables size equals: 0.
 
+	resolver registerImplicitsDeclarations.
 	resolver resolveAccesses.
 
 	self assert: subrtn localVariables size equals: 1.
@@ -886,6 +943,67 @@ FamixEsopeResolverTest >> testResolveImplicitParameterRange [
 		          first parameters first.
 	self assert: entity declaredType class equals: FamixF77TypeIntrinsic.
 	self assert: entity declaredType name equals: 'character'
+]
+
+{ #category : #tests }
+FamixEsopeResolverTest >> testResolveImplicitPointer [
+
+	| sub type var |
+	"
+      subroutine demo
+      segment point
+      end segment
+      segini point
+      end
+	"
+	type := self newEntity: FamixEsopeSegment named: 'point'.
+	type attributes: #().
+
+	sub := (self newPU: 'demo')
+		addType: type;
+		yourself.
+
+	var := self defaultVariable: 'point' withType: (self defaultType: 'real').
+	(self newEntity: FamixEsopeCommand)
+		commandName: 'segini' ;
+		accessor: sub ;
+		variable: var.
+
+	resolver resolveDeclaredTypeOfPointers.
+
+	self assert: var declaredType equals: type
+]
+
+{ #category : #'test - implicit' }
+FamixEsopeResolverTest >> testResolveImplicitType [
+
+	| sub |
+	sub := self defaultSubroutine: 'sub'.
+
+	sub registerImplicitSegment: (self defaultSegment: 'point' with: #()).
+
+	self assert: (sub implicitTypeFor: 'aVar') equals: 'real'.
+	self assert: (sub implicitTypeFor: 'i') equals: 'integer'.
+	self assert: (sub implicitTypeFor: 'x') equals: 'real'.
+	self assert: (sub implicitTypeFor: 'point') equals: 'point'.
+
+]
+
+{ #category : #'test - implicit' }
+FamixEsopeResolverTest >> testResolveImplicitTypeInStatementFunction [
+
+	| sub f |
+	sub := self defaultSubroutine: 'sub'.
+	sub registerImplicitSegment: (self defaultSegment: 'point' with: #()).
+
+	f := self newEntity: FamixF77StatementFunction named: 'f'.
+	f parentEntity: sub.
+
+	self assert: (f implicitTypeFor: 'aVar') equals: 'real'.
+	self assert: (f implicitTypeFor: 'i') equals: 'integer'.
+	self assert: (f implicitTypeFor: 'x') equals: 'real'.
+	self assert: (f implicitTypeFor: 'point') equals: 'point'.
+
 ]
 
 { #category : #tests }

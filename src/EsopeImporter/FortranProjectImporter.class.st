@@ -394,7 +394,6 @@ FortranProjectImporter >> importSteps [
 		'JSon AST to Intermediary AST' -> #jsonASTToIAST .
 		'Intermediary AST to Famix' -> #iASTToFamix .
 		'Famix symbol resolution' -> #famixResolve .
-		'Pointer variables type propagation' -> #propagatePointerType .
 
 		'Post import sanity checks' -> #postImportChecks
 	}
@@ -477,22 +476,6 @@ FortranProjectImporter >> jsonASTToIAST [
 ]
 
 { #category : #'private - import' }
-FortranProjectImporter >> makePointerFromVariable: esopeCmd [
-	"esopeCmd is a kind of Access where the variable is an Esope pointeur
-	 We need to:
-	 - check if there is another variable with the same name in the owner
-	 - if so, merge the 2 variables into one"
-
-	(resolver
-		 resolveAllVariablesNamed: esopeCmd variable name
-		 in: esopeCmd accessor)
-
-		do: [ :variable |
-			variable = esopeCmd variable
-				ifFalse: [ resolver mergeVariable: variable into: esopeCmd variable ] ]
-]
-
-{ #category : #'private - import' }
 FortranProjectImporter >> newResolver [
 
 	^resolver := (FamixEsopeResolver  on: famixModel)
@@ -538,16 +521,6 @@ FortranProjectImporter >> postImportChecks [
 			entity famixImportSanityCheck.
 			errorHandler leaveContext
 		]
-	]
-]
-
-{ #category : #run }
-FortranProjectImporter >> propagatePointerType [
-
-	(famixModel allWithType: FamixEsopeCommand) do: [ :esopeCmd |
-		errorHandler enterContext: esopeCmd commandName.
-		self makePointerFromVariable: esopeCmd.
-		errorHandler leaveContext
 	]
 ]
 

@@ -37,3 +37,8 @@ IASTEsopeSegCommand >> esopeCommand: anObject [
 
 	command := anObject
 ]
+
+{ #category : #testing }
+IASTEsopeSegCommand >> isEsope [
+	^true
+]

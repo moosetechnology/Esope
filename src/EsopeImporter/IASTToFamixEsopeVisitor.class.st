@@ -45,8 +45,8 @@ IASTToFamixEsopeVisitor >> visitIASTEsopeSegment: aSegment [
 	| segment |
 	segment := self model newSegment
 		           sourceAnchor:
-			           (self visitIndexedFileAnchor: aSegment sourceAnchor);
-		           name: aSegment entityName;
+			           (self visitIndexedFileAnchor: aSegment sourceAnchor) ;
+		           name: aSegment entityName asLowercase ;
 		           yourself.
 	stack push: segment.
 	self createSymbolTableFor: segment.
