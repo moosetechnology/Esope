@@ -243,13 +243,13 @@ FamixEsopeResolver >> resolveAccess: aFamixAccess [
 
 	aFamixAccess variable: (self ensureVariableNamed: iastVariable entityName in: aFamixAccess accessor).
 
-	(aFamixAccess class = FamixEsopeCommand)
+	"(aFamixAccess class = FamixEsopeCommand)
 	ifTrue: [
 		(aFamixAccess variable declaredType class = FamixEsopeSegment)
 			ifFalse: [
 				aFamixAccess variable declaredType: (self resolveTypeName: aFamixAccess variable name)
 			]
-	]
+	]"
 
 ]
 
