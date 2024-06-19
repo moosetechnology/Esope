@@ -1074,7 +1074,7 @@ JsonToIASTVisitorTest >> testParameterStatement [
       END
 "
 	
-	| programFile stmt |
+	| programFile stmt access |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"/home/anquetil/Pharo/images/fortran-metamodels/srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:55)","statement":{"anno":[],"declarators":{"anno":[],"list":[{"anno":[],"initial":{"anno":[],"span":"(2:25)-(2:25)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"length":null,"span":"(2:18)-(2:25)","type":"scalar","variable":{"anno":[],"span":"(2:18)-(2:23)","tag":"value","value":{"contents":"legere","tag":"variable"}}},{"anno":[],"initial":{"anno":[],"span":"(2:34)-(2:34)","tag":"value","value":{"contents":["2",null],"tag":"integer"}},"length":null,"span":"(2:28)-(2:34)","type":"scalar","variable":{"anno":[],"span":"(2:28)-(2:32)","tag":"value","value":{"contents":"grave","tag":"variable"}}},{"anno":[],"initial":{"anno":[],"span":"(2:44)-(2:44)","tag":"value","value":{"contents":["3",null],"tag":"integer"}},"length":null,"span":"(2:37)-(2:44)","type":"scalar","variable":{"anno":[],"span":"(2:37)-(2:42)","tag":"value","value":{"contents":"fatale","tag":"variable"}}},{"anno":[],"initial":{"anno":[],"span":"(2:54)-(2:54)","tag":"value","value":{"contents":["4",null],"tag":"integer"}},"length":null,"span":"(2:47)-(2:54)","type":"scalar","variable":{"anno":[],"span":"(2:47)-(2:52)","tag":"value","value":{"contents":"finale","tag":"variable"}}}],"span":"(2:18)-(2:54)"},"span":"(2:7)-(2:55)","tag":"parameter"},"tag":"statement"}],"name":"paramstmt","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
@@ -1087,7 +1087,13 @@ JsonToIASTVisitorTest >> testParameterStatement [
 		self assert: each class equals: IASTVarAccess ].
 	self
 		assertCollection: (stmt collect: #entityName)
-		hasSameElements: #(legere grave fatale finale)
+		hasSameElements: #(legere grave fatale finale).
+
+	access := stmt detect: [ :e | e entityName = 'grave' ].
+	self assert: access sourceAnchor startLine equals: 2.
+	self assert: access sourceAnchor startColumn equals: 28.
+	self assert: access sourceAnchor endLine equals: 2.
+	self assert: access sourceAnchor endColumn equals: 33
 ]
 
 { #category : #'tests-esope' }
