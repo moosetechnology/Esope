@@ -587,6 +587,7 @@ JsonToIASTVisitor >> visitOpenStatement: anOpenStatement [
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitParameterStatement: aParameterStatementNode [ 
 	"span declarators
+
 	 Variable in PARAMETER statement will come back as IASTVariable-s
 	 We need them to be IASTVarAccess"
 
@@ -597,6 +598,7 @@ JsonToIASTVisitor >> visitParameterStatement: aParameterStatementNode [
 		IASTVarAccess new
 			isWrite: true ;
 			entityName: v entityName ;
+			sourceAnchor: v sourceAnchor ;
 			yourself
 	]
 ]
