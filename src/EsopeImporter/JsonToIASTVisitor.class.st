@@ -610,7 +610,7 @@ JsonToIASTVisitor >> visitProgramFile: aProgramFileNode [
 
 	programFile := IASTProgramFile new
 		filename: self f77sourcefile ;
-		progUnits: data second ;
+		body: data second ;
 		yourself.
 	self model add: programFile.
 	^ programFile
