@@ -575,6 +575,28 @@ IASTToFamixVisitorTest >> testFamixFortran77Comment [
 	self assert: entity content equals: ' a comment'.
 ]
 
+{ #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77CommentInSubRoutine [
+	| entity |
+	programFile body: {  IASTSubroutine new
+		entityName: 'sub';
+		body: { IASTComment new text: ' a comment' ; yourself };
+		yourself  }.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 1.
+	self assert: entity comments size equals: 0.
+
+	entity := entity programUnits first.
+	self assert: entity class equals: FamixF77PUSubroutine.
+	self assert: entity comments size equals: 1.
+
+	entity := entity comments first.
+	self assert: entity class equals: FamixF77Comment.
+	self assert: entity content equals: ' a comment'.
+]
+
 { #category : #'tests-esope' }
 IASTToFamixVisitorTest >> testFamixFortran77ESOAtWithArrayArgument [
 "Special case of a D__ function call with an array as argument
