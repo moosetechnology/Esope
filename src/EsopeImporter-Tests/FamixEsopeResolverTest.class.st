@@ -1235,6 +1235,8 @@ FamixEsopeResolverTest >> testResolveInvocations [
 FamixEsopeResolverTest >> testResolveInvocationsWrongArgumentNumber [
 	| invocation callee caller |
 	
+	self skip: 'Famix does not model arguments, so we cannot resolve based on their number'.
+	
 	caller := (self defaultMain: 'main')
 		addOutgoingInvocation: (self defaultInvocation: 'sub');
 		yourself.
