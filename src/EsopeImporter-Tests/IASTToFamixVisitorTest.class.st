@@ -191,7 +191,7 @@ IASTToFamixVisitorTest >> testComment [
 
 	| entity comment |
 
-	programFile progUnits: { IASTMainProgram new
+	programFile body: { IASTMainProgram new
 			 entityName: 'main';
 			 body: { IASTComment new
 		           text: 'a normal comment';
@@ -229,7 +229,7 @@ c@_   end segment
 			           (#abs -> #real).
 			           (#ord -> #real) }.
 
-	programFile progUnits: { (IASTIncludedFile new
+	programFile body: { (IASTIncludedFile new
 			 entityName: '_$aFile_inc';
 			 sourceAnchor: self defaultAnchor;
 			 body: { 
@@ -397,7 +397,7 @@ IASTToFamixVisitorTest >> testFamixEsopeCommandSegini [
 	| famixSegini iastSegini progFile |
 	iastSegini := self defaultSegmentComand: 'segini' on: 'ptr'.
 
-	programFile progUnits: { IASTSubroutine new
+	programFile body: { IASTSubroutine new
 			 entityName: 'sub';
 			 body: { iastSegini };
 			 yourself }.
@@ -454,7 +454,7 @@ IASTToFamixVisitorTest >> testFamixEsopeSegment [
 			           (#status -> #logical).
 			           (#age -> #integer) }.
 
-	programFile progUnits: { IASTSubroutine new
+	programFile body: { IASTSubroutine new
 			 entityName: 'sub';
 			 body: { segment };
 			 yourself }.
@@ -499,7 +499,7 @@ c  ptr.attr(/1)
 	self flag: #TODO.
 	s__ := self defaultVarEsoSl: #( #ptr #attr ).
 
-	programFile progUnits: { (IASTSubroutine new
+	programFile body: { (IASTSubroutine new
 			 entityName: 'sub';
 			 body: { s__ };
 			 yourself) }.
@@ -535,7 +535,7 @@ c  ptr.attr(/1)
 IASTToFamixVisitorTest >> testFamixFortran77 [
 
 	| entity |
-	programFile progUnits: { IASTSubroutine new
+	programFile body: { IASTSubroutine new
 		entityName: 'sub';
 		body: #();
 		yourself
@@ -554,6 +554,25 @@ IASTToFamixVisitorTest >> testFamixFortran77 [
 	self assert: entity class equals: FamixF77PUSubroutine.
 	self assert: entity name equals: 'sub'.
 
+]
+
+{ #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77Comment [
+	| entity |
+	programFile body: { IASTComment new
+		text: ' a comment' ;
+		isProgUnit: true ;
+		yourself  
+	}.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 0.
+	self assert: entity comments size equals: 1.
+
+	entity := entity comments first.
+	self assert: entity class equals: FamixF77Comment.
+	self assert: entity content equals: ' a comment'.
 ]
 
 { #category : #'tests-esope' }
@@ -587,7 +606,7 @@ IASTToFamixVisitorTest >> testFamixFortran77Invocation [
 			entityName: 'main';
 			body: { IASTInvocation new entityName: 'sub'; yourself };
 			yourself.
-	programFile progUnits: { callee . caller }.
+	programFile body: { callee . caller }.
 
 	programFile accept: visitor.
 	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
@@ -607,7 +626,7 @@ IASTToFamixVisitorTest >> testFamixFortran77Invocation [
 IASTToFamixVisitorTest >> testFamixFortran77LocalVariable [
 
 	| entity var |
-	programFile progUnits: { IASTSubroutine new
+	programFile body: { IASTSubroutine new
 			 entityName: 'sub';
 			 body: { (self defaultVariable: 'aVar' withType: 'integer') };
 			 yourself }.
@@ -632,7 +651,7 @@ IASTToFamixVisitorTest >> testFamixFortran77LocalVariable [
 IASTToFamixVisitorTest >> testFamixFortran77PUBlockdata [
 
 	| entity |
-	programFile progUnits: { IASTBlockData new
+	programFile body: { IASTBlockData new
 			 entityName: 'bdata';
 			 yourself
 	}.
@@ -648,29 +667,10 @@ IASTToFamixVisitorTest >> testFamixFortran77PUBlockdata [
 ]
 
 { #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testFamixFortran77PUComment [
-	| entity |
-	programFile progUnits: { IASTComment new
-		text: ' a comment' ;
-		isProgUnit: true ;
-		yourself  
-	}.
-
-	entity := programFile accept: visitor.
-
-	self assert: entity programUnits size equals: 1.
-
-	entity := entity programUnits first.
-	self assert: entity class equals: FamixF77PUComment.
-	self assert: entity content equals: ' a comment'.
-	self assert: entity programFile isNotNil.
-]
-
-{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77PUFunction [
 
 	| entity |
-	programFile progUnits: { IASTFunction new
+	programFile body: { IASTFunction new
 			 entityName: 'fct';
 			 yourself }.
 
@@ -688,7 +688,7 @@ IASTToFamixVisitorTest >> testFamixFortran77PUFunction [
 IASTToFamixVisitorTest >> testFamixFortran77PUFunctionWithParameter [
 
 	| entity param |
-	programFile progUnits: { IASTFunction new
+	programFile body: { IASTFunction new
 			 entityName: 'fct';
 			 parameters: { self defaultParameter };
 			 yourself }.
@@ -713,7 +713,7 @@ IASTToFamixVisitorTest >> testFamixFortran77PUFunctionWithParameter [
 IASTToFamixVisitorTest >> testFamixFortran77PUMain [
 
 	| entity |
-	programFile progUnits: { IASTMainProgram new
+	programFile body: { IASTMainProgram new
 			 entityName: 'main';
 			 yourself }.
 
@@ -760,7 +760,7 @@ IASTToFamixVisitorTest >> testFamixFortran77SourceAnchor [
 IASTToFamixVisitorTest >> testFamixFortran77Subroutine [
 
 	| entity |
-	programFile progUnits: { IASTSubroutine new
+	programFile body: { IASTSubroutine new
 			 entityName: 'sub';
 			 yourself }.
 
@@ -779,7 +779,7 @@ IASTToFamixVisitorTest >> testFamixFortran77Subroutine [
 IASTToFamixVisitorTest >> testImplicitWithRange [
 
 	| entity sub |
-	programFile progUnits: { (IASTSubroutine new
+	programFile body: { (IASTSubroutine new
 			 entityName: 'sub';
 			 body: { IASTImplicit new
 				rules: { (self implicitRule: 'character' range: { #( $c $f ) }) }
@@ -819,7 +819,7 @@ c@_#include ""point.seg""
 		               includeCommand: '#include';
 		               entityName: 'point.seg';
 		               yourself.
-	programFile progUnits: { (IASTSubroutine new
+	programFile body: { (IASTSubroutine new
 			 entityName: 'test';
 			 body: { includeStmt };
 			 yourself) }.
@@ -843,7 +843,7 @@ c@_#include ""point.seg""
 IASTToFamixVisitorTest >> testMultipleImplicit [
 
 	| entity sub |
-	programFile progUnits: { (IASTSubroutine new
+	programFile body: { (IASTSubroutine new
 			 entityName: 'sub';
 			 body: { IASTImplicit new
 				rules: { (self implicitRule: 'character' range: #( #( $c ) #( $d $f ) )) }
@@ -877,7 +877,7 @@ IASTToFamixVisitorTest >> testMultipleImplicit [
 IASTToFamixVisitorTest >> testSimpleImplicit [
 
 	| entity sub |
-	programFile progUnits: { (IASTSubroutine new
+	programFile body: { (IASTSubroutine new
 			 entityName: 'sub';
 			 body: { IASTImplicit new
 				rules: { (self implicitRule: 'character' range: { #( $c ) }) }
