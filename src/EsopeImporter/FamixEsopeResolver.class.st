@@ -134,12 +134,9 @@ FamixEsopeResolver >> registerImplicitsDeclarations [
 	 in the respective implicitDictionary-s"
 
 	(self model allWithSubTypesOf: FamixF77ProgramUnit) do: [ :famixPU |
-		(famixPU isKindOf: FamixF77PUComment)
-			ifFalse: [
-				self errorHandler enterContext: 'on file ' , famixPU name.
-				famixPU registerImplicits.
-				self errorHandler leaveContext
-			]
+		self errorHandler enterContext: 'on file ' , famixPU name.
+		famixPU registerImplicits.
+		self errorHandler leaveContext
 	]
 ]
 

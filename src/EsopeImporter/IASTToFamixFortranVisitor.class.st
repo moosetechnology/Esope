@@ -94,17 +94,12 @@ IASTToFamixFortranVisitor >> visitIASTBlockData: aBlockData [
 { #category : #visiting }
 IASTToFamixFortranVisitor >> visitIASTComment: aComment [
 
-	| comment |
-	comment := aComment isProgUnit
-		           ifTrue: [ self newEntity: FamixF77PUComment ]
-		           ifFalse: [ 
-			           (self newEntity: FamixF77Comment)
-				           isEsope: aComment isEsope;
-				           commentedEntity: stack top ].
-	^ comment
-		  sourceAnchor: (self visitIndexedFileAnchor: aComment sourceAnchor);
-		  content: aComment text;
-		  yourself
+	^(self newEntity: FamixF77Comment)
+		content: aComment text ;
+		commentedEntity: stack top ;
+		sourceAnchor: (self visitIndexedFileAnchor: aComment sourceAnchor) ;
+		isEsope: aComment isEsope ;
+		yourself
 ]
 
 { #category : #visiting }
@@ -217,8 +212,12 @@ IASTToFamixFortranVisitor >> visitIASTProgramFile: aProgramFile [
 
 	stack push: progFile.
 
-	aProgramFile progUnits do: [ :progUnit |
-		progFile addProgramUnit: (progUnit accept: self) ].
+	aProgramFile body do: [ :child || famixComment |
+		famixComment := child accept: self.
+		child isComment
+		ifTrue: [ famixComment commentedEntity: progFile ]
+		ifFalse: [ progFile addProgramUnit: famixComment ]
+	].
 
 	stack pop.
 	^ progFile

@@ -556,6 +556,25 @@ IASTToFamixVisitorTest >> testFamixFortran77 [
 
 ]
 
+{ #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77Comment [
+	| entity |
+	programFile body: { IASTComment new
+		text: ' a comment' ;
+		isProgUnit: true ;
+		yourself  
+	}.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 0.
+	self assert: entity comments size equals: 1.
+
+	entity := entity comments first.
+	self assert: entity class equals: FamixF77Comment.
+	self assert: entity content equals: ' a comment'.
+]
+
 { #category : #'tests-esope' }
 IASTToFamixVisitorTest >> testFamixFortran77ESOAtWithArrayArgument [
 "Special case of a D__ function call with an array as argument
@@ -644,25 +663,6 @@ IASTToFamixVisitorTest >> testFamixFortran77PUBlockdata [
 	entity := entity programUnits first.
 	self assert: entity class equals: FamixF77PUBlockdata.
 	self assert: entity name equals: 'bdata'.
-	self assert: entity programFile isNotNil.
-]
-
-{ #category : #'tests-fortran' }
-IASTToFamixVisitorTest >> testFamixFortran77PUComment [
-	| entity |
-	programFile progUnits: { IASTComment new
-		text: ' a comment' ;
-		isProgUnit: true ;
-		yourself  
-	}.
-
-	entity := programFile accept: visitor.
-
-	self assert: entity programUnits size equals: 1.
-
-	entity := entity programUnits first.
-	self assert: entity class equals: FamixF77PUComment.
-	self assert: entity content equals: ' a comment'.
 	self assert: entity programFile isNotNil.
 ]
 
