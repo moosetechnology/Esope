@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'filename',
 		'version',
-		'progUnits'
+		'body'
 	],
 	#category : #'EsopeImporter-AST-IR'
 }
@@ -19,11 +19,6 @@ IASTProgramFile >> accept: aVisitor [
 IASTProgramFile >> addProgramUnit: anObject [
 
 	^ self progUnits add: anObject
-]
-
-{ #category : #accessing }
-IASTProgramFile >> comments [
-	^self localComments 
 ]
 
 { #category : #accessing }
