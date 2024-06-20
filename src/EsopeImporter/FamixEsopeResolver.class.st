@@ -399,8 +399,8 @@ FamixEsopeResolver >> resolveInvocables: invocable [
 
 	(model allWithSubTypesOf: FamixF77PUProcedure)
 		do: [ :entity |
-			((entity name = invocable entityName) and:
-			[ entity parameters size = (invocable arguments ifNil: [ #() ]) size ])
+			((entity name = invocable entityName) "and:
+			[ entity parameters size = (invocable arguments ifNil: [ #() ]) size ]")
 				ifTrue: [ ^ entity ]
 		].
 

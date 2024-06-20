@@ -8,7 +8,8 @@ FamixF77ProgramUnit >> allDeclaredTypesInMyScope [
 	return := Set new.
 	return addAll: self types.
 	self includes do: [ :inclusion |
-		return addAll: inclusion included allDeclaredTypesInMyScope 
+		inclusion included
+			ifNotNil: [ :includedFile | return addAll: includedFile allDeclaredTypesInMyScope  ]
 	].
 
 	^return asOrderedCollection
