@@ -1,5 +1,5 @@
 "
-Im an 'Entier Dimentionnel'
+I am a parameter for arrays in a segment
 
 ## Relations
 ======================
