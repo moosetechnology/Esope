@@ -52,7 +52,7 @@ FamixEsopeTest >> defaultSegmentComand: commandName [
 { #category : #tests }
 FamixEsopeTest >> defaultSegmentComand: commandName on: varPointer [
 
-	^ (self newEntity: FamixEsopeSegini)
+	^ (self newEntity: FamixEsopeCommand)
 		  sourceAnchor: (self defaultAnchorFrom: 2 @ 7 to: 2 @ 19);
 		  variable: (self defaultVariable: varPointer withType: 'pointeur');
 		  yourself
@@ -101,7 +101,7 @@ FamixEsopeTest >> testCreateSegmentCommandSegini [
 	| segini |
 	segini := self defaultSegmentComand: 'segini' on: 'ptr'.
 
-	self assert: segini class equals: FamixEsopeSegini.
+	self assert: segini class equals: FamixEsopeCommand.
 
 	self assert: segini variable class equals: FamixF77Variable.
 	self assert: segini variable name equals: 'ptr'.
