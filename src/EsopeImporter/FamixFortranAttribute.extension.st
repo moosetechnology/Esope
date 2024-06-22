@@ -2,7 +2,8 @@ Extension { #name : #FamixFortranAttribute }
 
 { #category : #'*EsopeImporter' }
 FamixFortranAttribute >> famixImportSanityCheck [
+	"not calling super because does not have a parentBehaviouralEntity"
 
-	self assert: parentType isNotNil description: 'Variable without parentType'.
-	self assert: declaredType isNotNil description: 'Variable without declaredType'.
+	self sanityCheck: parentType isNotNil description: 'Attribute ', name , ' without parentType'.
+	self sanityCheck: declaredType isNotNil description: 'Attribute ', name , ' without declaredType'.
 ]
