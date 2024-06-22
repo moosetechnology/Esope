@@ -1251,3 +1251,377 @@ FamixEsopeResolverTest >> testResolveInvocationsWrongArgumentNumber [
 
 	self assert: invocation candidates size equals: 0
 ]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckAccessNoAccessor [
+
+	| access |
+	access := self newEntity: FamixF77Access.
+	access variable: (self newEntity: FamixF77Variable).
+
+	self should: [ access famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckAccessNoVariable [
+
+	| access |
+	access := self newEntity: FamixF77Access.
+	access accessor: (self newEntity: FamixF77PUSubroutine).
+
+	self should: [ access famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckAccessPass [
+
+	| access |
+	access := self newEntity: FamixF77Access.
+	access variable: (self newEntity: FamixF77Variable).
+	access accessor: (self newEntity: FamixF77PUSubroutine).
+
+	self shouldnt: [ access famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckAttributeNoDeclaredType [
+
+	| var |
+	var := self newEntity: FamixFortranAttribute named: 'anAttribute'.
+	var parentType: (self newEntity: FamixEsopeSegment).
+
+	self should: [ var famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckAttributeNoParent [
+
+	| var |
+	var := self newEntity: FamixFortranAttribute named: 'anAttribute'.
+	var declaredType: (self newEntity: FamixF77TypeIntrinsic).
+
+	self should: [ var famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckAttributePass [
+
+	| var |
+	var := self newEntity: FamixFortranAttribute named: 'anAttribute'.
+	var parentType: (self newEntity: FamixEsopeSegment).
+	var declaredType: (self newEntity: FamixF77TypeIntrinsic).
+
+	self shouldnt: [ var famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckEsopeCommandNoAccessor [
+
+	| cmd |
+	cmd := self newEntity: FamixEsopeCommand.
+	cmd variable: (self newEntity: FamixF77Variable).
+	cmd variable declaredType: (self newEntity: FamixEsopeSegment).
+
+	self should: [cmd famixImportSanityCheck] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckEsopeCommandNoVariable [
+
+	| cmd |
+	cmd := self newEntity: FamixEsopeCommand.
+	cmd accessor: (self newEntity: FamixF77PUSubroutine).
+
+	self should: [cmd famixImportSanityCheck] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckEsopeCommandNotPointer [
+
+	| cmd |
+	cmd := self newEntity: FamixEsopeCommand.
+	cmd variable: (self newEntity: FamixF77Variable).
+	cmd variable declaredType: (self newEntity: FamixF77TypeIntrinsic).
+	cmd accessor: (self newEntity: FamixF77PUSubroutine).
+
+	self should: [cmd famixImportSanityCheck] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckEsopeCommandPass [
+
+	| cmd |
+	cmd := self newEntity: FamixEsopeCommand.
+	cmd variable: (self newEntity: FamixF77Variable).
+	cmd variable declaredType: (self newEntity: FamixEsopeSegment).
+	cmd accessor: (self newEntity: FamixF77PUSubroutine).
+
+	self shouldnt: [cmd famixImportSanityCheck] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckIncludedFileNoInclusion [
+
+	| includedFile |
+	includedFile := self newEntity: FamixF77IncludedFile named: 'file.inc'.
+	includedFile programFile: (self newEntity: FamixF77ProgramFile).
+
+	self should: [ includedFile famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckIncludedFileNoParent [
+
+	| includedFile |
+	includedFile := self newEntity: FamixF77IncludedFile named: 'file.inc'.
+	includedFile inclusions: { self newEntity: FamixF77Include }.
+
+	self should: [ includedFile famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckIncludedFilePass [
+
+	| includedFile |
+	includedFile := self newEntity: FamixF77IncludedFile named: 'file.inc'.
+	includedFile programFile: (self newEntity: FamixF77ProgramFile).
+	includedFile inclusions: { self newEntity: FamixF77Include }.
+
+	self shouldnt: [ includedFile famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckIntrinsicRoutineNoInvoker [
+
+	| includedFile |
+	includedFile := self newEntity: FamixF77IntrinsicRoutine named: 'write'.
+	includedFile incomingInvocations: #().
+
+	self should: [ includedFile famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckIntrinsicRoutinePass [
+
+	| includedFile |
+	includedFile := self newEntity: FamixF77IntrinsicRoutine named: 'write'.
+	includedFile incomingInvocations: { self newEntity: FamixF77Invocation }.
+
+	self shouldnt: [ includedFile famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckInvocationNoCandidates [
+
+	| invok |
+	invok := self newEntity: FamixF77Invocation.
+	invok sender: (self newEntity: FamixF77PUSubroutine).
+	invok candidates: #().
+
+	self should: [ invok famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckInvocationNoSender [
+
+	| invok |
+	invok := self newEntity: FamixF77Invocation.
+	invok candidates: { self newEntity: FamixF77PUFunction }.
+
+	self should: [ invok famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckInvocationPass [
+
+	| invok |
+	invok := self newEntity: FamixF77Invocation.
+	invok sender: (self newEntity: FamixF77PUSubroutine).
+	invok candidates: { self newEntity: FamixF77PUFunction }.
+
+	self shouldnt: [ invok famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckMainNoParent [
+
+	| main |
+	main := self newEntity: FamixF77PUMain named: 'myMain'.
+
+	self should: [ main famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckMainPass [
+
+	| main |
+	main := self newEntity: FamixF77PUMain named: 'myMain'.
+	main programFile: (self newEntity: FamixF77ProgramFile).
+
+	self shouldnt: [ main famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckPUFunctionNoDeclaredType [
+
+	| fct |
+	fct := self newEntity: FamixF77PUFunction named: 'f'.
+	fct programFile: (self newEntity: FamixF77ProgramFile).
+
+	self should: [ fct famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckPUFunctionNoParent [
+
+	| fct |
+	fct := self newEntity: FamixF77PUFunction named: 'f'.
+	fct declaredType: (self newEntity: FamixF77TypeIntrinsic).
+
+	self should: [ fct famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckPUFunctionPass [
+
+	| fct |
+	fct := self newEntity: FamixF77PUFunction named: 'f'.
+	fct programFile: (self newEntity: FamixF77ProgramFile).
+	fct declaredType: (self newEntity: FamixF77TypeIntrinsic).
+
+	self shouldnt: [ fct famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckParameterNoDeclaredType [
+
+	| param |
+	param := self newEntity: FamixF77Parameter.
+	param parentBehaviouralEntity: (self newEntity: FamixF77PUSubroutine).
+
+	self should: [ param famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckParameterNoParent [
+
+	| param |
+	param := self newEntity: FamixF77Parameter.
+	param declaredType: (self newEntity: FamixF77TypeIntrinsic).
+
+	self should: [ param famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckParameterPass [
+
+	| param |
+	param := self newEntity: FamixF77Parameter.
+	param declaredType: (self newEntity: FamixF77TypeIntrinsic).
+	param parentBehaviouralEntity: (self newEntity: FamixF77PUSubroutine).
+
+	self shouldnt: [ param famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckStatementFunctionNoParent [
+
+	| fct |
+	fct := self newEntity: FamixF77StatementFunction named: 'f'.
+
+	self should: [ fct famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckStatementFunctionPass [
+
+	| fct |
+	fct := self newEntity: FamixF77StatementFunction named: 'f'.
+	fct parentEntity: (self newEntity: FamixF77PUSubroutine).
+
+	self shouldnt: [ fct famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckUnknownVariableNoAccess [
+
+	| var |
+	var := self newEntity: FamixF77UnknownVariable.
+	var incomingAccesses: #().
+
+	self should: [ var famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckUnknownVariablePass [
+
+	| var |
+	var := self newEntity: FamixF77UnknownVariable.
+	var incomingAccesses: {  self newEntity: FamixF77Access }.
+
+	self shouldnt: [ var famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckVariableNoDeclaredType [
+
+	| var |
+	var := self newEntity: FamixF77Variable named: 'aVariable'.
+	var parentBehaviouralEntity: (self newEntity: FamixF77PUSubroutine).
+
+	self should: [ var famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckVariableNoParent [
+
+	| var |
+	var := self newEntity: FamixF77Variable named: 'aVariable'.
+	var declaredType: (self newEntity: FamixF77TypeIntrinsic).
+
+	self should: [ var famixImportSanityCheck ] raise: SanityCheckException.
+
+]
+
+{ #category : #'test - sanityCheck' }
+FamixEsopeResolverTest >> testSanityCheckVariablePass [
+
+	| var |
+	var := self newEntity: FamixF77Variable named: 'aVariable'.
+	var parentBehaviouralEntity: (self newEntity: FamixF77PUSubroutine).
+	var declaredType: (self newEntity: FamixF77TypeIntrinsic).
+
+	self shouldnt: [ var famixImportSanityCheck ] raise: SanityCheckException.
+
+]
