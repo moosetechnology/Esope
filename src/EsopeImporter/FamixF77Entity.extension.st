@@ -1,14 +1,6 @@
 Extension { #name : #FamixF77Entity }
 
 { #category : #'*EsopeImporter' }
-FamixF77Entity >> assert: aBlock description: aString [
-	"reimplement Object>>assert:description: because we want a resumable Failure"
-
-	aBlock value == true ifFalse: [
-		Exception signal: aString ]
-]
-
-{ #category : #'*EsopeImporter' }
 FamixF77Entity >> famixImportSanityCheck [
 	"nothing special by default"
 ]
@@ -17,4 +9,12 @@ FamixF77Entity >> famixImportSanityCheck [
 FamixF77Entity >> isEsopeSegment [
 
 	^false
+]
+
+{ #category : #'*EsopeImporter' }
+FamixF77Entity >> sanityCheck: aBlock description: aString [
+	"copied from Object>>assert:description: with our own exception"
+
+	aBlock value == true ifFalse: [
+		SanityCheckException signal: aString ]
 ]

@@ -3,8 +3,10 @@ Extension { #name : #FamixF77Variable }
 { #category : #'*EsopeImporter' }
 FamixF77Variable >> famixImportSanityCheck [
 
-	self assert: parentBehaviouralEntity isNotNil description: 'Variable without parentBehaviouralEntity'.
-	self assert: declaredType isNotNil description: 'Variable without declaredType'.
+	super famixImportSanityCheck.
+
+	self sanityCheck: parentBehaviouralEntity isNotNil description: 'Variable ', name , ' without parentBehaviouralEntity'.
+	self sanityCheck: declaredType isNotNil description: 'Variable ', name , ' without declaredType'.
 ]
 
 { #category : #'*EsopeImporter' }

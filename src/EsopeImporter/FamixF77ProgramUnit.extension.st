@@ -63,7 +63,9 @@ FamixF77ProgramUnit >> defaultImplicit [
 { #category : #'*EsopeImporter' }
 FamixF77ProgramUnit >> famixImportSanityCheck [
 
-	self assert: programFile isNotNil description: name , ' without parent ProgramFile'.
+	super famixImportSanityCheck.
+
+	self sanityCheck: programFile isNotNil description: name , ' without parent ProgramFile'.
 ]
 
 { #category : #'*EsopeImporter' }
@@ -168,7 +170,7 @@ FamixF77ProgramUnit >> registerImplicits [
 	].
 
 	(self allDeclaredTypesInMyScope) do: [ :famixType |
-		(famixType class = FamixEsopeSegment) 
+		(famixType isEsopeSegment) 
 		ifTrue: [ self registerImplicitSegment: famixType ]
 	]
 

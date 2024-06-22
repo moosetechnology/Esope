@@ -26,7 +26,7 @@ FamixF77StatementFunction >> famixImportSanityCheck [
 
 	super famixImportSanityCheck.
 
-	self assert: parentEntity isNotNil description: 'StatementFunction without parentEntity'.
+	self sanityCheck: parentEntity isNotNil description: 'StatementFunction without parentEntity'.
 ]
 
 { #category : #'*EsopeImporter' }

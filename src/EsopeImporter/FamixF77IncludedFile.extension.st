@@ -23,5 +23,5 @@ FamixF77IncludedFile >> famixImportSanityCheck [
 
 	super famixImportSanityCheck.
 
-	self assert: inclusions isNotEmpty description: 'IncludedFile without inclusions'.
+	self sanityCheck: inclusions isNotEmpty description: 'IncludedFile without inclusions'.
 ]
