@@ -287,28 +287,13 @@ FortranProjectImporter >> famixResolve [
 ]
 
 { #category : #'private - files' }
-FortranProjectImporter >> findFiles: fileNames in: folders [
-	"try to find files matching one of fileNames in folders
-	 returns a FileReference and the folder containing it for each one found"
+FortranProjectImporter >> findFiles: fileNames in: folder [
+	"try to find files matching one of fileNames in #folder
+	 for each name returns the first FileReference found and the (sub-)folder containing it"
 
-	^fileNames
-		collect: [ :includedFile | self folderContaining: includedFile among: folders ]
-		thenReject: #isNil
-]
-
-{ #category : #'private - files' }
-FortranProjectImporter >> folderContaining: includedFileName among: includeFolderReferences [
-	"search for includedFileName in one of the includeFolderReferences
-	 if found, returns the folder if found and nil otherwise
-
-	 Note: The includedFileName may be a file name ('blah.h'),
-	   a path name ('lib/blah.h'), or a filename without extension ('blah')"
-
-	^includeFolderReferences
-		detect: [ :folder | (folder / includedFileName)  exists ]
-		ifOne: [ :folder | folder / includedFileName ]
-		ifNone: [ nil ]
-
+	^ fileNames
+		  collect: [ :includedFile | self relativePathOf: includedFile in: folder ]
+		  thenReject: #isNil
 ]
 
 { #category : #run }
@@ -517,6 +502,24 @@ FortranProjectImporter >> postImportChecks [
 			errorHandler leaveContext
 		]
 	]
+]
+
+{ #category : #'private - files' }
+FortranProjectImporter >> relativePathOf: includedFileName in: folder [
+	"search for includedFileName in #folder or sub-folders
+	 if found, returns the path relative to #folder and nil otherwise
+
+	 Note: The includedFileName may be a file name ('blah.h'),
+	   a path name ('lib/blah.h'), or a filename without extension ('blah')"
+
+	(folder / includedFileName) exists ifTrue: [
+		^ folder / includedFileName ].
+
+	folder children do: [ :child |
+		(self relativePathOf: includedFileName in: child) ifNotNil: [ :found |
+			^ folder / found ] ].
+
+	^ nil
 ]
 
 { #category : #accessing }
