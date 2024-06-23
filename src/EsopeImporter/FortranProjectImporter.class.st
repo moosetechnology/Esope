@@ -46,8 +46,6 @@ Class {
 	#instVars : [
 		'famixModel',
 		'iastmodel',
-		'srcFolders',
-		'includeFolders',
 		'defaultFileEncoding',
 		'errorHandler',
 		'stopOnError',
@@ -56,7 +54,9 @@ Class {
 		'tempFortranFolder',
 		'tempJsonFolder',
 		'resolver',
-		'withSanityChecks'
+		'withSanityChecks',
+		'includeFolder',
+		'srcFolder'
 	],
 	#category : #'EsopeImporter-Importer'
 }
@@ -144,8 +144,7 @@ FortranProjectImporter >> collectIncludedFileNames [
 { #category : #'private - files' }
 FortranProjectImporter >> collectSrcFilesWithExtensions: extensions [
 
-	^self srcFolders flatCollect: [ :srcFolderName |
-		self collectFilesIn: srcFolderName withExtensions: extensions ]
+	^self collectFilesIn: srcFolder withExtensions: extensions
 ]
 
 { #category : #'private - files' }
@@ -360,10 +359,7 @@ FortranProjectImporter >> iASTToFamix [
 { #category : #run }
 FortranProjectImporter >> import [
 
-	srcFolders ifNil: [ 
-		Warning signal: 'Set source folders first' ].
-	srcFolders ifEmpty: [ 
-		Warning signal: 'Set source folders first' ].
+	srcFolder ifNil: [ Warning signal: 'Set source folder first' ].
 
 	errorHandler := FortranErrorManager new.
 	errorHandler stopOnError: self stopOnError.
@@ -400,26 +396,25 @@ FortranProjectImporter >> importSteps [
 ]
 
 { #category : #accessing }
-FortranProjectImporter >> includeFolders [
+FortranProjectImporter >> includeFolder [
 
-	^ includeFolders ifNil: [ self srcFolders ]
+	^ includeFolder ifNil: [ self srcFolder ]
 ]
 
 { #category : #accessing }
-FortranProjectImporter >> includeFolders: aCollection [
-	"aCollection should contain either strings of FileReferences"
+FortranProjectImporter >> includeFolder: folder [
+	"folder is either a String of a FileReference"
 
-	includeFolders := aCollection collect: [ :folder |
-		folder isString
-			ifTrue: [ folder asFileReference ]
-			ifFalse: [ folder ]
-	]
+	includeFolder := folder isString
+		ifTrue: [ folder asFileReference ]
+		ifFalse: [ folder ]
+
 ]
 
 { #category : #run }
 FortranProjectImporter >> includedFilesToEsope [
 
-	(self findFiles: self collectIncludedFileNames in: self includeFolders)
+	(self findFiles: self collectIncludedFileNames in: self includeFolder)
 		do: [ :foundFile |
 			errorHandler enterContext: foundFile basename.
 			self fakeEsopeProgramUnit: foundFile to: self tempEsopeFolder.
@@ -525,20 +520,19 @@ FortranProjectImporter >> postImportChecks [
 ]
 
 { #category : #accessing }
-FortranProjectImporter >> srcFolders [
+FortranProjectImporter >> srcFolder [
 
-	^srcFolders 
+	^srcFolder 
 ]
 
 { #category : #accessing }
-FortranProjectImporter >> srcFolders: aCollection [
-	"aCollection should contain either strings of FileReferences"
+FortranProjectImporter >> srcFolder: folder [
+	"folder is either a String or a FileReference"
 
-	srcFolders := aCollection collect: [ :folder |
-		folder isString
-			ifTrue: [ folder asFileReference ]
-			ifFalse: [ folder ]
-	]
+	srcFolder := folder isString
+		ifTrue: [ folder asFileReference ]
+		ifFalse: [ folder ]
+
 ]
 
 { #category : #'error management' }
