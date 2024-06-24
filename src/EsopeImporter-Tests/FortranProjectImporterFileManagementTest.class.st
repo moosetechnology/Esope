@@ -279,9 +279,9 @@ FortranProjectImporterFileManagementTest >> testIncludedFilesToEsope [
 	tempFolder := './tmpEsopeImport' asFileReference.
 	self assert: tempFolder exists.
 	self assert: tempFolder children size equals: 1.
-	self assert: tempFolder children anyOne basename equals: 'project'.
+	self assert: tempFolder children anyOne basename equals: 'inc'.
 
-	tempFolder := tempFolder / 'project'.
+	tempFolder := tempFolder / 'inc'.
 	self
 		assertCollection: (tempFolder children collect: #basename)
 		hasSameElements: #( 'inc1' 'inc2' ).

@@ -400,9 +400,9 @@ FortranProjectImporter >> includeFolder: folder [
 { #category : #run }
 FortranProjectImporter >> includedFilesToEsope [
 
-	(self findFiles: self collectIncludedFileNames in: self includeFolder)
+	(self collectRelativePathsTo: self collectIncludedFileNames in: self includeFolder)
 		do: [ :foundFile |
-			errorHandler enterContext: foundFile basename.
+			errorHandler enterContext: foundFile.
 			self fakeEsopeProgramUnit: foundFile to: self tempEsopeFolder.
 			errorHandler leaveContext
 		]
