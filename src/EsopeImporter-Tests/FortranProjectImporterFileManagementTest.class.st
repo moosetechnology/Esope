@@ -185,73 +185,6 @@ a line
 ]
 
 { #category : #tests }
-FortranProjectImporterFileManagementTest >> testFileReferenceToIn [
-
-	(fileSystem / 'included.h') createFile.
-
-	self
-		assert: (importer fileReferenceTo: 'included.h' in: fileSystem root)
-		equals: 'included.h'
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFileReferenceToInFirstPathFound [
-
-	(fileSystem / 'inc1') createDirectory.
-	(fileSystem / 'inc1' / 'included.h') createFile.
-	(fileSystem / 'inc2') createDirectory.
-	(fileSystem / 'inc2' / 'included.h') createFile.
-
-	self
-		assert:
-		(importer fileReferenceTo: 'included.h' in: fileSystem root)
-		equals: 'inc1/included.h'
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFileReferenceToInSubDirectory [
-
-	(fileSystem / 'inc') createDirectory.
-	(fileSystem / 'inc' / 'included.h') createFile.
-
-	self
-		assert: (importer fileReferenceTo: 'included.h' in: fileSystem root)
-		equals: 'inc/included.h'
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFileReferenceToInWithPath [
-
-	(fileSystem / 'inc') createDirectory.
-	(fileSystem / 'inc' / 'included.h') createFile.
-
-	self
-		assert:
-		(importer fileReferenceTo: 'inc/included.h' in: fileSystem root)
-		equals: 'inc/included.h'
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFileReferenceToNoExtension [
-
-	(fileSystem / 'included') createFile.
-
-	self
-		assert: (importer fileReferenceTo: 'included' in: fileSystem root)
-		equals: 'included'
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFileReferenceToNotFound [
-
-	(fileSystem / 'excluded.h') createFile.
-
-	self
-		assert: (importer fileReferenceTo: 'included.h' in: fileSystem root)
-		equals: nil
-]
-
-{ #category : #tests }
 FortranProjectImporterFileManagementTest >> testFindFileInNotFound [
 
 	| files |
@@ -359,6 +292,73 @@ FortranProjectImporterFileManagementTest >> testIncludedFilesToEsope [
 		assertCollection: ((tempFolder / 'inc2') children collect: #basename)
 		hasSameElements: #( 'f3.obj.E').
 
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testRelativePathToIn [
+
+	(fileSystem / 'included.h') createFile.
+
+	self
+		assert: (importer relativePathTo: 'included.h' in: fileSystem root)
+		equals: 'included.h'
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testRelativePathToInFirstPathFound [
+
+	(fileSystem / 'inc1') createDirectory.
+	(fileSystem / 'inc1' / 'included.h') createFile.
+	(fileSystem / 'inc2') createDirectory.
+	(fileSystem / 'inc2' / 'included.h') createFile.
+
+	self
+		assert:
+		(importer relativePathTo: 'included.h' in: fileSystem root)
+		equals: 'inc1/included.h'
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testRelativePathToInNoExtension [
+
+	(fileSystem / 'included') createFile.
+
+	self
+		assert: (importer relativePathTo: 'included' in: fileSystem root)
+		equals: 'included'
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testRelativePathToInNotFound [
+
+	(fileSystem / 'excluded.h') createFile.
+
+	self
+		assert: (importer relativePathTo: 'included.h' in: fileSystem root)
+		equals: nil
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testRelativePathToInSubDirectory [
+
+	(fileSystem / 'inc') createDirectory.
+	(fileSystem / 'inc' / 'included.h') createFile.
+
+	self
+		assert: (importer relativePathTo: 'included.h' in: fileSystem root)
+		equals: 'inc/included.h'
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testRelativePathToInWithPath [
+
+	(fileSystem / 'inc') createDirectory.
+	(fileSystem / 'inc' / 'included.h') createFile.
+
+	self
+		assert:
+		(importer relativePathTo: 'inc/included.h' in: fileSystem root)
+		equals: 'inc/included.h'
 ]
 
 { #category : #tests }
