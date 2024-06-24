@@ -71,7 +71,7 @@ FortranProjectImporterFileManagementTest >> tearDown [
 	folder exists ifTrue: [ folder deleteAll ]
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectFilesInWithExtensions [
 
 	| files |
@@ -84,7 +84,7 @@ FortranProjectImporterFileManagementTest >> testCollectFilesInWithExtensions [
 	self assert: files anyOne fullName equals: '/project/inc/inc2/f3.obj'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectFilesInWithExtensionsSeveralFiles [
 
 	| files |
@@ -99,7 +99,7 @@ FortranProjectImporterFileManagementTest >> testCollectFilesInWithExtensionsSeve
 		hasSameElements: #( '/project/inc/inc1/f1.inc' '/project/inc/inc2/f1.inc')
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectIncludedFileNames [
 
 	self prepareWorkspace.
@@ -109,7 +109,7 @@ FortranProjectImporterFileManagementTest >> testCollectIncludedFileNames [
 		 hasSameElements: #( 'f1.inc' 'f2.seg' 'f3.obj' )
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectRelativePathsToIn [
 
 	| files |
@@ -121,7 +121,7 @@ FortranProjectImporterFileManagementTest >> testCollectRelativePathsToIn [
 	self assert: files anyOne equals: 'inc1/f2.seg'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectRelativePathsToInNotFound [
 
 	| files |
@@ -132,7 +132,7 @@ FortranProjectImporterFileManagementTest >> testCollectRelativePathsToInNotFound
 	self assert: files size equals: 0
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectRelativePathsToInWithDuplicate [
 	"returns the first file found"
 
@@ -146,7 +146,7 @@ FortranProjectImporterFileManagementTest >> testCollectRelativePathsToInWithDupl
 	self assert: files anyOne equals: 'inc1/f1.inc'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectSrcFilesWithExtensions [
 	| files |
 	self prepareWorkspace.
@@ -157,7 +157,7 @@ FortranProjectImporterFileManagementTest >> testCollectSrcFilesWithExtensions [
 		 hasSameElements: #( 'f1.fc' 'f2.ec' )
 ]
 
-{ #category : #tests }
+{ #category : #'tests - import steps' }
 FortranProjectImporterFileManagementTest >> testEsopeFileToFortran [
 
 	| srcFile destFile |
@@ -191,10 +191,6 @@ FortranProjectImporterFileManagementTest >> testEsopeToFortran [
 	tempFolder := './tmpFortranImport' asFileReference.
 	self assert: tempFolder exists.
 	self assert: tempFolder children size equals: 1.
-	self assert: tempFolder children anyOne basename equals: 'project'.
-
-	tempFolder := tempFolder / 'project'.
-	self assert: tempFolder children size equals: 1.
 	self assert: tempFolder children anyOne basename equals: 'src'.
 
 	tempFolder := tempFolder / 'src'.
@@ -204,7 +200,7 @@ FortranProjectImporterFileManagementTest >> testEsopeToFortran [
 
 ]
 
-{ #category : #tests }
+{ #category : #'tests - import steps' }
 FortranProjectImporterFileManagementTest >> testFakeEsopeProgramUnitTo [
 
 	| srcFile resultFile |
@@ -225,7 +221,7 @@ a line
 '
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testFindIncludesIn [
 	| includer files |
 	self prepareWorkspace.
@@ -264,7 +260,7 @@ FortranProjectImporterFileManagementTest >> testFortranToJsonAST [
 
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testGetIncludedFile [
 
 	self assert: (importer getIncludedFileName: '#include  "blah.inc"') equals: 'blah.inc'
@@ -298,7 +294,7 @@ FortranProjectImporterFileManagementTest >> testIncludedFilesToEsope [
 
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testRelativePathToIn [
 
 	(fileSystem / 'included.h') createFile.
@@ -308,7 +304,7 @@ FortranProjectImporterFileManagementTest >> testRelativePathToIn [
 		equals: 'included.h'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testRelativePathToInFirstPathFound [
 
 	(fileSystem / 'inc1') createDirectory.
@@ -322,7 +318,7 @@ FortranProjectImporterFileManagementTest >> testRelativePathToInFirstPathFound [
 		equals: 'inc1/included.h'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testRelativePathToInNoExtension [
 
 	(fileSystem / 'included') createFile.
@@ -332,7 +328,7 @@ FortranProjectImporterFileManagementTest >> testRelativePathToInNoExtension [
 		equals: 'included'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testRelativePathToInNotFound [
 
 	(fileSystem / 'excluded.h') createFile.
@@ -342,7 +338,7 @@ FortranProjectImporterFileManagementTest >> testRelativePathToInNotFound [
 		equals: nil
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testRelativePathToInSubDirectory [
 
 	(fileSystem / 'inc') createDirectory.
@@ -353,7 +349,7 @@ FortranProjectImporterFileManagementTest >> testRelativePathToInSubDirectory [
 		equals: 'inc/included.h'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testRelativePathToInWithPath [
 
 	(fileSystem / 'inc') createDirectory.
@@ -365,7 +361,7 @@ FortranProjectImporterFileManagementTest >> testRelativePathToInWithPath [
 		equals: 'inc/included.h'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testUnquoteIncludedFile [
 
 	self assert: (importer unquoteIncludedFile: 'blah') equals: 'blah'.
