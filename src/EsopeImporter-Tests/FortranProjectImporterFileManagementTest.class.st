@@ -206,11 +206,13 @@ FortranProjectImporterFileManagementTest >> testEsopeToFortran [
 FortranProjectImporterFileManagementTest >> testFakeEsopeProgramUnitTo [
 
 	| srcFile resultFile |
+	importer includeFolder: (fileSystem / 'inc').
+
 	(fileSystem  / 'inc') createDirectory.
 	srcFile := (fileSystem / 'inc' / 'included.h').
 	srcFile writeStreamDo: [:st | st << 'a line' ; cr].
 
-	importer fakeEsopeProgramUnit: srcFile to: (fileSystem / 'tmpEsope').
+	importer fakeEsopeProgramUnit: 'included.h' to: (fileSystem / 'tmpEsope').
 
 	resultFile := fileSystem / 'tmpEsope' / 'inc' / 'included.h.E'.
 

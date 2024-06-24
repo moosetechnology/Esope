@@ -261,16 +261,17 @@ FortranProjectImporter >> fakeEsopeProgramUnit: includedFile to: workingEsopeFol
 	 The includedFile is actually an association containingFolder -> filename
 	 Records in originalFileMap the original name of the file and the created fake esope file"
 
-	| destFolder |
-	destFolder := self appendPath: includedFile parent toParent: workingEsopeFolder.
-	destFolder ensureCreateDirectory.
+	| srcFile destFile |
+	srcFile := includeFolder / includedFile.
+	destFile := (workingEsopeFolder / includeFolder basename / includedFile) , 'E'.
+	destFile ensureCreateFile.
 
-	(destFolder /  (includedFile basename , '.E')) writeStreamDo: [ :tmpStream |
+	destFile writeStreamDo: [ :tmpStream |
 		tmpStream
 			<< '      subroutine _$' ;
-			<< (includedFile basename copy replaceAll: $. with: $_) ;
+			<< (includedFile copy replaceAll: $. with: $_) ;
 			cr ;
-			<< includedFile contents ;
+			<< srcFile contents ;
 			<< '      end' ;
 			cr ]
 ]
