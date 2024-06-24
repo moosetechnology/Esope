@@ -228,12 +228,12 @@ FortranProjectImporterFileManagementTest >> testFindIncludesIn [
 	| includer files |
 	self prepareWorkspace.
 
-	includer := importer srcFolders anyOne children detect: [ :file | file basename = 'f1.fc' ].
+	includer := importer srcFolder children detect: [ :file | file basename = 'f1.fc' ].
 	files := importer includedNamesIn: includer.
 
 	self
 		assertCollection: files
-		 hasSameElements: #( 'f1.inc' 'f3.obj' )
+		hasSameElements: #( 'f1.inc' 'f3.obj' )
 ]
 
 { #category : #'tests - import steps' }
