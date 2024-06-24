@@ -108,6 +108,43 @@ FortranProjectImporterFileManagementTest >> testCollectIncludedFileNames [
 ]
 
 { #category : #tests }
+FortranProjectImporterFileManagementTest >> testCollectRelativePathsToIn [
+
+	| files |
+	self prepareWorkspace.
+
+	files := importer collectRelativePathsTo: #( 'f2.seg' ) in: importer includeFolder.
+
+	self assert: files size equals: 1.
+	self assert: files anyOne equals: 'inc1/f2.seg'
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testCollectRelativePathsToInNotFound [
+
+	| files |
+	self prepareWorkspace.
+
+	files := importer collectRelativePathsTo: #( 'inexistent.file' ) in: importer includeFolder.
+
+	self assert: files size equals: 0
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testCollectRelativePathsToInWithDuplicate [
+	"returns the first file found"
+
+	| files |
+	self prepareWorkspace.
+
+
+	files := importer collectRelativePathsTo: #( 'f1.inc' ) in: importer includeFolder.
+
+	self assert: files size equals: 1.
+	self assert: files anyOne equals: 'inc1/f1.inc'
+]
+
+{ #category : #tests }
 FortranProjectImporterFileManagementTest >> testCollectSrcFilesWithExtensions [
 	| files |
 	self prepareWorkspace.
@@ -182,43 +219,6 @@ FortranProjectImporterFileManagementTest >> testFakeEsopeProgramUnitTo [
 a line
       end
 '
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFindFileInNotFound [
-
-	| files |
-	self prepareWorkspace.
-
-	files := importer findFiles: #( 'inexistent.file' ) in: importer includeFolder.
-
-	self assert: files size equals: 0
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFindFileInWithDuplicate [
-	"returns the first file found"
-
-	| files |
-	self prepareWorkspace.
-
-
-	files := importer findFiles: #( 'f1.inc' ) in: importer includeFolder.
-
-	self assert: files size equals: 1.
-	self assert: files anyOne equals: 'inc1/f1.inc'
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFindFilesIn [
-
-	| files |
-	self prepareWorkspace.
-
-	files := importer findFiles: #( 'f2.seg' ) in: importer includeFolder.
-
-	self assert: files size equals: 1.
-	self assert: files anyOne equals: 'inc1/f2.seg'
 ]
 
 { #category : #tests }

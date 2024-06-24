@@ -142,6 +142,16 @@ FortranProjectImporter >> collectIncludedFileNames [
 ]
 
 { #category : #'private - files' }
+FortranProjectImporter >> collectRelativePathsTo: fileNames in: folder [
+	"try to find files matching one of fileNames in #folder
+	 for each name returns the first path found (relative to folder)"
+
+	^ fileNames
+		  collect: [ :includedFile | self relativePathTo: includedFile in: folder ]
+		  thenReject: #isNil
+]
+
+{ #category : #'private - files' }
 FortranProjectImporter >> collectSrcFilesWithExtensions: extensions [
 
 	^self collectFilesIn: srcFolder withExtensions: extensions
@@ -284,16 +294,6 @@ FortranProjectImporter >> famixResolve [
 	self newResolver
 		resolve.
 
-]
-
-{ #category : #'private - files' }
-FortranProjectImporter >> findFiles: fileNames in: folder [
-	"try to find files matching one of fileNames in #folder
-	 for each name returns the first path found (relative to folder)"
-
-	^ fileNames
-		  collect: [ :includedFile | self fileReferenceTo: includedFile in: folder ]
-		  thenReject: #isNil
 ]
 
 { #category : #run }
