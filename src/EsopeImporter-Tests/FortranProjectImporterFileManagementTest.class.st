@@ -163,13 +163,17 @@ FortranProjectImporterFileManagementTest >> testCollectRelativePathsToInWithDupl
 
 { #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectSrcFilesWithExtensions [
+
 	| files |
 	self prepareWorkspace.
 
-	files := importer collectSrcFilesWithExtensions: {'fc' . 'ec' }.
+	files := importer
+		collectSrcFilesWithExtensions: #( 'ec' 'fc' ).
+
+	self assert: files size equals: 2.
 	self
-		assertCollection: (files collect: #basename)
-		 hasSameElements: #( 'f1.fc' 'f2.ec' )
+		assertCollection: (files collect: #fullName)
+		hasSameElements: #( '/project/src/f1.fc' '/project/src/f2.ec' )
 ]
 
 { #category : #'tests - import steps' }
