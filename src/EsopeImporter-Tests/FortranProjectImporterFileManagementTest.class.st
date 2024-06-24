@@ -44,8 +44,8 @@ FortranProjectImporterFileManagementTest >> prepareWorkspace [
 			<< '#include "f1.inc"'; cr
 	].
 
-	importer srcFolder: fileSystem / 'project/src'.
-	importer includeFolder: fileSystem / 'project/inc'
+	importer srcFolder: fileSystem / 'project' / 'src'.
+	importer includeFolder: fileSystem / 'project' / 'inc'
 ]
 
 { #category : #running }
