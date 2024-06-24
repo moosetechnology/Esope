@@ -287,12 +287,33 @@ FortranProjectImporter >> famixResolve [
 ]
 
 { #category : #'private - files' }
+FortranProjectImporter >> fileReferenceTo: includedFileName in: folder [
+	"search for includedFileName in #folder or sub-folders
+	 Returns the first path to the file relative to #folder.
+	 Returns nil if no such includedFileName is found
+	 Note: includedFileName may be a path : 'lib/blah.h'"
+
+	(folder / includedFileName) exists ifTrue: [
+		^ includedFileName ].
+
+	folder children do: [ :child |
+		child isDirectory
+		ifTrue: [
+			(self fileReferenceTo: includedFileName in: child)
+			ifNotNil: [ :found | ^ child basename , '/' , found ]
+		]
+	].
+
+	^ nil
+]
+
+{ #category : #'private - files' }
 FortranProjectImporter >> findFiles: fileNames in: folder [
 	"try to find files matching one of fileNames in #folder
-	 for each name returns the first FileReference found and the (sub-)folder containing it"
+	 for each name returns the first path found (relative to folder)"
 
 	^ fileNames
-		  collect: [ :includedFile | self relativePathOf: includedFile in: folder ]
+		  collect: [ :includedFile | self fileReferenceTo: includedFile in: folder ]
 		  thenReject: #isNil
 ]
 
@@ -502,24 +523,6 @@ FortranProjectImporter >> postImportChecks [
 			errorHandler leaveContext
 		]
 	]
-]
-
-{ #category : #'private - files' }
-FortranProjectImporter >> relativePathOf: includedFileName in: folder [
-	"search for includedFileName in #folder or sub-folders
-	 if found, returns the path relative to #folder and nil otherwise
-
-	 Note: The includedFileName may be a file name ('blah.h'),
-	   a path name ('lib/blah.h'), or a filename without extension ('blah')"
-
-	(folder / includedFileName) exists ifTrue: [
-		^ folder / includedFileName ].
-
-	folder children do: [ :child |
-		(self relativePathOf: includedFileName in: child) ifNotNil: [ :found |
-			^ folder / found ] ].
-
-	^ nil
 ]
 
 { #category : #accessing }

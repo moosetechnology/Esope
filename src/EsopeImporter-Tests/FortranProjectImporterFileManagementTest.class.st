@@ -16,16 +16,17 @@ FortranProjectImporterFileManagementTest >> prepareWorkspace [
 
 	| f1 f2 |
 	fileSystem createDirectory: '/project'.
-	fileSystem createDirectory: '/project/inc1'.
-	fileSystem createDirectory: '/project/inc2'.
+	fileSystem createDirectory: '/project/inc'.
+	fileSystem createDirectory: '/project/inc/inc1'.
+	fileSystem createDirectory: '/project/inc/inc2'.
 	fileSystem createDirectory: '/project/src'.
 
-	(fileSystem / '/project/inc1/f1.inc') createFile.
-	(fileSystem / '/project/inc1/f2.seg') createFile.
-	(fileSystem / '/project/inc2/f3.obj') createFile.
+	(fileSystem / '/project/inc/inc1/f1.inc') createFile.
+	(fileSystem / '/project/inc/inc1/f2.seg') createFile.
+	(fileSystem / '/project/inc/inc2/f3.obj') createFile.
 	"note: duplicated name f1.inc, by default importer will take the first found"
-	(fileSystem / '/project/inc2/f1.inc') createFile.
-	(fileSystem / '/project/inc2/f4.h') createFile.
+	(fileSystem / '/project/inc/inc2/f1.inc') createFile.
+	(fileSystem / '/project/inc/inc2/f4.h') createFile.
 
 	f1 := (fileSystem / 'project/src/f1.fc') createFile.
 	f2 := (fileSystem / 'project/src/f2.ec') createFile.
@@ -43,11 +44,8 @@ FortranProjectImporterFileManagementTest >> prepareWorkspace [
 			<< '#include "f1.inc"'; cr
 	].
 
-	importer srcFolders: { fileSystem / 'project/src' }.
-	importer includeFolders: { 
-		fileSystem / 'project/inc1'.
-		fileSystem / 'project/inc2' 
-	}
+	importer srcFolder: fileSystem / 'project/src'.
+	importer includeFolder: fileSystem / 'project/inc'
 ]
 
 { #category : #running }
@@ -187,6 +185,73 @@ a line
 ]
 
 { #category : #tests }
+FortranProjectImporterFileManagementTest >> testFileReferenceToIn [
+
+	(fileSystem / 'included.h') createFile.
+
+	self
+		assert: (importer fileReferenceTo: 'included.h' in: fileSystem root)
+		equals: 'included.h'
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testFileReferenceToInFirstPathFound [
+
+	(fileSystem / 'inc1') createDirectory.
+	(fileSystem / 'inc1' / 'included.h') createFile.
+	(fileSystem / 'inc2') createDirectory.
+	(fileSystem / 'inc2' / 'included.h') createFile.
+
+	self
+		assert:
+		(importer fileReferenceTo: 'included.h' in: fileSystem root)
+		equals: 'inc1/included.h'
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testFileReferenceToInSubDirectory [
+
+	(fileSystem / 'inc') createDirectory.
+	(fileSystem / 'inc' / 'included.h') createFile.
+
+	self
+		assert: (importer fileReferenceTo: 'included.h' in: fileSystem root)
+		equals: 'inc/included.h'
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testFileReferenceToInWithPath [
+
+	(fileSystem / 'inc') createDirectory.
+	(fileSystem / 'inc' / 'included.h') createFile.
+
+	self
+		assert:
+		(importer fileReferenceTo: 'inc/included.h' in: fileSystem root)
+		equals: 'inc/included.h'
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testFileReferenceToNoExtension [
+
+	(fileSystem / 'included') createFile.
+
+	self
+		assert: (importer fileReferenceTo: 'included' in: fileSystem root)
+		equals: 'included'
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testFileReferenceToNotFound [
+
+	(fileSystem / 'excluded.h') createFile.
+
+	self
+		assert: (importer fileReferenceTo: 'included.h' in: fileSystem root)
+		equals: nil
+]
+
+{ #category : #tests }
 FortranProjectImporterFileManagementTest >> testFileReferencesForIn [
 
 	| files |
@@ -233,42 +298,6 @@ FortranProjectImporterFileManagementTest >> testFindIncludesIn [
 	self
 		assertCollection: files
 		 hasSameElements: #( 'f1.inc' 'f3.obj' )
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFolderContainingAmong [
-
-	| file |
-	file := (fileSystem / 'included.h') createFile.
-
-	self assert: (importer folderContaining: 'included.h' among: { fileSystem } ) equals: file
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFolderContainingAmongNoExtension [
-
-	| file |
-	file := (fileSystem / 'included') createFile.
-
-	self assert: (importer folderContaining: 'included' among: { fileSystem } ) equals: file
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFolderContainingAmongNotFound [
-
-	(fileSystem / 'excluded.h') createFile.
-
-	self assert: (importer folderContaining: 'included.h' among: { fileSystem } ) equals: nil
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFolderContainingAmongWithPath [
-
-	| file |
-	(fileSystem  / 'inc') createDirectory.
-	file := (fileSystem / 'inc' / 'included.h') createFile.
-
-	self assert: (importer folderContaining: 'inc/included.h' among: { fileSystem } ) equals: file
 ]
 
 { #category : #'tests - import steps' }
