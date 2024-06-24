@@ -252,39 +252,40 @@ FortranProjectImporterFileManagementTest >> testFileReferenceToNotFound [
 ]
 
 { #category : #tests }
-FortranProjectImporterFileManagementTest >> testFileReferencesForIn [
+FortranProjectImporterFileManagementTest >> testFindFileInNotFound [
 
 	| files |
 	self prepareWorkspace.
 
-	files := importer findFiles: #( 'f2.seg' ) in: { importer includeFolders first }.
-
-	self assert: files size equals: 1.
-	self assert: files anyOne fullName equals: '/project/inc1/f2.seg'
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFileReferencesForInNotFound [
-
-	| files |
-	self prepareWorkspace.
-
-	files := importer findFiles: #( 'inexistent.file' ) in: importer includeFolders.
+	files := importer findFiles: #( 'inexistent.file' ) in: importer includeFolder.
 
 	self assert: files size equals: 0
 ]
 
 { #category : #tests }
-FortranProjectImporterFileManagementTest >> testFileReferencesForInWithDuplicate [
+FortranProjectImporterFileManagementTest >> testFindFileInWithDuplicate [
+	"returns the first file found"
 
 	| files |
 	self prepareWorkspace.
 
 
-	files := importer findFiles: #( 'f1.inc' ) in: importer includeFolders.
+	files := importer findFiles: #( 'f1.inc' ) in: importer includeFolder.
 
 	self assert: files size equals: 1.
-	self assert: files anyOne fullName equals: '/project/inc1/f1.inc'
+	self assert: files anyOne equals: 'inc1/f1.inc'
+]
+
+{ #category : #tests }
+FortranProjectImporterFileManagementTest >> testFindFilesIn [
+
+	| files |
+	self prepareWorkspace.
+
+	files := importer findFiles: #( 'f2.seg' ) in: importer includeFolder.
+
+	self assert: files size equals: 1.
+	self assert: files anyOne equals: 'inc1/f2.seg'
 ]
 
 { #category : #tests }
