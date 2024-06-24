@@ -173,7 +173,7 @@ FortranProjectImporterFileManagementTest >> testCollectSrcFilesWithExtensions [
 ]
 
 { #category : #'tests - import steps' }
-FortranProjectImporterFileManagementTest >> testEsopeFileToFortran [
+FortranProjectImporterFileManagementTest >> testDeEsopifyFromTo [
 
 	| srcFile destFile |
 	srcFile := fileSystem / 'esope.e'.
