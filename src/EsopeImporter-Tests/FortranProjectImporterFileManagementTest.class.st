@@ -78,10 +78,10 @@ FortranProjectImporterFileManagementTest >> testCollectFilesInWithExtensions [
 	self prepareWorkspace.
 
 	files := importer
-		collectFilesIn: importer includeFolders first "project/inc1"
-		withExtensions: {'inc'}.
+		collectFilesIn: importer includeFolder
+		withExtensions: {'obj'}.
 	self assert: files size equals: 1.
-	self assert: files anyOne fullName equals: '/project/inc1/f1.inc'.
+	self assert: files anyOne fullName equals: '/project/inc/inc2/f3.obj'
 ]
 
 { #category : #tests }
@@ -91,10 +91,12 @@ FortranProjectImporterFileManagementTest >> testCollectFilesInWithExtensionsSeve
 	self prepareWorkspace.
 
 	files := importer
-		collectFilesIn: importer includeFolders anyOne parent "/project/"
+		collectFilesIn: importer includeFolder 
 		withExtensions: {'inc'}.
 	self assert: files size equals: 2.
-	self assert: files anyOne basename equals: 'f1.inc'.
+	self
+		assertCollection: (files collect: #fullName)
+		hasSameElements: #( '/project/inc/inc1/f1.inc' '/project/inc/inc2/f1.inc')
 ]
 
 { #category : #tests }
