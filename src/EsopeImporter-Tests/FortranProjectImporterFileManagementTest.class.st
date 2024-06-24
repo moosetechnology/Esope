@@ -103,8 +103,8 @@ FortranProjectImporterFileManagementTest >> testCollectIncludedFileNames [
 	self prepareWorkspace.
 
 	self
-		assertCollection: importer collectIncludedFileNames
-		hasSameElements: #( 'f1.inc' 'f2.seg' 'f3.obj' )
+		assertCollection: (importer collectIncludedFileNames)
+		 hasSameElements: #( 'f1.inc' 'f2.seg' 'f3.obj' )
 ]
 
 { #category : #tests }
