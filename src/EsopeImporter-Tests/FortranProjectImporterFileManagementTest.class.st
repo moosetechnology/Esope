@@ -73,6 +73,20 @@ FortranProjectImporterFileManagementTest >> tearDown [
 ]
 
 { #category : #'tests - file-management' }
+FortranProjectImporterFileManagementTest >> testAllLocalizedFilesIn [
+
+	| files |
+	self prepareWorkspace.
+
+	files := importer allLocalizedFilesIn: fileSystem / 'project' / 'inc'.
+
+	self
+		assertCollection: (files collect: #pathString)
+		hasSameElements: #( 'inc1/f1.inc' 'inc1/f2.seg' 'inc2/f3.obj' 'inc2/f1.inc' 'inc2/f4.h' ).
+
+]
+
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectFilesInWithExtensions [
 
 	| files |
