@@ -121,7 +121,7 @@ FortranProjectImporterFileManagementTest >> testCollectIncludedFileNames [
 
 	self
 		assertCollection: (importer collectIncludedFileNames)
-		 hasSameElements: #( 'f1.inc' 'f2.seg' 'f3.obj' )
+		hasSameElements: #( 'f1.inc' 'f2.seg' 'f3.obj' )
 ]
 
 { #category : #'tests - file-management' }
@@ -282,7 +282,10 @@ FortranProjectImporterFileManagementTest >> testFortranToJsonAST [
 { #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testGetIncludedFile [
 
-	self assert: (importer getIncludedFileName: '#include  "blah.inc"') equals: 'blah.inc'
+	| names |
+	names := importer getIncludedFileName: '#include  "blah.inc"'.
+
+	self assert: names equals: 'blah.inc'
 ]
 
 { #category : #'tests - import steps' }
