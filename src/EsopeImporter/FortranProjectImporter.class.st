@@ -520,13 +520,13 @@ FortranProjectImporter >> pathOf: includedFileName in: folder [
 	 Note: includedFileName may be a path : 'lib/blah.h'"
 
 	(folder / includedFileName) exists ifTrue: [
-		^ includedFileName ].
+		^ folder / includedFileName ].
 
 	folder children do: [ :child |
 		child isDirectory
 		ifTrue: [
 			(self pathOf: includedFileName in: child)
-			ifNotNil: [ :found | ^ child basename , '/' , found ]
+			ifNotNil: [ :found | ^found ]
 		]
 	].
 

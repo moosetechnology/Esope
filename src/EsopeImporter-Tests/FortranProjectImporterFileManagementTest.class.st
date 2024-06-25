@@ -341,9 +341,7 @@ FortranProjectImporterFileManagementTest >> testPathOfIn [
 
 	path := importer pathOf: 'included.h' in: fileSystem root.
 
-	self
-		assert: path
-		equals: 'included.h'
+	self assert: path fullName equals: '/included.h'
 ]
 
 { #category : #'tests - file-management' }
@@ -357,9 +355,7 @@ FortranProjectImporterFileManagementTest >> testPathOfInFirstPathFound [
 
 	path := importer pathOf: 'included.h' in: fileSystem root.
 
-	self
-		assert: path
-		equals: 'inc1/included.h'
+	self assert: path fullName equals: '/inc1/included.h'
 ]
 
 { #category : #'tests - file-management' }
@@ -371,7 +367,7 @@ FortranProjectImporterFileManagementTest >> testPathOfInNoExtension [
 
 	path := importer pathOf: 'included' in: fileSystem root.
 
-	self assert: path equals: 'included'
+	self assert: path fullName equals: '/included'
 ]
 
 { #category : #'tests - file-management' }
@@ -394,7 +390,7 @@ FortranProjectImporterFileManagementTest >> testPathOfInSubDirectory [
 
 	path := importer pathOf: 'included.h' in: fileSystem root.
 
-	self assert: path equals: 'includes/included.h'
+	self assert: path fullName equals: '/includes/included.h'
 ]
 
 { #category : #'tests - file-management' }
@@ -406,7 +402,7 @@ FortranProjectImporterFileManagementTest >> testPathOfInWithPath [
 
 	path := importer pathOf: 'includes/included.h' in: fileSystem root.
 
-	self assert: path equals: 'includes/included.h'
+	self assert: path fullName equals: '/includes/included.h'
 ]
 
 { #category : #'tests - file-management' }
