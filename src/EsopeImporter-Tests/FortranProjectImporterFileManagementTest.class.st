@@ -16,21 +16,21 @@ FortranProjectImporterFileManagementTest >> prepareWorkspace [
 
 	| f1 f2 |
 	fileSystem createDirectory: '/project'.
-	fileSystem createDirectory: '/project/inc'.
-	fileSystem createDirectory: '/project/inc/inc1'.
-	fileSystem createDirectory: '/project/inc/inc2'.
-	fileSystem createDirectory: '/project/src'.
+	fileSystem createDirectory: '/project/includes'.
+	fileSystem createDirectory: '/project/includes/inc1'.
+	fileSystem createDirectory: '/project/includes/inc2'.
+	fileSystem createDirectory: '/project/sources'.
 
-	(fileSystem / '/project/inc/inc1/f1.inc') createFile.
-	(fileSystem / '/project/inc/inc1/f2.seg') createFile.
-	(fileSystem / '/project/inc/inc2/f3.obj') createFile.
+	(fileSystem / '/project/includes/inc1/f1.inc') createFile.
+	(fileSystem / '/project/includes/inc1/f2.seg') createFile.
+	(fileSystem / '/project/includes/inc2/f3.obj') createFile.
 	"note: duplicated name f1.inc, by default importer will take the first found"
-	(fileSystem / '/project/inc/inc2/f1.inc') createFile.
-	(fileSystem / '/project/inc/inc2/f4.h') createFile.
+	(fileSystem / '/project/includes/inc2/f1.inc') createFile.
+	(fileSystem / '/project/includes/inc2/f4.h') createFile.
 
-	f1 := (fileSystem / 'project/src/f1.fc') createFile.
-	f2 := (fileSystem / 'project/src/f2.ec') createFile.
-	(fileSystem / 'project/src/f3.f') createFile.
+	f1 := (fileSystem / 'project/sources/f1.fc') createFile.
+	f2 := (fileSystem / 'project/sources/f2.ec') createFile.
+	(fileSystem / 'project/sources/f3.f') createFile.
 
 	f1 writeStreamDo: [ :st |
 		st
@@ -55,8 +55,8 @@ FortranProjectImporterFileManagementTest >> setUp [
 
 	fileSystem := FileSystem memory.
 
-	importer srcFolder: fileSystem / 'project' / 'src'.
-	importer includeFolder: fileSystem / 'project' / 'inc'
+	importer srcFolder: fileSystem / 'project' / 'sources'.
+	importer includeFolder: fileSystem / 'project' / 'includes'
 ]
 
 { #category : #running }
@@ -78,7 +78,7 @@ FortranProjectImporterFileManagementTest >> testAllLocalizedFilesIn [
 	| files |
 	self prepareWorkspace.
 
-	files := importer allLocalizedFilesIn: fileSystem / 'project' / 'inc'.
+	files := importer allLocalizedFilesIn: fileSystem / 'project' / 'includes'.
 
 	self
 		assertCollection: (files collect: #pathString)
@@ -96,7 +96,7 @@ FortranProjectImporterFileManagementTest >> testCollectFilesInWithExtensions [
 		collectFilesIn: importer includeFolder
 		withExtensions: {'obj'}.
 	self assert: files size equals: 1.
-	self assert: files anyOne fullName equals: '/project/inc/inc2/f3.obj'
+	self assert: files anyOne fullName equals: '/project/includes/inc2/f3.obj'
 ]
 
 { #category : #'tests - file-management' }
@@ -111,7 +111,7 @@ FortranProjectImporterFileManagementTest >> testCollectFilesInWithExtensionsSeve
 	self assert: files size equals: 2.
 	self
 		assertCollection: (files collect: #fullName)
-		hasSameElements: #( '/project/inc/inc1/f1.inc' '/project/inc/inc2/f1.inc')
+		hasSameElements: #( '/project/includes/inc1/f1.inc' '/project/includes/inc2/f1.inc')
 ]
 
 { #category : #'tests - file-management' }
@@ -173,7 +173,7 @@ FortranProjectImporterFileManagementTest >> testCollectSrcFilesWithExtensions [
 	self assert: files size equals: 2.
 	self
 		assertCollection: (files collect: #fullName)
-		hasSameElements: #( '/project/src/f1.fc' '/project/src/f2.ec' )
+		hasSameElements: #( '/project/sources/f1.fc' '/project/sources/f2.ec' )
 ]
 
 { #category : #'tests - import steps' }
