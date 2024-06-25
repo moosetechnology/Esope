@@ -231,11 +231,19 @@ FortranProjectImporter >> esopeToFortran [
 	The result goes in the FortranWorkingDirectory"
 
 	(self allLocalizedFilesIn: self tempEsopeFolder) do: [ :localPath |
-		self deEsopify: localPath from: self tempEsopeFolder to: self tempFortranFolder ].
+		self
+			deEsopify: localPath
+			from: (self tempEsopeFolder / 'src')
+			to: (self tempFortranFolder / 'src')
+		].
 
-	(self collectSrcFilesWithExtensions: self extensionsEsope) do: [ :localPath |
-		self copy: localPath to: self tempEsopeFolder.
-		self deEsopify: localPath from: self tempEsopeFolder to: self tempFortranFolder ]
+	(self localizedSrcFilesWithExtensions: self extensionsEsope) do: [ :localPath |
+		self copy: localPath to: (self tempEsopeFolder / 'src').
+		self
+			deEsopify: localPath
+			from: (self tempEsopeFolder / 'src')
+			to: (self tempFortranFolder / 'src')
+		]
 ]
 
 { #category : #constants }
@@ -258,22 +266,21 @@ FortranProjectImporter >> f77parser [
 ]
 
 { #category : #'private - import' }
-FortranProjectImporter >> fakeEsopeProgramUnit: includedFile to: workingEsopeFolder [
-	"creates a fake programUnit from an includedFile
-	 The includedFile is actually an association containingFolder -> filename
-	 Records in originalFileMap the original name of the file and the created fake esope file"
+FortranProjectImporter >> fakeEsopeProgramUnit: includedFile from: sourceFolder to: workingEsopeFolder [
+	"creates a fake programUnit from an includedFile"
 
-	| srcFile destFile |
-	srcFile := includeFolder / includedFile.
-	destFile := (workingEsopeFolder / includeFolder basename / includedFile) , 'E'.
+	| localizedSrcFile destFile |
+	localizedSrcFile := includedFile relativeTo: sourceFolder.
+
+	destFile := (workingEsopeFolder / localizedSrcFile pathString) , 'E'.
 	destFile ensureCreateFile.
 
 	destFile writeStreamDo: [ :tmpStream |
 		tmpStream
 			<< '      subroutine _$' ;
-			<< (includedFile copy replaceAll: $. with: $_) ;
+			<< (includedFile basename copy replaceAll: $. with: $_) ;
 			cr ;
-			<< srcFile contents ;
+			<< includedFile contents ;
 			<< '      end' ;
 			cr ]
 ]
@@ -459,6 +466,13 @@ FortranProjectImporter >> jsonASTToIAST [
 			iastEntity
 		]
 
+]
+
+{ #category : #'private - files' }
+FortranProjectImporter >> localizedSrcFilesWithExtensions: extensions [
+
+	^(self collectFilesIn: srcFolder withExtensions: extensions) collect: [ :file |
+		file relativeTo: srcFolder ]
 ]
 
 { #category : #'private - import' }

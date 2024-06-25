@@ -220,7 +220,7 @@ FortranProjectImporterFileManagementTest >> testEsopeToFortran [
 ]
 
 { #category : #'tests - import steps' }
-FortranProjectImporterFileManagementTest >> testFakeEsopeProgramUnitTo [
+FortranProjectImporterFileManagementTest >> testFakeEsopeProgramUnitFromTo [
 
 	| srcFile resultFile |
 	importer includeFolder: (fileSystem / 'inc').
@@ -229,7 +229,10 @@ FortranProjectImporterFileManagementTest >> testFakeEsopeProgramUnitTo [
 	srcFile := (fileSystem / 'inc' / 'included.h').
 	srcFile writeStreamDo: [:st | st << 'a line' ; cr].
 
-	importer fakeEsopeProgramUnit: 'included.h' to: (fileSystem / 'tmpEsope').
+	importer
+		fakeEsopeProgramUnit: srcFile
+		from: (fileSystem / 'inc')
+		to: (fileSystem / 'tmpEsope' / 'inc').
 
 	resultFile := fileSystem / 'tmpEsope' / 'inc' / 'included.h.E'.
 
@@ -314,6 +317,20 @@ FortranProjectImporterFileManagementTest >> testIncludedNamesIn [
 	self
 		assertCollection: files
 		hasSameElements: #( 'f1.inc' 'f3.obj' )
+]
+
+{ #category : #'tests - file-management' }
+FortranProjectImporterFileManagementTest >> testLocalizedSrcFilesWithExtensions [
+
+	| files |
+	self prepareWorkspace.
+
+	files := importer localizedSrcFilesWithExtensions: #( 'ec' 'fc' ).
+
+	self assert: files size equals: 2.
+	self
+		assertCollection: (files collect: #pathString)
+		hasSameElements: #( 'f1.fc' 'f2.ec' )
 ]
 
 { #category : #'tests - file-management' }
