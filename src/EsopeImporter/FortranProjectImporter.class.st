@@ -144,11 +144,13 @@ FortranProjectImporter >> collectIncludedFileNames [
 { #category : #'private - files' }
 FortranProjectImporter >> collectRelativePathsTo: fileNames in: folder [
 	"try to find files matching one of fileNames in #folder
-	 for each name returns the first path found (relative to folder)"
+	 for each name returns the first path found (relative to folder)
+	
+	 If a file name is not found it will appear as nil in the result of the collect"
 
-	^ fileNames
-		  collect: [ :includedFile | self relativePathTo: includedFile in: folder ]
-		  thenReject: #isNil
+	^fileNames
+		collect: [ :includedFile | self pathOf: includedFile in: folder ]
+		thenReject: #isNil
 ]
 
 { #category : #'private - files' }
@@ -400,10 +402,13 @@ FortranProjectImporter >> includeFolder: folder [
 { #category : #run }
 FortranProjectImporter >> includedFilesToEsope [
 
-	(self collectRelativePathsTo: self collectIncludedFileNames in: self includeFolder)
-		do: [ :foundFile |
-			errorHandler enterContext: foundFile.
-			self fakeEsopeProgramUnit: foundFile to: self tempEsopeFolder.
+	self collectIncludedFileNames
+		do: [ :fileName || srcFile |
+			errorHandler enterContext: fileName.
+
+			srcFile := self pathOf: fileName in: includeFolder.
+			self fakeEsopeProgramUnit: srcFile from: includeFolder to: self tempEsopeFolder / 'inc'.
+
 			errorHandler leaveContext
 		]
 ]
@@ -493,20 +498,8 @@ FortranProjectImporter >> parseFortran77File: srcFileReference to: destFileRefer
 	)
 ]
 
-{ #category : #run }
-FortranProjectImporter >> postImportChecks [
-
-	withSanityChecks ifTrue: [
-		famixModel entities do: [ :entity |
-			errorHandler enterContext: entity asString.
-			entity famixImportSanityCheck.
-			errorHandler leaveContext
-		]
-	]
-]
-
 { #category : #'private - files' }
-FortranProjectImporter >> relativePathTo: includedFileName in: folder [
+FortranProjectImporter >> pathOf: includedFileName in: folder [
 	"search for includedFileName in #folder or sub-folders
 	 Returns the first path to the file relative to #folder.
 	 Returns nil if no such includedFileName is found
@@ -518,12 +511,24 @@ FortranProjectImporter >> relativePathTo: includedFileName in: folder [
 	folder children do: [ :child |
 		child isDirectory
 		ifTrue: [
-			(self relativePathTo: includedFileName in: child)
+			(self pathOf: includedFileName in: child)
 			ifNotNil: [ :found | ^ child basename , '/' , found ]
 		]
 	].
 
 	^ nil
+]
+
+{ #category : #run }
+FortranProjectImporter >> postImportChecks [
+
+	withSanityChecks ifTrue: [
+		famixModel entities do: [ :entity |
+			errorHandler enterContext: entity asString.
+			entity famixImportSanityCheck.
+			errorHandler leaveContext
+		]
+	]
 ]
 
 { #category : #accessing }

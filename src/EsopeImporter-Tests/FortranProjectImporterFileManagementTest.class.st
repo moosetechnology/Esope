@@ -314,70 +314,79 @@ FortranProjectImporterFileManagementTest >> testIncludedFilesToEsope [
 ]
 
 { #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testRelativePathToIn [
+FortranProjectImporterFileManagementTest >> testPathOfIn [
 
+	| path |
 	(fileSystem / 'included.h') createFile.
 
+	path := importer pathOf: 'included.h' in: fileSystem root.
+
 	self
-		assert: (importer relativePathTo: 'included.h' in: fileSystem root)
+		assert: path
 		equals: 'included.h'
 ]
 
 { #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testRelativePathToInFirstPathFound [
+FortranProjectImporterFileManagementTest >> testPathOfInFirstPathFound [
 
+	| path |
 	(fileSystem / 'inc1') createDirectory.
 	(fileSystem / 'inc1' / 'included.h') createFile.
 	(fileSystem / 'inc2') createDirectory.
 	(fileSystem / 'inc2' / 'included.h') createFile.
 
+	path := importer pathOf: 'included.h' in: fileSystem root.
+
 	self
-		assert:
-		(importer relativePathTo: 'included.h' in: fileSystem root)
+		assert: path
 		equals: 'inc1/included.h'
 ]
 
 { #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testRelativePathToInNoExtension [
+FortranProjectImporterFileManagementTest >> testPathOfInNoExtension [
+
+	| path |
 
 	(fileSystem / 'included') createFile.
 
-	self
-		assert: (importer relativePathTo: 'included' in: fileSystem root)
-		equals: 'included'
+	path := importer pathOf: 'included' in: fileSystem root.
+
+	self assert: path equals: 'included'
 ]
 
 { #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testRelativePathToInNotFound [
+FortranProjectImporterFileManagementTest >> testPathOfInNotFound [
 
+	| path |
 	(fileSystem / 'excluded.h') createFile.
 
-	self
-		assert: (importer relativePathTo: 'included.h' in: fileSystem root)
-		equals: nil
+	path := importer pathOf: 'included.h' in: fileSystem root.
+
+	self assert: path equals: nil
 ]
 
 { #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testRelativePathToInSubDirectory [
+FortranProjectImporterFileManagementTest >> testPathOfInSubDirectory [
 
-	(fileSystem / 'inc') createDirectory.
-	(fileSystem / 'inc' / 'included.h') createFile.
+	| path |
+	(fileSystem / 'includes') createDirectory.
+	(fileSystem / 'includes' / 'included.h') createFile.
 
-	self
-		assert: (importer relativePathTo: 'included.h' in: fileSystem root)
-		equals: 'inc/included.h'
+	path := importer pathOf: 'included.h' in: fileSystem root.
+
+	self assert: path equals: 'includes/included.h'
 ]
 
 { #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testRelativePathToInWithPath [
+FortranProjectImporterFileManagementTest >> testPathOfInWithPath [
 
-	(fileSystem / 'inc') createDirectory.
-	(fileSystem / 'inc' / 'included.h') createFile.
+	| path |
+	(fileSystem / 'includes') createDirectory.
+	(fileSystem / 'includes' / 'included.h') createFile.
 
-	self
-		assert:
-		(importer relativePathTo: 'inc/included.h' in: fileSystem root)
-		equals: 'inc/included.h'
+	path := importer pathOf: 'includes/included.h' in: fileSystem root.
+
+	self assert: path equals: 'includes/included.h'
 ]
 
 { #category : #'tests - file-management' }
