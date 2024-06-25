@@ -73,20 +73,6 @@ FortranProjectImporterFileManagementTest >> tearDown [
 ]
 
 { #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testAllLocalizedFilesIn [
-
-	| files |
-	self prepareWorkspace.
-
-	files := importer allLocalizedFilesIn: fileSystem / 'project' / 'includes'.
-
-	self
-		assertCollection: (files collect: #pathString)
-		hasSameElements: #( 'inc1/f1.inc' 'inc1/f2.seg' 'inc2/f3.obj' 'inc2/f1.inc' 'inc2/f4.h' ).
-
-]
-
-{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectFilesIn [
 
 	| files |
@@ -141,21 +127,6 @@ FortranProjectImporterFileManagementTest >> testCollectIncludedFileNames [
 	self
 		assertCollection: (importer collectIncludedFileNames)
 		hasSameElements: #( 'f1.inc' 'f2.seg' 'f3.obj' )
-]
-
-{ #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testCollectSrcFilesWithExtensions [
-
-	| files |
-	self prepareWorkspace.
-
-	files := importer
-		collectSrcFilesWithExtensions: #( 'ec' 'fc' ).
-
-	self assert: files size equals: 2.
-	self
-		assertCollection: (files collect: #fullName)
-		hasSameElements: #( '/project/sources/f1.fc' '/project/sources/f2.ec' )
 ]
 
 { #category : #'tests - import steps' }
@@ -299,20 +270,6 @@ FortranProjectImporterFileManagementTest >> testIncludedNamesIn [
 	self
 		assertCollection: files
 		hasSameElements: #( 'f1.inc' 'f3.obj' )
-]
-
-{ #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testLocalizedSrcFilesWithExtensions [
-
-	| files |
-	self prepareWorkspace.
-
-	files := importer localizedSrcFilesWithExtensions: #( 'ec' 'fc' ).
-
-	self assert: files size equals: 2.
-	self
-		assertCollection: (files collect: #pathString)
-		hasSameElements: #( 'f1.fc' 'f2.ec' )
 ]
 
 { #category : #'tests - file-management' }

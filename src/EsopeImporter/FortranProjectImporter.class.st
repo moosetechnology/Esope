@@ -92,15 +92,6 @@ FortranProjectImporter class >> parseString: fortranCode [
 ]
 
 { #category : #'private - files' }
-FortranProjectImporter >> allLocalizedFilesIn: aFolder [
-
-	^aFolder allFiles collect: [ :file |
-		file relativeTo: aFolder absolutePath
-	].
-
-]
-
-{ #category : #'private - files' }
 FortranProjectImporter >> appendPath: aPath toParent: aFolder [
 	"aPath may be a relative or absolute path, we want it 'concatenated' to aFolder
 	 to give something like: 'aFolder / aPath' 
@@ -139,12 +130,6 @@ FortranProjectImporter >> collectIncludedFileNames [
 
 	^(self collectFilesIn: srcFolder withExtensions: self extensionsEsope)
 		flatCollectAsSet: [ :srcFileReference | self includedNamesIn: srcFileReference]
-]
-
-{ #category : #'private - files' }
-FortranProjectImporter >> collectSrcFilesWithExtensions: extensions [
-
-	^self collectFilesIn: srcFolder withExtensions: extensions
 ]
 
 { #category : #'private - files' }
@@ -454,13 +439,6 @@ FortranProjectImporter >> jsonASTToIAST [
 			iastEntity
 		]
 
-]
-
-{ #category : #'private - files' }
-FortranProjectImporter >> localizedSrcFilesWithExtensions: extensions [
-
-	^(self collectFilesIn: srcFolder withExtensions: extensions) collect: [ :file |
-		file relativeTo: srcFolder ]
 ]
 
 { #category : #'private - import' }
