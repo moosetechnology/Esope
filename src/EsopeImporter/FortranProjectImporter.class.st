@@ -120,24 +120,24 @@ FortranProjectImporter >> appendPath: aPath toParent: aFolder [
 ]
 
 { #category : #'private - files' }
+FortranProjectImporter >> collectFilesIn: aFileReference [
+
+	^aFileReference isDirectory
+		ifTrue: [ aFileReference children flatCollect: [ :child | self collectFilesIn: child  ] ]
+		ifFalse: [ { aFileReference } ]
+]
+
+{ #category : #'private - files' }
 FortranProjectImporter >> collectFilesIn: srcFileReference withExtensions: extensions [
 
-	^srcFileReference isDirectory
-		ifTrue: [
-			srcFileReference children flatCollect: [ :childReference |
-				self collectFilesIn: childReference withExtensions: extensions ]
-		]
-		ifFalse: [
-			(extensions includes: srcFileReference extension)
-				ifTrue: [ { srcFileReference } ]
-				ifFalse: [ #() ]
-		]
+	^(self collectFilesIn: srcFileReference)
+		select: [ :file | extensions includes: file extension ]
 ]
 
 { #category : #'private - files' }
 FortranProjectImporter >> collectIncludedFileNames [
 
-	^(self collectSrcFilesWithExtensions: self extensionsEsope)
+	^(self collectFilesIn: srcFolder withExtensions: self extensionsEsope)
 		flatCollectAsSet: [ :srcFileReference | self includedNamesIn: srcFileReference]
 ]
 
@@ -218,14 +218,14 @@ FortranProjectImporter >> esopeToFortran [
 	"'de-esopifying Esope files to be able to parse them in Fortran
 	The result goes in the FortranWorkingDirectory"
 
-	(self allLocalizedFilesIn: self tempEsopeFolder) do: [ :localPath |
+	(self collectFilesIn: self tempEsopeFolder) do: [ :localPath |
 		self
 			deEsopify: localPath
 			from: (self tempEsopeFolder / 'src')
 			to: (self tempFortranFolder / 'src')
 		].
 
-	(self localizedSrcFilesWithExtensions: self extensionsEsope) do: [ :localPath |
+	(self collectFilesIn: srcFolder withExtensions: self extensionsEsope) do: [ :localPath |
 		self copy: localPath to: (self tempEsopeFolder / 'src').
 		self
 			deEsopify: localPath
@@ -299,10 +299,10 @@ FortranProjectImporter >> fortranToJsonAST [
 	"Goes through all Fortran-77 files (de-esopified or 'pure') and parses each one
 	 to produce a corresponding Json AST"
 
-	(self allLocalizedFilesIn: self tempFortranFolder) do: [ :localPath |
+	(self collectFilesIn: self tempFortranFolder) do: [ :localPath |
 		self parseFortran77: localPath from: self tempFortranFolder to: self tempJsonFolder ].
 
-	(self collectSrcFilesWithExtensions: self extensionsFortran) do: [ :localPath |
+	(self collectFilesIn: srcFolder withExtensions: self extensionsFortran) do: [ :localPath |
 		localPath asFileReference
 			copyTo: (self appendPath: localPath toParent: tempFortranFolder).
 		self parseFortran77: localPath from: self tempFortranFolder to: self tempJsonFolder ]

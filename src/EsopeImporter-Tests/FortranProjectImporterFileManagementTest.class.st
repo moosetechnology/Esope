@@ -87,6 +87,25 @@ FortranProjectImporterFileManagementTest >> testAllLocalizedFilesIn [
 ]
 
 { #category : #'tests - file-management' }
+FortranProjectImporterFileManagementTest >> testCollectFilesIn [
+
+	| files |
+	self prepareWorkspace.
+
+	files := importer collectFilesIn: fileSystem / 'project' / 'includes'.
+
+	self
+		assertCollection: (files collect: #pathString)
+		hasSameElements: #(
+			'/project/includes/inc1/f1.inc'
+			'/project/includes/inc1/f2.seg'
+			'/project/includes/inc2/f3.obj'
+			'/project/includes/inc2/f1.inc'
+			'/project/includes/inc2/f4.h' ).
+
+]
+
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectFilesInWithExtensions [
 
 	| files |
