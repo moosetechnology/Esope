@@ -142,18 +142,6 @@ FortranProjectImporter >> collectIncludedFileNames [
 ]
 
 { #category : #'private - files' }
-FortranProjectImporter >> collectRelativePathsTo: fileNames in: folder [
-	"try to find files matching one of fileNames in #folder
-	 for each name returns the first path found (relative to folder)
-	
-	 If a file name is not found it will appear as nil in the result of the collect"
-
-	^fileNames
-		collect: [ :includedFile | self pathOf: includedFile in: folder ]
-		thenReject: #isNil
-]
-
-{ #category : #'private - files' }
 FortranProjectImporter >> collectSrcFilesWithExtensions: extensions [
 
 	^self collectFilesIn: srcFolder withExtensions: extensions

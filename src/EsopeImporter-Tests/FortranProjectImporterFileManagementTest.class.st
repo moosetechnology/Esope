@@ -125,43 +125,6 @@ FortranProjectImporterFileManagementTest >> testCollectIncludedFileNames [
 ]
 
 { #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testCollectRelativePathsToIn [
-
-	| files |
-	self prepareWorkspace.
-
-	files := importer collectRelativePathsTo: #( 'f2.seg' ) in: importer includeFolder.
-
-	self assert: files size equals: 1.
-	self assert: files anyOne equals: 'inc1/f2.seg'
-]
-
-{ #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testCollectRelativePathsToInNotFound [
-
-	| files |
-	self prepareWorkspace.
-
-	files := importer collectRelativePathsTo: #( 'inexistent.file' ) in: importer includeFolder.
-
-	self assert: files size equals: 0
-]
-
-{ #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testCollectRelativePathsToInWithDuplicate [
-	"returns the first file found"
-
-	| files |
-	self prepareWorkspace.
-
-
-	files := importer collectRelativePathsTo: #( 'f1.inc' ) in: importer includeFolder.
-
-	self assert: files size equals: 1.
-	self assert: files anyOne equals: 'inc1/f1.inc'
-]
-
-{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectSrcFilesWithExtensions [
 
 	| files |
