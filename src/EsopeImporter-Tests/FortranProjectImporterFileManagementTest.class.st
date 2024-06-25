@@ -240,19 +240,6 @@ a line
 '
 ]
 
-{ #category : #'tests - file-management' }
-FortranProjectImporterFileManagementTest >> testFindIncludesIn [
-	| includer files |
-	self prepareWorkspace.
-
-	includer := importer srcFolder children detect: [ :file | file basename = 'f1.fc' ].
-	files := importer includedNamesIn: includer.
-
-	self
-		assertCollection: files
-		hasSameElements: #( 'f1.inc' 'f3.obj' )
-]
-
 { #category : #'tests - import steps' }
 FortranProjectImporterFileManagementTest >> testFortranToJsonAST [
 
@@ -314,6 +301,19 @@ FortranProjectImporterFileManagementTest >> testIncludedFilesToEsope [
 		assertCollection: ((tempFolder / 'inc2') children collect: #basename)
 		hasSameElements: #( 'f3.obj.E').
 
+]
+
+{ #category : #'tests - file-management' }
+FortranProjectImporterFileManagementTest >> testIncludedNamesIn [
+	| includer files |
+	self prepareWorkspace.
+
+	includer := importer srcFolder children detect: [ :file | file basename = 'f1.fc' ].
+	files := importer includedNamesIn: includer.
+
+	self
+		assertCollection: files
+		hasSameElements: #( 'f1.inc' 'f3.obj' )
 ]
 
 { #category : #'tests - file-management' }
