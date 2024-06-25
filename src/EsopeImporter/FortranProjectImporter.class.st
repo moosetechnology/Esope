@@ -140,14 +140,15 @@ FortranProjectImporter >> copy: aPath to: aFolder [
 ]
 
 { #category : #'private - import' }
-FortranProjectImporter >> deEsopify: localPath from: srcFolder to: destFolder [
-	"de-esopify localPath in srcFolder to fortran file in destFolder"
+FortranProjectImporter >> deEsopify: srcFile from: sourceFolder to: destFolder [
+	"de-esopify localPath in sourceFolder to fortran file in destFolder"
 
-	| srcFile destFile |
-	srcFile := self appendPath: localPath toParent: srcFolder.
+	| localPath destFile |
+
+	localPath := srcFile relativeTo: sourceFolder.
 	destFile := (self appendPath: localPath toParent: destFolder) withExtension: 'f'.
 
-	errorHandler enterContext: 'file:' , localPath fullName.
+	errorHandler enterContext: 'file:' , srcFile fullName.
 
 	PPEsopeRewriter
 		rewriteFrom: (srcFile readStreamEncoded: self defaultFileEncoding)
@@ -203,18 +204,18 @@ FortranProjectImporter >> esopeToFortran [
 	"'de-esopifying Esope files to be able to parse them in Fortran
 	The result goes in the FortranWorkingDirectory"
 
-	(self collectFilesIn: self tempEsopeFolder) do: [ :localPath |
+	(self collectFilesIn: self tempEsopeFolder) do: [ :path |
 		self
-			deEsopify: localPath
-			from: (self tempEsopeFolder / 'src')
-			to: (self tempFortranFolder / 'src')
+			deEsopify: path
+			from: self tempEsopeFolder
+			to: self tempFortranFolder
 		].
 
-	(self collectFilesIn: srcFolder withExtensions: self extensionsEsope) do: [ :localPath |
-		self copy: localPath to: (self tempEsopeFolder / 'src').
+	(self collectFilesIn: srcFolder withExtensions: self extensionsEsope) do: [ :path |
+		self copy: path to: (self tempEsopeFolder / 'src').
 		self
-			deEsopify: localPath
-			from: (self tempEsopeFolder / 'src')
+			deEsopify: path
+			from: srcFolder
 			to: (self tempFortranFolder / 'src')
 		]
 ]
