@@ -384,11 +384,12 @@ FortranProjectImporter >> includeFolder: folder [
 FortranProjectImporter >> includedFilesToEsope [
 
 	self collectIncludedFileNames
-		do: [ :fileName || srcFile |
+		do: [ :fileName |
 			errorHandler enterContext: fileName.
 
-			srcFile := self pathOf: fileName in: includeFolder.
-			self fakeEsopeProgramUnit: srcFile from: includeFolder to: self tempEsopeFolder / 'inc'.
+			(self pathOf: fileName in: self includeFolder)
+			ifNotNil: [ :srcFile |
+				self fakeEsopeProgramUnit: srcFile from: includeFolder to: self tempEsopeFolder / 'inc'].
 
 			errorHandler leaveContext
 		]
