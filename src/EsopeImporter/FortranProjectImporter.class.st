@@ -284,8 +284,9 @@ FortranProjectImporter >> famixResolve [
 
 { #category : #run }
 FortranProjectImporter >> fortranToJsonAST [
-	"Goes through all Fortran-77 files (de-esopified or 'pure') and parses each one
-	 to produce a corresponding Json AST"
+	"Goes through all Fortran-77 files and parses each one to produce a corresponding Json AST
+	 - 1st, de-esopified files
+	 - 2nd, pure Fortran files"
 
 	(self collectFilesIn: self tempFortranFolder) do: [ :localPath |
 		self parseFortran77: localPath from: self tempFortranFolder to: self tempJsonFolder ].
@@ -453,18 +454,19 @@ FortranProjectImporter >> newResolver [
 ]
 
 { #category : #'private - import' }
-FortranProjectImporter >> parseFortran77: localPath from: srcFolder to: destFolder [
+FortranProjectImporter >> parseFortran77: srcFile from: src to: dest [
 	"runs fortran77 parser on localPath in srcFolder to JSON file in destFolder"
 
-	| destFile cmdReturn |
-	destFile := (self appendPath: localPath toParent: destFolder) withExtension: 'json'.
-	destFile parent ensureCreateDirectory.
+	| localizedFile destFile cmdReturn |
+	localizedFile := srcFile relativeTo: src.
+	destFile := (self appendPath: localizedFile toParent: dest) withExtension: 'json'.
+	destFile ensureCreateFile.
 
-	cmdReturn := self parseFortran77File: (self appendPath: localPath toParent: srcFolder) to: destFile.
+	cmdReturn := self parseFortran77File: (self appendPath: srcFile toParent: src) to: destFile.
 
 	(cmdReturn = 0) ifTrue: [ ^self ].
 
-	errorHandler error: 'Error while parsing ' , localPath pathString.
+	errorHandler error: 'Error while parsing ' , srcFile pathString.
 	destFile ensureDelete
 
 ]
