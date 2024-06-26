@@ -133,10 +133,12 @@ FortranProjectImporter >> collectIncludedFileNames [
 ]
 
 { #category : #'private - files' }
-FortranProjectImporter >> copy: aPath to: aFolder [
+FortranProjectImporter >> copy: aPath from: src to: dest [
 
+	| localizedPath |
+	localizedPath := aPath relativeTo: src.
 	aPath asFileReference
-		copyTo: (self appendPath: aPath toParent: aFolder)
+		copyTo: (self appendPath: localizedPath toParent: dest)
 ]
 
 { #category : #'private - import' }
@@ -211,10 +213,10 @@ FortranProjectImporter >> esopeToFortran [
 			to: self tempFortranFolder
 		].
 
-	(self collectFilesIn: srcFolder withExtensions: self extensionsEsope) do: [ :path |
-		self copy: path to: (self tempEsopeFolder / 'src').
+	(self collectFilesIn: srcFolder withExtensions: self extensionsEsope) do: [ :srcFile |
+		self copy: srcFile from: srcFolder to: (self tempEsopeFolder / 'src').
 		self
-			deEsopify: path
+			deEsopify: srcFile
 			from: srcFolder
 			to: (self tempFortranFolder / 'src')
 		]
