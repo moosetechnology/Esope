@@ -367,7 +367,7 @@ FortranProjectImporter >> importSteps [
 { #category : #accessing }
 FortranProjectImporter >> includeFolder [
 
-	^ includeFolder ifNil: [ self srcFolder ]
+	^ includeFolder ifNil: [ self sourceFolder ]
 ]
 
 { #category : #accessing }
