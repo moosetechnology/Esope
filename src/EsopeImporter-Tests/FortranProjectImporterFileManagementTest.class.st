@@ -55,7 +55,7 @@ FortranProjectImporterFileManagementTest >> setUp [
 
 	fileSystem := FileSystem memory.
 
-	importer srcFolder: fileSystem / 'project' / 'sources'.
+	importer sourceFolder: fileSystem / 'project' / 'sources'.
 	importer includeFolder: fileSystem / 'project' / 'includes'
 ]
 
@@ -264,7 +264,7 @@ FortranProjectImporterFileManagementTest >> testIncludedNamesIn [
 	| includer files |
 	self prepareWorkspace.
 
-	includer := importer srcFolder children detect: [ :file | file basename = 'f1.fc' ].
+	includer := importer sourceFolder children detect: [ :file | file basename = 'f1.fc' ].
 	files := importer includedNamesIn: includer.
 
 	self

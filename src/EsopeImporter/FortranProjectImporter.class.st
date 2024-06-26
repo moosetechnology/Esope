@@ -513,13 +513,13 @@ FortranProjectImporter >> postImportChecks [
 ]
 
 { #category : #accessing }
-FortranProjectImporter >> srcFolder [
+FortranProjectImporter >> sourceFolder [
 
 	^srcFolder 
 ]
 
 { #category : #accessing }
-FortranProjectImporter >> srcFolder: folder [
+FortranProjectImporter >> sourceFolder: folder [
 	"folder is either a String or a FileReference"
 
 	srcFolder := folder isString
