@@ -16,20 +16,21 @@ FortranProjectImporterFileManagementTest >> prepareWorkspace [
 
 	| f1 f2 |
 	fileSystem createDirectory: '/project'.
-	fileSystem createDirectory: '/project/inc1'.
-	fileSystem createDirectory: '/project/inc2'.
-	fileSystem createDirectory: '/project/src'.
+	fileSystem createDirectory: '/project/includes'.
+	fileSystem createDirectory: '/project/includes/inc1'.
+	fileSystem createDirectory: '/project/includes/inc2'.
+	fileSystem createDirectory: '/project/sources'.
 
-	(fileSystem / '/project/inc1/f1.inc') createFile.
-	(fileSystem / '/project/inc1/f2.seg') createFile.
-	(fileSystem / '/project/inc2/f3.obj') createFile.
+	(fileSystem / '/project/includes/inc1/f1.inc') createFile.
+	(fileSystem / '/project/includes/inc1/f2.seg') createFile.
+	(fileSystem / '/project/includes/inc2/f3.obj') createFile.
 	"note: duplicated name f1.inc, by default importer will take the first found"
-	(fileSystem / '/project/inc2/f1.inc') createFile.
-	(fileSystem / '/project/inc2/f4.h') createFile.
+	(fileSystem / '/project/includes/inc2/f1.inc') createFile.
+	(fileSystem / '/project/includes/inc2/f4.h') createFile.
 
-	f1 := (fileSystem / 'project/src/f1.fc') createFile.
-	f2 := (fileSystem / 'project/src/f2.ec') createFile.
-	(fileSystem / 'project/src/f3.f') createFile.
+	f1 := (fileSystem / 'project/sources/f1.fc') createFile.
+	f2 := (fileSystem / 'project/sources/f2.ec') createFile.
+	(fileSystem / 'project/sources/f3.f') createFile.
 
 	f1 writeStreamDo: [ :st |
 		st
@@ -43,11 +44,6 @@ FortranProjectImporterFileManagementTest >> prepareWorkspace [
 			<< '#include "f1.inc"'; cr
 	].
 
-	importer srcFolders: { fileSystem / 'project/src' }.
-	importer includeFolders: { 
-		fileSystem / 'project/inc1'.
-		fileSystem / 'project/inc2' 
-	}
 ]
 
 { #category : #running }
@@ -56,8 +52,11 @@ FortranProjectImporterFileManagementTest >> setUp [
 
 	importer := FortranProjectImporter new.
 	importer errorHandler: FortranErrorManager new.
-	fileSystem := FileSystem memory
 
+	fileSystem := FileSystem memory.
+
+	importer sourceFolder: fileSystem / 'project' / 'sources'.
+	importer includeFolder: fileSystem / 'project' / 'includes'
 ]
 
 { #category : #running }
@@ -73,55 +72,65 @@ FortranProjectImporterFileManagementTest >> tearDown [
 	folder exists ifTrue: [ folder deleteAll ]
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
+FortranProjectImporterFileManagementTest >> testCollectFilesIn [
+
+	| files |
+	self prepareWorkspace.
+
+	files := importer collectFilesIn: fileSystem / 'project' / 'includes'.
+
+	self
+		assertCollection: (files collect: #pathString)
+		hasSameElements: #(
+			'/project/includes/inc1/f1.inc'
+			'/project/includes/inc1/f2.seg'
+			'/project/includes/inc2/f3.obj'
+			'/project/includes/inc2/f1.inc'
+			'/project/includes/inc2/f4.h' ).
+
+]
+
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectFilesInWithExtensions [
 
 	| files |
 	self prepareWorkspace.
 
 	files := importer
-		collectFilesIn: importer includeFolders first "project/inc1"
-		withExtensions: {'inc'}.
+		collectFilesIn: importer includeFolder
+		withExtensions: {'obj'}.
 	self assert: files size equals: 1.
-	self assert: files anyOne fullName equals: '/project/inc1/f1.inc'.
+	self assert: files anyOne fullName equals: '/project/includes/inc2/f3.obj'
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectFilesInWithExtensionsSeveralFiles [
 
 	| files |
 	self prepareWorkspace.
 
 	files := importer
-		collectFilesIn: importer includeFolders anyOne parent "/project/"
+		collectFilesIn: importer includeFolder 
 		withExtensions: {'inc'}.
 	self assert: files size equals: 2.
-	self assert: files anyOne basename equals: 'f1.inc'.
+	self
+		assertCollection: (files collect: #fullName)
+		hasSameElements: #( '/project/includes/inc1/f1.inc' '/project/includes/inc2/f1.inc')
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testCollectIncludedFileNames [
 
 	self prepareWorkspace.
 
 	self
-		assertCollection: importer collectIncludedFileNames
+		assertCollection: (importer collectIncludedFileNames)
 		hasSameElements: #( 'f1.inc' 'f2.seg' 'f3.obj' )
 ]
 
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testCollectSrcFilesWithExtensions [
-	| files |
-	self prepareWorkspace.
-
-	files := importer collectSrcFilesWithExtensions: {'fc' . 'ec' }.
-	self
-		assertCollection: (files collect: #basename)
-		 hasSameElements: #( 'f1.fc' 'f2.ec' )
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testEsopeFileToFortran [
+{ #category : #'tests - import steps' }
+FortranProjectImporterFileManagementTest >> testDeEsopifyFromTo [
 
 	| srcFile destFile |
 	srcFile := fileSystem / 'esope.e'.
@@ -154,10 +163,6 @@ FortranProjectImporterFileManagementTest >> testEsopeToFortran [
 	tempFolder := './tmpFortranImport' asFileReference.
 	self assert: tempFolder exists.
 	self assert: tempFolder children size equals: 1.
-	self assert: tempFolder children anyOne basename equals: 'project'.
-
-	tempFolder := tempFolder / 'project'.
-	self assert: tempFolder children size equals: 1.
 	self assert: tempFolder children anyOne basename equals: 'src'.
 
 	tempFolder := tempFolder / 'src'.
@@ -167,15 +172,20 @@ FortranProjectImporterFileManagementTest >> testEsopeToFortran [
 
 ]
 
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFakeEsopeProgramUnitTo [
+{ #category : #'tests - import steps' }
+FortranProjectImporterFileManagementTest >> testFakeEsopeProgramUnitFromTo [
 
 	| srcFile resultFile |
+	importer includeFolder: (fileSystem / 'inc').
+
 	(fileSystem  / 'inc') createDirectory.
 	srcFile := (fileSystem / 'inc' / 'included.h').
 	srcFile writeStreamDo: [:st | st << 'a line' ; cr].
 
-	importer fakeEsopeProgramUnit: srcFile to: (fileSystem / 'tmpEsope').
+	importer
+		fakeEsopeProgramUnit: srcFile
+		from: (fileSystem / 'inc')
+		to: (fileSystem / 'tmpEsope' / 'inc').
 
 	resultFile := fileSystem / 'tmpEsope' / 'inc' / 'included.h.E'.
 
@@ -184,91 +194,6 @@ FortranProjectImporterFileManagementTest >> testFakeEsopeProgramUnitTo [
 a line
       end
 '
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFileReferencesForIn [
-
-	| files |
-	self prepareWorkspace.
-
-	files := importer findFiles: #( 'f2.seg' ) in: { importer includeFolders first }.
-
-	self assert: files size equals: 1.
-	self assert: files anyOne fullName equals: '/project/inc1/f2.seg'
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFileReferencesForInNotFound [
-
-	| files |
-	self prepareWorkspace.
-
-	files := importer findFiles: #( 'inexistent.file' ) in: importer includeFolders.
-
-	self assert: files size equals: 0
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFileReferencesForInWithDuplicate [
-
-	| files |
-	self prepareWorkspace.
-
-
-	files := importer findFiles: #( 'f1.inc' ) in: importer includeFolders.
-
-	self assert: files size equals: 1.
-	self assert: files anyOne fullName equals: '/project/inc1/f1.inc'
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFindIncludesIn [
-	| includer files |
-	self prepareWorkspace.
-
-	includer := importer srcFolders anyOne children detect: [ :file | file basename = 'f1.fc' ].
-	files := importer includedNamesIn: includer.
-
-	self
-		assertCollection: files
-		 hasSameElements: #( 'f1.inc' 'f3.obj' )
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFolderContainingAmong [
-
-	| file |
-	file := (fileSystem / 'included.h') createFile.
-
-	self assert: (importer folderContaining: 'included.h' among: { fileSystem } ) equals: file
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFolderContainingAmongNoExtension [
-
-	| file |
-	file := (fileSystem / 'included') createFile.
-
-	self assert: (importer folderContaining: 'included' among: { fileSystem } ) equals: file
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFolderContainingAmongNotFound [
-
-	(fileSystem / 'excluded.h') createFile.
-
-	self assert: (importer folderContaining: 'included.h' among: { fileSystem } ) equals: nil
-]
-
-{ #category : #tests }
-FortranProjectImporterFileManagementTest >> testFolderContainingAmongWithPath [
-
-	| file |
-	(fileSystem  / 'inc') createDirectory.
-	file := (fileSystem / 'inc' / 'included.h') createFile.
-
-	self assert: (importer folderContaining: 'inc/included.h' among: { fileSystem } ) equals: file
 ]
 
 { #category : #'tests - import steps' }
@@ -297,10 +222,13 @@ FortranProjectImporterFileManagementTest >> testFortranToJsonAST [
 
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testGetIncludedFile [
 
-	self assert: (importer getIncludedFileName: '#include  "blah.inc"') equals: 'blah.inc'
+	| names |
+	names := importer getIncludedFileName: '#include  "blah.inc"'.
+
+	self assert: names equals: 'blah.inc'
 ]
 
 { #category : #'tests - import steps' }
@@ -314,9 +242,9 @@ FortranProjectImporterFileManagementTest >> testIncludedFilesToEsope [
 	tempFolder := './tmpEsopeImport' asFileReference.
 	self assert: tempFolder exists.
 	self assert: tempFolder children size equals: 1.
-	self assert: tempFolder children anyOne basename equals: 'project'.
+	self assert: tempFolder children anyOne basename equals: 'inc'.
 
-	tempFolder := tempFolder / 'project'.
+	tempFolder := tempFolder / 'inc'.
 	self
 		assertCollection: (tempFolder children collect: #basename)
 		hasSameElements: #( 'inc1' 'inc2' ).
@@ -331,7 +259,92 @@ FortranProjectImporterFileManagementTest >> testIncludedFilesToEsope [
 
 ]
 
-{ #category : #tests }
+{ #category : #'tests - file-management' }
+FortranProjectImporterFileManagementTest >> testIncludedNamesIn [
+	| includer files |
+	self prepareWorkspace.
+
+	includer := importer sourceFolder children detect: [ :file | file basename = 'f1.fc' ].
+	files := importer includedNamesIn: includer.
+
+	self
+		assertCollection: files
+		hasSameElements: #( 'f1.inc' 'f3.obj' )
+]
+
+{ #category : #'tests - file-management' }
+FortranProjectImporterFileManagementTest >> testPathOfIn [
+
+	| path |
+	(fileSystem / 'included.h') createFile.
+
+	path := importer pathOf: 'included.h' in: fileSystem root.
+
+	self assert: path fullName equals: '/included.h'
+]
+
+{ #category : #'tests - file-management' }
+FortranProjectImporterFileManagementTest >> testPathOfInFirstPathFound [
+
+	| path |
+	(fileSystem / 'inc1') createDirectory.
+	(fileSystem / 'inc1' / 'included.h') createFile.
+	(fileSystem / 'inc2') createDirectory.
+	(fileSystem / 'inc2' / 'included.h') createFile.
+
+	path := importer pathOf: 'included.h' in: fileSystem root.
+
+	self assert: path fullName equals: '/inc1/included.h'
+]
+
+{ #category : #'tests - file-management' }
+FortranProjectImporterFileManagementTest >> testPathOfInNoExtension [
+
+	| path |
+
+	(fileSystem / 'included') createFile.
+
+	path := importer pathOf: 'included' in: fileSystem root.
+
+	self assert: path fullName equals: '/included'
+]
+
+{ #category : #'tests - file-management' }
+FortranProjectImporterFileManagementTest >> testPathOfInNotFound [
+
+	| path |
+	(fileSystem / 'excluded.h') createFile.
+
+	path := importer pathOf: 'included.h' in: fileSystem root.
+
+	self assert: path equals: nil
+]
+
+{ #category : #'tests - file-management' }
+FortranProjectImporterFileManagementTest >> testPathOfInSubDirectory [
+
+	| path |
+	(fileSystem / 'includes') createDirectory.
+	(fileSystem / 'includes' / 'included.h') createFile.
+
+	path := importer pathOf: 'included.h' in: fileSystem root.
+
+	self assert: path fullName equals: '/includes/included.h'
+]
+
+{ #category : #'tests - file-management' }
+FortranProjectImporterFileManagementTest >> testPathOfInWithPath [
+
+	| path |
+	(fileSystem / 'includes') createDirectory.
+	(fileSystem / 'includes' / 'included.h') createFile.
+
+	path := importer pathOf: 'includes/included.h' in: fileSystem root.
+
+	self assert: path fullName equals: '/includes/included.h'
+]
+
+{ #category : #'tests - file-management' }
 FortranProjectImporterFileManagementTest >> testUnquoteIncludedFile [
 
 	self assert: (importer unquoteIncludedFile: 'blah') equals: 'blah'.
