@@ -328,6 +328,18 @@ FortranProjectImporter >> iASTToFamix [
 	famixModel := visitor model
 ]
 
+{ #category : #'private - testing' }
+FortranProjectImporter >> iastModel [
+
+	^ iastmodel
+]
+
+{ #category : #'private - testing' }
+FortranProjectImporter >> iastModel: anObject [
+
+	iastmodel := anObject
+]
+
 { #category : #run }
 FortranProjectImporter >> import [
 

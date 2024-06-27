@@ -276,6 +276,48 @@ FortranProjectImporterTest >> testIncludedNamesIn [
 		hasSameElements: #( 'f1.inc' 'f3.obj' )
 ]
 
+{ #category : #'tests - import steps' }
+FortranProjectImporterTest >> testJsonASTToIAST [
+	"json file and assert: taken from JsonToIASTVisitorTest >> testMultipleStatements
+
+		subroutine hello
+      integer someVar
+      someVar = 3 * someVar
+      end"
+
+	| jsonFile programFile stmt |
+
+	jsonFile := importer tempJsonFolder / 'sources/aFile.json'.
+	jsonFile ensureCreateFile.
+	jsonFile writeStreamDo: [ :st |
+		st
+			<< '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:21)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:15)-(2:21)","type":"scalar","variable":{"anno":[],"span":"(2:15)-(2:21)","tag":"value","value":{"contents":"somevar","tag":"variable"}}}],"span":"(2:15)-(2:21)"},"span":"(2:7)-(2:21)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:7)-(3:27)","statement":{"anno":[],"expression":{"anno":[],"left":{"anno":[],"span":"(3:17)-(3:17)","tag":"value","value":{"contents":["3",null],"tag":"integer"}},"op":{"tag":"multiplication"},"right":{"anno":[],"span":"(3:21)-(3:27)","tag":"value","value":{"contents":"somevar","tag":"variable"}},"span":"(3:17)-(3:27)","tag":"binary"},"span":"(3:7)-(3:27)","tag":"assign_expression","target":{"anno":[],"span":"(3:7)-(3:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'
+	].
+
+	importer jsonASTToIAST.
+
+	programFile := importer iastModel anyOne.
+	
+	self assert: programFile isNotNil.
+	self assert: programFile body first body size equals: 2.
+
+	stmt := programFile body first body first first.
+	self assert: stmt class equals: IASTVariable.
+	self assert: stmt typeSpec class equals: IASTTypeRef.
+	self assert: stmt entityName equals: 'somevar'.
+
+	stmt := programFile body first body second first.
+	self assert: stmt class equals: IASTVarAccess.
+	self assert: stmt isWrite.
+	self assert: stmt entityName equals: 'somevar'.
+
+	stmt := programFile body first body second second.
+	self assert: stmt class equals: IASTVarAccess.
+	self deny: stmt isWrite.
+	self assert: stmt entityName equals: 'somevar'.
+
+]
+
 { #category : #'tests - file-management' }
 FortranProjectImporterTest >> testPathOfIn [
 
@@ -346,6 +388,22 @@ FortranProjectImporterTest >> testPathOfInWithPath [
 	path := importer pathOf: 'includes/included.h' in: fileSystem root.
 
 	self assert: path fullName equals: '/includes/included.h'
+]
+
+{ #category : #'tests - import steps' }
+FortranProjectImporterTest >> testPostImportChecks [
+	"test copied from #testSanityCheckParameterPass"
+
+	(self newEntity: FamixF77Parameter)
+		declaredType: (self newEntity: FamixF77TypeIntrinsic) ;
+		parentBehaviouralEntity: (self defaultSubroutine: 'aRoutine').
+
+	importer withSanityChecks: true.
+	importer stopOnError: true.
+	importer famixModel: mooseModel.
+
+	self shouldnt: [ importer postImportChecks ] raise: SanityCheckException.
+
 ]
 
 { #category : #'test - sanityCheck' }
