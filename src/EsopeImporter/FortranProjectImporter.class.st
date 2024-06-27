@@ -214,7 +214,7 @@ FortranProjectImporter >> esopeToFortran [
 		].
 
 	(self collectFilesIn: srcFolder withExtensions: self extensionsEsope) do: [ :srcFile |
-		self copy: srcFile from: srcFolder to: (self tempEsopeFolder / 'src').
+		"self copy: srcFile from: srcFolder to: (self tempEsopeFolder / 'src')."
 		self
 			deEsopify: srcFile
 			from: srcFolder
@@ -449,7 +449,7 @@ FortranProjectImporter >> jsonASTToIAST [
 { #category : #'private - import' }
 FortranProjectImporter >> newResolver [
 
-	^resolver := (FamixEsopeResolver  on: famixModel)
+	^resolver := (FamixEsopeResolver on: famixModel)
 		errorHandler: errorHandler
 ]
 
@@ -458,11 +458,12 @@ FortranProjectImporter >> parseFortran77: srcFile from: src to: dest [
 	"runs fortran77 parser on localPath in srcFolder to JSON file in destFolder"
 
 	| localizedFile destFile cmdReturn |
+
 	localizedFile := srcFile relativeTo: src.
 	destFile := (self appendPath: localizedFile toParent: dest) withExtension: 'json'.
 	destFile ensureCreateFile.
 
-	cmdReturn := self parseFortran77File: (self appendPath: srcFile toParent: src) to: destFile.
+	cmdReturn := self parseFortran77File: srcFile to: destFile.
 
 	(cmdReturn = 0) ifTrue: [ ^self ].
 
