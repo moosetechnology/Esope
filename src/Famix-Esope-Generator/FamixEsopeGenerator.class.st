@@ -274,19 +274,19 @@ FamixEsopeGenerator >> defineClasses [
 
 	attribute := self remoteEntity: #Attribute withPrefix: #FamixFortran.
 
-	command := builder
+	command := self
 		           newClassNamed: #Command
 		           comment: self commentCommand.
 
-	dimentionalInteger := builder
+	dimentionalInteger := self
 		                      newClassNamed: #DimentionalInteger
 		                      comment: self dimentionalIntegerComment.
 
-	implicitPointer := builder
+	implicitPointer := self
 		                   newClassNamed: #ImplicitPointer
 		                   comment: self commentImplicitPointer.
 
-	segment := builder
+	segment := self
 		           newClassNamed: #Segment
 		           comment: self commentSegment.
 
