@@ -302,6 +302,34 @@ JsonToIASTVisitorTest >> testContinueStatement [
 	self assert: programFile body first body isEmpty
 ]
 
+{ #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testDeref [
+	"subroutine hello
+	   ptr.att = 5
+      end"
+
+	| programFile var |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"/home/anquetil/Pharo/images/esope-import/srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:18)","statement":{"anno":[],"expression":{"anno":[],"span":"(2:18)-(2:18)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"span":"(2:8)-(2:18)","tag":"assign_expression","target":{"anno":[],"expression":{"anno":[],"span":"(2:8)-(2:10)","tag":"value","value":{"contents":"ptr","tag":"variable"}},"field":{"anno":[],"span":"(2:12)-(2:14)","tag":"value","value":{"contents":"att","tag":"variable"}},"span":"(2:8)-(2:14)","tag":"deref"}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:9)-(3:10)","subprograms":null,"tag":"subroutine"}]}'.
+
+	self assert: programFile body first body size equals: 1.
+	"statement has 1 expression"
+	self assert: programFile body first body anyOne size equals: 1.
+
+	var := programFile body first body anyOne anyOne.
+	self assert: var class equals: IASTVarAccess.
+	self assert: var entityName equals: 'ptr'.
+	self assert: var isWrite.
+	self assert: var dereferencedVariable isNotNil.
+
+	var := var dereferencedVariable.
+	self assert: var class equals: IASTVarAccess.
+	self assert: var entityName equals: 'att'.
+	self deny: var isWrite.
+	self assert: var dereferencedVariable isNil.
+
+
+]
+
 { #category : #'tests-esope' }
 JsonToIASTVisitorTest >> testESOAtWithArrayArgument [
 "Special case of a D__ function call with an array as argument

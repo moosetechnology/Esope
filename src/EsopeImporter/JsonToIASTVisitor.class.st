@@ -269,6 +269,18 @@ JsonToIASTVisitor >> visitDeclarators: aDeclaratorsList [
 	^(super visitDeclarators: aDeclaratorsList) second
 ]
 
+{ #category : #'visiting expression' }
+JsonToIASTVisitor >> visitDeref: aDerefNode [
+	"span expression field"
+
+	| data |
+	data := super visitDeref: aDerefNode.
+
+	data second dereferencedVariable: data third.
+
+	^data second
+]
+
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitDo: aDoNode [
 	"#(span label do_spec target body end_label)"
