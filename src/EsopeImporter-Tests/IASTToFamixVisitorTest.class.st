@@ -557,6 +557,37 @@ IASTToFamixVisitorTest >> testFamixFortran77 [
 ]
 
 { #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77Call [
+	"subroutine mysub
+      write(*,*) msg
+      end
+"
+
+	| entity iastCall |
+	iastCall := IASTInvocation new
+		entityName: 'write' ;
+		arguments: { IASTVarAccess new entityName: 'msg' ; isWrite: false ; yourself } ;
+		yourself.
+
+	programFile body: { IASTSubroutine new
+		entityName: 'mysub';
+		body: { iastCall };
+		yourself
+	}.
+
+	programFile accept: visitor.
+
+	self assert: (visitor model allWithType: FamixF77ProgramFile) size equals: 1.
+	self assert: (visitor model allWithType: FamixF77ProgramFile) anyOne programUnits size equals: 1.
+
+	entity := (visitor model allWithType: FamixF77ProgramFile) anyOne programUnits anyOne.
+	self assert: entity class equals: FamixF77PUSubroutine.
+
+	self assert: entity outgoingInvocations size equals: 1.
+	self assert: entity accesses size equals: 1.
+]
+
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77Comment [
 	| entity |
 	programFile body: { IASTComment new
