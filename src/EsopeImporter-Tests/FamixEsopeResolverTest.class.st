@@ -661,6 +661,18 @@ FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointers [
 ]
 
 { #category : #'test - implicit' }
+FamixEsopeResolverTest >> testResolveImplicitFunctionType [
+
+	| sub |
+	sub := self defaultFunction: 'f'.
+
+	resolver resolveImplicitFunctionType: sub.
+
+	self assert: sub declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: sub declaredType name equals: 'real'
+]
+
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testResolveImplicitParameter [
 
 	"
