@@ -236,6 +236,44 @@ FortranProjectImporterTest >> testGetIncludedFile [
 ]
 
 { #category : #'tests - import steps' }
+FortranProjectImporterTest >> testIASTToFamix [
+	"json file and assert: taken from
+	   IASTToFamixVisitorTest >> testFamixFortran77PUFunctionWithParameter"
+
+	| iastEntity fmxEntity param |
+	iastEntity := IASTParameter new
+			entityName: 'var' ;
+			yourself.
+	iastEntity := IASTFunction new
+		entityName: 'fct' ;
+		parameters: { iastEntity } ;
+		yourself.
+	iastEntity := IASTProgramFile new
+		filename: './main.f' ;
+		body: {  iastEntity } ;
+		yourself.
+	importer iastModel: { iastEntity }.
+
+	importer iASTToFamix.
+
+	self assert: (importer famixModel allWithType: FamixF77ProgramFile) size equals: 1.
+
+	fmxEntity := (importer famixModel allWithType: FamixF77ProgramFile) anyOne.
+	self assert: fmxEntity programUnits size equals: 1.
+
+	fmxEntity := fmxEntity programUnits first.
+	self assert: fmxEntity class equals: FamixF77PUFunction.
+	self assert: fmxEntity name equals: 'fct'.
+	self assert: fmxEntity programFile isNotNil.
+
+	self assert: fmxEntity parameters size equals: 1.
+	param := fmxEntity parameters first.
+	self assert: param class equals: FamixF77Parameter.
+	self assert: param name equals: 'var'.
+	self assert: param parentBehaviouralEntity equals: fmxEntity.
+]
+
+{ #category : #'tests - import steps' }
 FortranProjectImporterTest >> testIncludedFilesToEsope [
 
 	| tempFolder |

@@ -3,7 +3,7 @@ Class {
 	#superclass : #TestCase,
 	#instVars : [
 		'mooseModel',
-		'famixProgFile'
+		'programFile'
 	],
 	#category : #'EsopeImporter-Tests-Importer'
 }
@@ -51,17 +51,7 @@ FamixEsopeUtilitiesTest >> defaultAttribute: varName withType: typeName [
 FamixEsopeUtilitiesTest >> defaultFunction: name [
 
 	^ (self newEntity: FamixF77PUFunction named: name) programFile:
-		  famixProgFile
-]
-
-{ #category : #'default values' }
-FamixEsopeUtilitiesTest >> defaultIASTEsopeCommand: commandName name: entityName [
-
-	^ IASTEsopeSegCommand new
-		  esopeCommand: commandName;
-		  entityName: entityName;
-		  sourceAnchor: self defaultAnchor;
-		  yourself
+		  programFile
 ]
 
 { #category : #'default values' }
@@ -102,7 +92,7 @@ FamixEsopeUtilitiesTest >> defaultInvocation: name [
 FamixEsopeUtilitiesTest >> defaultMain: name [
 
 	^ (self newEntity: FamixF77PUMain named: name) programFile:
-		  famixProgFile
+		  programFile
 ]
 
 { #category : #'default values' }
@@ -141,7 +131,7 @@ FamixEsopeUtilitiesTest >> defaultSegment: segmentName with: dictDeclarations [
 FamixEsopeUtilitiesTest >> defaultSubroutine: name [
 
 	^ (self newEntity: FamixF77PUSubroutine named: name) programFile:
-		  famixProgFile
+		  programFile
 ]
 
 { #category : #'default values' }
@@ -211,7 +201,7 @@ FamixEsopeUtilitiesTest >> newEntity: aFamixClass named: aName [
 FamixEsopeUtilitiesTest >> newPU: aName [
 
 	^ (self newEntity: FamixF77PUSubroutine named: aName)
-		  programFile: famixProgFile;
+		  programFile: programFile;
 		  yourself
 ]
 
@@ -221,5 +211,5 @@ FamixEsopeUtilitiesTest >> setUp [
 	super setUp.
 
 	mooseModel := FamixEsopeModel new.
-	famixProgFile  := self defaultProgramFile: './main.f'.
+	programFile  := self defaultProgramFile: './main.f'.
 ]
