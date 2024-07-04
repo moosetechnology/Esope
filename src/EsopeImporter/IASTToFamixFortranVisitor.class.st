@@ -69,6 +69,17 @@ IASTToFamixFortranVisitor >> visit: anIASTModel [
 ]
 
 { #category : #visiting }
+IASTToFamixFortranVisitor >> visitExpression: anExpression [
+
+	anExpression isCollection
+		ifFalse: [ anExpression accept: self ]
+		ifTrue: [ 
+			anExpression do: [ :subExpr |
+				self visitExpression: subExpr ]
+		]
+]
+
+{ #category : #visiting }
 IASTToFamixFortranVisitor >> visitIASTBlockData: aBlockData [
 
 	| blockdata |
