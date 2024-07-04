@@ -567,6 +567,7 @@ IASTToFamixVisitorTest >> testFamixFortran77Call [
 	iastCall := IASTInvocation new
 		entityName: 'write' ;
 		arguments: { IASTVarAccess new entityName: 'msg' ; isWrite: false ; yourself } ;
+		sourceAnchor: self defaultAnchor ;
 		yourself.
 
 	programFile body: { IASTSubroutine new
@@ -630,7 +631,7 @@ IASTToFamixVisitorTest >> testFamixFortran77CommentInSubRoutine [
 
 { #category : #'tests-esope' }
 IASTToFamixVisitorTest >> testFamixFortran77ESOAtWithArrayArgument [
-"Special case of a D__ function call with an array as argument
+	"Special case of a D__ function call with an array as argument
 
       subroutine hello
         integer arr(10)
