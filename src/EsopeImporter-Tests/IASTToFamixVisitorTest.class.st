@@ -412,6 +412,42 @@ IASTToFamixVisitorTest >> testFamixEsopeCommandSegini [
 ]
 
 { #category : #'tests-esope' }
+IASTToFamixVisitorTest >> testFamixEsopePointerAccess [
+	"SUBROUTINE sub
+      ptr.att = 5
+      END
+
+	pointer access are recorded as 2 independant accesses (but the second one is for an
+	attribute of a segment.
+	Here we don't have the segment, so it is only two variableAccess-es"
+
+	| accesses iastVar |
+	iastVar := self defaultVarAccess: 'ptr' isWrite: true.
+	iastVar dereferencedVariable: (self defaultVarAccess: 'att' isWrite: false).
+
+	programFile body: { IASTSubroutine new
+		entityName: 'sub';
+		body: { iastVar } ;
+		yourself
+	}.
+
+	programFile accept: visitor.
+
+	accesses := visitor model allAccesses.
+	self assert: accesses size equals: 2.
+
+	self assert: (accesses allSatisfy: [ : acc | acc accessor name = 'sub']).
+	self assert: (accesses allSatisfy: [ : acc |
+		(acc attributeAt: #entity ifAbsent: [nil])
+			isNotNil ]).
+
+	self assert: (accesses anySatisfy: [ : acc |
+		(acc attributeAt: #entity ifAbsent: ["impossible"]) entityName = 'ptr']).
+	self assert: (accesses anySatisfy: [ : acc |
+		(acc attributeAt: #entity ifAbsent: ["impossible"]) entityName = 'att']).
+]
+
+{ #category : #'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopePointerDeclaration [
 "      program main
       segment, pers
