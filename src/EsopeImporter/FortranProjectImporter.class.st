@@ -291,10 +291,12 @@ FortranProjectImporter >> fortranToJsonAST [
 	(self collectFilesIn: self tempFortranFolder) do: [ :localPath |
 		self parseFortran77: localPath from: self tempFortranFolder to: self tempJsonFolder ].
 
-	(self collectFilesIn: srcFolder withExtensions: self extensionsFortran) do: [ :localPath |
-		localPath asFileReference
-			copyTo: (self appendPath: localPath toParent: tempFortranFolder).
-		self parseFortran77: localPath from: self tempFortranFolder to: self tempJsonFolder ]
+	(self collectFilesIn: srcFolder withExtensions: self extensionsFortran) do: [ :projectPath |
+		| localPath |
+		localPath := projectPath relativeTo: srcFolder.
+		"projectPath asFileReference
+			copyTo: (self appendPath: localPath toParent: tempFortranFolder / 'src')."
+		self parseFortran77: projectPath from: srcFolder to: self tempJsonFolder / 'src' ]
 ]
 
 { #category : #'private - files' }
