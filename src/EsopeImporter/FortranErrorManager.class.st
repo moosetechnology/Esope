@@ -28,6 +28,7 @@ FortranErrorManager >> enterFile: aFilename [
 FortranErrorManager >> error: anException [
 
 	stop ifTrue: [ anException pass ].
+	(anException isKindOf: Halt) ifTrue: [ anException pass ].
 
 	errors add: (
 		(String streamContents: [ :stream |
