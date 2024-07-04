@@ -193,6 +193,9 @@ IASTToFamixFortranVisitor >> visitIASTIncludedFile: anIncludedFile [
 { #category : #visiting }
 IASTToFamixFortranVisitor >> visitIASTInvocation: anInvocation [
 
+	anInvocation arguments do: [ :expression |
+		self visitExpression: expression ].
+
 	^ self model newInvocation
 		sourceAnchor:
 			(self visitIndexedFileAnchor: anInvocation sourceAnchor);
