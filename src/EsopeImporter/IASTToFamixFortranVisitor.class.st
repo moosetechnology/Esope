@@ -73,10 +73,9 @@ IASTToFamixFortranVisitor >> visitIASTBlockData: aBlockData [
 
 	| blockdata |
 	blockdata := self model newPUBlockdata
-		             sourceAnchor:
-			             (self visitIndexedFileAnchor: aBlockData sourceAnchor);
-		             name: aBlockData entityName;
-		             yourself.
+		sourceAnchor: (self visitIndexedFileAnchor: aBlockData sourceAnchor);
+		name: aBlockData entityName;
+		yourself.
 	stack push: blockdata.
 
 	"prossess accesses"
@@ -243,8 +242,9 @@ IASTToFamixFortranVisitor >> visitIASTSubroutine: aSubroutine [
 
 	| subroutine |
 	subroutine := self
-		              iASTProgramUnit: aSubroutine
-		              toFamix: FamixF77PUSubroutine.
+		iASTProgramUnit: aSubroutine
+		toFamix: FamixF77PUSubroutine.
+
 	aSubroutine parameters do: [ :parameter | 
 		subroutine addParameter: (parameter accept: self) ].
 
