@@ -412,6 +412,42 @@ IASTToFamixVisitorTest >> testFamixEsopeCommandSegini [
 ]
 
 { #category : #'tests-esope' }
+IASTToFamixVisitorTest >> testFamixEsopePointerAccess [
+	"SUBROUTINE sub
+      ptr.att = 5
+      END
+
+	pointer access are recorded as 2 independant accesses (but the second one is for an
+	attribute of a segment.
+	Here we don't have the segment, so it is only two variableAccess-es"
+
+	| accesses iastVar |
+	iastVar := self defaultVarAccess: 'ptr' isWrite: true.
+	iastVar dereferencedVariable: (self defaultVarAccess: 'att' isWrite: false).
+
+	programFile body: { IASTSubroutine new
+		entityName: 'sub';
+		body: { iastVar } ;
+		yourself
+	}.
+
+	programFile accept: visitor.
+
+	accesses := visitor model allAccesses.
+	self assert: accesses size equals: 2.
+
+	self assert: (accesses allSatisfy: [ : acc | acc accessor name = 'sub']).
+	self assert: (accesses allSatisfy: [ : acc |
+		(acc attributeAt: #entity ifAbsent: [nil])
+			isNotNil ]).
+
+	self assert: (accesses anySatisfy: [ : acc |
+		(acc attributeAt: #entity ifAbsent: ["impossible"]) entityName = 'ptr']).
+	self assert: (accesses anySatisfy: [ : acc |
+		(acc attributeAt: #entity ifAbsent: ["impossible"]) entityName = 'att']).
+]
+
+{ #category : #'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopePointerDeclaration [
 "      program main
       segment, pers
@@ -557,6 +593,38 @@ IASTToFamixVisitorTest >> testFamixFortran77 [
 ]
 
 { #category : #'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77Call [
+	"subroutine mysub
+      write(*,*) msg
+      end
+"
+
+	| entity iastCall |
+	iastCall := IASTInvocation new
+		entityName: 'write' ;
+		arguments: { IASTVarAccess new entityName: 'msg' ; isWrite: false ; yourself } ;
+		sourceAnchor: self defaultAnchor ;
+		yourself.
+
+	programFile body: { IASTSubroutine new
+		entityName: 'mysub';
+		body: { iastCall };
+		yourself
+	}.
+
+	programFile accept: visitor.
+
+	self assert: (visitor model allWithType: FamixF77ProgramFile) size equals: 1.
+	self assert: (visitor model allWithType: FamixF77ProgramFile) anyOne programUnits size equals: 1.
+
+	entity := (visitor model allWithType: FamixF77ProgramFile) anyOne programUnits anyOne.
+	self assert: entity class equals: FamixF77PUSubroutine.
+
+	self assert: entity outgoingInvocations size equals: 1.
+	self assert: entity accesses size equals: 1.
+]
+
+{ #category : #'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77Comment [
 	| entity |
 	programFile body: { IASTComment new
@@ -599,7 +667,7 @@ IASTToFamixVisitorTest >> testFamixFortran77CommentInSubRoutine [
 
 { #category : #'tests-esope' }
 IASTToFamixVisitorTest >> testFamixFortran77ESOAtWithArrayArgument [
-"Special case of a D__ function call with an array as argument
+	"Special case of a D__ function call with an array as argument
 
       subroutine hello
         integer arr(10)
