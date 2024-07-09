@@ -1359,10 +1359,9 @@ FortranAbstractJsonVisitor >> visitSpan: aSpanString [
 ]
 
 { #category : #'visiting expression' }
-FortranAbstractJsonVisitor >> visitSpecification: aSpecificationNode [
+FortranAbstractJsonVisitor >> visitSpecification: aSpecificationCollection [
 
-	^self visitJsonElement: aSpecificationNode
-
+	^self visitIOParameters: aSpecificationCollection 
 ]
 
 { #category : #visiting }
