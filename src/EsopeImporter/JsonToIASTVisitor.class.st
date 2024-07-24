@@ -506,10 +506,13 @@ JsonToIASTVisitor >> visitGotoStatement: aGotoStatementNode [
 JsonToIASTVisitor >> visitIOParameter: anIOParameterNode [
 	"span name expr"
 
-	| data |
+	| data ioParam |
 	data := super visitIOParameter: anIOParameterNode.
+	ioParam := data second
+		ifNotNil: [:varName | IASTVarAccess new entityName: varName ; isWrite: true ; yourself ]
+		ifNil: [ nil ].
 
-	^{ data second ifNotNil: [ IASTVarAccess new ] ifNil: [ nil ]
+	^{ ioParam
 	 .
 	 data third } reject: #isNil
 ]

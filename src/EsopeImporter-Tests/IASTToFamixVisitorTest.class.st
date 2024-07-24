@@ -2,16 +2,18 @@
 An IASTVisitorF77Test is a test class for testing the behavior of IASTVisitorF77
 "
 Class {
-	#name : #IASTToFamixVisitorTest,
-	#superclass : #TestCase,
+	#name : 'IASTToFamixVisitorTest',
+	#superclass : 'TestCase',
 	#instVars : [
 		'visitor',
 		'programFile'
 	],
-	#category : #'EsopeImporter-Tests-Visitor'
+	#category : 'EsopeImporter-Tests-Visitor',
+	#package : 'EsopeImporter-Tests',
+	#tag : 'Visitor'
 }
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> anchorFrom: startPoint to: endPoint [
 
 	^ IASTIndexedFileAnchor new
@@ -23,13 +25,13 @@ IASTToFamixVisitorTest >> anchorFrom: startPoint to: endPoint [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> defaultAnchor [
 
 	^ self anchorFrom: 1 @ 7 to: 2 @ 10
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultEmptySegment: segmentName [
 
 	^ IASTEsopeSegment new
@@ -39,13 +41,13 @@ IASTToFamixVisitorTest >> defaultEmptySegment: segmentName [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> defaultImplicitNone [
 
 	^ IASTImplicit new
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> defaultNamedEntity: entityName for: aClassName [
 
 	^ aClassName new
@@ -54,7 +56,7 @@ IASTToFamixVisitorTest >> defaultNamedEntity: entityName for: aClassName [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> defaultParameter [
 
 	^ IASTParameter new
@@ -63,7 +65,7 @@ IASTToFamixVisitorTest >> defaultParameter [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultSegment: segmentName [
 
 	^ IASTEsopeSegment new
@@ -73,7 +75,7 @@ IASTToFamixVisitorTest >> defaultSegment: segmentName [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultSegment: segmentName with: dictDeclarations [
 
 	^ IASTEsopeSegment new
@@ -84,7 +86,7 @@ IASTToFamixVisitorTest >> defaultSegment: segmentName with: dictDeclarations [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> defaultSegmentComand: commandName on: varName [
 
 	^ IASTEsopeSegCommand new
@@ -94,7 +96,7 @@ IASTToFamixVisitorTest >> defaultSegmentComand: commandName on: varName [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> defaultType: typeName [
 
 	^ IASTTypeRef new
@@ -103,13 +105,13 @@ IASTToFamixVisitorTest >> defaultType: typeName [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> defaultVarAccess: name [
 
 	^ self defaultVarAccess: name isWrite: false
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> defaultVarAccess: name isWrite: boolean [
 
 	^ IASTVarAccess new
@@ -119,7 +121,7 @@ IASTToFamixVisitorTest >> defaultVarAccess: name isWrite: boolean [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultVarEsoAt: entities [
 
 	^ IASTVarEsoAt new
@@ -129,7 +131,7 @@ IASTToFamixVisitorTest >> defaultVarEsoAt: entities [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultVarEsoSl: entities [
 
 	^ IASTVarEsoSl new
@@ -139,7 +141,7 @@ IASTToFamixVisitorTest >> defaultVarEsoSl: entities [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultVariable: assoc [
 
 	^ IASTVariable new
@@ -152,7 +154,7 @@ IASTToFamixVisitorTest >> defaultVariable: assoc [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> defaultVariable: varName withType: typeName [
 
 	^ IASTVariable new
@@ -162,7 +164,7 @@ IASTToFamixVisitorTest >> defaultVariable: varName withType: typeName [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> implicitRule: typeName range: ranges [
 
 	^ IASTImplicitTypingRule new
@@ -171,14 +173,14 @@ IASTToFamixVisitorTest >> implicitRule: typeName range: ranges [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> jsonToIAST: jsonCode [
 	| jsonVisitor |
 	jsonVisitor := JsonToIASTVisitor new.
 	^jsonVisitor visitProgramFile: (NeoJSONReader fromString: jsonCode)
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> setUp [
 	super setUp.
 	
@@ -186,7 +188,7 @@ IASTToFamixVisitorTest >> setUp [
 	visitor := IASTToFamixFortranVisitor new.
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testComment [
 
 	| entity comment |
@@ -211,7 +213,7 @@ IASTToFamixVisitorTest >> testComment [
 	self assert: comment commentedEntity equals: entity programUnits first.
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testDummyFamixFortran77Subroutine [
 
 	"
@@ -259,7 +261,7 @@ c@_   end segment
 	self assert: entity localVariables first name equals: 'l'
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopeAccessors [
 
 	"
@@ -295,7 +297,7 @@ IASTToFamixVisitorTest >> testFamixEsopeAccessors [
 	self assert: var entityName equals: 'attr'.
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopeAccessorsWithArg [
 
 	"
@@ -344,7 +346,7 @@ IASTToFamixVisitorTest >> testFamixEsopeAccessorsWithArg [
 
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopeAccessorsWithArgsWithDot [
 
 	"
@@ -387,7 +389,7 @@ IASTToFamixVisitorTest >> testFamixEsopeAccessorsWithArgsWithDot [
 
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopeCommandSegini [
 
 	"
@@ -411,7 +413,7 @@ IASTToFamixVisitorTest >> testFamixEsopeCommandSegini [
 	self assert: famixSegini commandName equals: 'segini'.
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopePointerAccess [
 	"SUBROUTINE sub
       ptr.att = 5
@@ -447,7 +449,7 @@ IASTToFamixVisitorTest >> testFamixEsopePointerAccess [
 		(acc attributeAt: #entity ifAbsent: ["impossible"]) entityName = 'att']).
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopePointerDeclaration [
 "      program main
       segment, pers
@@ -473,7 +475,7 @@ IASTToFamixVisitorTest >> testFamixEsopePointerDeclaration [
 
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopeSegment [
 
 	"
@@ -522,7 +524,7 @@ IASTToFamixVisitorTest >> testFamixEsopeSegment [
 	self assert: attribute declaredType name equals: 'integer'.
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopeSlashWithLitteralDim [
 
 	"
@@ -567,7 +569,7 @@ c  ptr.attr(/1)
 		equals: 'ptr'
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77 [
 
 	| entity |
@@ -592,7 +594,7 @@ IASTToFamixVisitorTest >> testFamixFortran77 [
 
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77Call [
 	"subroutine mysub
       write(*,*) msg
@@ -624,7 +626,7 @@ IASTToFamixVisitorTest >> testFamixFortran77Call [
 	self assert: entity accesses size equals: 1.
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77Comment [
 	| entity |
 	programFile body: { IASTComment new
@@ -643,7 +645,7 @@ IASTToFamixVisitorTest >> testFamixFortran77Comment [
 	self assert: entity content equals: ' a comment'.
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77CommentInSubRoutine [
 	| entity |
 	programFile body: {  IASTSubroutine new
@@ -665,7 +667,7 @@ IASTToFamixVisitorTest >> testFamixFortran77CommentInSubRoutine [
 	self assert: entity content equals: ' a comment'.
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixFortran77ESOAtWithArrayArgument [
 	"Special case of a D__ function call with an array as argument
 
@@ -684,7 +686,7 @@ IASTToFamixVisitorTest >> testFamixFortran77ESOAtWithArrayArgument [
 
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77Invocation [
 	| entity invocation caller callee |
 
@@ -712,7 +714,7 @@ IASTToFamixVisitorTest >> testFamixFortran77Invocation [
 	self assert: (invocation attributeAt: #entity ifAbsent: [ nil ] ) isNotNil
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77LocalVariable [
 
 	| entity var |
@@ -737,7 +739,7 @@ IASTToFamixVisitorTest >> testFamixFortran77LocalVariable [
 		equals: entity programUnits first
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77PUBlockdata [
 
 	| entity |
@@ -756,7 +758,7 @@ IASTToFamixVisitorTest >> testFamixFortran77PUBlockdata [
 	self assert: entity programFile isNotNil.
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77PUFunction [
 
 	| entity |
@@ -774,7 +776,7 @@ IASTToFamixVisitorTest >> testFamixFortran77PUFunction [
 	self assert: entity programFile isNotNil.
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77PUFunctionWithParameter [
 
 	| entity param |
@@ -799,7 +801,7 @@ IASTToFamixVisitorTest >> testFamixFortran77PUFunctionWithParameter [
 	self assert: param parentBehaviouralEntity equals: entity.
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77PUMain [
 
 	| entity |
@@ -817,7 +819,7 @@ IASTToFamixVisitorTest >> testFamixFortran77PUMain [
 	self assert: entity programFile isNotNil.
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77ProgramFile [
 	| entity |
 	programFile accept: visitor.
@@ -833,7 +835,7 @@ IASTToFamixVisitorTest >> testFamixFortran77ProgramFile [
 	self assert: entity programUnits size equals: 0
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77SourceAnchor [
 	| entity |
 	entity := self defaultAnchor accept: visitor.
@@ -846,7 +848,7 @@ IASTToFamixVisitorTest >> testFamixFortran77SourceAnchor [
 	self assert: entity endColumn equals: 10.
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77Subroutine [
 
 	| entity |
@@ -865,7 +867,7 @@ IASTToFamixVisitorTest >> testFamixFortran77Subroutine [
 	self assert: entity parameters size equals: 0
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testImplicitWithRange [
 
 	| entity sub |
@@ -895,7 +897,7 @@ IASTToFamixVisitorTest >> testImplicitWithRange [
 	self assert: entity second equals: $f
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testIncludeFamixFortran77Subroutine [
 
 	"
@@ -929,7 +931,7 @@ c@_#include ""point.seg""
 	self assert: include source equals: programFile."
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testMultipleImplicit [
 
 	| entity sub |
@@ -963,7 +965,7 @@ IASTToFamixVisitorTest >> testMultipleImplicit [
 	self assert: entity second equals: $f
 ]
 
-{ #category : #'tests-fortran' }
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testSimpleImplicit [
 
 	| entity sub |
