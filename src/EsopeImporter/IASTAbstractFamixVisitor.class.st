@@ -1,16 +1,14 @@
 Class {
-	#name : 'IASTAbstractFamixVisitor',
-	#superclass : 'Object',
+	#name : #IASTAbstractFamixVisitor,
+	#superclass : #Object,
 	#instVars : [
 		'model',
 		'stack'
 	],
-	#category : 'EsopeImporter-Visitor',
-	#package : 'EsopeImporter',
-	#tag : 'Visitor'
+	#category : 'EsopeImporter-Visitor'
 }
 
-{ #category : 'private-creation' }
+{ #category : #'private-creation' }
 IASTAbstractFamixVisitor >> createFamixF77Access: anIastObject [
 
 	^ self model newAccess
@@ -22,19 +20,19 @@ IASTAbstractFamixVisitor >> createFamixF77Access: anIastObject [
 		  yourself
 ]
 
-{ #category : 'private-creation' }
+{ #category : #'private-creation' }
 IASTAbstractFamixVisitor >> createImplicitsDictionaryFor: anEntity [
 
 	anEntity attributeAt: #implicitDictionary put: self defaultImplicit
 ]
 
-{ #category : 'private-creation' }
+{ #category : #'private-creation' }
 IASTAbstractFamixVisitor >> createSymbolTableFor: anEntity [
 
 	anEntity attributeAt: #symbolTable put: Dictionary new
 ]
 
-{ #category : 'private-creation' }
+{ #category : #'private-creation' }
 IASTAbstractFamixVisitor >> defaultImplicit [
 
 	^ (($a to: $z) collect: [ :char | 
@@ -43,14 +41,14 @@ IASTAbstractFamixVisitor >> defaultImplicit [
 			   ifFalse: [ char -> #real ] ]) asDictionary
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 IASTAbstractFamixVisitor >> initialize [
 
 	super initialize.
 	stack := Stack new.
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 IASTAbstractFamixVisitor >> intrinsicTypes [
 	^ {
 		  #integer -> ((self newEntity: FamixF77TypeIntrinsic) name: #integer).
@@ -61,19 +59,19 @@ IASTAbstractFamixVisitor >> intrinsicTypes [
 		} asDictionary
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTAbstractFamixVisitor >> model [
 
 	^ model
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTAbstractFamixVisitor >> model: anObject [
 
 	model := anObject
 ]
 
-{ #category : 'private-creation' }
+{ #category : #'private-creation' }
 IASTAbstractFamixVisitor >> newEntity: aClass [
 
 	^ aClass new
@@ -81,7 +79,7 @@ IASTAbstractFamixVisitor >> newEntity: aClass [
 		  yourself
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 IASTAbstractFamixVisitor >> retrieveType: aTypeName from: aMooseModel [
 
 	^ (aMooseModel
@@ -94,7 +92,7 @@ IASTAbstractFamixVisitor >> retrieveType: aTypeName from: aMooseModel [
 	 ) at: aTypeName ifAbsent: self typeNotFoundBlock.
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 IASTAbstractFamixVisitor >> retrieveTypeFrom: aName [
 
 	^ (self model 
@@ -107,7 +105,7 @@ IASTAbstractFamixVisitor >> retrieveTypeFrom: aName [
 	 ) at: aName ifAbsent: self typeNotFoundBlock.
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : #'as yet unclassified' }
 IASTAbstractFamixVisitor >> spawn: aVisitorClass [
 	^aVisitorClass new
 		model: self model ;
@@ -115,25 +113,25 @@ IASTAbstractFamixVisitor >> spawn: aVisitorClass [
 		yourself
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTAbstractFamixVisitor >> stack [
 
 	^ stack
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTAbstractFamixVisitor >> stack: anObject [
 
 	stack := anObject
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : #'as yet unclassified' }
 IASTAbstractFamixVisitor >> symbolTable: anEntity at: key [
 
 	^ anEntity attributeAt: key asSymbol ifAbsent: [  ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : #'as yet unclassified' }
 IASTAbstractFamixVisitor >> symbolTable: anEntity at: key put: value [
 
 	(self symbolTable: anEntity at: #symbolTable)
@@ -141,13 +139,13 @@ IASTAbstractFamixVisitor >> symbolTable: anEntity at: key put: value [
 		put: value
 ]
 
-{ #category : 'initialization' }
+{ #category : #initialization }
 IASTAbstractFamixVisitor >> typeNotFoundBlock [
 
 	^ [ self newEntity: FamixF77TypeUnknown ]
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTAbstractFamixVisitor >> visitIASTParameter: aParameter [
 
 	^ (self newEntity: FamixF77Parameter)
@@ -157,7 +155,7 @@ IASTAbstractFamixVisitor >> visitIASTParameter: aParameter [
 		  yourself
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTAbstractFamixVisitor >> visitIASTTypeRef: aType [
 
 	self flag: #TODO. "How to deal with length and kind for example character*20 name produce aType object like:
@@ -174,7 +172,7 @@ IASTAbstractFamixVisitor >> visitIASTTypeRef: aType [
 		yourself
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
 	"an aVarAccess can have:
 	- indices for example: varAccess(i, j, k) -> i j k are indices
@@ -202,7 +200,7 @@ IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
 	^(self createFamixF77Access: aVarAccess) isWrite: aVarAccess isWrite
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTAbstractFamixVisitor >> visitIndexedFileAnchor: aSourceAnchor [
 
 	^ aSourceAnchor ifNil: [ nil ] ifNotNil: [

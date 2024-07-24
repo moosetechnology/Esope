@@ -2,24 +2,22 @@
 For symbol resolution
 "
 Class {
-	#name : 'FamixEsopeResolver',
-	#superclass : 'Object',
+	#name : #FamixEsopeResolver,
+	#superclass : #Object,
 	#instVars : [
 		'model',
 		'errorHandler'
 	],
-	#category : 'EsopeImporter-Importer',
-	#package : 'EsopeImporter',
-	#tag : 'Importer'
+	#category : 'EsopeImporter-Importer'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : #'as yet unclassified' }
 FamixEsopeResolver class >> intrinsicRoutines [
 
 	^#( abort . abs . access . achar . acos . adjustl . adjustr . aimag . aint . alarm . all . allocated . alog . alog10 . amax0 . amax1 . amin0 . amin1 . amod . and . anint . any . asin . associated . atan . atan2 . besj0 . besj1 . besjn . besy0 . besy1 . besyn . bit_size . btest . cabs . ccos . ceiling . cexp . char . chdir . chmod . clog . cmplx . complex . conjg . cos . cosh . count . cpu_time . cshift . csin . csqrt . ctime . ctime . dabs . dacos . dasin . datan . datan2 . date_and_time . dbesj0 . dbesj1 . dbesjn . dbesy0 . dbesy1 . dbesyn . dble . dcos . dcosh . ddim . derf . derfc . dexp . digits . dim . dint . dlog . dlog10 . dmax1 . dmin1 . dmod . dnint . dot_product . dprod . dsign . dsin . dsinh . dsqrt . dtan . dtanh . dtime . eoshift . epsilon . erf . erfc . etime . etime . exit . exp . exponent . fdate . fdate . fget . fgetc . float . floor . flush . fnum . fput . fputc . fraction . fseek . fstat . fstat . ftell . ftell . gerror . getarg . getcwd . getcwd . getenv . getgid . getlog . getpid . getuid . gmtime . hostnm . hostnm . huge . iabs . iachar . iand . iargc . ibclr . ibits . ibset . ichar . idate . idim . idint . idnint . ieor . ierrno . ifix . imag . imagpart . index . int . int2 . int8 . ior . irand . isatty . ishft . ishftc . isign . itime . kill . kind . lbound . len . len_trim . lge . lgt . link . lle . llt . lnblnk . loc . log . log10 . logical . long . lshift . lstat . lstat . ltime . matmul . max . max0 . max1 . maxexponent . maxloc . maxval . mclock . mclock8 . merge . min . min0 . min1 . minexponent . minloc . minval . mod . modulo . mvbits . nearest . nint . not . or . pack . perror . precision . present . product . radix . rand . random_number . random_seed . range . real . realpart . rename . repeat . reshape . rrspacing . rshift . scale . scan . second . second . selected_int_kind . selected_real_kind . set_exponent . shape . short . sign . signal . sin . sinh . sleep . sngl . spacing . spread . sqrt . srand . stat . stat . sum . symlnk . system . system_clock . tan . tanh . time . time8 . tiny . transfer . transpose . trim . ttynam . ttynam . ubound . umask . unlink . unpack . verify . write . xor . zabs . zcos . zexp . zlog . zsin . zsqrt )
 ]
 
-{ #category : 'private-helper' }
+{ #category : #'private-helper' }
 FamixEsopeResolver class >> on: aMooseModel [
 	"Answer an instance with same model as aMooseModel."
 	^self new
@@ -27,7 +25,7 @@ FamixEsopeResolver class >> on: aMooseModel [
 		  yourself
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> ensureVariableNamed: variableName in: famixProgramUnit [
 
 	^(self resolveVariableNamed: variableName in: famixProgramUnit)
@@ -36,25 +34,25 @@ FamixEsopeResolver >> ensureVariableNamed: variableName in: famixProgramUnit [
 
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 FamixEsopeResolver >> errorHandler [
 
 	^errorHandler ifNil: [ errorHandler := FortranErrorManager new ]
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 FamixEsopeResolver >> errorHandler: anErrorHandler [
 
 	errorHandler := anErrorHandler
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 FamixEsopeResolver >> isIntrinsicRoutine: invocated [
 
 	^self class intrinsicRoutines includes: invocated entityName
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> makePointerVariableForEsopeCommand: esopeCmd [
 	"esopeCmd is a kind of Access where the variable is an Esope pointeur
 	 We need to:
@@ -71,7 +69,7 @@ FamixEsopeResolver >> makePointerVariableForEsopeCommand: esopeCmd [
 
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	"merge meaningfull properties from variableToRemove into variableToKeep
 	 then remove links between variableToRemove and other entities (associations are
@@ -101,26 +99,26 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	model removeEntity: variableToRemove
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 FamixEsopeResolver >> model [
 
 	^ model
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 FamixEsopeResolver >> model: anObject [
 
 	model := anObject
 ]
 
-{ #category : 'private' }
+{ #category : #private }
 FamixEsopeResolver >> newEntity: aFamixClass [
 	^aFamixClass new
 		mooseModel: model;
 		yourself
 ]
 
-{ #category : 'run' }
+{ #category : #run }
 FamixEsopeResolver >> propagatePointerType [
 
 	(model allWithType: FamixEsopeCommand) do: [ :esopeCmd |
@@ -130,7 +128,7 @@ FamixEsopeResolver >> propagatePointerType [
 	]
 ]
 
-{ #category : 'run' }
+{ #category : #run }
 FamixEsopeResolver >> registerImplicitsDeclarations [
 	"find IMPLICIT declaration statements in all program units and register them
 	 in the respective implicitDictionary-s"
@@ -142,7 +140,7 @@ FamixEsopeResolver >> registerImplicitsDeclarations [
 	]
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> requalifyFunctionDeclaration: external [
 	"external declaration of function followed by a VariableDeclaration of the same function
 	 we simply remove the VariableDeclaration
@@ -164,7 +162,7 @@ FamixEsopeResolver >> requalifyFunctionDeclaration: external [
 		]
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> requalifyFunctionDeclarations [
 	"VariableDeclaration that are actually functions are simply removed
 	We know it is a function because there is an 'external' declaration for that name"
@@ -174,7 +172,7 @@ FamixEsopeResolver >> requalifyFunctionDeclarations [
 	]
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> requalifyParameterDeclaration: param [
 	"looks for a VariableDeclaration in the same program unit with the same name
 	 then merge the VariableDeclaration into param, but keeping the declaredType
@@ -190,7 +188,7 @@ FamixEsopeResolver >> requalifyParameterDeclaration: param [
 		]
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> requalifyParameterDeclarations [
 	"For each parameter, try to find a matching VariableDeclaration to merge them together"
 
@@ -199,7 +197,7 @@ FamixEsopeResolver >> requalifyParameterDeclarations [
 	]
 ]
 
-{ #category : 'run' }
+{ #category : #run }
 FamixEsopeResolver >> requalifyVariableDeclarations [
 	"some LocalVariable entities are actually Functions
 	 for some other, there is a Parameter and a LocalVariable for the same Fortran entity"
@@ -208,7 +206,7 @@ FamixEsopeResolver >> requalifyVariableDeclarations [
 	self requalifyFunctionDeclarations.
 ]
 
-{ #category : 'run' }
+{ #category : #run }
 FamixEsopeResolver >> resolve [
 
 	self resolvingSteps do: [ :step |
@@ -218,7 +216,7 @@ FamixEsopeResolver >> resolve [
 	]
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveAccess: aFamixAccess [
 	"set #variable property of anAccess from the IASTVariable it contains.
 	 Might create a new Famix variable if none is found
@@ -252,7 +250,7 @@ FamixEsopeResolver >> resolveAccess: aFamixAccess [
 
 ]
 
-{ #category : 'run' }
+{ #category : #run }
 FamixEsopeResolver >> resolveAccesses [
 	"Access-es do not have #variable at this point but an IASTVariable
 	 sets the #variable property of all Access-es"
@@ -261,7 +259,7 @@ FamixEsopeResolver >> resolveAccesses [
 		self resolveAccess: access ]
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveAllVariablesNamed: variableName in: accessor [
 
 	| found  |
@@ -273,21 +271,21 @@ FamixEsopeResolver >> resolveAllVariablesNamed: variableName in: accessor [
 	^found
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveAsImplicitAttribute: variableName in: anAccessor [
 
 	^(anAccessor allTypes flatCollect: [ :type | type attributes ])
 		select: [ :entity | entity name = variableName ]
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveAsLocalVariable: variableName in: anAccessor [
 
 	^anAccessor allLocalVariables
 		select: [ :entity | entity name = variableName ]
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveAttributeAccess: anAccess forPointer: aPointerVariable [
 	"resolve access to a segment attribute"
 
@@ -301,7 +299,7 @@ FamixEsopeResolver >> resolveAttributeAccess: anAccess forPointer: aPointerVaria
 
 ]
 
-{ #category : 'run' }
+{ #category : #run }
 FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
 	"sets the declaredType of pointers"
 
@@ -320,7 +318,7 @@ FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
 		].
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 	"sets the declaredType of pointer esopeVariable"
 
@@ -336,7 +334,7 @@ FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 		ifFound: [ :segment | aFamixVariable declaredType: segment ]
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveImplicitFunctionType: function [
 
 	function declaredType:
@@ -345,7 +343,7 @@ FamixEsopeResolver >> resolveImplicitFunctionType: function [
 
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveImplicitVariableType: aVariable [
 	"Tries to guess the type of an implicitly defined variable
 	 - can be a pointer to an Esope segment
@@ -357,7 +355,7 @@ FamixEsopeResolver >> resolveImplicitVariableType: aVariable [
 
 ]
 
-{ #category : 'run' }
+{ #category : #run }
 FamixEsopeResolver >> resolveImplicits [
 	"put a declaredType based on IMPLICIT declarations for all variables with no declaredType"
 
@@ -379,7 +377,7 @@ FamixEsopeResolver >> resolveImplicits [
 
 ]
 
-{ #category : 'run' }
+{ #category : #run }
 FamixEsopeResolver >> resolveIncludes [
 	"links FamixF77IncludedFile with the FamixF77Include_s that concern them"
 
@@ -393,7 +391,7 @@ FamixEsopeResolver >> resolveIncludes [
 	]
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveInvocables: invocable [
 
 	(model allWithSubTypesOf: FamixF77PUProcedure)
@@ -406,7 +404,7 @@ FamixEsopeResolver >> resolveInvocables: invocable [
 	^nil
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveInvocation: anInvocation [
 
 	| invocated |
@@ -419,7 +417,7 @@ FamixEsopeResolver >> resolveInvocation: anInvocation [
 			ifTrue: [ anInvocation addCandidate: (model newIntrinsicRoutine name: invocated entityName) ] ]
 ]
 
-{ #category : 'run' }
+{ #category : #run }
 FamixEsopeResolver >> resolveInvocations [
 
 	(self model allWithType: FamixF77Invocation) do: [ :invocation |
@@ -429,7 +427,7 @@ FamixEsopeResolver >> resolveInvocations [
 	]
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveTypeName: aName [
 	"Finds a FamixType from its name"
 
@@ -440,7 +438,7 @@ FamixEsopeResolver >> resolveTypeName: aName [
 		ifNone: [ self model newTypeUnknown ]
 ]
 
-{ #category : 'symbols resolution' }
+{ #category : #'symbols resolution' }
 FamixEsopeResolver >> resolveVariableNamed: variableName in: accessor [
 	| found |
 	found := self resolveAllVariablesNamed: variableName in: accessor.
@@ -451,7 +449,7 @@ FamixEsopeResolver >> resolveVariableNamed: variableName in: accessor [
 	^nil
 ]
 
-{ #category : 'run' }
+{ #category : #run }
 FamixEsopeResolver >> resolvingSteps [
 
 	^ #(
@@ -469,7 +467,7 @@ FamixEsopeResolver >> resolvingSteps [
 
 ]
 
-{ #category : 'run' }
+{ #category : #run }
 FamixEsopeResolver >> setImplicitDeclaredType: anEntity in: owner [
 	"put a declaredType to anEntity based on IMPLICIT declarations in owner
 	 Note: implicit types are intrinsic types so we could simplify the use of #resolveTypeName:

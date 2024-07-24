@@ -1,6 +1,6 @@
-Extension { #name : 'FamixF77IntrinsicRoutine' }
+Extension { #name : #FamixF77IntrinsicRoutine }
 
-{ #category : '*EsopeImporter' }
+{ #category : #'*EsopeImporter' }
 FamixF77IntrinsicRoutine >> famixImportSanityCheck [
 	"not calling super because does not have a parent Programfile"
 
