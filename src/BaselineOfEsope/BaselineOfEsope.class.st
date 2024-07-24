@@ -1,10 +1,11 @@
 Class {
-	#name : #BaselineOfEsope,
-	#superclass : #BaselineOf,
-	#category : #BaselineOfEsope
+	#name : 'BaselineOfEsope',
+	#superclass : 'BaselineOf',
+	#category : 'BaselineOfEsope',
+	#package : 'BaselineOfEsope'
 }
 
-{ #category : #baselines }
+{ #category : 'baselines' }
 BaselineOfEsope >> baseline: spec [
 	<baseline>
 	spec
@@ -18,7 +19,7 @@ BaselineOfEsope >> baseline: spec [
 
 ]
 
-{ #category : #baselines }
+{ #category : 'baselines' }
 BaselineOfEsope >> defineDependencies: spec [
 	spec
 		baseline: 'PetitParser2' with: [ spec repository: 'github://kursjan/petitparser2' ];
@@ -27,7 +28,7 @@ BaselineOfEsope >> defineDependencies: spec [
 
 ]
 
-{ #category : #baselines }
+{ #category : 'baselines' }
 BaselineOfEsope >> defineGroups: spec [
 
 	spec
@@ -35,10 +36,9 @@ BaselineOfEsope >> defineGroups: spec [
 		with: #( 'Famix-Esope-Entities' 'Famix-Esope-Generator' 'Famix-Esope-Tests' )
 ]
 
-{ #category : #baselines }
+{ #category : 'baselines' }
 BaselineOfEsope >> definePackages: spec [
 	spec
-		repository: 'github://moosetechnology/Esope';
 		package: 'EsopeImporter' with: [ spec requires: #('Famix-Esope-Entities' PetitParser2 NeoJSON) ];
 		package: 'EsopeImporter-Tests' with: [ spec requires: #(EsopeImporter) ];
 		package: 'Famix-Esope-Entities' with: [ spec requires: #(FamixFortran) ];
