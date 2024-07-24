@@ -151,6 +151,12 @@ JsonToIASTVisitor >> visitAssign_expression: anAssignExpressionNode [
 ]
 
 { #category : #'visiting statement' }
+JsonToIASTVisitor >> visitBackspaceStatement: aBackspaceStatementNode [
+
+	^(super visitBackspaceStatement: aBackspaceStatementNode) second
+]
+
+{ #category : #'visiting statement' }
 JsonToIASTVisitor >> visitBinary: anNode [
 
 	| data |
@@ -492,6 +498,18 @@ JsonToIASTVisitor >> visitFunction_call: aFunctionCallNode [
 JsonToIASTVisitor >> visitGotoStatement: aGotoStatementNode [
 
 	^nil
+]
+
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitIOParameter: anIOParameterNode [
+	"span name expr"
+
+	| data |
+	data := super visitIOParameter: anIOParameterNode.
+
+	^{ data second ifNotNil: [ IASTVarAccess new ] ifNil: [ nil ]
+	 .
+	 data third } reject: #isNil
 ]
 
 { #category : #'visiting statement' }

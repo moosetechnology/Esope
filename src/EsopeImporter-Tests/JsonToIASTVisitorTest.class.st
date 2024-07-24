@@ -158,6 +158,24 @@ JsonToIASTVisitorTest >> testAssignementStatementWithEsoAt [
 
 ]
 
+{ #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testBackspaceStatement [
+	"
+      program toto
+       BACKSPACE ( 2, IOSTAT=CODE, ERR=9 )
+      end	
+	"
+	| programFile stmt |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"/home/anquetil/w/SAPH/toto.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:41)","statement":{"anno":[],"span":"(2:7)-(2:41)","specification":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:19)-(2:19)","tag":"value","value":{"contents":["2",null],"tag":"integer"}},"name":null,"span":"(2:19)-(2:19)"},{"anno":[],"expr":{"anno":[],"span":"(2:29)-(2:32)","tag":"value","value":{"contents":"code","tag":"variable"}},"name":"iostat","span":"(2:22)-(2:32)"},{"anno":[],"expr":{"anno":[],"span":"(2:39)-(2:39)","tag":"value","value":{"contents":["9",null],"tag":"integer"}},"name":"err","span":"(2:35)-(2:39)"}],"span":"(2:17)-(2:41)"},"tag":"backspace"},"tag":"statement"}],"name":"toto","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+
+
+	self assert: programFile body first body first size equals: 1.
+	stmt := programFile body first body first first.
+	self assert: stmt class equals: IASTInvocation.
+	self assert: stmt entityName equals: 'write'.
+	self assert: stmt arguments size equals: 0.
+]
+
 { #category : #'tests-progUnit' }
 JsonToIASTVisitorTest >> testBlockDataWithOneCommon [
 	"blockdata hello
@@ -1602,7 +1620,7 @@ JsonToIASTVisitorTest >> testTwoIntegerVariableDeclarations [
 	self assert: var typeSpec entityName equals: 'integer'.
 ]
 
-{ #category : #'tests-esope' }
+{ #category : #'tests-statement' }
 JsonToIASTVisitorTest >> testWriteStatementWithStringArgument [
 	"
       subroutine print
