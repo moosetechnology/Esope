@@ -1,14 +1,16 @@
 Class {
-	#name : #FamixEsopeUtilitiesTest,
-	#superclass : #TestCase,
+	#name : 'FamixEsopeUtilitiesTest',
+	#superclass : 'TestCase',
 	#instVars : [
 		'mooseModel',
 		'programFile'
 	],
-	#category : #'EsopeImporter-Tests-Importer'
+	#category : 'EsopeImporter-Tests-Importer',
+	#package : 'EsopeImporter-Tests',
+	#tag : 'Importer'
 }
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> anchorFrom: startPoint to: endPoint [
 
 	^ FamixF77IndexedFileAnchor new
@@ -21,7 +23,7 @@ FamixEsopeUtilitiesTest >> anchorFrom: startPoint to: endPoint [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultAccess: varName [
 
 	^ FamixF77Access new
@@ -32,13 +34,13 @@ FamixEsopeUtilitiesTest >> defaultAccess: varName [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultAnchor [
 
 	^ self anchorFrom: 1 @ 7 to: 2 @ 10
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultAttribute: varName withType: typeName [
 
 	^ (self newEntity: FamixFortranAttribute)
@@ -47,14 +49,14 @@ FamixEsopeUtilitiesTest >> defaultAttribute: varName withType: typeName [
 		  declaredType: (self defaultType: typeName)
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultFunction: name [
 
 	^ (self newEntity: FamixF77PUFunction named: name) programFile:
 		  programFile
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultIASTInvocation: name [
 
 	^ IASTInvocation new
@@ -62,7 +64,7 @@ FamixEsopeUtilitiesTest >> defaultIASTInvocation: name [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultIASTVarAccess: name [
 
 	^ IASTVarAccess new
@@ -71,13 +73,13 @@ FamixEsopeUtilitiesTest >> defaultIASTVarAccess: name [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultImplicitNone [
 
 	^ IASTImplicitTypingRule new
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultInvocation: name [
 
 	^ FamixF77Invocation new
@@ -88,20 +90,20 @@ FamixEsopeUtilitiesTest >> defaultInvocation: name [
 		yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultMain: name [
 
 	^ (self newEntity: FamixF77PUMain named: name) programFile:
 		  programFile
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultParameter: name [
 
 	^ self newEntity: FamixF77Parameter named: name
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultProgramFile: aFilename [
 
 	^ (self newEntity: FamixF77ProgramFile named: aFilename)
@@ -109,14 +111,14 @@ FamixEsopeUtilitiesTest >> defaultProgramFile: aFilename [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultProgramUnit: name forType: aFamixClass belongsTo: aFamixProgramFile [
 
 	^ (self newEntity: aFamixClass named: name) programFile:
 		  aFamixProgramFile
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultSegment: segmentName with: dictDeclarations [
 
 	^ (self newEntity: FamixEsopeSegment)
@@ -127,21 +129,21 @@ FamixEsopeUtilitiesTest >> defaultSegment: segmentName with: dictDeclarations [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultSubroutine: name [
 
 	^ (self newEntity: FamixF77PUSubroutine named: name) programFile:
 		  programFile
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultSubroutine: name belongsTo: aFamixProgramFile [
 
 	^ (self newEntity: FamixF77PUSubroutine named: name) programFile:
 		  aFamixProgramFile
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultType: anIntrinsicFortranType [
 
 	^FamixF77TypeIntrinsic new
@@ -150,20 +152,20 @@ FamixEsopeUtilitiesTest >> defaultType: anIntrinsicFortranType [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultVariable: name withType: type [
 
 	^ (self newEntity: FamixF77Variable named: name) declaredType:
 		  (self defaultType: type)
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> externalDeclaration: name [
 
 	^ self newEntity: FamixF77ExternalDeclaration named: name
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> iastTypeRef: typeName [
 
 	^ IASTTypeRef new
@@ -172,7 +174,7 @@ FamixEsopeUtilitiesTest >> iastTypeRef: typeName [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> implicitRule: typeName range: ranges [
 
 	^ IASTImplicitTypingRule new
@@ -181,7 +183,7 @@ FamixEsopeUtilitiesTest >> implicitRule: typeName range: ranges [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> newEntity: aFamixClass [
 
 	^ aFamixClass new
@@ -190,14 +192,14 @@ FamixEsopeUtilitiesTest >> newEntity: aFamixClass [
 		  yourself
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> newEntity: aFamixClass named: aName [
 
 	^ (self newEntity: aFamixClass)
 		name: aName
 ]
 
-{ #category : #'default values' }
+{ #category : 'default values' }
 FamixEsopeUtilitiesTest >> newPU: aName [
 
 	^ (self newEntity: FamixF77PUSubroutine named: aName)
@@ -205,7 +207,7 @@ FamixEsopeUtilitiesTest >> newPU: aName [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 FamixEsopeUtilitiesTest >> setUp [
 
 	super setUp.

@@ -2,16 +2,18 @@
 I am a test class for testing the management of files and paths in FortranProjectImporter
 "
 Class {
-	#name : #FortranProjectImporterTest,
-	#superclass : #FamixEsopeUtilitiesTest,
+	#name : 'FortranProjectImporterTest',
+	#superclass : 'FamixEsopeUtilitiesTest',
 	#instVars : [
 		'importer',
 		'fileSystem'
 	],
-	#category : #'EsopeImporter-Tests-Importer'
+	#category : 'EsopeImporter-Tests-Importer',
+	#package : 'EsopeImporter-Tests',
+	#tag : 'Importer'
 }
 
-{ #category : #running }
+{ #category : 'running' }
 FortranProjectImporterTest >> prepareWorkspace [
 
 	| f1 f2 |
@@ -46,7 +48,7 @@ FortranProjectImporterTest >> prepareWorkspace [
 
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 FortranProjectImporterTest >> setUp [
 	super setUp.
 
@@ -59,7 +61,7 @@ FortranProjectImporterTest >> setUp [
 	importer includeFolder: fileSystem / 'project' / 'includes'
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 FortranProjectImporterTest >> tearDown [ 
 
 	| folder |
@@ -76,7 +78,7 @@ FortranProjectImporterTest >> tearDown [
 
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testCollectFilesIn [
 
 	| files |
@@ -95,7 +97,7 @@ FortranProjectImporterTest >> testCollectFilesIn [
 
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testCollectFilesInWithExtensions [
 
 	| files |
@@ -108,7 +110,7 @@ FortranProjectImporterTest >> testCollectFilesInWithExtensions [
 	self assert: files anyOne fullName equals: '/project/includes/inc2/f3.obj'
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testCollectFilesInWithExtensionsSeveralFiles [
 
 	| files |
@@ -123,7 +125,7 @@ FortranProjectImporterTest >> testCollectFilesInWithExtensionsSeveralFiles [
 		hasSameElements: #( '/project/includes/inc1/f1.inc' '/project/includes/inc2/f1.inc')
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testCollectIncludedFileNames [
 
 	self prepareWorkspace.
@@ -133,7 +135,7 @@ FortranProjectImporterTest >> testCollectIncludedFileNames [
 		hasSameElements: #( 'f1.inc' 'f2.seg' 'f3.obj' )
 ]
 
-{ #category : #'tests - import steps' }
+{ #category : 'tests - import steps' }
 FortranProjectImporterTest >> testDeEsopifyFromTo [
 
 	| srcFile destFile |
@@ -156,7 +158,7 @@ c@_   segini p
 '
 ]
 
-{ #category : #'tests - import steps' }
+{ #category : 'tests - import steps' }
 FortranProjectImporterTest >> testEsopeToFortran [
 
 	| tempFolder |
@@ -176,7 +178,7 @@ FortranProjectImporterTest >> testEsopeToFortran [
 
 ]
 
-{ #category : #'tests - import steps' }
+{ #category : 'tests - import steps' }
 FortranProjectImporterTest >> testFakeEsopeProgramUnitFromTo [
 
 	| srcFile resultFile |
@@ -200,7 +202,7 @@ a line
 '
 ]
 
-{ #category : #'tests - import steps' }
+{ #category : 'tests - import steps' }
 FortranProjectImporterTest >> testFortranToJsonAST [
 
 	| tempFolder |
@@ -226,7 +228,7 @@ FortranProjectImporterTest >> testFortranToJsonAST [
 
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testGetIncludedFile [
 
 	| names |
@@ -235,7 +237,7 @@ FortranProjectImporterTest >> testGetIncludedFile [
 	self assert: names equals: 'blah.inc'
 ]
 
-{ #category : #'tests - import steps' }
+{ #category : 'tests - import steps' }
 FortranProjectImporterTest >> testIASTToFamix [
 	"json file and assert: taken from
 	   IASTToFamixVisitorTest >> testFamixFortran77PUFunctionWithParameter"
@@ -273,7 +275,7 @@ FortranProjectImporterTest >> testIASTToFamix [
 	self assert: param parentBehaviouralEntity equals: fmxEntity.
 ]
 
-{ #category : #'tests - import steps' }
+{ #category : 'tests - import steps' }
 FortranProjectImporterTest >> testIncludedFilesToEsope [
 
 	| tempFolder |
@@ -301,7 +303,7 @@ FortranProjectImporterTest >> testIncludedFilesToEsope [
 
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testIncludedNamesIn [
 	| includer files |
 	self prepareWorkspace.
@@ -314,7 +316,7 @@ FortranProjectImporterTest >> testIncludedNamesIn [
 		hasSameElements: #( 'f1.inc' 'f3.obj' )
 ]
 
-{ #category : #'tests - import steps' }
+{ #category : 'tests - import steps' }
 FortranProjectImporterTest >> testJsonASTToIAST [
 	"json file and assert: taken from JsonToIASTVisitorTest >> testMultipleStatements
 
@@ -356,7 +358,7 @@ FortranProjectImporterTest >> testJsonASTToIAST [
 
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testPathOfIn [
 
 	| path |
@@ -367,7 +369,7 @@ FortranProjectImporterTest >> testPathOfIn [
 	self assert: path fullName equals: '/included.h'
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testPathOfInFirstPathFound [
 
 	| path |
@@ -381,7 +383,7 @@ FortranProjectImporterTest >> testPathOfInFirstPathFound [
 	self assert: path fullName equals: '/inc1/included.h'
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testPathOfInNoExtension [
 
 	| path |
@@ -393,7 +395,7 @@ FortranProjectImporterTest >> testPathOfInNoExtension [
 	self assert: path fullName equals: '/included'
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testPathOfInNotFound [
 
 	| path |
@@ -404,7 +406,7 @@ FortranProjectImporterTest >> testPathOfInNotFound [
 	self assert: path equals: nil
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testPathOfInSubDirectory [
 
 	| path |
@@ -416,7 +418,7 @@ FortranProjectImporterTest >> testPathOfInSubDirectory [
 	self assert: path fullName equals: '/includes/included.h'
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testPathOfInWithPath [
 
 	| path |
@@ -428,7 +430,7 @@ FortranProjectImporterTest >> testPathOfInWithPath [
 	self assert: path fullName equals: '/includes/included.h'
 ]
 
-{ #category : #'tests - import steps' }
+{ #category : 'tests - import steps' }
 FortranProjectImporterTest >> testPostImportChecks [
 	"test copied from #testSanityCheckParameterPass"
 
@@ -444,7 +446,7 @@ FortranProjectImporterTest >> testPostImportChecks [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckAccessNoAccessor [
 
 	| access |
@@ -455,7 +457,7 @@ FortranProjectImporterTest >> testSanityCheckAccessNoAccessor [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckAccessNoVariable [
 
 	| access |
@@ -466,7 +468,7 @@ FortranProjectImporterTest >> testSanityCheckAccessNoVariable [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckAccessPass [
 
 	| access |
@@ -478,7 +480,7 @@ FortranProjectImporterTest >> testSanityCheckAccessPass [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckAttributeNoDeclaredType [
 
 	| var |
@@ -489,7 +491,7 @@ FortranProjectImporterTest >> testSanityCheckAttributeNoDeclaredType [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckAttributeNoParent [
 
 	| var |
@@ -500,7 +502,7 @@ FortranProjectImporterTest >> testSanityCheckAttributeNoParent [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckAttributePass [
 
 	| var |
@@ -512,7 +514,7 @@ FortranProjectImporterTest >> testSanityCheckAttributePass [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckEsopeCommandNoAccessor [
 
 	| cmd |
@@ -524,7 +526,7 @@ FortranProjectImporterTest >> testSanityCheckEsopeCommandNoAccessor [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckEsopeCommandNoVariable [
 
 	| cmd |
@@ -535,7 +537,7 @@ FortranProjectImporterTest >> testSanityCheckEsopeCommandNoVariable [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckEsopeCommandNotPointer [
 
 	| cmd |
@@ -548,7 +550,7 @@ FortranProjectImporterTest >> testSanityCheckEsopeCommandNotPointer [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckEsopeCommandPass [
 
 	| cmd |
@@ -561,7 +563,7 @@ FortranProjectImporterTest >> testSanityCheckEsopeCommandPass [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckIncludedFileNoInclusion [
 
 	| includedFile |
@@ -572,7 +574,7 @@ FortranProjectImporterTest >> testSanityCheckIncludedFileNoInclusion [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckIncludedFileNoParent [
 
 	| includedFile |
@@ -583,7 +585,7 @@ FortranProjectImporterTest >> testSanityCheckIncludedFileNoParent [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckIncludedFilePass [
 
 	| includedFile |
@@ -595,7 +597,7 @@ FortranProjectImporterTest >> testSanityCheckIncludedFilePass [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckIntrinsicRoutineNoInvoker [
 
 	| includedFile |
@@ -606,7 +608,7 @@ FortranProjectImporterTest >> testSanityCheckIntrinsicRoutineNoInvoker [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckIntrinsicRoutinePass [
 
 	| includedFile |
@@ -617,7 +619,7 @@ FortranProjectImporterTest >> testSanityCheckIntrinsicRoutinePass [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckInvocationNoCandidates [
 
 	| invok |
@@ -629,7 +631,7 @@ FortranProjectImporterTest >> testSanityCheckInvocationNoCandidates [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckInvocationNoSender [
 
 	| invok |
@@ -640,7 +642,7 @@ FortranProjectImporterTest >> testSanityCheckInvocationNoSender [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckInvocationPass [
 
 	| invok |
@@ -652,7 +654,7 @@ FortranProjectImporterTest >> testSanityCheckInvocationPass [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckMainNoParent [
 
 	| main |
@@ -662,7 +664,7 @@ FortranProjectImporterTest >> testSanityCheckMainNoParent [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckMainPass [
 
 	| main |
@@ -673,7 +675,7 @@ FortranProjectImporterTest >> testSanityCheckMainPass [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckPUFunctionNoDeclaredType [
 
 	| fct |
@@ -684,7 +686,7 @@ FortranProjectImporterTest >> testSanityCheckPUFunctionNoDeclaredType [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckPUFunctionNoParent [
 
 	| fct |
@@ -695,7 +697,7 @@ FortranProjectImporterTest >> testSanityCheckPUFunctionNoParent [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckPUFunctionPass [
 
 	| fct |
@@ -707,7 +709,7 @@ FortranProjectImporterTest >> testSanityCheckPUFunctionPass [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckParameterNoDeclaredType [
 
 	| param |
@@ -718,7 +720,7 @@ FortranProjectImporterTest >> testSanityCheckParameterNoDeclaredType [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckParameterNoParent [
 
 	| param |
@@ -729,7 +731,7 @@ FortranProjectImporterTest >> testSanityCheckParameterNoParent [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckParameterPass [
 
 	| param |
@@ -741,7 +743,7 @@ FortranProjectImporterTest >> testSanityCheckParameterPass [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckStatementFunctionNoParent [
 
 	| fct |
@@ -751,7 +753,7 @@ FortranProjectImporterTest >> testSanityCheckStatementFunctionNoParent [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckStatementFunctionPass [
 
 	| fct |
@@ -762,7 +764,7 @@ FortranProjectImporterTest >> testSanityCheckStatementFunctionPass [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckUnknownVariableNoAccess [
 
 	| var |
@@ -773,7 +775,7 @@ FortranProjectImporterTest >> testSanityCheckUnknownVariableNoAccess [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckUnknownVariablePass [
 
 	| var |
@@ -784,7 +786,7 @@ FortranProjectImporterTest >> testSanityCheckUnknownVariablePass [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckVariableNoDeclaredType [
 
 	| var |
@@ -795,7 +797,7 @@ FortranProjectImporterTest >> testSanityCheckVariableNoDeclaredType [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckVariableNoParent [
 
 	| var |
@@ -806,7 +808,7 @@ FortranProjectImporterTest >> testSanityCheckVariableNoParent [
 
 ]
 
-{ #category : #'test - sanityCheck' }
+{ #category : 'test - sanityCheck' }
 FortranProjectImporterTest >> testSanityCheckVariablePass [
 
 	| var |
@@ -818,7 +820,7 @@ FortranProjectImporterTest >> testSanityCheckVariablePass [
 
 ]
 
-{ #category : #'tests - file-management' }
+{ #category : 'tests - file-management' }
 FortranProjectImporterTest >> testUnquoteIncludedFile [
 
 	self assert: (importer unquoteIncludedFile: 'blah') equals: 'blah'.

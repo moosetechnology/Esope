@@ -196,11 +196,13 @@ FortranAbstractJsonVisitor >> visitAttributes: aNode [
 	^nil
 ]
 
-{ #category : 'visiting expression' }
+{ #category : 'visiting statement' }
 FortranAbstractJsonVisitor >> visitBackspaceStatement: aBackspaceStatementNode [
 
-	^self visitJsonMap: aBackspaceStatementNode keys: #( span specification )
-
+	^{
+		self visitSpan: (aBackspaceStatementNode at: 'span') .
+		self visitIOParameters: (aBackspaceStatementNode at: 'specification')
+	}
 ]
 
 { #category : 'visiting statement' }
@@ -1361,10 +1363,9 @@ FortranAbstractJsonVisitor >> visitSpan: aSpanString [
 ]
 
 { #category : 'visiting expression' }
-FortranAbstractJsonVisitor >> visitSpecification: aSpecificationNode [
+FortranAbstractJsonVisitor >> visitSpecification: aSpecificationCollection [
 
-	^self visitJsonElement: aSpecificationNode
-
+	^self visitIOParameters: aSpecificationCollection 
 ]
 
 { #category : 'visiting' }
