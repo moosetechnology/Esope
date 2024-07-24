@@ -1,69 +1,71 @@
 Class {
-	#name : #IASTVariable,
-	#superclass : #IASTEntityRef,
+	#name : 'IASTVariable',
+	#superclass : 'IASTEntityRef',
 	#instVars : [
 		'typeSpec',
 		'initialValue',
 		'dimension',
 		'isEsope'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTVariable >> accept: aVisitor [
 
 	^ aVisitor visitIASTVariable: self.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTVariable >> dimension [
 
 	^ dimension
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTVariable >> dimension: anObject [
 
 	dimension := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTVariable >> initialValue [
 
 	^ initialValue
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTVariable >> initialValue: anObject [
 
 	initialValue := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTVariable >> isEsope [
 
 	^ isEsope
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTVariable >> isEsope: anObject [
 
 	isEsope := anObject
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 IASTVariable >> isVariable [
 	^true
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTVariable >> typeSpec [
 
 	^ typeSpec
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTVariable >> typeSpec: anObject [
 
 	typeSpec := anObject

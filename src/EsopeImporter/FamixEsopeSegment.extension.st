@@ -1,17 +1,24 @@
-Extension { #name : #FamixEsopeSegment }
+Extension { #name : 'FamixEsopeSegment' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixEsopeSegment >> addLocalVariable: aVariable [
 	self addAttribute: aVariable
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixEsopeSegment >> isEsopeSegment [
 
 	^true
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixEsopeSegment >> localVariableClass [
 	^FamixFortranAttribute
+]
+
+{ #category : '*EsopeImporter' }
+FamixEsopeSegment class >> metamodel [
+	"temporary solution to issue https://github.com/moosetechnology/Famix/issues/808"
+
+	^ FamixEsopeModel metamodel
 ]

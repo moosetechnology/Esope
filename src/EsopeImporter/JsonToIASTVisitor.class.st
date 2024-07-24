@@ -2,24 +2,26 @@
 A visitor for JSON output of camfor/fortran-src to build an intermediary representation
 "
 Class {
-	#name : #JsonToIASTVisitor,
-	#superclass : #FortranAbstractJsonVisitor,
+	#name : 'JsonToIASTVisitor',
+	#superclass : 'FortranAbstractJsonVisitor',
 	#instVars : [
 		'f77sourcefile',
 		'model',
 		'entityStack'
 	],
-	#category : #'EsopeImporter-Visitor'
+	#category : 'EsopeImporter-Visitor',
+	#package : 'EsopeImporter',
+	#tag : 'Visitor'
 }
 
-{ #category : #'private - utilities' }
+{ #category : 'private - utilities' }
 JsonToIASTVisitor >> asCollection: anObject [
 	anObject ifNil: [ ^#() ].
 	anObject isCollection ifTrue: [ ^anObject ].
 	^{ anObject }
 ]
 
-{ #category : #'visiting esope' }
+{ #category : 'visiting esope' }
 JsonToIASTVisitor >> createEsopeCommand: anEsopeCommentNode [
 
 	| data |
@@ -31,7 +33,7 @@ JsonToIASTVisitor >> createEsopeCommand: anEsopeCommentNode [
 		  yourself
 ]
 
-{ #category : #'private - utilities' }
+{ #category : 'private - utilities' }
 JsonToIASTVisitor >> createStatementFunctionOrVarAccess: data [
 
 	(self isSpecialEsopeFunctionName: data second entityName)
@@ -54,33 +56,33 @@ JsonToIASTVisitor >> createStatementFunctionOrVarAccess: data [
 		yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 JsonToIASTVisitor >> currentEsopeSegment [
 	^entityStack top isEsopeSegment
 		ifTrue: [ entityStack top ]
 		ifFalse: [ nil ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 JsonToIASTVisitor >> f77sourcefile [
 	^f77sourcefile
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 JsonToIASTVisitor >> initialize [
 	super initialize.
 	model := OrderedCollection new.
 	entityStack := Stack new
 ]
 
-{ #category : #'private - utilities' }
+{ #category : 'private - utilities' }
 JsonToIASTVisitor >> isSpecialEsopeFunctionName: aString [
 	aString isString ifFalse: [ ^false ].
 
 	^{'d__' . 's__'} includes: aString
 ]
 
-{ #category : #'private - utilities' }
+{ #category : 'private - utilities' }
 JsonToIASTVisitor >> makeIndexedAnchor: aPointPair [
 	^IASTIndexedFileAnchor new
 		  startLine: aPointPair first x ;
@@ -91,17 +93,17 @@ JsonToIASTVisitor >> makeIndexedAnchor: aPointPair [
 		  yourself
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 JsonToIASTVisitor >> model [
 	^ model
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 JsonToIASTVisitor >> model: aCollection [
 	model := aCollection
 ]
 
-{ #category : #'private - utilities' }
+{ #category : 'private - utilities' }
 JsonToIASTVisitor >> varAccessToParameter: aCollection [
 
 	^aCollection collect: [ :varAccess |
@@ -111,7 +113,7 @@ JsonToIASTVisitor >> varAccessToParameter: aCollection [
 	]
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : 'visiting prog-unit' }
 JsonToIASTVisitor >> visitArgument: anArgumentNode [
 	"used for argument in subprogram calls and parameter in subprogram definition"
 
@@ -126,13 +128,13 @@ JsonToIASTVisitor >> visitArgument: anArgumentNode [
 	^arg
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : 'visiting prog-unit' }
 JsonToIASTVisitor >> visitArguments: anArgumentList [
 	^(super visitArguments: anArgumentList)
 		reject: #isNil
 ]
 
-{ #category : #'visiting expression' }
+{ #category : 'visiting expression' }
 JsonToIASTVisitor >> visitAssign_expression: anAssignExpressionNode [
 	| data |
 	data := super visitAssign_expression: anAssignExpressionNode.
@@ -150,13 +152,13 @@ JsonToIASTVisitor >> visitAssign_expression: anAssignExpressionNode [
 
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitBackspaceStatement: aBackspaceStatementNode [
 
 	^(super visitBackspaceStatement: aBackspaceStatementNode) second
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitBinary: anNode [
 
 	| data |
@@ -165,7 +167,7 @@ JsonToIASTVisitor >> visitBinary: anNode [
 	^(self asCollection: data second) , (self asCollection: data fourth)
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : 'visiting prog-unit' }
 JsonToIASTVisitor >> visitBlock_data: aBlockDataNode [
 	| data |
 	data := super visitBlock_data: aBlockDataNode.
@@ -176,14 +178,14 @@ JsonToIASTVisitor >> visitBlock_data: aBlockDataNode [
 		yourself
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitBody: aNode [
 
 	^(super visitBody: aNode)
 		reject: #isNil
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitCallStatement: aCallNode [
 
 	| astNode data |
@@ -202,7 +204,7 @@ JsonToIASTVisitor >> visitCallStatement: aCallNode [
 		  yourself
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitCommonGroup: aCommonGroupNode [
 	| data |
 	data := self visitCommonGroupName: (aCommonGroupNode at: 'name').
@@ -213,30 +215,30 @@ JsonToIASTVisitor >> visitCommonGroup: aCommonGroupNode [
 		yourself
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitCommonStatement: aCommonStatementNode [
 	^self visitCommon_groups: (aCommonStatementNode at: 'common_groups')
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitConditions: aConditionList [
 	| data |
 	data := super visitConditions: aConditionList.
 	^(data collect: #first) , (data collect: #second)
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitContinueStatement: aContinueStatementNode [
 	^nil
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 JsonToIASTVisitor >> visitData: aDataNode [
 	self flag: #TODO.
 	self shouldBeImplemented
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitDeclarationStatement: aDeclarationStatementNode [
 	| data |
 
@@ -252,12 +254,12 @@ JsonToIASTVisitor >> visitDeclarationStatement: aDeclarationStatementNode [
 
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitDeclarator: aDeclaratorNode [
 	^self visitDeclaratorVariable: (aDeclaratorNode at: 'variable')
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitDeclaratorVariable: aDeclaratorVariableNode [
 	| data |
 	data := super visitDeclaratorVariable: aDeclaratorVariableNode.
@@ -270,12 +272,12 @@ JsonToIASTVisitor >> visitDeclaratorVariable: aDeclaratorVariableNode [
 	
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitDeclarators: aDeclaratorsList [
 	^(super visitDeclarators: aDeclaratorsList) second
 ]
 
-{ #category : #'visiting expression' }
+{ #category : 'visiting expression' }
 JsonToIASTVisitor >> visitDeref: aDerefNode [
 	"span expression field"
 
@@ -287,7 +289,7 @@ JsonToIASTVisitor >> visitDeref: aDerefNode [
 	^data second
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitDo: aDoNode [
 	"#(span label do_spec target body end_label)"
 
@@ -297,7 +299,7 @@ JsonToIASTVisitor >> visitDo: aDoNode [
 	 
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitDo_spec: aDoSpecNode [
 	| data |
 	data := (super visitDo_spec: aDoSpecNode).
@@ -305,7 +307,7 @@ JsonToIASTVisitor >> visitDo_spec: aDoSpecNode [
 	 
 ]
 
-{ #category : #'visiting esope' }
+{ #category : 'visiting esope' }
 JsonToIASTVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
 	"updates end of current Esope segment"
 	| span |
@@ -317,7 +319,7 @@ JsonToIASTVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
 	^nil
 ]
 
-{ #category : #'visiting esope' }
+{ #category : 'visiting esope' }
 JsonToIASTVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
 
 	| data |
@@ -329,7 +331,7 @@ JsonToIASTVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
 		  yourself
 ]
 
-{ #category : #'visiting esope' }
+{ #category : 'visiting esope' }
 JsonToIASTVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
 	| data |
 	data := super visitEsopePointeurComment: anEsopeCommentNode.
@@ -340,35 +342,35 @@ JsonToIASTVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
 
 ]
 
-{ #category : #'visiting esope' }
+{ #category : 'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegactComment: anEsopeCommentNode [
 
 	^self createEsopeCommand: anEsopeCommentNode
 
 ]
 
-{ #category : #'visiting esope' }
+{ #category : 'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegadjComment: anEsopeCommentNode [
 
 	^self createEsopeCommand: anEsopeCommentNode
 
 ]
 
-{ #category : #'visiting esope' }
+{ #category : 'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegdesComment: anEsopeCommentNode [
 
 	^self createEsopeCommand: anEsopeCommentNode
 
 ]
 
-{ #category : #'visiting esope' }
+{ #category : 'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSeginiComment: anEsopeCommentNode [
 
 	^self createEsopeCommand: anEsopeCommentNode
 
 ]
 
-{ #category : #'visiting esope' }
+{ #category : 'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
 	"Source anchor for the segment is wrong,
 	 endLine/endColumn will be updated in #visitEsopeEndsegmentComment:"
@@ -384,20 +386,20 @@ JsonToIASTVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
 	^seg
 ]
 
-{ #category : #'visiting esope' }
+{ #category : 'visiting esope' }
 JsonToIASTVisitor >> visitEsopeSegsupComment: anEsopeCommentNode [
 
 	^self createEsopeCommand: anEsopeCommentNode
 
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitExitStatement: anExitNode [
 
 	^(super visitExitStatement: anExitNode) second
 ]
 
-{ #category : #'visiting esope' }
+{ #category : 'visiting esope' }
 JsonToIASTVisitor >> visitExternalStatement: anExternalStatementNode [
 
 	| data |
@@ -406,14 +408,14 @@ JsonToIASTVisitor >> visitExternalStatement: anExternalStatementNode [
 	^ data second do: [ :anAccess | anAccess annotations: 'external' ]
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitFormatStatement: aFormatStatement [
 
 	^nil
 
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitFortranComment: aFortranCommentNode [
 	| data |
 	data := super visitFortranComment: aFortranCommentNode.
@@ -423,26 +425,26 @@ JsonToIASTVisitor >> visitFortranComment: aFortranCommentNode [
 		yourself
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitFrom: aString [
 	"start of a range for an implicit statement: a string of one character"
 
 	^aString first
 ]
 
-{ #category : #'visiting expression' }
+{ #category : 'visiting expression' }
 JsonToIASTVisitor >> visitFunctionAsValue: aFunctionNode [
 	^(super visitFunctionAsValue: aFunctionNode)
 		second
 
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : 'visiting prog-unit' }
 JsonToIASTVisitor >> visitFunctionParameters: aParameterList [
 	^super visitFunctionParameters: aParameterList
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitFunctionStatement: aFunctionNode [
 	| data entity |
 	data := super visitFunctionStatement: aFunctionNode.
@@ -456,7 +458,7 @@ JsonToIASTVisitor >> visitFunctionStatement: aFunctionNode [
 		ifNotNil: [ { entity . data fourth } ]
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : 'visiting prog-unit' }
 JsonToIASTVisitor >> visitFunctionWithBlocks: aFunctionNode [
 	| data |
 	data := super visitFunctionWithBlocks: aFunctionNode.
@@ -470,7 +472,7 @@ JsonToIASTVisitor >> visitFunctionWithBlocks: aFunctionNode [
 
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitFunction_call: aFunctionCallNode [
 
 	| astNode data functionName |
@@ -494,13 +496,13 @@ JsonToIASTVisitor >> visitFunction_call: aFunctionCallNode [
 		yourself
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitGotoStatement: aGotoStatementNode [
 
 	^nil
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitIOParameter: anIOParameterNode [
 	"span name expr"
 
@@ -512,7 +514,7 @@ JsonToIASTVisitor >> visitIOParameter: anIOParameterNode [
 	 data third } reject: #isNil
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitIf: anIfNode [
 	"super visit keys: #(span label conditions blocks)"
 
@@ -522,7 +524,7 @@ JsonToIASTVisitor >> visitIf: anIfNode [
 	^data third , data fourth
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitIf_logicalStatement: anIfNode [
 
 	| data |
@@ -530,7 +532,7 @@ JsonToIASTVisitor >> visitIf_logicalStatement: anIfNode [
 	^data allButFirst
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitImplicitStatement: anImplicitStatementNode [
 
 	| data implicit |
@@ -545,7 +547,7 @@ JsonToIASTVisitor >> visitImplicitStatement: anImplicitStatementNode [
 	^ implicit
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitImplicitStatementRange: anImplicitStatementRangeNode [
 	| data |
 	data := super visitImplicitStatementRange: anImplicitStatementRangeNode.
@@ -555,12 +557,12 @@ JsonToIASTVisitor >> visitImplicitStatementRange: anImplicitStatementRangeNode [
 		ifNotNil: [ { data second . data third } ]
 ]
 
-{ #category : #'visiting expression' }
+{ #category : 'visiting expression' }
 JsonToIASTVisitor >> visitInteger: anIntegerNode [
 	^nil
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitIntrinsicStatement: anIntrinsicStatement [
 	"span vars"
 	| data |
@@ -571,7 +573,7 @@ JsonToIASTVisitor >> visitIntrinsicStatement: anIntrinsicStatement [
 	^nil
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitItems: anImplicitItemsNode [
 	"'items' in implicit statement"
 
@@ -590,7 +592,7 @@ JsonToIASTVisitor >> visitItems: anImplicitItemsNode [
 	]
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : 'visiting prog-unit' }
 JsonToIASTVisitor >> visitMain: aMainProgramNode [
  	| data |
 	data := super visitMain: aMainProgramNode.
@@ -603,18 +605,18 @@ JsonToIASTVisitor >> visitMain: aMainProgramNode [
 
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : 'visiting prog-unit' }
 JsonToIASTVisitor >> visitMiFilename: aString [
 	f77sourcefile := aString
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitOpenStatement: anOpenStatement [ 
 
 	^nil
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitParameterStatement: aParameterStatementNode [ 
 	"span declarators
 
@@ -633,7 +635,7 @@ JsonToIASTVisitor >> visitParameterStatement: aParameterStatementNode [
 	]
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : 'visiting prog-unit' }
 JsonToIASTVisitor >> visitProgramFile: aProgramFileNode [
 	| programFile data |
 	data := super visitProgramFile: aProgramFileNode.
@@ -647,7 +649,7 @@ JsonToIASTVisitor >> visitProgramFile: aProgramFileNode [
 		
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : 'visiting prog-unit' }
 JsonToIASTVisitor >> visitProgram_units: aCollection [
 
 	| data |
@@ -657,12 +659,12 @@ JsonToIASTVisitor >> visitProgram_units: aCollection [
 	^data
 ]
 
-{ #category : #'visiting expression' }
+{ #category : 'visiting expression' }
 JsonToIASTVisitor >> visitReal: aRealNode [
 	^nil
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitReturnStatement: aReturnStatementNode [
 	| data |
 	data := super visitReturnStatement: aReturnStatementNode.
@@ -670,7 +672,7 @@ JsonToIASTVisitor >> visitReturnStatement: aReturnStatementNode [
 	^data second
 ]
 
-{ #category : #'visiting expression' }
+{ #category : 'visiting expression' }
 JsonToIASTVisitor >> visitSingle: anArraySingleIndexNode [
 	| data |
 	data := super visitSingle: anArraySingleIndexNode.
@@ -678,12 +680,12 @@ JsonToIASTVisitor >> visitSingle: anArraySingleIndexNode [
 
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 JsonToIASTVisitor >> visitSpanOf: aNode [
 	^self makeIndexedAnchor: (self visitSpan: (aNode at: 'span'))
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitStatement: aStatementNode [
 	"not interested in 'span' and 'label'
 	so overwrite completely the super method"
@@ -692,7 +694,7 @@ JsonToIASTVisitor >> visitStatement: aStatementNode [
 			ifFalse: [ self visitJsonElement: (aStatementNode at: 'statement') ]
 ]
 
-{ #category : #'visiting prog-unit' }
+{ #category : 'visiting prog-unit' }
 JsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 
 	| data entity |
@@ -712,7 +714,7 @@ JsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 		yourself
 ]
 
-{ #category : #'visiting expression' }
+{ #category : 'visiting expression' }
 JsonToIASTVisitor >> visitSubscript: aSubscriptNode [
 
 	| data |
@@ -738,7 +740,7 @@ JsonToIASTVisitor >> visitSubscript: aSubscriptNode [
 
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 JsonToIASTVisitor >> visitTo: aString [
 	"end of a range for an implicit statement: a string of one character"
 
@@ -747,7 +749,7 @@ JsonToIASTVisitor >> visitTo: aString [
 		ifNotNil: [ aString first ]
 ]
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 JsonToIASTVisitor >> visitType: aTypeNode [
 	| data |
 	data := (super visitType: aTypeNode) reject: #isNil.
@@ -758,7 +760,7 @@ JsonToIASTVisitor >> visitType: aTypeNode [
 		yourself
 ]
 
-{ #category : #'visiting expression' }
+{ #category : 'visiting expression' }
 JsonToIASTVisitor >> visitUnary: aUnaryNode [
 	| data |
 	data := super visitUnary: aUnaryNode.
@@ -766,7 +768,7 @@ JsonToIASTVisitor >> visitUnary: aUnaryNode [
 	^data third ifNil: [ nil ] ifNotNil: [ :entity | entity ]
 ]
 
-{ #category : #'visiting expression' }
+{ #category : 'visiting expression' }
 JsonToIASTVisitor >> visitValue: aValueNode [
 
 	| data |
@@ -779,7 +781,7 @@ JsonToIASTVisitor >> visitValue: aValueNode [
 				  yourself ] ]
 ]
 
-{ #category : #'visiting expression' }
+{ #category : 'visiting expression' }
 JsonToIASTVisitor >> visitVariable: aVariableNode [
 	| data |
 	data := super visitVariable: aVariableNode.
@@ -791,7 +793,7 @@ JsonToIASTVisitor >> visitVariable: aVariableNode [
 		yourself
 ]
 
-{ #category : #'visiting statement' }
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitWriteStatement: aWriteStatementNode [
 	| data |
 	data := super visitWriteStatement: aWriteStatementNode.
