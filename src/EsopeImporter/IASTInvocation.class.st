@@ -1,57 +1,59 @@
 Class {
-	#name : #IASTInvocation,
-	#superclass : #IASTEntityRef,
+	#name : 'IASTInvocation',
+	#superclass : 'IASTEntityRef',
 	#instVars : [
 		'isIntrinsic',
 		'arguments',
 		'indices'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTInvocation >> accept: aVisitor [
 
 	^ aVisitor visitIASTInvocation: self.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTInvocation >> arguments [
 
 	^ arguments ifNil: [ arguments := OrderedCollection new ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTInvocation >> arguments: aNodes [
 
 	arguments := aNodes
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTInvocation >> indices [
 
 	^ indices
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTInvocation >> indices: anObject [
 
 	indices := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTInvocation >> isIntrinsic [
 
 	^ isIntrinsic
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTInvocation >> isIntrinsic: anObject [
 
 	isIntrinsic := anObject
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 IASTInvocation >> isInvocation [
 	^true
 ]

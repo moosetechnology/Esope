@@ -1,51 +1,53 @@
 Class {
-	#name : #IASTProgramFile,
-	#superclass : #IASTAbstractEntity,
+	#name : 'IASTProgramFile',
+	#superclass : 'IASTAbstractEntity',
 	#instVars : [
 		'filename',
 		'version',
 		'body'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTProgramFile >> accept: aVisitor [
 
 	^ aVisitor visitIASTProgramFile: self.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTProgramFile >> addProgramUnit: anObject [
 
 	^ self body add: anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTProgramFile >> body [
 
 	^ body
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTProgramFile >> body: anObject [
 
 	body := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTProgramFile >> filename [
 
 	^ filename
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTProgramFile >> filename: anObject [
 
 	filename := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTProgramFile >> initialize [
 
 	super initialize.
@@ -56,13 +58,13 @@ IASTProgramFile >> initialize [
 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTProgramFile >> version [
 
 	^ version
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTProgramFile >> version: anObject [
 
 	version := anObject

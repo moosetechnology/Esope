@@ -3,26 +3,28 @@ An Entity created when there is an import error.
 It does not do anything and has some methods to be polymorphic with other entities
 "
 Class {
-	#name : #IASTErrorEntity,
-	#superclass : #IASTAbstractEntity,
+	#name : 'IASTErrorEntity',
+	#superclass : 'IASTAbstractEntity',
 	#instVars : [
 		'filename'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 IASTErrorEntity >> accept: aVisitor [
 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTErrorEntity >> filename [
 
 	^ filename
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTErrorEntity >> filename: anObject [
 
 	filename := anObject

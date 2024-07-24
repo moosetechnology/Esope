@@ -1,38 +1,40 @@
 Class {
-	#name : #IASTImplicitTypingRule,
-	#superclass : #IASTAbstractEntity,
+	#name : 'IASTImplicitTypingRule',
+	#superclass : 'IASTAbstractEntity',
 	#instVars : [
 		'forType',
 		'ranges'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTImplicitTypingRule >> accept: aVisitor [
 
 	^ aVisitor visitIASTImplicit: self.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTImplicitTypingRule >> forType [
 
 	^ forType
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTImplicitTypingRule >> forType: anObject [
 
 	forType := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTImplicitTypingRule >> ranges [
 	"actually a collection of ranges, each range being an array {from . to}"
 	^ranges
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTImplicitTypingRule >> ranges: anObject [
 
 	ranges := anObject

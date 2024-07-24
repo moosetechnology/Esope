@@ -1,38 +1,40 @@
 Class {
-	#name : #IASTTypeRef,
-	#superclass : #IASTEntityRef,
+	#name : 'IASTTypeRef',
+	#superclass : 'IASTEntityRef',
 	#instVars : [
 		'length',
 		'kind'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTTypeRef >> accept: aVisitor [
 
 	^ aVisitor visitIASTTypeRef: self.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTTypeRef >> kind [
 
 	^ kind
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTTypeRef >> kind: anObject [
 
 	kind := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTTypeRef >> length [
 
 	^ length
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTTypeRef >> length: anObject [
 
 	length := anObject
