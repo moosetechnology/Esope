@@ -1,56 +1,58 @@
 Class {
-	#name : #IASTComment,
-	#superclass : #IASTAbstractEntity,
+	#name : 'IASTComment',
+	#superclass : 'IASTAbstractEntity',
 	#instVars : [
 		'text',
 		'isProgUnit'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTComment >> accept: aVisitor [
 
 	^ aVisitor visitIASTComment: self.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTComment >> initialize [ 
 
 	super initialize.
 	isProgUnit := false.
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 IASTComment >> isComment [
 	^true
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTComment >> isEsope [
 
 	^ text beginsWith: 'eso' caseSensitive: false 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTComment >> isProgUnit [
 
 	^ isProgUnit
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTComment >> isProgUnit: anObject [
 
 	isProgUnit := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTComment >> text [
 
 	^ text
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTComment >> text: anObject [
 
 	text := anObject

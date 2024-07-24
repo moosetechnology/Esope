@@ -1,6 +1,6 @@
-Extension { #name : #FamixF77ProgramUnit }
+Extension { #name : 'FamixF77ProgramUnit' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> allDeclaredTypesInMyScope [
 	"returns all types declared directly in receiver or in the files it includes"
 
@@ -15,7 +15,7 @@ FamixF77ProgramUnit >> allDeclaredTypesInMyScope [
 	^return asOrderedCollection
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> allLocalVariables [
 
 	^self localVariables
@@ -29,7 +29,7 @@ FamixF77ProgramUnit >> allLocalVariables [
 	)
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> createUnresolveVariable: variableName with: resolver [
 	"If the variable could not be resolved within an access, it means it is a use of an
 	 implicit variable
@@ -50,7 +50,7 @@ FamixF77ProgramUnit >> createUnresolveVariable: variableName with: resolver [
 
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> defaultImplicit [
 
 	^ (($a to: $z) collect: [ :char | 
@@ -60,7 +60,7 @@ FamixF77ProgramUnit >> defaultImplicit [
 
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> famixImportSanityCheck [
 
 	super famixImportSanityCheck.
@@ -68,13 +68,13 @@ FamixF77ProgramUnit >> famixImportSanityCheck [
 	self sanityCheck: programFile isNotNil description: name , ' without parent ProgramFile'.
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> implicitDictionary [
 
 	^ self attributeAt: #implicitDictionary ifAbsentPut: [ self defaultImplicit ]
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> implicitFortranTypeFor: variableName [
 
 	self implicitDictionary
@@ -84,7 +84,7 @@ FamixF77ProgramUnit >> implicitFortranTypeFor: variableName [
 	^nil
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> implicitSegmentTypeFor: variableName [
 
 	self implicitDictionary
@@ -94,7 +94,7 @@ FamixF77ProgramUnit >> implicitSegmentTypeFor: variableName [
 	^nil
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> implicitTypeFor: variableName [
 	"find a type according to the first letter of the variable's name
 	 - first search for a segment with that (full) name
@@ -109,19 +109,19 @@ FamixF77ProgramUnit >> implicitTypeFor: variableName [
 	^FamixF77TypeUnknown defaultName
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> implicits [
 
 	^ self attributeAt: #implicits ifAbsent: [ #() ]
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> localVariableClass [
 
 	^FamixF77Variable
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> registerImplicit: iASTTypeRef range: aRange [
 	"for letters in aRange register in receiver's implicit dictionary the corresponding iASTTypeRef"
 
@@ -138,7 +138,7 @@ FamixF77ProgramUnit >> registerImplicit: iASTTypeRef range: aRange [
 	]
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> registerImplicitSegment: famixType [
 	"registers in the receiver's implicit dictionary the famixType (which should be an EsopeSegment)
 	 If the segment's name is one character, it could be confused for a Fortran IMPLICIT declaration"
@@ -151,7 +151,7 @@ FamixF77ProgramUnit >> registerImplicitSegment: famixType [
 
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> registerImplicits [
 	"find all IMPLICIT declaration statement in receiver and register them
 	 in its implicitDictionary
@@ -176,7 +176,7 @@ FamixF77ProgramUnit >> registerImplicits [
 
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> removeFortranImplicits [
 	"Removes allimplicit declaration for Fortran type
     They are recognized because the key is a letter, not a string"
@@ -186,7 +186,7 @@ FamixF77ProgramUnit >> removeFortranImplicits [
 			ifTrue: [ self implicitDictionary removeKey: association key ] ]
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> symbolTable [
 self flag: 'TO REMOVE?'.
 

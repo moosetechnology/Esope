@@ -1,30 +1,32 @@
 Class {
-	#name : #IASTImplicit,
-	#superclass : #IASTAbstractEntity,
+	#name : 'IASTImplicit',
+	#superclass : 'IASTAbstractEntity',
 	#instVars : [
 		'rules'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTImplicit >> accept: aVisitor [
 
 	^ aVisitor visitIASTImplicit: self.
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 IASTImplicit >> isImplicit [
 	^true
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTImplicit >> rules [
 
 	^ rules
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTImplicit >> rules: anObject [
 
 	rules := anObject

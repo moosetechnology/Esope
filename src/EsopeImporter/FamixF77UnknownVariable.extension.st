@@ -1,6 +1,6 @@
-Extension { #name : #FamixF77UnknownVariable }
+Extension { #name : 'FamixF77UnknownVariable' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77UnknownVariable >> famixImportSanityCheck [
 
 	super famixImportSanityCheck.

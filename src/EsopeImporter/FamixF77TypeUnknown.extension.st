@@ -1,11 +1,11 @@
-Extension { #name : #FamixF77TypeUnknown }
+Extension { #name : 'FamixF77TypeUnknown' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77TypeUnknown class >> defaultName [
 	^#unknownType 
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77TypeUnknown >> initialize [
 	super initialize.
 

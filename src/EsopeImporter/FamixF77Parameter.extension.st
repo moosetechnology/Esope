@@ -1,6 +1,6 @@
-Extension { #name : #FamixF77Parameter }
+Extension { #name : 'FamixF77Parameter' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77Parameter >> famixImportSanityCheck [
 
 	super famixImportSanityCheck.

@@ -1,18 +1,18 @@
-Extension { #name : #FamixF77StatementFunction }
+Extension { #name : 'FamixF77StatementFunction' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77StatementFunction >> allLocalVariables [
 
 	^self parameters
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77StatementFunction >> allTypes [
 
 	^#()
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77StatementFunction >> createUnresolveVariable: variableName with: resolver [ 
 	"StatementFunctions have Parameters and no LocalVariable,
 	 unresolved accesses may be found in their parentEntity"
@@ -21,7 +21,7 @@ FamixF77StatementFunction >> createUnresolveVariable: variableName with: resolve
 
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77StatementFunction >> famixImportSanityCheck [
 
 	super famixImportSanityCheck.
@@ -29,13 +29,13 @@ FamixF77StatementFunction >> famixImportSanityCheck [
 	self sanityCheck: parentEntity isNotNil description: 'StatementFunction without parentEntity'.
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77StatementFunction >> implicitDictionary [
 
 	^parentEntity implicitDictionary
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77StatementFunction >> implicitTypeFor: variableName [
 	"statementFunction cannot declare IMPLICIT statement or declare SEGMENT, therefore
 	 delegate this message to the parentEntity"
