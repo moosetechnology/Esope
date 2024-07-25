@@ -58,7 +58,7 @@ Class {
 		'includeFolder',
 		'srcFolder'
 	],
-	#category : 'EsopeImporter-Importer'
+	#category : #'EsopeImporter-Importer'
 }
 
 { #category : #importing }
@@ -186,7 +186,7 @@ FortranProjectImporter >> ensureEmptyFolder: folder [
 { #category : #'error management' }
 FortranProjectImporter >> errorHandler [
 
-	^ errorHandler
+	^ errorHandler ifNil: [ errorHandler := FortranErrorManager new ]
 ]
 
 { #category : #'error management' }

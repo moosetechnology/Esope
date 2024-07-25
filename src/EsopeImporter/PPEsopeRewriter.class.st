@@ -7,7 +7,7 @@ Class {
 	#instVars : [
 		'stream'
 	],
-	#category : 'EsopeImporter-Importer'
+	#category : #'EsopeImporter-Importer'
 }
 
 { #category : #accessing }
@@ -374,8 +374,15 @@ PPEsopeRewriter >> rewriteFrom: esopeFile to: annotatedFile [
 
 { #category : #utilities }
 PPEsopeRewriter >> sanitize: aString [
-	^Character tab = aString first 
-		ifTrue:  [  '        ' , aString allButFirst ]
+
+	| firstSixChars index |
+	firstSixChars := aString size < 6 
+		ifTrue: [ aString ]
+		ifFalse: [ aString copyFrom: 1 to: 6 ].
+
+	index := firstSixChars indexOf: (Character tab) ifAbsent: [ 0 ].
+	^index > 0
+		ifTrue:  [  aString copyReplaceFrom: index to: index with: '        ' ]
 		ifFalse: [ aString   ]
 ]
 
