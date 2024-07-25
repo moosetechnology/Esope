@@ -1,6 +1,6 @@
-Extension { #name : 'FamixFortranEntity' }
+Extension { #name : #FamixFortranEntity }
 
-{ #category : '*EsopeImporter' }
+{ #category : #'*EsopeImporter' }
 FamixFortranEntity >> famixImportSanityCheck [
 	"nothing special by default"
 ]

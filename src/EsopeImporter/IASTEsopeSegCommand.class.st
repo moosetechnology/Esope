@@ -1,46 +1,44 @@
 Class {
-	#name : 'IASTEsopeSegCommand',
-	#superclass : 'IASTAbstractEntity',
+	#name : #IASTEsopeSegCommand,
+	#superclass : #IASTAbstractEntity,
 	#instVars : [
 		'entityName',
 		'command'
 	],
-	#category : 'EsopeImporter-AST-IR',
-	#package : 'EsopeImporter',
-	#tag : 'AST-IR'
+	#category : 'EsopeImporter-AST-IR'
 }
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTEsopeSegCommand >> accept: aVisitor [
 
 	^aVisitor visitIASTEsopeSegCommand: self
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTEsopeSegCommand >> entityName [
 
 	^ entityName
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTEsopeSegCommand >> entityName: anObject [
 
 	entityName := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTEsopeSegCommand >> esopeCommand [
 
 	^ command
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTEsopeSegCommand >> esopeCommand: anObject [
 
 	command := anObject
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 IASTEsopeSegCommand >> isEsope [
 	^true
 ]

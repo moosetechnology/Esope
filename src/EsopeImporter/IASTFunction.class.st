@@ -1,27 +1,25 @@
 Class {
-	#name : 'IASTFunction',
-	#superclass : 'IASTSubroutine',
+	#name : #IASTFunction,
+	#superclass : #IASTSubroutine,
 	#instVars : [
 		'returnType'
 	],
-	#category : 'EsopeImporter-AST-IR',
-	#package : 'EsopeImporter',
-	#tag : 'AST-IR'
+	#category : 'EsopeImporter-AST-IR'
 }
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTFunction >> accept: aVisitor [
 
 	^ aVisitor visitIASTFunction: self.
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTFunction >> returnType [
 
 	^ returnType
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTFunction >> returnType: anObject [
 
 	returnType := anObject

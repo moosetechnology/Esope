@@ -1,57 +1,55 @@
 Class {
-	#name : 'IASTAbstractEntity',
-	#superclass : 'Object',
+	#name : #IASTAbstractEntity,
+	#superclass : #Object,
 	#instVars : [
 		'sourceAnchor'
 	],
-	#category : 'EsopeImporter-AST-IR',
-	#package : 'EsopeImporter',
-	#tag : 'AST-IR'
+	#category : 'EsopeImporter-AST-IR'
 }
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTAbstractEntity >> accept: aVisitor [
 
 	self subclassResponsibility
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 IASTAbstractEntity >> isComment [
 	^false
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 IASTAbstractEntity >> isEsopeSegment [
 	^false
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 IASTAbstractEntity >> isImplicit [
 	^false
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 IASTAbstractEntity >> isInvocation [
 	^false
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 IASTAbstractEntity >> isVarAccess [
 	^false
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 IASTAbstractEntity >> isVariable [
 	^false
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTAbstractEntity >> sourceAnchor [
 
 	^ sourceAnchor
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTAbstractEntity >> sourceAnchor: anObject [
 
 	sourceAnchor := anObject

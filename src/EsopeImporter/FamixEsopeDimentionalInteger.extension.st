@@ -1,6 +1,6 @@
-Extension { #name : 'FamixEsopeDimentionalInteger' }
+Extension { #name : #FamixEsopeDimentionalInteger }
 
-{ #category : '*EsopeImporter' }
+{ #category : #'*EsopeImporter' }
 FamixEsopeDimentionalInteger class >> metamodel [
 	"temporary solution to issue https://github.com/moosetechnology/Famix/issues/808"
 

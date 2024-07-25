@@ -1,12 +1,10 @@
 Class {
-	#name : 'IASTToFamixEsopeVisitor',
-	#superclass : 'IASTAbstractFamixVisitor',
-	#category : 'EsopeImporter-Visitor',
-	#package : 'EsopeImporter',
-	#tag : 'Visitor'
+	#name : #IASTToFamixEsopeVisitor,
+	#superclass : #IASTAbstractFamixVisitor,
+	#category : 'EsopeImporter-Visitor'
 }
 
-{ #category : 'private-creation' }
+{ #category : #'private-creation' }
 IASTToFamixEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
 
 	sourceAnchor startColumn: sourceAnchor endColumn - typeName size.
@@ -14,7 +12,7 @@ IASTToFamixEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
 	"sourceAnchor: (self visitIndexedFileAnchor: sourceAnchor);"
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTToFamixEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
 
 	| varsNames |
@@ -29,7 +27,7 @@ IASTToFamixEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
 		  yourself
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTToFamixEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 
 	^ (self model newCommand)
@@ -41,7 +39,7 @@ IASTToFamixEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 		  yourself
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTToFamixEsopeVisitor >> visitIASTEsopeSegment: aSegment [
 
 	| segment |
@@ -59,7 +57,7 @@ IASTToFamixEsopeVisitor >> visitIASTEsopeSegment: aSegment [
 	^ stack pop
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTToFamixEsopeVisitor >> visitIASTInvocation: anInvocation [
 
 	"In Esope vistior, we know that an invocation is actually an access to an array
@@ -75,13 +73,13 @@ IASTToFamixEsopeVisitor >> visitIASTInvocation: anInvocation [
 	^self createFamixF77Access: anInvocation
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTToFamixEsopeVisitor >> visitIASTParameter: aParameter [
 
 	^ self createFamixF77Access: aParameter
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTToFamixEsopeVisitor >> visitIASTVarEsoAt: aVarEsoAt [
 
 	| famixAccess attributeAccess  |
@@ -95,7 +93,7 @@ IASTToFamixEsopeVisitor >> visitIASTVarEsoAt: aVarEsoAt [
 	^famixAccess
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTToFamixEsopeVisitor >> visitIASTVarEsoSl: aVarEsoSl [
 
 	self flag: #TODO.
@@ -103,7 +101,7 @@ IASTToFamixEsopeVisitor >> visitIASTVarEsoSl: aVarEsoSl [
 	^ aVarEsoSl entities collect: [ :each | each accept: self ]
 ]
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTToFamixEsopeVisitor >> visitIASTVariable: aVariable [
 
 	^ (self newEntity: FamixFortranAttribute)

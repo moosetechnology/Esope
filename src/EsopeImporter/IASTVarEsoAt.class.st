@@ -1,17 +1,15 @@
 Class {
-	#name : 'IASTVarEsoAt',
-	#superclass : 'IASTVarEso',
-	#category : 'EsopeImporter-AST-IR',
-	#package : 'EsopeImporter',
-	#tag : 'AST-IR'
+	#name : #IASTVarEsoAt,
+	#superclass : #IASTVarEso,
+	#category : 'EsopeImporter-AST-IR'
 }
 
-{ #category : 'instance creation' }
+{ #category : #'instance creation' }
 IASTVarEsoAt class >> realName [
 	^ 'd__'
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTVarEsoAt >> accept: aVisitor [
 
 	^ aVisitor visitIASTVarEsoAt: self

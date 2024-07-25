@@ -8,8 +8,8 @@ Try can try with:
 The example starts take a Esope source file and hide then either in comment or in function invocations.
 "
 Class {
-	#name : 'PPEsopeGrammar',
-	#superclass : 'PP2CompositeNode',
+	#name : #PPEsopeGrammar,
+	#superclass : #PP2CompositeNode,
 	#instVars : [
 		'file',
 		'include',
@@ -31,24 +31,22 @@ Class {
 		'commentLine',
 		'anyLine'
 	],
-	#category : 'EsopeImporter-Importer',
-	#package : 'EsopeImporter',
-	#tag : 'Importer'
+	#category : 'EsopeImporter-Importer'
 }
 
-{ #category : 'utility' }
+{ #category : #utility }
 PPEsopeGrammar class >> getSourceFromFile: filename [
 	^ filename asFileReference contents asText
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> anyLine [
 	^ commentLine
 	/ fortranLine
 	/ emptyLine
 ]
 
-{ #category : 'tokens' }
+{ #category : #tokens }
 PPEsopeGrammar >> beginOfLine [
 	"6 spaces, or a tab (with optional spaces), or a label (with spaces)"
 
@@ -59,7 +57,7 @@ PPEsopeGrammar >> beginOfLine [
 	) flatten
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> commentLine [
 	^((self terminal: 'C') / (self terminal: '*')) flatten
 	, endOfLine negate star flatten
@@ -67,19 +65,19 @@ PPEsopeGrammar >> commentLine [
 	
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 PPEsopeGrammar >> emptyLine [
 
 	^ optionalBlanks , endOfLine
 ]
 
-{ #category : 'tokens' }
+{ #category : #tokens }
 PPEsopeGrammar >> endOfLine [
 
 	^ (Character cr asPParser / Character lf asPParser) plus flatten
 ]
 
-{ #category : 'grammar-helper' }
+{ #category : #'grammar-helper' }
 PPEsopeGrammar >> endSegment [
 
 	^ beginOfLine
@@ -91,7 +89,7 @@ PPEsopeGrammar >> endSegment [
 	, endOfLine
 ]
 
-{ #category : 'grammar-helper' }
+{ #category : #'grammar-helper' }
 PPEsopeGrammar >> esopeLine: esopeKeyword [
 
 	^ beginOfLine
@@ -102,7 +100,7 @@ PPEsopeGrammar >> esopeLine: esopeKeyword [
 	, endOfLine
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> file [
 
 	^(
@@ -123,14 +121,14 @@ PPEsopeGrammar >> file [
 	) plus
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> fortranLine [
 
 	^ endOfLine negate star flatten
 	, endOfLine
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> include [
 
 	self flag: #FIXME.
@@ -145,7 +143,7 @@ PPEsopeGrammar >> include [
 	, endOfLine
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> includeName [
 	^ (
 		(
@@ -162,13 +160,13 @@ PPEsopeGrammar >> includeName [
 	) flatten
 ]
 
-{ #category : 'tokens' }
+{ #category : #tokens }
 PPEsopeGrammar >> optionalBlanks [
 
 	^#blank asPParser star flatten
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> pointer [
 	^ beginOfLine
 	, optionalBlanks
@@ -178,47 +176,47 @@ PPEsopeGrammar >> pointer [
 	, endOfLine
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> segact [
 	^self esopeLine: 'segact'
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> segadj [
 	^self esopeLine: 'segadj'
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> segdes [
 	^self esopeLine: 'segdes'
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> segini [
 	^self esopeLine: 'segini'
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> segment [
 	^self esopeLine: 'segment'
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> segprt [
 	^self esopeLine: 'segprt'
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> segsup [
 	^self esopeLine: 'segsup'
 ]
 
-{ #category : 'grammar' }
+{ #category : #grammar }
 PPEsopeGrammar >> start [
 	^file end
 ]
 
-{ #category : 'grammar-helper' }
+{ #category : #'grammar-helper' }
 PPEsopeGrammar >> terminal: aString [
 	^ aString asPParser caseInsensitive
 ]

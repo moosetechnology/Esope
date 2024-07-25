@@ -1,6 +1,6 @@
-Extension { #name : 'FamixF03DerivedType' }
+Extension { #name : #FamixF03DerivedType }
 
-{ #category : '*EsopeImporter' }
+{ #category : #'*EsopeImporter' }
 FamixF03DerivedType class >> metamodel [
 	"temporary solution to issue https://github.com/moosetechnology/Famix/issues/808"
 

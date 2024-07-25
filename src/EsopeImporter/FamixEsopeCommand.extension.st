@@ -1,6 +1,6 @@
-Extension { #name : 'FamixEsopeCommand' }
+Extension { #name : #FamixEsopeCommand }
 
-{ #category : '*EsopeImporter' }
+{ #category : #'*EsopeImporter' }
 FamixEsopeCommand >> famixImportSanityCheck [
 
 	super famixImportSanityCheck.
@@ -8,7 +8,7 @@ FamixEsopeCommand >> famixImportSanityCheck [
 	self sanityCheck: (variable declaredType isEsopeSegment) description: 'EsopeCommand on non-pointer variable'.
 ]
 
-{ #category : '*EsopeImporter' }
+{ #category : #'*EsopeImporter' }
 FamixEsopeCommand class >> metamodel [
 	"temporary solution to issue https://github.com/moosetechnology/Famix/issues/808"
 

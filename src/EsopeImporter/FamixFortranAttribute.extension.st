@@ -1,6 +1,6 @@
-Extension { #name : 'FamixFortranAttribute' }
+Extension { #name : #FamixFortranAttribute }
 
-{ #category : '*EsopeImporter' }
+{ #category : #'*EsopeImporter' }
 FamixFortranAttribute >> famixImportSanityCheck [
 	"not calling super because does not have a parentBehaviouralEntity"
 
@@ -8,7 +8,7 @@ FamixFortranAttribute >> famixImportSanityCheck [
 	self sanityCheck: declaredType isNotNil description: 'Attribute ', name , ' without declaredType'.
 ]
 
-{ #category : '*EsopeImporter' }
+{ #category : #'*EsopeImporter' }
 FamixFortranAttribute class >> metamodel [
 	"temporary solution to issue https://github.com/moosetechnology/Famix/issues/808"
 

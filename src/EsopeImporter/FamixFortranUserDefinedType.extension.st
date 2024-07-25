@@ -1,6 +1,6 @@
-Extension { #name : 'FamixFortranUserDefinedType' }
+Extension { #name : #FamixFortranUserDefinedType }
 
-{ #category : '*EsopeImporter' }
+{ #category : #'*EsopeImporter' }
 FamixFortranUserDefinedType class >> metamodel [
 	"temporary solution to issue https://github.com/moosetechnology/Famix/issues/808"
 

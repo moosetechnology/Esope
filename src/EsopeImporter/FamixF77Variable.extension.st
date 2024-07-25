@@ -1,6 +1,6 @@
-Extension { #name : 'FamixF77Variable' }
+Extension { #name : #FamixF77Variable }
 
-{ #category : '*EsopeImporter' }
+{ #category : #'*EsopeImporter' }
 FamixF77Variable >> famixImportSanityCheck [
 
 	super famixImportSanityCheck.
@@ -9,13 +9,13 @@ FamixF77Variable >> famixImportSanityCheck [
 	self sanityCheck: declaredType isNotNil description: 'Variable ', name , ' without declaredType'.
 ]
 
-{ #category : '*EsopeImporter' }
+{ #category : #'*EsopeImporter' }
 FamixF77Variable >> segment [
 
 	^self attributeAt: #segmentName ifAbsent: [ nil ]
 ]
 
-{ #category : '*EsopeImporter' }
+{ #category : #'*EsopeImporter' }
 FamixF77Variable >> segment: aString [
 
 	^self attributeAt: #segmentName put: aString

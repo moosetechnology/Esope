@@ -6,65 +6,63 @@ A segment has
 - a list of `declarations` (fields in the segment)
 "
 Class {
-	#name : 'IASTEsopeSegment',
-	#superclass : 'IASTAbstractEntity',
+	#name : #IASTEsopeSegment,
+	#superclass : #IASTAbstractEntity,
 	#instVars : [
 		'entityName',
 		'declarations'
 	],
-	#category : 'EsopeImporter-AST-IR',
-	#package : 'EsopeImporter',
-	#tag : 'AST-IR'
+	#category : 'EsopeImporter-AST-IR'
 }
 
-{ #category : 'visiting' }
+{ #category : #visiting }
 IASTEsopeSegment >> accept: aVisitor [
 
 	^ aVisitor visitIASTEsopeSegment: self.
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTEsopeSegment >> addAllDeclarations: aCollection [
 
 	declarations addAll: aCollection
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTEsopeSegment >> addDeclaration: anObject [
 
 	declarations add: anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTEsopeSegment >> declarations [
 
 	^ declarations
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTEsopeSegment >> declarations: anObject [
 
 	declarations := anObject
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTEsopeSegment >> entityName [
 
 	^ entityName
 ]
 
-{ #category : 'accessing' }
+{ #category : #accessing }
 IASTEsopeSegment >> entityName: anObject [
 
 	entityName := anObject
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 IASTEsopeSegment >> isEsope [
 	^true
 ]
 
-{ #category : 'testing' }
+{ #category : #testing }
 IASTEsopeSegment >> isEsopeSegment [
 	^true
 ]
