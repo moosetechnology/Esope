@@ -446,14 +446,19 @@ FortranProjectImporter >> isIncludeLine: aString [
 { #category : #run }
 FortranProjectImporter >> jsonASTToIAST [
 
-	| visitor iastEntity |
+	| visitor |
 	visitor := JsonToIASTVisitor new.
 
 	iastmodel := (self tempJsonFolder allFiles) 
-		collect: [ :jsonFile | 
+		collect: [ :jsonFile | | iastEntity jsonDOM code |
+			code := jsonFile contents.
+			iastEntity := nil.
+			jsonDOM := nil.
 			errorHandler enterContext: jsonFile fullName.
-			iastEntity := visitor visitProgramFile:
-				(NeoJSONReader fromString: jsonFile contents).
+			[ jsonDOM := NeoJSONReader fromString: code ]
+			on: NeoJSONParseError
+			do: [  JsonASTParseException signal: code ].
+		 	jsonDOM ifNotNil: [ iastEntity := visitor visitProgramFile: jsonDOM ].
 			errorHandler leaveContext.
 			iastEntity
 		]
