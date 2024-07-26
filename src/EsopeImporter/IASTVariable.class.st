@@ -17,6 +17,18 @@ IASTVariable >> accept: aVisitor [
 ]
 
 { #category : #accessing }
+IASTVariable >> dimensions [
+
+	^ dimensions
+]
+
+{ #category : #accessing }
+IASTVariable >> dimensions: anObject [
+
+	dimensions := anObject
+]
+
+{ #category : #accessing }
 IASTVariable >> initialValue [
 
 	^ initialValue
