@@ -20,7 +20,7 @@ FortranAbstractJsonVisitor >> esopeCommand: anEsopeCommentString [
 	^(wordBoundaries size > 2)
 		ifTrue: [
 			{ (anEsopeCommentString copyFrom: wordBoundaries first to: wordBoundaries second) .
-			  (anEsopeCommentString copyFrom: wordBoundaries third to: wordBoundaries fourth) }
+			  (anEsopeCommentString copyFrom: wordBoundaries third to: wordBoundaries last) }
 		]
 		ifFalse: [ { anEsopeCommentString copyFrom: wordBoundaries first to: wordBoundaries second } ]
 ]

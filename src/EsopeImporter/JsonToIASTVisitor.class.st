@@ -9,7 +9,7 @@ Class {
 		'model',
 		'entityStack'
 	],
-	#category : 'EsopeImporter-Visitor'
+	#category : #'EsopeImporter-Visitor'
 }
 
 { #category : #'private - utilities' }
@@ -321,10 +321,13 @@ JsonToIASTVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
 JsonToIASTVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
 
 	| data |
+	self flag: #FIXME. "Related to #esopeCommand: we take until the last but here we do not want the last  double quote char
+	So in the entityName, we remove this char. Need to find a better way to do that.
+	"
 	data := super visitEsopeIncludeComment: anEsopeIncludeCommentNode.
 	^ IASTInclude new
 		  sourceAnchor: (self makeIndexedAnchor: data second);
-		  entityName: data fourth;
+		  entityName: data fourth allButLast;
 		  includeCommand: data third;
 		  yourself
 ]
