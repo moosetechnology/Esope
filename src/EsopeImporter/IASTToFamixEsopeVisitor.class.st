@@ -1,7 +1,7 @@
 Class {
 	#name : #IASTToFamixEsopeVisitor,
 	#superclass : #IASTAbstractFamixVisitor,
-	#category : 'EsopeImporter-Visitor'
+	#category : #'EsopeImporter-Visitor'
 }
 
 { #category : #'private-creation' }
@@ -15,16 +15,18 @@ IASTToFamixEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
 { #category : #visiting }
 IASTToFamixEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
 
-	| varsNames |
+	| varsNames pointer |
 	varsNames := aPointerVar entityName substrings: '.'.
-	varsNames size < 2 ifTrue: [ ^ self ].
+	
+	pointer := (self model newVariableNamed: varsNames first)
+		sourceAnchor: (self visitIndexedFileAnchor: aPointerVar sourceAnchor);
+		isEsope: true;
+		yourself.
+	
+	varsNames size > 1 
+		ifTrue: [ pointer segment: varsNames second ].
 
-	^ (self model newVariableNamed: varsNames first)
-		  sourceAnchor:
-			  (self visitIndexedFileAnchor: aPointerVar sourceAnchor);
-		  isEsope: true;
-		  segment: varsNames second;
-		  yourself
+	^ pointer
 ]
 
 { #category : #visiting }

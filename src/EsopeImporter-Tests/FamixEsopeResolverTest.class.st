@@ -1,15 +1,13 @@
 Class {
-	#name : 'FamixEsopeResolverTest',
-	#superclass : 'FamixEsopeUtilitiesTest',
+	#name : #FamixEsopeResolverTest,
+	#superclass : #FamixEsopeUtilitiesTest,
 	#instVars : [
 		'resolver'
 	],
-	#category : 'EsopeImporter-Tests-Importer',
-	#package : 'EsopeImporter-Tests',
-	#tag : 'Importer'
+	#category : 'EsopeImporter-Tests-Importer'
 }
 
-{ #category : 'running' }
+{ #category : #running }
 FamixEsopeResolverTest >> setUp [
 
 	super setUp.
@@ -17,7 +15,7 @@ FamixEsopeResolverTest >> setUp [
 	resolver := FamixEsopeResolver on: mooseModel.
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testMakePointerFromVariable [
 	"We have a pointer variable and a normal variable with the same name
 	 the 2nd should be merged into the 1st which keeps its declared type and
@@ -48,7 +46,7 @@ FamixEsopeResolverTest >> testMakePointerFromVariable [
 	self assert: subroutine localVariables size equals: 1.
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testMergeVariableInto [
 	"We have 2 variables with the same name one should be merged into the other which keeps its
 	 declared type and	gets the accesses of the 1st"
@@ -85,7 +83,7 @@ FamixEsopeResolverTest >> testMergeVariableInto [
 	self assert: variable1 declaredType name equals: 'INTEGER'
 ]
 
-{ #category : 'test - implicit' }
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testRegisterImplicitDefault [
 
 	"
@@ -106,7 +104,7 @@ FamixEsopeResolverTest >> testRegisterImplicitDefault [
 	self assert: (pu implicitDictionary at: $i) equals: 'integer'.
 ]
 
-{ #category : 'test - implicit' }
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testRegisterImplicitMultiple [
 	"
       subroutine rtn
@@ -135,7 +133,7 @@ FamixEsopeResolverTest >> testRegisterImplicitMultiple [
 	self assert: (pu implicitDictionary at: $e) equals: 'real'
 ]
 
-{ #category : 'test - implicit' }
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testRegisterImplicitNone [
 
 	"
@@ -155,7 +153,7 @@ FamixEsopeResolverTest >> testRegisterImplicitNone [
 	self assert: pu implicitDictionary isEmpty
 ]
 
-{ #category : 'test - implicit' }
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testRegisterImplicitRange [
 	"
       subroutine rtn
@@ -180,7 +178,7 @@ FamixEsopeResolverTest >> testRegisterImplicitRange [
 	self assert: (pu implicitDictionary at: $d) equals: 'real'
 ]
 
-{ #category : 'test - implicit' }
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testRegisterImplicitSegment [
 
 	"
@@ -205,7 +203,7 @@ FamixEsopeResolverTest >> testRegisterImplicitSegment [
 	self assert: (main implicitDictionary at: 'point') equals: 'point'
 ]
 
-{ #category : 'test - implicit' }
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testRegisterImplicitSimple [
 	"
       subroutine rtn
@@ -228,7 +226,7 @@ FamixEsopeResolverTest >> testRegisterImplicitSimple [
 	self assert: (pu implicitDictionary at: $b) equals: 'real'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testRequalifyFunctionDeclarations [
 
 	"
@@ -255,7 +253,7 @@ FamixEsopeResolverTest >> testRequalifyFunctionDeclarations [
 
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testRequalifyParameterDeclarations [
 
 	"
@@ -284,7 +282,7 @@ FamixEsopeResolverTest >> testRequalifyParameterDeclarations [
 
 ]
 
-{ #category : 'test - resolveAccess' }
+{ #category : #'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccesses [
 	"program main
 	 integer var
@@ -307,7 +305,7 @@ FamixEsopeResolverTest >> testResolveAccesses [
 	self assert: access variable equals: main localVariables first.
 ]
 
-{ #category : 'test - resolveAccess' }
+{ #category : #'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesForALocalVariableImplicit [
 	"program main
 	 var
@@ -338,7 +336,7 @@ FamixEsopeResolverTest >> testResolveAccessesForALocalVariableImplicit [
 
 ]
 
-{ #category : 'test - resolveAccess' }
+{ #category : #'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesForAParameter [
 
 	| subrtn access |
@@ -365,7 +363,7 @@ FamixEsopeResolverTest >> testResolveAccessesForAParameter [
 	self assert: access accessor equals: subrtn
 ]
 
-{ #category : 'test - resolveAccess' }
+{ #category : #'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesForAPointerDotAttribute [
 
 	| main access access2 varP typePoint |
@@ -414,7 +412,7 @@ FamixEsopeResolverTest >> testResolveAccessesForAPointerDotAttribute [
 	self assert: access2 accessor equals: main
 ]
 
-{ #category : 'test - resolveAccess' }
+{ #category : #'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesForAPointerVariableDeclared [
 
 	| main access var |
@@ -451,7 +449,7 @@ FamixEsopeResolverTest >> testResolveAccessesForAPointerVariableDeclared [
 	self assert: access accessor equals: main
 ]
 
-{ #category : 'test - resolveAccess' }
+{ #category : #'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesForAPointerVariableImplicit [
 
 	| subrtn access var |
@@ -489,7 +487,7 @@ FamixEsopeResolverTest >> testResolveAccessesForAPointerVariableImplicit [
 	self assert: access accessor equals: subrtn
 ]
 
-{ #category : 'test - resolveAccess' }
+{ #category : #'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesForAnAttribute [
 
 	| subrtn access type |
@@ -522,7 +520,7 @@ FamixEsopeResolverTest >> testResolveAccessesForAnAttribute [
 	self assert: access accessor equals: subrtn
 ]
 
-{ #category : 'test - resolveAccess' }
+{ #category : #'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesFromStatementFunctionToParameter [
 	"program main
 	 identity(x) = x
@@ -550,7 +548,7 @@ FamixEsopeResolverTest >> testResolveAccessesFromStatementFunctionToParameter [
 
 ]
 
-{ #category : 'test - resolveAccess' }
+{ #category : #'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesFromStatementFunctionToParentLocalVariable [
 	"program main
 	 var = 1
@@ -583,7 +581,7 @@ FamixEsopeResolverTest >> testResolveAccessesFromStatementFunctionToParentLocalV
 	self assert: fct accesses anyOne variable equals: var.
 ]
 
-{ #category : 'test - resolveAccess' }
+{ #category : #'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesInIncludedFileToInside [
 	"Resolve accesses from includedFile to variable declared in the same includedIile
 
@@ -607,7 +605,7 @@ FamixEsopeResolverTest >> testResolveAccessesInIncludedFileToInside [
 	self assert: access variable equals: accessor localVariables first.
 ]
 
-{ #category : 'test - resolveAccess' }
+{ #category : #'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesInIncludedFileToOutside [
 	"Do not resolve accesses from includedFile to variable declared outside the same includedIile
 	 (because resolution depends on where the file is included)
@@ -631,7 +629,7 @@ FamixEsopeResolverTest >> testResolveAccessesInIncludedFileToOutside [
 	self assert: access variable name equals: 'var'.
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointers [
 
 	| sub entity type var |
@@ -662,7 +660,7 @@ FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointers [
 	self assert: entity declaredType equals: type
 ]
 
-{ #category : 'test - implicit' }
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testResolveImplicitFunctionType [
 
 	| sub |
@@ -674,7 +672,7 @@ FamixEsopeResolverTest >> testResolveImplicitFunctionType [
 	self assert: sub declaredType name equals: 'real'
 ]
 
-{ #category : 'test - implicit' }
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testResolveImplicitParameter [
 
 	"
@@ -697,7 +695,7 @@ FamixEsopeResolverTest >> testResolveImplicitParameter [
 		equals: 'integer'
 ]
 
-{ #category : 'test - implicit' }
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testResolveImplicitParameterNone [
 
 	"
@@ -721,7 +719,7 @@ FamixEsopeResolverTest >> testResolveImplicitParameterNone [
 
 ]
 
-{ #category : 'test - implicit' }
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testResolveImplicitParameterRange [
 	"
       subroutine sub(var)
@@ -748,7 +746,7 @@ FamixEsopeResolverTest >> testResolveImplicitParameterRange [
 	self assert: entity declaredType name equals: 'character'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveImplicitPointer [
 
 	| sub type var |
@@ -777,7 +775,7 @@ FamixEsopeResolverTest >> testResolveImplicitPointer [
 	self assert: var declaredType equals: type
 ]
 
-{ #category : 'test - implicit' }
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testResolveImplicitType [
 
 	| sub |
@@ -792,7 +790,7 @@ FamixEsopeResolverTest >> testResolveImplicitType [
 
 ]
 
-{ #category : 'test - implicit' }
+{ #category : #'test - implicit' }
 FamixEsopeResolverTest >> testResolveImplicitTypeInStatementFunction [
 
 	| sub f |
@@ -809,7 +807,7 @@ FamixEsopeResolverTest >> testResolveImplicitTypeInStatementFunction [
 
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveImplicits [
 
 	"
@@ -833,7 +831,7 @@ FamixEsopeResolverTest >> testResolveImplicits [
 
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveImplicitsDeclared [
 
 	"
@@ -860,7 +858,7 @@ FamixEsopeResolverTest >> testResolveImplicitsDeclared [
 
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveImplicitsForFunction [
 	"
       function fct()
@@ -878,7 +876,7 @@ FamixEsopeResolverTest >> testResolveImplicitsForFunction [
 	self assert: fct declaredType name equals: 'real'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveImplicitsForStatementFunction [
 	"
       function fct()
@@ -899,7 +897,7 @@ FamixEsopeResolverTest >> testResolveImplicitsForStatementFunction [
 	self assert: fct declaredType name equals: 'real'
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveImplicitsNone [
 
 	"
@@ -925,7 +923,7 @@ FamixEsopeResolverTest >> testResolveImplicitsNone [
 
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveIncludeDirective [
 	"
 +------ point.seg ----------------------------------+
@@ -972,7 +970,7 @@ FamixEsopeResolverTest >> testResolveIncludeDirective [
 	self assert: sub inclusions anyOne includedBy equals: main
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveInvocationToIntrinsic [
 	| invocation callee caller |
 	
@@ -992,7 +990,7 @@ FamixEsopeResolverTest >> testResolveInvocationToIntrinsic [
 	self assert: invocation candidates first class equals: FamixF77IntrinsicRoutine.
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveInvocationToWrite [
 	| invocation caller |
 	
@@ -1012,7 +1010,7 @@ FamixEsopeResolverTest >> testResolveInvocationToWrite [
 	self assert: invocation candidates first class equals: FamixF77IntrinsicRoutine.
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveInvocations [
 	| invocation callee caller |
 	
@@ -1034,7 +1032,7 @@ FamixEsopeResolverTest >> testResolveInvocations [
 	self assert: invocation candidates first equals: callee.
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 FamixEsopeResolverTest >> testResolveInvocationsWrongArgumentNumber [
 	| invocation callee caller |
 	
