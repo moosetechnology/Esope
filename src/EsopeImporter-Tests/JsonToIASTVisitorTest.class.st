@@ -1450,13 +1450,16 @@ c@_   end segment
 { #category : #'tests-esope' }
 JsonToIASTVisitorTest >> testSegmentDeclarationWithArrayAttribute [
 
-	| programFile seg |
-	programFile :=  self visitF77Code: '      subroutine hello
+	"
+      subroutine hello
 c@_   segment, foo
         integer bar(n)
 c@_   end segment
       end
-'.
+	"
+
+	| programFile seg |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment, foo","span":"(2:1)-(2:18)","tag":"comment"},{"anno":[],"label":null,"span":"(3:9)-(3:22)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(3:21)-(3:21)","upper":{"anno":[],"span":"(3:21)-(3:21)","tag":"value","value":{"contents":"n","tag":"variable"}}}],"span":"(3:21)-(3:21)"},"initial":null,"length":null,"span":"(3:17)-(3:22)","type":"array","variable":{"anno":[],"span":"(3:17)-(3:19)","tag":"value","value":{"contents":"bar","tag":"variable"}}}],"span":"(3:17)-(3:22)"},"span":"(3:9)-(3:22)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(3:9)-(3:15)"}},"tag":"statement"},{"anno":[],"comment":"@_   end segment","span":"(4:1)-(4:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(5:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 	self assert: programFile body first body size equals: 1.
 	seg := programFile body first body first.
@@ -1476,13 +1479,14 @@ c@_   end segment
 { #category : #'tests-esope' }
 JsonToIASTVisitorTest >> testSegmentDeclarationWithArrayAttributes [
 
-	| programFile seg |
-	programFile :=  self visitF77Code: '      subroutine hello
+"      subroutine hello
 c@_   segment, foo
         integer bar(n, m)
 c@_   end segment
       end
-'.
+"
+	| programFile seg |
+	programFile :=  self visitJsonCode:  '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment, foo","span":"(2:1)-(2:18)","tag":"comment"},{"anno":[],"label":null,"span":"(3:9)-(3:25)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(3:21)-(3:21)","upper":{"anno":[],"span":"(3:21)-(3:21)","tag":"value","value":{"contents":"n","tag":"variable"}}},{"anno":[],"lower":null,"span":"(3:24)-(3:24)","upper":{"anno":[],"span":"(3:24)-(3:24)","tag":"value","value":{"contents":"m","tag":"variable"}}}],"span":"(3:21)-(3:24)"},"initial":null,"length":null,"span":"(3:17)-(3:25)","type":"array","variable":{"anno":[],"span":"(3:17)-(3:19)","tag":"value","value":{"contents":"bar","tag":"variable"}}}],"span":"(3:17)-(3:25)"},"span":"(3:9)-(3:25)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(3:9)-(3:15)"}},"tag":"statement"},{"anno":[],"comment":"@_   end segment","span":"(4:1)-(4:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(5:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 	self assert: programFile body first body size equals: 1.
 	seg := programFile body first body first.
@@ -1503,13 +1507,15 @@ c@_   end segment
 { #category : #'tests-esope' }
 JsonToIASTVisitorTest >> testSegmentDeclarationWithArrayPointeurAttribute [
 
-	| programFile seg |
-	programFile :=  self visitF77Code: '      subroutine hello
+"
+      subroutine hello
 c@_   segment, foo
 c@_     pointeur bar(n, m).titi
 c@_   end segment
       end
-'.
+"
+	| programFile seg |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment, foo","span":"(2:1)-(2:18)","tag":"comment"},{"anno":[],"comment":"@_     pointeur bar(n, m).titi","span":"(3:1)-(3:31)","tag":"comment"},{"anno":[],"comment":"@_   end segment","span":"(4:1)-(4:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(5:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 	self assert: programFile body first body size equals: 1.
 	seg := programFile body first body first.

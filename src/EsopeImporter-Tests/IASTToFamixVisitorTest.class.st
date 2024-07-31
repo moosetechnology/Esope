@@ -8,7 +8,7 @@ Class {
 		'visitor',
 		'programFile'
 	],
-	#category : 'EsopeImporter-Tests-Visitor'
+	#category : #'EsopeImporter-Tests-Visitor'
 }
 
 { #category : #running }
@@ -487,6 +487,57 @@ IASTToFamixVisitorTest >> testFamixEsopeSegment [
 	| segment entity attribute |
 	segment := self defaultSegment: 'myseg' with: { 
 			           (#uname -> #character).
+			           (#status -> #logical).
+			           (#age -> #integer) }.
+
+	programFile body: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: { segment };
+			 yourself }.
+
+	entity := programFile accept: visitor.
+	
+	self assert: entity programUnits size equals: 1.
+
+	self assert: (visitor model allWithType: FamixEsopeSegment) size equals: 1.
+	entity := (visitor model allWithType: FamixEsopeSegment) first.
+	self assert: entity name equals: 'myseg'.
+	self assert: entity isType.
+	self assert: entity attributes size equals: 3.
+	
+	self assert: entity attributes size equals: 3.
+	attribute := entity attributes first.
+	self assert: attribute class equals: FamixFortranAttribute.
+	self assert: attribute name equals: 'uname'.
+	self assert: attribute declaredType name equals: 'character'.
+	
+	attribute := entity attributes second.
+	self assert: attribute class equals: FamixFortranAttribute.
+	self assert: attribute name equals: 'status'.
+	self assert: attribute declaredType name equals: 'logical'.
+	
+	attribute := entity attributes third.
+	self assert: attribute class equals: FamixFortranAttribute.
+	self assert: attribute name equals: 'age'.
+	self assert: attribute declaredType name equals: 'integer'.
+]
+
+{ #category : #'tests-esope' }
+IASTToFamixVisitorTest >> testFamixEsopeSegmentWithPointeur [
+
+	"
+      segment myseg
+        integer a1(n)
+c@_      pointeur a2(n).aseg
+      end segment
+	"
+
+	| segment entity attribute |
+	
+	self skip: #TODO. "not yet implement".
+	
+	segment := self defaultSegment: 'myseg' with: { 
+			           (#a1 -> #integer).
 			           (#status -> #logical).
 			           (#age -> #integer) }.
 
