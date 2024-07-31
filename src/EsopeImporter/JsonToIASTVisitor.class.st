@@ -9,7 +9,7 @@ Class {
 		'model',
 		'entityStack'
 	],
-	#category : 'EsopeImporter-Visitor'
+	#category : #'EsopeImporter-Visitor'
 }
 
 { #category : #'private - utilities' }
@@ -254,17 +254,23 @@ JsonToIASTVisitor >> visitDeclarationStatement: aDeclarationStatementNode [
 
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitDeclarator: aDeclaratorNode [
-	^self visitDeclaratorVariable: (aDeclaratorNode at: 'variable')
+	^self visitDeclaratorVariable: aDeclaratorNode
 ]
 
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitDeclaratorVariable: aDeclaratorVariableNode [
-	| data |
-	data := super visitDeclaratorVariable: aDeclaratorVariableNode.
+	| data dimensions |
+	data := super visitDeclaratorVariable: (aDeclaratorVariableNode at: 'variable').
+	dimensions := (aDeclaratorVariableNode at: 'dims' ifAbsent: []) 
+		ifNotNil: [ :dims | self visitDims: dims ].
 
 	^IASTVariable new
 		sourceAnchor: (self makeIndexedAnchor: data first) ;
 		entityName: data second ;
+		dimensions: (dimensions 
+			ifNotNil: [  dimensions collect: [:dim | dim third] ] 
+			ifNil: [ #() ] 
+		); 
 		yourself
 	
 	
@@ -321,22 +327,30 @@ JsonToIASTVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
 JsonToIASTVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
 
 	| data |
+	self flag: #FIXME. "Related to #esopeCommand: we take until the last but here we do not want the last  double quote char
+	So in the entityName, we remove this char. Need to find a better way to do that.
+	"
 	data := super visitEsopeIncludeComment: anEsopeIncludeCommentNode.
 	^ IASTInclude new
 		  sourceAnchor: (self makeIndexedAnchor: data second);
-		  entityName: data fourth;
+		  entityName: data fourth allButLast;
 		  includeCommand: data third;
 		  yourself
 ]
 
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
-	| data |
+	| data pointer |
 	data := super visitEsopePointeurComment: anEsopeCommentNode.
-	^IASTEsopePointer new
+	
+	pointer := IASTEsopePointer new
 		sourceAnchor: (self makeIndexedAnchor: data second) ;
 		entityName: data fourth ;
 		yourself.
+	
+	^entityStack
+		ifNotEmpty: [ entityStack top addAllDeclarations: { pointer } . nil ]
+		ifEmpty: [ pointer ]
 
 ]
 

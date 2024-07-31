@@ -1,15 +1,13 @@
 Class {
-	#name : 'EsopeFullGrammarTest',
-	#superclass : 'TestCase',
+	#name : #EsopeFullGrammarTest,
+	#superclass : #TestCase,
 	#instVars : [
 		'parser'
 	],
-	#category : 'EsopeImporter-Tests-Rewriter',
-	#package : 'EsopeImporter-Tests',
-	#tag : 'Rewriter'
+	#category : 'EsopeImporter-Tests-Rewriter'
 }
 
-{ #category : 'tests' }
+{ #category : #tests }
 EsopeFullGrammarTest class >> esopeBigFile [
 
 	^ '      subroutine vcstp(ov1,pshp1,pbeg1,pend1,ov2,status)
@@ -369,7 +367,7 @@ C     -- terminer en echec
 '
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 EsopeFullGrammarTest class >> esopeFileWithCallStatement [
 
 	^ '      subroutine valrma(
@@ -463,7 +461,7 @@ C     -- terminer en echec
 '
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 EsopeFullGrammarTest class >> esopeSmallFile [
 
 	^ '      subroutine stgbrk(
@@ -684,34 +682,34 @@ C
 '
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 EsopeFullGrammarTest >> parserClass [
 
 	^ PPEsopeGrammar
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 EsopeFullGrammarTest >> setUp [
 
 	super setUp.
 	parser := self parserClass new
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 EsopeFullGrammarTest >> testBigFile [
 
 	self deny:
 		(parser parse: self class esopeBigFile) isPetit2Failure
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 EsopeFullGrammarTest >> testEmptyFile [
 
 	self deny: (parser parse: '
 ') isPetit2Failure
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 EsopeFullGrammarTest >> testEsopePointeurFile [
 
 	self deny: (parser parse: '      subroutine stgbrk(
@@ -725,7 +723,7 @@ c     == sorties ==
 ') isPetit2Failure
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 EsopeFullGrammarTest >> testEsopeSegactFile [
 
 	self deny: (parser parse: '      subroutine stgbrk(
@@ -739,7 +737,7 @@ c     == sorties ==
 ') isPetit2Failure
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 EsopeFullGrammarTest >> testEsopeSegadjFile [
 
 	self deny: (parser parse: '      subroutine stgbrk(
@@ -754,7 +752,7 @@ c     == sorties ==
 ') isPetit2Failure
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 EsopeFullGrammarTest >> testEsopeSegdesFile [
 
 	self deny: (parser parse: '      subroutine stgbrk(
@@ -769,7 +767,7 @@ c     == sorties ==
 ') isPetit2Failure
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 EsopeFullGrammarTest >> testEsopeSeginiFile [
 
 	self deny: (parser parse: '      subroutine stgbrk(
@@ -784,7 +782,7 @@ c     == sorties ==
 ') isPetit2Failure
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 EsopeFullGrammarTest >> testNonEsopeFile [
 
 	self deny: (parser parse: '      subroutine stgbrk(
@@ -797,14 +795,14 @@ c     == sorties ==
 ') isPetit2Failure
 ]
 
-{ #category : 'running' }
+{ #category : #running }
 EsopeFullGrammarTest >> testSmallFile [
 
 	self deny:
 		(parser parse: self class esopeSmallFile) isPetit2Failure
 ]
 
-{ #category : 'tests' }
+{ #category : #tests }
 EsopeFullGrammarTest >> testStart [
 
 	self deny:

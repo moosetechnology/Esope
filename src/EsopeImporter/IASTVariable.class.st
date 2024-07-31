@@ -4,10 +4,10 @@ Class {
 	#instVars : [
 		'typeSpec',
 		'initialValue',
-		'dimension',
-		'isEsope'
+		'isEsope',
+		'dimensions'
 	],
-	#category : 'EsopeImporter-AST-IR'
+	#category : #'EsopeImporter-AST-IR'
 }
 
 { #category : #accessing }
@@ -17,15 +17,15 @@ IASTVariable >> accept: aVisitor [
 ]
 
 { #category : #accessing }
-IASTVariable >> dimension [
+IASTVariable >> dimensions [
 
-	^ dimension
+	^ dimensions
 ]
 
 { #category : #accessing }
-IASTVariable >> dimension: anObject [
+IASTVariable >> dimensions: anObject [
 
-	dimension := anObject
+	dimensions := anObject
 ]
 
 { #category : #accessing }

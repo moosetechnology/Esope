@@ -20,7 +20,7 @@ FortranAbstractJsonVisitor >> esopeCommand: anEsopeCommentString [
 	^(wordBoundaries size > 2)
 		ifTrue: [
 			{ (anEsopeCommentString copyFrom: wordBoundaries first to: wordBoundaries second) .
-			  (anEsopeCommentString copyFrom: wordBoundaries third to: wordBoundaries fourth) }
+			  (anEsopeCommentString copyFrom: wordBoundaries third to: wordBoundaries last) }
 		]
 		ifFalse: [ { anEsopeCommentString copyFrom: wordBoundaries first to: wordBoundaries second } ]
 ]
@@ -523,7 +523,7 @@ FortranAbstractJsonVisitor >> visitEqv: aEqvtoOperatorNode [
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeComment: anEsopeCommentNode [
-	"we separate each Esope command in a different visit methdo to give opportunity to
+	"we separate each Esope command in a different visit method to give opportunity to
 	 concrete visitors (subclasses) to treat them differently.
 	 But here, they are pretty much all the same, so they come down to the same treatment"
 
