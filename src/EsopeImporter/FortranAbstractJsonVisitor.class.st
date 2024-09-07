@@ -642,6 +642,7 @@ FortranAbstractJsonVisitor >> visitExpr: anExprNode [
 
 { #category : 'visiting expression' }
 FortranAbstractJsonVisitor >> visitExpression: aExpressionNode [
+
 	^self visitJsonElement: aExpressionNode
 ]
 
