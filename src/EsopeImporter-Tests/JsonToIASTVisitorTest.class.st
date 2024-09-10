@@ -880,6 +880,32 @@ c@_   IF (N.GT.0) SEGINI P
 	self assert: seg sourceAnchor endColumn equals: 29
 ]
 
+{ #category : 'tests-progUnit' }
+JsonToIASTVisitorTest >> testExternalStatement [
+	"PROGRAM TESTALT
+       EXTERNAL fct
+      END 
+"
+	| programFile fct |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:19)","statement":{"anno":[],"span":"(2:8)-(2:19)","tag":"external","vars":{"anno":[],"list":[{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"fct","tag":"variable"}}],"span":"(2:17)-(2:19)"}},"tag":"statement"}],"name":"testalt","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+
+
+	self assert: programFile body first body size equals: 1.
+	fct := programFile body first body first.
+
+	self assert: fct class equals: IASTExternalFunctionStatement.
+	self assert: fct entityName equals: 'fct'.
+
+	self assert: fct sourceAnchor notNil.
+	self assert: fct sourceAnchor class equals: IASTIndexedFileAnchor.
+	self assert: fct sourceAnchor fileName equals: './fortran77.f'.
+	self assert: fct sourceAnchor startLine equals: 2.
+	self assert: fct sourceAnchor startColumn equals: 17.
+	self assert: fct sourceAnchor endLine equals: 2.
+	self assert: fct sourceAnchor endColumn equals: 20.
+
+]
+
 { #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testFunctionWithFunctionInvocation [
 "      integer function efunc()

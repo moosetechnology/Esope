@@ -405,7 +405,10 @@ JsonToIASTVisitor >> visitExternalStatement: anExternalStatementNode [
 	| data |
 	data := super visitExternalStatement: anExternalStatementNode.
 
-	^ data second do: [ :anAccess | anAccess annotations: 'external' ]
+	^IASTExternalFunctionStatement new
+		entityName: data second first entityName ;
+		sourceAnchor: data second first sourceAnchor ;
+		yourself
 ]
 
 { #category : 'visiting statement' }
