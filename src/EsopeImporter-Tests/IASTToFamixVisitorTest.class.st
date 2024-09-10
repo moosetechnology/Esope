@@ -687,6 +687,28 @@ IASTToFamixVisitorTest >> testFamixFortran77ESOAtWithArrayArgument [
 ]
 
 { #category : 'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77ExternalFunction [
+
+	| entity |
+	programFile body: { IASTSubroutine new
+		entityName: 'sub';
+		body: { IASTExternalFunctionStatement new
+			entityName: 'fct';
+			yourself };
+		yourself }.
+
+	programFile accept: visitor.
+
+	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
+
+	self assert: entity programUnits first externalDeclarations size equals: 1.
+
+	entity := entity programUnits first externalDeclarations anyOne.
+	self assert: entity class equals: FamixF77ExternalDeclaration .
+	self assert: entity name equals: 'fct'
+]
+
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77Invocation [
 	| entity invocation caller callee |
 

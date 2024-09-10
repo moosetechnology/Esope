@@ -144,6 +144,22 @@ IASTToFamixFortranVisitor >> visitIASTEsopeSegment: aSegment [
 ]
 
 { #category : 'visiting' }
+IASTToFamixFortranVisitor >> visitIASTExternalFunctionStatement: anIASTExternalFunctionStatement [
+
+	| fct |
+	fct := (self newEntity: FamixF77ExternalDeclaration)
+		sourceAnchor:
+			(self visitIndexedFileAnchor: anIASTExternalFunctionStatement sourceAnchor) ;
+		name: anIASTExternalFunctionStatement entityName ;
+		programUnit: stack top ;
+		yourself.
+
+	self symbolTable: stack top at: fct name put: fct. 
+
+	^ fct
+]
+
+{ #category : 'visiting' }
 IASTToFamixFortranVisitor >> visitIASTFunction: aFunction [
 
 	| function |
