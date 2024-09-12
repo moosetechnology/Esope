@@ -15,12 +15,12 @@ JsonToIASTVisitorTest >> testAccessArrayWithIndices [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:21)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:19)-(2:20)","upper":{"anno":[],"span":"(2:19)-(2:20)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}}],"span":"(2:19)-(2:20)"},"initial":null,"length":null,"span":"(2:15)-(2:21)","type":"array","variable":{"anno":[],"span":"(2:15)-(2:17)","tag":"value","value":{"contents":"arr","tag":"variable"}}}],"span":"(2:15)-(2:21)"},"span":"(2:7)-(2:21)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:7)-(3:22)","statement":{"anno":[],"expression":{"anno":[],"expression":{"anno":[],"span":"(3:17)-(3:19)","tag":"value","value":{"contents":"arr","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:21)-(3:21)","tag":"value","value":{"contents":"i","tag":"variable"}},"name":null,"span":"(3:21)-(3:21)","tag":"single"}],"span":"(3:21)-(3:21)"},"span":"(3:17)-(3:22)","tag":"subscript"},"span":"(3:7)-(3:22)","tag":"assign_expression","target":{"anno":[],"span":"(3:7)-(3:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 	"body of 1st program-unit has 2 statements"
-	self assert: programFile progUnits first body size equals: 2.
+	self assert: programFile body first body size equals: 2.
 	"2nd statement has 2 expressions"
-	self assert: programFile progUnits first body second size equals: 2.
+	self assert: programFile body first body second size equals: 2.
 
 	"array access is seond expression of second statement"
-	var := programFile progUnits first body second second.
+	var := programFile body first body second second.
 	self assert: var class equals: IASTVarAccess.
 	self assert: var entityName equals: 'arr'.
 	self assert: var indices size equals: 1.
@@ -43,12 +43,12 @@ JsonToIASTVisitorTest >> testAccessArrayWithIndicesLiteral [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:21)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:19)-(2:20)","upper":{"anno":[],"span":"(2:19)-(2:20)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}}],"span":"(2:19)-(2:20)"},"initial":null,"length":null,"span":"(2:15)-(2:21)","type":"array","variable":{"anno":[],"span":"(2:15)-(2:17)","tag":"value","value":{"contents":"arr","tag":"variable"}}}],"span":"(2:15)-(2:21)"},"span":"(2:7)-(2:21)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:7)-(3:22)","statement":{"anno":[],"expression":{"anno":[],"expression":{"anno":[],"span":"(3:17)-(3:19)","tag":"value","value":{"contents":"arr","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:21)-(3:21)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"name":null,"span":"(3:21)-(3:21)","tag":"single"}],"span":"(3:21)-(3:21)"},"span":"(3:17)-(3:22)","tag":"subscript"},"span":"(3:7)-(3:22)","tag":"assign_expression","target":{"anno":[],"span":"(3:7)-(3:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 	"body of 1st program-unit has 2 statements"
-	self assert: programFile progUnits first body size equals: 2.
+	self assert: programFile body first body size equals: 2.
 	"2nd statement has 2 expressions"
-	self assert: programFile progUnits first body second size equals: 2.
+	self assert: programFile body first body second size equals: 2.
 
 	"array access is seond expression of second statement"
-	var := programFile progUnits first body second second.
+	var := programFile body first body second second.
 	self assert: var class equals: IASTVarAccess.
 	self assert: var entityName equals: 'arr'.
 	self assert: var indices size equals: 1.
@@ -67,12 +67,12 @@ JsonToIASTVisitorTest >> testAccessArrayWithSeveralIndices [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:29)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:19)-(2:20)","upper":{"anno":[],"span":"(2:19)-(2:20)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}},{"anno":[],"lower":null,"span":"(2:23)-(2:24)","upper":{"anno":[],"span":"(2:23)-(2:24)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}},{"anno":[],"lower":null,"span":"(2:27)-(2:28)","upper":{"anno":[],"span":"(2:27)-(2:28)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}}],"span":"(2:19)-(2:28)"},"initial":null,"length":null,"span":"(2:15)-(2:29)","type":"array","variable":{"anno":[],"span":"(2:15)-(2:17)","tag":"value","value":{"contents":"arr","tag":"variable"}}}],"span":"(2:15)-(2:29)"},"span":"(2:7)-(2:29)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:7)-(3:28)","statement":{"anno":[],"expression":{"anno":[],"expression":{"anno":[],"span":"(3:17)-(3:19)","tag":"value","value":{"contents":"arr","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:21)-(3:21)","tag":"value","value":{"contents":"x","tag":"variable"}},"name":null,"span":"(3:21)-(3:21)","tag":"single"},{"anno":[],"index":{"anno":[],"span":"(3:24)-(3:24)","tag":"value","value":{"contents":["2",null],"tag":"integer"}},"name":null,"span":"(3:24)-(3:24)","tag":"single"},{"anno":[],"index":{"anno":[],"span":"(3:27)-(3:27)","tag":"value","value":{"contents":"y","tag":"variable"}},"name":null,"span":"(3:27)-(3:27)","tag":"single"}],"span":"(3:21)-(3:27)"},"span":"(3:17)-(3:28)","tag":"subscript"},"span":"(3:7)-(3:28)","tag":"assign_expression","target":{"anno":[],"span":"(3:7)-(3:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 	"body of 1st program-unit has 2 statements"
-	self assert: programFile progUnits first body size equals: 2.
+	self assert: programFile body first body size equals: 2.
 	"2nd statement has 2 expressions"
-	self assert: programFile progUnits first body second size equals: 2.
+	self assert: programFile body first body second size equals: 2.
 
 	"array access is 2nd expression of 2nd statement"
-	var := programFile progUnits first body second second.
+	var := programFile body first body second second.
 	self assert: var class equals: IASTVarAccess.
 	self assert: var entityName equals: 'arr'.
 	self assert: var indices size equals: 3.
@@ -97,14 +97,14 @@ JsonToIASTVisitorTest >> testAssignementStatement [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:24)","statement":{"anno":[],"expression":{"anno":[],"span":"(2:17)-(2:24)","tag":"value","value":{"contents":"othervar","tag":"variable"}},"span":"(2:7)-(2:24)","tag":"assign_expression","target":{"anno":[],"span":"(2:7)-(2:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 2.
+	self assert: programFile body first body first size equals: 2.
 
-	var := programFile progUnits first body first first.
+	var := programFile body first body first first.
 	self assert: var class equals: IASTVarAccess.
 	self assert: var isWrite.
 	self assert: var entityName equals: 'somevar'.
 
-	var := programFile progUnits first body first second.
+	var := programFile body first body first second.
 	self assert: var class equals: IASTVarAccess.
 	self deny: var isWrite.
 	self assert: var entityName equals: 'othervar'.
@@ -121,17 +121,17 @@ JsonToIASTVisitorTest >> testAssignementStatementWithComplexRHS [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:35)","statement":{"anno":[],"expression":{"anno":[],"left":{"anno":[],"span":"(2:17)-(2:24)","tag":"value","value":{"contents":"othervar","tag":"variable"}},"op":{"tag":"addition"},"right":{"anno":[],"span":"(2:28)-(2:35)","tag":"value","value":{"contents":"thirdvar","tag":"variable"}},"span":"(2:17)-(2:35)","tag":"binary"},"span":"(2:7)-(2:35)","tag":"assign_expression","target":{"anno":[],"span":"(2:7)-(2:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 3.
+	self assert: programFile body first body first size equals: 3.
 
-	stmt := programFile progUnits first body first first.
+	stmt := programFile body first body first first.
 	self assert: stmt class equals: IASTVarAccess.
 	self assert: stmt entityName equals: 'somevar'.
 
-	stmt := programFile progUnits first body first second.
+	stmt := programFile body first body first second.
 	self assert: stmt class equals: IASTVarAccess.
 	self assert: stmt entityName equals: 'othervar'.
 
-	stmt := programFile progUnits first body first third.
+	stmt := programFile body first body first third.
 	self assert: stmt class equals: IASTVarAccess.
 	self assert: stmt entityName equals: 'thirdvar'.
 
@@ -147,7 +147,7 @@ JsonToIASTVisitorTest >> testAssignementStatementWithEsoAt [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:28)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:23)-(2:25)","tag":"value","value":{"contents":"var","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:23)-(2:25)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:27)-(2:27)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"tag":"expr"},"name":null,"span":"(2:27)-(2:27)"}],"span":"(2:23)-(2:27)"},"function":{"anno":[],"span":"(2:17)-(2:21)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:17)-(2:28)","tag":"function_call"},"span":"(2:7)-(2:28)","tag":"assign_expression","target":{"anno":[],"span":"(2:7)-(2:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 	"first statement in body"
-	stmt := programFile progUnits first body first.
+	stmt := programFile body first body first.
 	self assert: stmt size equals: 2.
 
 	self assert: stmt first class equals: IASTVarAccess.
@@ -155,6 +155,37 @@ JsonToIASTVisitorTest >> testAssignementStatementWithEsoAt [
 
 	self assert: stmt second class equals: IASTVarEsoAt.
 	self assert: stmt second entityName equals: 'd__'.
+
+]
+
+{ #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testBackspaceStatement [
+	"
+      program toto
+       BACKSPACE ( 2, IOSTAT=CODE, ERR=9 )
+      end	
+	"
+	| programFile stmt |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"/home/anquetil/w/SAPH/toto.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:41)","statement":{"anno":[],"span":"(2:7)-(2:41)","specification":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:19)-(2:19)","tag":"value","value":{"contents":["2",null],"tag":"integer"}},"name":null,"span":"(2:19)-(2:19)"},{"anno":[],"expr":{"anno":[],"span":"(2:29)-(2:32)","tag":"value","value":{"contents":"code","tag":"variable"}},"name":"iostat","span":"(2:22)-(2:32)"},{"anno":[],"expr":{"anno":[],"span":"(2:39)-(2:39)","tag":"value","value":{"contents":["9",null],"tag":"integer"}},"name":"err","span":"(2:35)-(2:39)"}],"span":"(2:17)-(2:41)"},"tag":"backspace"},"tag":"statement"}],"name":"toto","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+
+
+	stmt := programFile body first "=program toto" body first "=BACKSPACE".
+	self assert: stmt size equals: 3.
+	self assert: stmt first size equals: 0.
+	self assert: stmt second size equals: 2.
+	self assert: stmt third size equals: 1.
+
+	self assert: stmt second first class equals: IASTVarAccess.
+	self assert: stmt second first entityName equals: 'iostat'.
+	self assert: stmt second first isWrite.
+
+	self assert: stmt second second class equals: IASTVarAccess.
+	self assert: stmt second second entityName equals: 'code'.
+	self deny: stmt second second isWrite.
+
+	self assert: stmt third first class equals: IASTVarAccess.
+	self assert: stmt third first entityName equals: 'err'.
+	self assert: stmt third first isWrite.
 
 ]
 
@@ -169,9 +200,9 @@ JsonToIASTVisitorTest >> testBlockDataWithOneCommon [
 
 
 	self assert: programFile class equals: IASTProgramFile.
-	self assert: programFile progUnits size equals: 1.
+	self assert: programFile body size equals: 1.
 
-	blockdata := programFile progUnits first.
+	blockdata := programFile body first.
 	self assert: blockdata entityName equals: 'hello'.
 	self assert: blockdata body size equals: 1.
 	
@@ -196,10 +227,10 @@ JsonToIASTVisitorTest >> testBlockDataWithOneCommonOneData [
 
 
 	self assert: programFile class equals: IASTProgramFile.
-	self assert: programFile progUnits size equals: 1.
-	self assert: programFile progUnits first class equals: IASTBlockData.
+	self assert: programFile body size equals: 1.
+	self assert: programFile body first class equals: IASTBlockData.
 
-	blockdata := programFile progUnits first.
+	blockdata := programFile body first.
 	self assert: blockdata entityName equals: 'hello'.
 	self assert: blockdata body size equals: 3.
 	self assert: blockdata comments isEmpty.
@@ -216,9 +247,9 @@ JsonToIASTVisitorTest >> testCallToWrite [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(1:25)-(1:27)","tag":"value","value":{"contents":"msg","tag":"variable"}}],"span":"(1:25)-(1:27)"},"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:20)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:18)-(2:20)","tag":"value","value":{"contents":"msg","tag":"variable"}}],"span":"(2:18)-(2:20)"},"format":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:13)-(2:13)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:13)-(2:13)"},{"anno":[],"expr":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:15)-(2:15)"}],"span":"(2:12)-(2:16)"},"span":"(2:7)-(2:20)","tag":"write"},"tag":"statement"}],"name":"mysub","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
+	self assert: programFile body first body size equals: 1.
 
-	stmt := programFile progUnits first body first.
+	stmt := programFile body first body first.
 	self assert: stmt first class equals: IASTInvocation.
 	self assert: stmt first entityName equals: 'write'.
 	self assert: stmt first arguments size equals: 1.
@@ -237,8 +268,8 @@ JsonToIASTVisitorTest >> testComment [
 	| programFile stmt |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"comment":"     blah","span":"(1:1)-(1:10)","tag":"comment"}]}'.
 
-	self assert: programFile progUnits size equals: 1.
-	stmt := programFile progUnits first.
+	self assert: programFile body size equals: 1.
+	stmt := programFile body first.
 	self assert: stmt class equals: IASTComment.
 	self assert: stmt text equals: '     blah'.
 
@@ -262,8 +293,8 @@ c     blah
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"     blah","span":"(2:1)-(2:10)","tag":"comment"}],"name":"hello","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
-	stmt := programFile progUnits first body first.
+	self assert: programFile body first body size equals: 1.
+	stmt := programFile body first body first.
 
 	self assert: stmt class equals: IASTComment.
 	self assert: stmt text equals: '     blah'.
@@ -280,9 +311,10 @@ JsonToIASTVisitorTest >> testCommentOutside [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"comment":"     blah","span":"(1:1)-(1:10)","tag":"comment"},{"anno":[],"arguments":null,"blocks":[],"name":"hello","result":null,"span":"(2:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}}]}'.
 
 
-	self assert: programFile progUnits size equals: 2.
-	stmt := programFile progUnits first.
+	self assert: programFile body size equals: 2.
+	stmt := programFile body first.
 	self assert: stmt class equals: IASTComment.
+	self assert: stmt isProgUnit.
 	self assert: stmt text equals: '     blah'.
 
 ]
@@ -298,7 +330,35 @@ JsonToIASTVisitorTest >> testContinueStatement [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:14)","statement":{"anno":[],"span":"(2:7)-(2:14)","tag":"continue"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
 
 
-	self assert: programFile progUnits first body isEmpty
+	self assert: programFile body first body isEmpty
+]
+
+{ #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testDeref [
+	"subroutine hello
+	   ptr.att = 5
+      end"
+
+	| programFile var |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"/home/anquetil/Pharo/images/esope-import/srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:18)","statement":{"anno":[],"expression":{"anno":[],"span":"(2:18)-(2:18)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"span":"(2:8)-(2:18)","tag":"assign_expression","target":{"anno":[],"expression":{"anno":[],"span":"(2:8)-(2:10)","tag":"value","value":{"contents":"ptr","tag":"variable"}},"field":{"anno":[],"span":"(2:12)-(2:14)","tag":"value","value":{"contents":"att","tag":"variable"}},"span":"(2:8)-(2:14)","tag":"deref"}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:9)-(3:10)","subprograms":null,"tag":"subroutine"}]}'.
+
+	self assert: programFile body first body size equals: 1.
+	"statement has 1 expression"
+	self assert: programFile body first body anyOne size equals: 1.
+
+	var := programFile body first body anyOne anyOne.
+	self assert: var class equals: IASTVarAccess.
+	self assert: var entityName equals: 'ptr'.
+	self assert: var isWrite.
+	self assert: var dereferencedVariable isNotNil.
+
+	var := var dereferencedVariable.
+	self assert: var class equals: IASTVarAccess.
+	self assert: var entityName equals: 'att'.
+	self deny: var isWrite.
+	self assert: var dereferencedVariable isNil.
+
+
 ]
 
 { #category : #'tests-esope' }
@@ -317,9 +377,9 @@ JsonToIASTVisitorTest >> testESOAtWithArrayArgument [
 	programFile := self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:23)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(2:21)-(2:22)","upper":{"anno":[],"span":"(2:21)-(2:22)","tag":"value","value":{"contents":["10",null],"tag":"integer"}}}],"span":"(2:21)-(2:22)"},"initial":null,"length":null,"span":"(2:17)-(2:23)","type":"array","variable":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"arr","tag":"variable"}}}],"span":"(2:17)-(2:23)"},"span":"(2:9)-(2:23)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:9)-(2:15)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:9)-(3:25)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(3:17)-(3:17)","tag":"value","value":{"contents":"y","tag":"variable"}},"tag":"expr"},"name":null,"span":"(3:17)-(3:17)"},{"anno":[],"expr":{"contents":{"anno":[],"expression":{"anno":[],"span":"(3:19)-(3:21)","tag":"value","value":{"contents":"arr","tag":"variable"}},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"span":"(3:23)-(3:23)","tag":"value","value":{"contents":"z","tag":"variable"}},"name":null,"span":"(3:23)-(3:23)","tag":"single"}],"span":"(3:23)-(3:23)"},"span":"(3:19)-(3:24)","tag":"subscript"},"tag":"expr"},"name":null,"span":"(3:19)-(3:24)"}],"span":"(3:17)-(3:24)"},"function":{"anno":[],"span":"(3:13)-(3:15)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(3:13)-(3:25)","tag":"function_call"},"span":"(3:9)-(3:25)","tag":"assign_expression","target":{"anno":[],"span":"(3:9)-(3:9)","tag":"value","value":{"contents":"x","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 	"body of 1st program-unit, then second statement"
-	self assert: programFile progUnits first body second size equals: 2.
+	self assert: programFile body first body second size equals: 2.
 	"2nd expression of the 2nd statement"
-	d__ := programFile progUnits first body second second.
+	d__ := programFile body first body second second.
 
 	self assert: d__ class equals: IASTVarEsoAt.
 	self assert: d__ entities size equals: 2.
@@ -347,9 +407,9 @@ JsonToIASTVisitorTest >> testEmptyBlockData [
 
 
 	self assert: programFile class equals: IASTProgramFile.
-	self assert: programFile progUnits size equals: 1.
-	self assert: programFile progUnits first class equals: IASTBlockData.
-	block := programFile progUnits first.
+	self assert: programFile body size equals: 1.
+	self assert: programFile body first class equals: IASTBlockData.
+	block := programFile body first.
 	self assert: block entityName equals: 'hello'.
 	self assert: block body isEmpty.
 	self assert: block comments isEmpty.
@@ -382,9 +442,9 @@ JsonToIASTVisitorTest >> testEmptyFunction [
 
 
 	self assert: programFile class equals: IASTProgramFile.
-	self assert: programFile progUnits size equals: 1.
-	self assert: programFile progUnits first class equals: IASTFunction.
-	fct := programFile progUnits first.
+	self assert: programFile body size equals: 1.
+	self assert: programFile body first class equals: IASTFunction.
+	fct := programFile body first.
 	self assert: fct entityName equals: 'hello'.
 	self assert: fct parameters isEmpty.
 	self assert: fct returnType class equals: IASTTypeRef.
@@ -410,7 +470,7 @@ JsonToIASTVisitorTest >> testEmptyFunctionWithArguments [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(1:30)-(1:30)","tag":"value","value":{"contents":"i","tag":"variable"}},{"anno":[],"span":"(1:32)-(1:32)","tag":"value","value":{"contents":"j","tag":"variable"}}],"span":"(1:30)-(1:32)"},"blocks":[],"name":"hello","result":null,"span":"(1:7)-(2:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
 
 
-	fct := programFile progUnits first.
+	fct := programFile body first.
 	self assert: fct entityName equals: 'hello'.
 	self assert: fct parameters size equals: 2.
 
@@ -434,9 +494,9 @@ JsonToIASTVisitorTest >> testEmptyProgram [
 
 
 	self assert: programFile class equals: IASTProgramFile.
-	self assert: programFile progUnits size equals: 1.
-	self assert: programFile progUnits first class equals: IASTMainProgram.
-	prog := programFile progUnits first.
+	self assert: programFile body size equals: 1.
+	self assert: programFile body first class equals: IASTMainProgram.
+	prog := programFile body first.
 	self assert: prog entityName equals: 'hello'.
 	self assert: prog body isEmpty.
 	self assert: prog comments isEmpty.
@@ -460,9 +520,9 @@ JsonToIASTVisitorTest >> testEmptyReturnStatement [
 	| programFile fct |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:12)","statement":{"anno":[],"span":"(2:7)-(2:12)","tag":"return","target":null},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
-	self assert: programFile progUnits size equals: 1.
+	self assert: programFile body size equals: 1.
 	
-	fct := programFile progUnits first.
+	fct := programFile body first.
 	self assert: fct body isEmpty
 ]
 
@@ -476,9 +536,9 @@ JsonToIASTVisitorTest >> testEmptySubroutine [
 
 
 	self assert: programFile class equals: IASTProgramFile.
-	self assert: programFile progUnits size equals: 1.
-	self assert: programFile progUnits first class equals: IASTSubroutine.
-	sub := programFile progUnits first.
+	self assert: programFile body size equals: 1.
+	self assert: programFile body first class equals: IASTSubroutine.
+	sub := programFile body first.
 	self assert: sub entityName equals: 'hello'.
 	self assert: sub parameters isEmpty.
 	self assert: sub body isEmpty.
@@ -501,7 +561,7 @@ JsonToIASTVisitorTest >> testEmptySubroutineOneParam [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(1:25)-(1:28)","tag":"value","value":{"contents":"name","tag":"variable"}}],"span":"(1:25)-(1:28)"},"blocks":[],"name":"hello","options":[null,null],"span":"(1:7)-(2:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	sub := programFile progUnits first.
+	sub := programFile body first.
 	self assert: sub entityName equals: 'hello'.
 	self assert: sub parameters size equals: 1.
 	self assert: sub parameters first class equals: IASTParameter.
@@ -518,7 +578,7 @@ JsonToIASTVisitorTest >> testEmptySubroutineTwoParams [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(1:25)-(1:30)","tag":"value","value":{"contents":"param1","tag":"variable"}},{"anno":[],"span":"(1:33)-(1:38)","tag":"value","value":{"contents":"param2","tag":"variable"}}],"span":"(1:25)-(1:38)"},"blocks":[],"name":"hello","options":[null,null],"span":"(1:7)-(2:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	sub := programFile progUnits first.
+	sub := programFile body first.
 	self assert: sub entityName equals: 'hello'.
 	self assert: sub parameters size equals: 2.
 	self assert: sub parameters first class equals: IASTParameter.
@@ -538,8 +598,8 @@ JsonToIASTVisitorTest >> testEsoArTwoArgs [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:26)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:15)-(2:17)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"span":"(2:19)-(2:21)","tag":"value","value":{"contents":"bar","tag":"variable"}}],"span":"(2:15)-(2:21)"},"body":{"anno":[],"span":"(2:26)-(2:26)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"name":{"anno":[],"span":"(2:9)-(2:13)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:26)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 1.
-	stmt := programFile progUnits first body first first.
+	self assert: programFile body first body first size equals: 1.
+	stmt := programFile body first body first first.
 	self assert: stmt class equals: IASTVarEsoAt.
 	self assert: stmt isWrite.
 	self assert: stmt entities size equals: 2.
@@ -559,10 +619,10 @@ JsonToIASTVisitorTest >> testEsoArWithDotArg [
 		               '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:30)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:13)-(2:13)","tag":"value","value":{"contents":"p","tag":"variable"}},{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:21)-(2:21)","tag":"value","value":{"contents":"p","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:21)-(2:21)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:23)-(2:23)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:23)-(2:23)"}],"span":"(2:21)-(2:23)"},"function":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:17)-(2:24)","tag":"function_call"},"tag":"expr"},"name":null,"span":"(2:17)-(2:24)"}],"span":"(2:17)-(2:24)"},"function":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"a","tag":"variable"}},"span":"(2:15)-(2:25)","tag":"function_call"}],"span":"(2:13)-(2:25)"},"body":{"anno":[],"span":"(2:30)-(2:30)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"name":{"anno":[],"span":"(2:9)-(2:11)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:30)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 1.
+	self assert: programFile body first body first size equals: 1.
 
 	"first statement in body, first entity in statement"
-	d__ := programFile progUnits first body first first.
+	d__ := programFile body first body first first.
 	self assert: d__ class equals: IASTVarEsoAt.
 	self assert: d__ entities size equals: 2.
 	self assert: d__ isWrite.
@@ -599,8 +659,8 @@ JsonToIASTVisitorTest >> testEsoArWithEsoAtArg [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:10)-(2:28)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:14)-(2:16)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:22)-(2:22)","tag":"value","value":{"contents":["2",null],"tag":"integer"}},"tag":"expr"},"name":null,"span":"(2:22)-(2:22)"}],"span":"(2:22)-(2:22)"},"function":{"anno":[],"span":"(2:18)-(2:20)","tag":"value","value":{"contents":"bar","tag":"variable"}},"span":"(2:18)-(2:23)","tag":"function_call"}],"span":"(2:14)-(2:23)"},"body":{"anno":[],"span":"(2:28)-(2:28)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"name":{"anno":[],"span":"(2:10)-(2:12)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:10)-(2:28)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 1.
-	d__ := programFile progUnits first body first first.
+	self assert: programFile body first body first size equals: 1.
+	d__ := programFile body first body first first.
 
 	self assert: d__ class equals: IASTVarEsoAt.
 	self assert: d__ isWrite.
@@ -632,8 +692,8 @@ JsonToIASTVisitorTest >> testEsoArWithVarArg [
 		               '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:27)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:21)-(2:21)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:21)-(2:21)"}],"span":"(2:21)-(2:21)"},"function":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"bar","tag":"variable"}},"span":"(2:17)-(2:22)","tag":"function_call"}],"span":"(2:13)-(2:22)"},"body":{"anno":[],"span":"(2:27)-(2:27)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"name":{"anno":[],"span":"(2:9)-(2:11)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:27)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 1.
-	d__ := programFile progUnits first body first first.
+	self assert: programFile body first body first size equals: 1.
+	d__ := programFile body first body first first.
 
 	self assert: d__ class equals: IASTVarEsoAt.
 	self assert: d__ isWrite.
@@ -661,9 +721,9 @@ JsonToIASTVisitorTest >> testEsoAtOneArg [
 	| programFile stmt |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:24)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"span":"(2:17)-(2:17)","tag":"value","value":{"contents":["2",null],"tag":"integer"}}],"span":"(2:13)-(2:17)"},"body":{"anno":[],"span":"(2:22)-(2:24)","tag":"value","value":{"contents":[{"exponent":{"letter":"e","num":"0"},"significand":"5.3"},null],"tag":"real"}},"name":{"anno":[],"span":"(2:9)-(2:11)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:24)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
+	self assert: programFile body first body first size equals: 1.
 
-	self assert: programFile progUnits first body first size equals: 1.
-	stmt := programFile progUnits first body first first.
+	stmt := programFile body first body first first.
 	self assert: stmt class equals: IASTVarEsoAt.
 	self assert: stmt isWrite.
 	self assert: stmt entities size equals: 1.
@@ -682,8 +742,8 @@ JsonToIASTVisitorTest >> testEsoAtTwoArgs [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:24)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"bar","tag":"variable"}}],"span":"(2:13)-(2:19)"},"body":{"anno":[],"span":"(2:24)-(2:24)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"name":{"anno":[],"span":"(2:9)-(2:11)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:24)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 1.
-	stmt := programFile progUnits first body first first.
+	self assert: programFile body first body first size equals: 1.
+	stmt := programFile body first body first first.
 	self assert: stmt class equals: IASTVarEsoAt.
 	self assert: stmt isWrite.
 	self assert: stmt entities size equals: 2.
@@ -704,12 +764,12 @@ JsonToIASTVisitorTest >> testEsoAtTwoArgsReceivesVar [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:31)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"baz","tag":"variable"}},{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"bar","tag":"variable"}}],"span":"(2:13)-(2:19)"},"body":{"anno":[],"span":"(2:24)-(2:31)","tag":"value","value":{"contents":"othervar","tag":"variable"}},"name":{"anno":[],"span":"(2:9)-(2:11)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:9)-(2:31)","tag":"function"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 2.
+	self assert: programFile body first body first size equals: 2.
 
-	var := programFile progUnits first body first first.
+	var := programFile body first body first first.
 	self assert: var class equals: IASTVarEsoAt.
 
-	var := programFile progUnits first body first second.
+	var := programFile body first body first second.
 	self assert: var class equals: IASTVarAccess.
 	self assert: var entityName equals: 'othervar'.
 	self deny: var isWrite.
@@ -725,8 +785,8 @@ JsonToIASTVisitorTest >> testEsoSl [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:20)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:17)-(2:17)","tag":"value","value":{"contents":"a","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:17)-(2:17)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:19)-(2:19)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:19)-(2:19)"}],"span":"(2:17)-(2:19)"},"function":{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"s__","tag":"variable"}},"span":"(2:13)-(2:20)","tag":"function_call"},"span":"(2:9)-(2:20)","tag":"assign_expression","target":{"anno":[],"span":"(2:9)-(2:9)","tag":"value","value":{"contents":"n","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 2.
-	stmt := programFile progUnits first body first second.
+	self assert: programFile body first body first size equals: 2.
+	stmt := programFile body first body first second.
 	self assert: stmt class equals: IASTVarEsoSl.
 	self assert: stmt entities size equals: 2.
 	
@@ -747,8 +807,8 @@ JsonToIASTVisitorTest >> testEsoSlWithDot [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:27)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:21)-(2:21)","tag":"value","value":{"contents":"p","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:21)-(2:21)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:23)-(2:23)","tag":"value","value":{"contents":"a","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:23)-(2:23)"}],"span":"(2:21)-(2:23)"},"function":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:17)-(2:24)","tag":"function_call"},"tag":"expr"},"name":null,"span":"(2:17)-(2:24)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:26)-(2:26)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:26)-(2:26)"}],"span":"(2:17)-(2:26)"},"function":{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"s__","tag":"variable"}},"span":"(2:13)-(2:27)","tag":"function_call"},"span":"(2:9)-(2:27)","tag":"assign_expression","target":{"anno":[],"span":"(2:9)-(2:9)","tag":"value","value":{"contents":"n","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 2.
-	stmt := programFile progUnits first body first second.
+	self assert: programFile body first body first size equals: 2.
+	stmt := programFile body first body first second.
 	self assert: stmt class equals: IASTVarEsoSl.
 	self assert: stmt entities size equals: 2.
 	
@@ -773,8 +833,8 @@ JsonToIASTVisitorTest >> testEsoSlWithTwoDot [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:34)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:21)-(2:21)","tag":"value","value":{"contents":"p","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:21)-(2:21)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:23)-(2:23)","tag":"value","value":{"contents":"a","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:23)-(2:23)"}],"span":"(2:21)-(2:23)"},"function":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:17)-(2:24)","tag":"function_call"},"tag":"expr"},"name":null,"span":"(2:17)-(2:24)"},{"anno":[],"expr":{"contents":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:30)-(2:30)","tag":"value","value":{"contents":"p","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:30)-(2:30)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:32)-(2:32)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:32)-(2:32)"}],"span":"(2:30)-(2:32)"},"function":{"anno":[],"span":"(2:26)-(2:28)","tag":"value","value":{"contents":"d__","tag":"variable"}},"span":"(2:26)-(2:33)","tag":"function_call"},"tag":"expr"},"name":null,"span":"(2:26)-(2:33)"}],"span":"(2:17)-(2:33)"},"function":{"anno":[],"span":"(2:13)-(2:15)","tag":"value","value":{"contents":"s__","tag":"variable"}},"span":"(2:13)-(2:34)","tag":"function_call"},"span":"(2:9)-(2:34)","tag":"assign_expression","target":{"anno":[],"span":"(2:9)-(2:9)","tag":"value","value":{"contents":"n","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 2.
-	stmt := programFile progUnits first body first second.
+	self assert: programFile body first body first size equals: 2.
+	stmt := programFile body first body first second.
 	self assert: stmt class equals: IASTVarEsoSl.
 	self assert: stmt entities size equals: 2.
 	self assert: stmt entities first class equals: IASTVarEsoAt.
@@ -804,13 +864,13 @@ c@_   IF (N.GT.0) SEGINI P
 	
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"test.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   IF (N.GT.0) SEGINI P","span":"(2:1)-(2:26)","tag":"comment"}],"name":"sub","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
-	self assert: programFile progUnits size equals: 1.
+	self assert: programFile body size equals: 1.
 	
-	cond := programFile progUnits first body first first.
+	cond := programFile body first body first first.
 	self assert: cond class equals: IASTVarAccess.
 	self assert: cond entityName equals: 'n'.
 
-	seg := programFile progUnits first body first second.
+	seg := programFile body first body first second.
 	self assert: seg class equals: IASTEsopeSegCommand.
 	self assert: seg entityName equals: 'p'.
 	self assert: seg esopeCommand equals: 'segini'.
@@ -828,22 +888,18 @@ JsonToIASTVisitorTest >> testFunctionWithFunctionInvocation [
       end
 "
 
-	| programFile fct |
+	| programFile stmt |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:22)","statement":{"anno":[],"expression":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:18)-(2:18)","tag":"value","value":{"contents":"i","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:18)-(2:18)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:21)-(2:21)","tag":"value","value":{"contents":"j","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:21)-(2:21)"}],"span":"(2:18)-(2:21)"},"function":{"anno":[],"span":"(2:11)-(2:15)","tag":"value","value":{"contents":"ifunc","tag":"variable"}},"span":"(2:11)-(2:22)","tag":"function_call"},"span":"(2:7)-(2:22)","tag":"assign_expression","target":{"anno":[],"span":"(2:7)-(2:7)","tag":"value","value":{"contents":"i","tag":"variable"}}},"tag":"statement"}],"name":"efunc","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
 
 
-	self assert: programFile progUnits size equals: 1.
+	self assert: programFile body size equals: 1.
 	
-	fct := programFile progUnits first.
+	stmt := programFile body first body first.
+	self assert: stmt second class equals: IASTInvocation.
+	self assert: stmt second entityName equals: 'ifunc'.
+	self assert: stmt second arguments size equals: 2.
+	self assert: stmt second sourceAnchor isNotNil.
 
-	self assert: fct class equals: IASTFunction.
-	self assert: fct entityName equals: 'efunc'.
-	self assert: fct body first size equals: 2.
-	self assert: fct sourceAnchor startLine equals: 1.
-	self assert: fct sourceAnchor startColumn equals: 7.
-	self assert: fct sourceAnchor endLine equals: 3.
-	self assert: fct sourceAnchor endColumn equals: 10.
-	
 ]
 
 { #category : #'tests-statement' }
@@ -857,7 +913,7 @@ JsonToIASTVisitorTest >> testGotoStatement [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:14)","statement":{"anno":[],"span":"(2:7)-(2:14)","tag":"goto","target":{"anno":[],"span":"(2:12)-(2:14)","tag":"value","value":{"contents":["100",null],"tag":"integer"}}},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
 
 
-	self assert: programFile progUnits first body isEmpty
+	self assert: programFile body first body isEmpty
 ]
 
 { #category : #'tests-statement' }
@@ -869,9 +925,9 @@ JsonToIASTVisitorTest >> testIfStatement [
 	| programFile fct |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"tmp.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:15)","statement":{"anno":[],"condition":{"anno":[],"span":"(2:10)-(2:10)","tag":"value","value":{"contents":"a","tag":"variable"}},"span":"(2:7)-(2:15)","statement":{"anno":[],"expression":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"span":"(2:13)-(2:15)","tag":"assign_expression","target":{"anno":[],"span":"(2:13)-(2:13)","tag":"value","value":{"contents":"a","tag":"variable"}}},"tag":"if_logical"},"tag":"statement"}],"name":"hello","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
 
-	self assert: programFile progUnits size equals: 1.
+	self assert: programFile body size equals: 1.
 	
-	fct := programFile progUnits first.
+	fct := programFile body first.
 	self assert: fct body first first class equals: IASTVarAccess.
 	self assert: fct body first first entityName equals: 'a'.
 	self assert: fct body first second first class equals: IASTVarAccess.
@@ -889,9 +945,9 @@ JsonToIASTVisitorTest >> testImplicitNoneStatement [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:20)","statement":{"anno":[],"items":null,"span":"(2:8)-(2:20)","tag":"implicit"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
+	self assert: programFile body first body size equals: 1.
 
-	stmt := programFile progUnits first body first.
+	stmt := programFile body first body first.
 	self assert: stmt class equals: IASTImplicit.
 	self assert: stmt rules isNil.
 ]
@@ -907,9 +963,9 @@ JsonToIASTVisitorTest >> testImplicitStatementSeveralRanges [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:39)","statement":{"anno":[],"items":{"anno":[],"list":[{"anno":[],"elements":{"anno":[],"list":[{"anno":[],"from":"c","span":"(2:28)-(2:30)","to":"e"},{"anno":[],"from":"h","span":"(2:33)-(2:33)","to":null},{"anno":[],"from":"l","span":"(2:36)-(2:38)","to":"m"}],"span":"(2:28)-(2:38)"},"span":"(2:17)-(2:39)","type":{"anno":[],"base_type":"character","selector":null,"span":"(2:17)-(2:25)"}}],"span":"(2:17)-(2:39)"},"span":"(2:8)-(2:39)","tag":"implicit"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
+	self assert: programFile body first body size equals: 1.
 
-	stmt := programFile progUnits first body first.
+	stmt := programFile body first body first.
 	self assert: stmt class equals: IASTImplicit.
 	self assert: stmt rules isCollection.
 	self assert: stmt rules size equals: 1.
@@ -944,9 +1000,9 @@ JsonToIASTVisitorTest >> testImplicitStatementSimpleChar [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:29)","statement":{"anno":[],"items":{"anno":[],"list":[{"anno":[],"elements":{"anno":[],"list":[{"anno":[],"from":"c","span":"(2:28)-(2:28)","to":null}],"span":"(2:28)-(2:28)"},"span":"(2:17)-(2:29)","type":{"anno":[],"base_type":"character","selector":null,"span":"(2:17)-(2:25)"}}],"span":"(2:17)-(2:29)"},"span":"(2:8)-(2:29)","tag":"implicit"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
+	self assert: programFile body first body size equals: 1.
 
-	stmt := programFile progUnits first body first.
+	stmt := programFile body first body first.
 	self assert: stmt class equals: IASTImplicit.
 	self assert: stmt rules size equals: 1.
 
@@ -973,9 +1029,9 @@ JsonToIASTVisitorTest >> testImplicitStatementSimpleRange [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:31)","statement":{"anno":[],"items":{"anno":[],"list":[{"anno":[],"elements":{"anno":[],"list":[{"anno":[],"from":"c","span":"(2:28)-(2:30)","to":"e"}],"span":"(2:28)-(2:30)"},"span":"(2:17)-(2:31)","type":{"anno":[],"base_type":"character","selector":null,"span":"(2:17)-(2:25)"}}],"span":"(2:17)-(2:31)"},"span":"(2:8)-(2:31)","tag":"implicit"},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
+	self assert: programFile body first body size equals: 1.
 
-	stmt := programFile progUnits first body first.
+	stmt := programFile body first body first.
 	self assert: stmt class equals: IASTImplicit.
 	self assert: stmt rules size equals: 1.
 
@@ -1000,8 +1056,8 @@ c@_#include ""file.inc""
 		               '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_#include \"file.inc\"","span":"(2:1)-(2:22)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
-	stmt := programFile progUnits first body first.
+	self assert: programFile body first body size equals: 1.
+	stmt := programFile body first body first.
 	self assert: stmt class equals: IASTInclude.
 	self assert: stmt includeCommand equals: 'include'.
 	self assert: stmt entityName equals: 'file.inc'
@@ -1017,8 +1073,8 @@ JsonToIASTVisitorTest >> testIntegerVariableDeclaration [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:15)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:15)-(2:15)","type":"scalar","variable":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"i","tag":"variable"}}}],"span":"(2:15)-(2:15)"},"span":"(2:7)-(2:15)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 1.
-	var := programFile progUnits first body first first.
+	self assert: programFile body first body first size equals: 1.
+	var := programFile body first body first first.
 
 	self assert: var class equals: IASTVariable.
 	self assert: var entityName equals: 'i'.
@@ -1026,6 +1082,21 @@ JsonToIASTVisitorTest >> testIntegerVariableDeclaration [
 	self assert: var typeSpec entityName equals: 'integer'.
 	self assert: var sourceAnchor isNotNil.
 	self assert: var sourceAnchor class equals: IASTIndexedFileAnchor
+]
+
+{ #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testIntrinsicStatement [
+"      subroutine hello
+      intrinsic SIN, COS
+      end
+"
+	| programFile |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:24)","statement":{"anno":[],"span":"(2:7)-(2:24)","tag":"intrinsic","vars":{"anno":[],"list":[{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"sin","tag":"variable"}},{"anno":[],"span":"(2:22)-(2:24)","tag":"value","value":{"contents":"cos","tag":"variable"}}],"span":"(2:17)-(2:24)"}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+
+	self assert: programFile body first body size equals: 0.
+
+	"note: currently not declaring the intrinsic sub-prgrams"
 ]
 
 { #category : #'tests-statement' }
@@ -1039,23 +1110,52 @@ JsonToIASTVisitorTest >> testMultipleStatements [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:21)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:15)-(2:21)","type":"scalar","variable":{"anno":[],"span":"(2:15)-(2:21)","tag":"value","value":{"contents":"somevar","tag":"variable"}}}],"span":"(2:15)-(2:21)"},"span":"(2:7)-(2:21)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(3:7)-(3:27)","statement":{"anno":[],"expression":{"anno":[],"left":{"anno":[],"span":"(3:17)-(3:17)","tag":"value","value":{"contents":["3",null],"tag":"integer"}},"op":{"tag":"multiplication"},"right":{"anno":[],"span":"(3:21)-(3:27)","tag":"value","value":{"contents":"somevar","tag":"variable"}},"span":"(3:17)-(3:27)","tag":"binary"},"span":"(3:7)-(3:27)","tag":"assign_expression","target":{"anno":[],"span":"(3:7)-(3:13)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 2.
+	self assert: programFile body first body size equals: 2.
 
-	stmt := programFile progUnits first body first first.
+	stmt := programFile body first body first first.
 	self assert: stmt class equals: IASTVariable.
 	self assert: stmt typeSpec class equals: IASTTypeRef.
 	self assert: stmt entityName equals: 'somevar'.
 
-	stmt := programFile progUnits first body second first.
+	stmt := programFile body first body second first.
 	self assert: stmt class equals: IASTVarAccess.
 	self assert: stmt isWrite.
 	self assert: stmt entityName equals: 'somevar'.
 
-	stmt := programFile progUnits first body second second.
+	stmt := programFile body first body second second.
 	self assert: stmt class equals: IASTVarAccess.
 	self deny: stmt isWrite.
 	self assert: stmt entityName equals: 'somevar'.
 
+]
+
+{ #category : #'tests-statement' }
+JsonToIASTVisitorTest >> testParameterStatement [
+"      subroutine paramstmt
+      PARAMETER (LEGERE=1, GRAVE=2, FATALE=3, FINALE=4)
+      END
+"
+	
+	| programFile stmt access |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"/home/anquetil/Pharo/images/fortran-metamodels/srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:55)","statement":{"anno":[],"declarators":{"anno":[],"list":[{"anno":[],"initial":{"anno":[],"span":"(2:25)-(2:25)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"length":null,"span":"(2:18)-(2:25)","type":"scalar","variable":{"anno":[],"span":"(2:18)-(2:23)","tag":"value","value":{"contents":"legere","tag":"variable"}}},{"anno":[],"initial":{"anno":[],"span":"(2:34)-(2:34)","tag":"value","value":{"contents":["2",null],"tag":"integer"}},"length":null,"span":"(2:28)-(2:34)","type":"scalar","variable":{"anno":[],"span":"(2:28)-(2:32)","tag":"value","value":{"contents":"grave","tag":"variable"}}},{"anno":[],"initial":{"anno":[],"span":"(2:44)-(2:44)","tag":"value","value":{"contents":["3",null],"tag":"integer"}},"length":null,"span":"(2:37)-(2:44)","type":"scalar","variable":{"anno":[],"span":"(2:37)-(2:42)","tag":"value","value":{"contents":"fatale","tag":"variable"}}},{"anno":[],"initial":{"anno":[],"span":"(2:54)-(2:54)","tag":"value","value":{"contents":["4",null],"tag":"integer"}},"length":null,"span":"(2:47)-(2:54)","type":"scalar","variable":{"anno":[],"span":"(2:47)-(2:52)","tag":"value","value":{"contents":"finale","tag":"variable"}}}],"span":"(2:18)-(2:54)"},"span":"(2:7)-(2:55)","tag":"parameter"},"tag":"statement"}],"name":"paramstmt","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+
+	self assert: programFile body first body size equals: 1.
+
+	stmt := programFile body first body first.
+	self assert: stmt size equals: 4.
+
+	stmt do: [ :each |
+		self assert: each class equals: IASTVarAccess ].
+	self
+		assertCollection: (stmt collect: #entityName)
+		hasSameElements: #(legere grave fatale finale).
+
+	access := stmt detect: [ :e | e entityName = 'grave' ].
+	self assert: access sourceAnchor startLine equals: 2.
+	self assert: access sourceAnchor startColumn equals: 28.
+	self assert: access sourceAnchor endLine equals: 2.
+	self assert: access sourceAnchor endColumn equals: 33
 ]
 
 { #category : #'tests-esope' }
@@ -1068,8 +1168,8 @@ c@_   pointeur p1.pstr
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   pointeur p1.pstr","span":"(2:1)-(2:22)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
-	seg := programFile progUnits first body first.
+	self assert: programFile body first body size equals: 1.
+	seg := programFile body first body first.
 
 	self assert: seg class equals: IASTEsopePointer.
 	self assert: seg entityName equals: 'p1.pstr'.
@@ -1091,7 +1191,7 @@ JsonToIASTVisitorTest >> testProgramWithEmptyDoStatement [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"body":[],"do_spec":{"anno":[],"increment":null,"initial":{"anno":[],"expression":{"anno":[],"span":"(2:12)-(2:12)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"span":"(2:10)-(2:12)","tag":"assign_expression","target":{"anno":[],"span":"(2:10)-(2:10)","tag":"value","value":{"contents":"i","tag":"variable"}}},"limit":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"n","tag":"variable"}},"span":"(2:10)-(2:15)"},"end_label":null,"label":null,"name":null,"span":"(2:7)-(3:11)","tag":"do","target":null}],"name":"hello","span":"(1:7)-(4:9)","subprograms":null,"tag":"main"}]}'.
 
 
-	prog := programFile progUnits first.
+	prog := programFile body first.
 	self assert: prog accesses size equals: 2.
 	self assertCollection: (prog accesses collect: [ :each | each entityName ]) hasSameElements: #(i n)
 	
@@ -1114,22 +1214,22 @@ JsonToIASTVisitorTest >> testProgramWithMultipleProgUnits [
 	| programFile node |
 	programFile :=  self visitJsonCode:  '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[],"name":"myprog","span":"(1:7)-(2:9)","subprograms":null,"tag":"main"},{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(4:31)-(4:31)","tag":"value","value":{"contents":"k","tag":"variable"}},{"anno":[],"span":"(4:34)-(4:34)","tag":"value","value":{"contents":"l","tag":"variable"}}],"span":"(4:31)-(4:34)"},"blocks":[],"name":"ifunc","result":null,"span":"(4:7)-(5:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(4:7)-(4:13)"}},{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(7:25)-(7:27)","tag":"value","value":{"contents":"msg","tag":"variable"}}],"span":"(7:25)-(7:27)"},"blocks":[],"name":"mysub","options":[null,null],"span":"(7:7)-(8:9)","subprograms":null,"tag":"subroutine"}]}'.
 
-	self assert: programFile progUnits size equals: 3.
+	self assert: programFile body size equals: 3.
 	
-	node := programFile progUnits first.
+	node := programFile body first.
 	self assert: node class equals: IASTMainProgram.
 	self assert: node entityName equals: 'myprog'.
 	self assert: node body size equals: 0.
 	self assert: node accesses size equals: 0.
 	self assert: node invocations size equals: 0.
 	
-	node := programFile progUnits second.
+	node := programFile body second.
 	self assert: node class equals: IASTFunction.
 	self assert: node parameters size equals: 2.
 	self assert: node parameters first entityName equals: 'k'.
 	self assert: node parameters second entityName equals: 'l'.
 
-	node := programFile progUnits third.
+	node := programFile body third.
 	self assert: node class equals: IASTSubroutine.
 	self assert: node parameters size equals: 1.
 	self assert: node parameters first entityName equals: 'msg'.
@@ -1146,10 +1246,10 @@ JsonToIASTVisitorTest >> testProgramWithOneStatement [
 
 
 	self assert: programFile class equals: IASTProgramFile.
-	self assert: programFile progUnits size equals: 1.
-	self assert: programFile progUnits first class equals: IASTMainProgram.
+	self assert: programFile body size equals: 1.
+	self assert: programFile body first class equals: IASTMainProgram.
 
-	prog := programFile progUnits first.
+	prog := programFile body first.
 	self assert: prog entityName equals: 'hello'.
 	self assert: prog body size equals: 1.
 	self assert: prog comments isEmpty.
@@ -1170,7 +1270,7 @@ JsonToIASTVisitorTest >> testProgramWithSimpleIfElseStatementWitBody [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(5:9)-(5:17)","statement":{"anno":[],"expression":{"anno":[],"left":{"anno":[],"span":"(5:13)-(5:13)","tag":"value","value":{"contents":"j","tag":"variable"}},"op":{"tag":"subtraction"},"right":{"anno":[],"span":"(5:17)-(5:17)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"span":"(5:13)-(5:17)","tag":"binary"},"span":"(5:9)-(5:17)","tag":"assign_expression","target":{"anno":[],"span":"(5:9)-(5:9)","tag":"value","value":{"contents":"j","tag":"variable"}}},"tag":"statement"}],"conditions":[[{"anno":[],"left":{"anno":[],"span":"(2:11)-(2:11)","tag":"value","value":{"contents":"i","tag":"variable"}},"op":{"tag":"lt"},"right":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"j","tag":"variable"}},"span":"(2:11)-(2:15)","tag":"binary"},[{"anno":[],"label":null,"span":"(3:9)-(3:17)","statement":{"anno":[],"expression":{"anno":[],"left":{"anno":[],"span":"(3:13)-(3:13)","tag":"value","value":{"contents":"i","tag":"variable"}},"op":{"tag":"addition"},"right":{"anno":[],"span":"(3:17)-(3:17)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"span":"(3:13)-(3:17)","tag":"binary"},"span":"(3:9)-(3:17)","tag":"assign_expression","target":{"anno":[],"span":"(3:9)-(3:9)","tag":"value","value":{"contents":"i","tag":"variable"}}},"tag":"statement"}]]],"end_label":null,"label":null,"name":null,"span":"(2:7)-(6:11)","tag":"if"}],"name":"hello","span":"(1:7)-(7:9)","subprograms":null,"tag":"main"}]}'.
 
 
-	prog := programFile progUnits first.
+	prog := programFile body first.
 	self assert: prog accesses size equals: 6.
 	self assertCollection: (prog accesses collect: [ :each | each entityName ]) hasSameElements: #(i j).
 	self assert: (prog accesses select: [:each | each entityName = 'i']) size equals: 3.
@@ -1194,7 +1294,7 @@ JsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWitBody [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"blocks":null,"conditions":[[{"anno":[],"left":{"anno":[],"span":"(2:11)-(2:11)","tag":"value","value":{"contents":"i","tag":"variable"}},"op":{"tag":"lt"},"right":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"j","tag":"variable"}},"span":"(2:11)-(2:15)","tag":"binary"},[{"anno":[],"label":null,"span":"(3:9)-(3:13)","statement":{"anno":[],"expression":{"anno":[],"span":"(3:13)-(3:13)","tag":"value","value":{"contents":"j","tag":"variable"}},"span":"(3:9)-(3:13)","tag":"assign_expression","target":{"anno":[],"span":"(3:9)-(3:9)","tag":"value","value":{"contents":"i","tag":"variable"}}},"tag":"statement"}]]],"end_label":null,"label":null,"name":null,"span":"(2:7)-(4:11)","tag":"if"}],"name":"hello","span":"(1:7)-(5:9)","subprograms":null,"tag":"main"}]}'.
 
 
-	prog := programFile progUnits first.
+	prog := programFile body first.
 	self assert: prog accesses size equals: 4.
 	self assertCollection: (prog accesses collect: [ :each | each entityName ]) hasSameElements: #(i j).
 	self assert: prog accesses third isWrite.
@@ -1215,7 +1315,7 @@ JsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWithoutBody [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"blocks":null,"conditions":[[{"anno":[],"left":{"anno":[],"span":"(2:11)-(2:11)","tag":"value","value":{"contents":"i","tag":"variable"}},"op":{"tag":"lt"},"right":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"j","tag":"variable"}},"span":"(2:11)-(2:15)","tag":"binary"},[]]],"end_label":null,"label":null,"name":null,"span":"(2:7)-(3:11)","tag":"if"}],"name":"hello","span":"(1:7)-(4:9)","subprograms":null,"tag":"main"}]}'.
 
 
-	prog := programFile progUnits first.
+	prog := programFile body first.
 	self assert: prog accesses size equals: 2.
 	self assertCollection: (prog accesses collect: [ :each | each entityName ]) hasSameElements: #(i j)
 	
@@ -1251,9 +1351,9 @@ JsonToIASTVisitorTest >> testReturnStatement [
 	| programFile fct |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:20)","statement":{"anno":[],"span":"(2:7)-(2:20)","tag":"return","target":{"anno":[],"span":"(2:14)-(2:20)","tag":"value","value":{"contents":"somevar","tag":"variable"}}},"tag":"statement"}],"name":"hello","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
 
-	self assert: programFile progUnits size equals: 1.
+	self assert: programFile body size equals: 1.
 	
-	fct := programFile progUnits first.
+	fct := programFile body first.
 	self assert: fct body first class equals: IASTVarAccess.
 	self assert: fct body first entityName equals: 'somevar'.
 ]
@@ -1268,8 +1368,8 @@ c@_   segact, lb
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segact, lb","span":"(2:1)-(2:16)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
-	seg := programFile progUnits first body first.
+	self assert: programFile body first body size equals: 1.
+	seg := programFile body first body first.
 
 	self assert: seg class equals: IASTEsopeSegCommand.
 	self assert: seg entityName equals: 'lb'.
@@ -1291,8 +1391,8 @@ c@_   segadj,lb
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segadj,lb","span":"(2:1)-(2:15)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
-	seg := programFile progUnits first body first.
+	self assert: programFile body first body size equals: 1.
+	seg := programFile body first body first.
 
 	self assert: seg class equals: IASTEsopeSegCommand.
 	self assert: seg entityName equals: 'lb'.
@@ -1314,8 +1414,8 @@ c@_   segini,lb
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segini,lb","span":"(2:1)-(2:15)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
-	seg := programFile progUnits first body first.
+	self assert: programFile body first body size equals: 1.
+	seg := programFile body first body first.
 
 	self assert: seg class equals: IASTEsopeSegCommand.
 	self assert: seg entityName equals: 'lb'.
@@ -1338,8 +1438,8 @@ c@_   end segment
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment,user","span":"(2:1)-(2:18)","tag":"comment"},{"anno":[],"comment":"@_   end segment","span":"(3:1)-(3:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
-	seg := programFile progUnits first body first.
+	self assert: programFile body first body size equals: 1.
+	seg := programFile body first body first.
 
 	self assert: seg class equals: IASTEsopeSegment.
 	self assert: seg entityName equals: 'user'.
@@ -1351,6 +1451,87 @@ c@_   end segment
 	self assert: seg sourceAnchor startColumn equals: 7.
 	self assert: seg sourceAnchor endLine equals: 3.
 	self assert: seg sourceAnchor endColumn equals: 18
+]
+
+{ #category : #'tests-esope' }
+JsonToIASTVisitorTest >> testSegmentDeclarationWithArrayAttribute [
+
+	"
+      subroutine hello
+c@_   segment, foo
+        integer bar(n)
+c@_   end segment
+      end
+	"
+
+	| programFile seg |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment, foo","span":"(2:1)-(2:18)","tag":"comment"},{"anno":[],"label":null,"span":"(3:9)-(3:22)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(3:21)-(3:21)","upper":{"anno":[],"span":"(3:21)-(3:21)","tag":"value","value":{"contents":"n","tag":"variable"}}}],"span":"(3:21)-(3:21)"},"initial":null,"length":null,"span":"(3:17)-(3:22)","type":"array","variable":{"anno":[],"span":"(3:17)-(3:19)","tag":"value","value":{"contents":"bar","tag":"variable"}}}],"span":"(3:17)-(3:22)"},"span":"(3:9)-(3:22)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(3:9)-(3:15)"}},"tag":"statement"},{"anno":[],"comment":"@_   end segment","span":"(4:1)-(4:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(5:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	self assert: programFile body first body size equals: 1.
+	seg := programFile body first body first.
+
+	self assert: seg class equals: IASTEsopeSegment.
+	self assert: seg entityName equals: 'foo'.
+	self assert: seg declarations size equals: 1.
+
+	self assert: seg declarations first entityName equals: 'bar'.
+	self assert: seg declarations first typeSpec entityName equals: 'integer'.
+	
+	self assert: seg declarations first dimensions size equals: 1.
+	self assert: seg declarations first dimensions first entityName equals: 'n'.
+
+]
+
+{ #category : #'tests-esope' }
+JsonToIASTVisitorTest >> testSegmentDeclarationWithArrayAttributes [
+
+"      subroutine hello
+c@_   segment, foo
+        integer bar(n, m)
+c@_   end segment
+      end
+"
+	| programFile seg |
+	programFile :=  self visitJsonCode:  '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment, foo","span":"(2:1)-(2:18)","tag":"comment"},{"anno":[],"label":null,"span":"(3:9)-(3:25)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"dims":{"anno":[],"list":[{"anno":[],"lower":null,"span":"(3:21)-(3:21)","upper":{"anno":[],"span":"(3:21)-(3:21)","tag":"value","value":{"contents":"n","tag":"variable"}}},{"anno":[],"lower":null,"span":"(3:24)-(3:24)","upper":{"anno":[],"span":"(3:24)-(3:24)","tag":"value","value":{"contents":"m","tag":"variable"}}}],"span":"(3:21)-(3:24)"},"initial":null,"length":null,"span":"(3:17)-(3:25)","type":"array","variable":{"anno":[],"span":"(3:17)-(3:19)","tag":"value","value":{"contents":"bar","tag":"variable"}}}],"span":"(3:17)-(3:25)"},"span":"(3:9)-(3:25)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(3:9)-(3:15)"}},"tag":"statement"},{"anno":[],"comment":"@_   end segment","span":"(4:1)-(4:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(5:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	self assert: programFile body first body size equals: 1.
+	seg := programFile body first body first.
+
+	self assert: seg class equals: IASTEsopeSegment.
+	self assert: seg entityName equals: 'foo'.
+	self assert: seg declarations size equals: 1.
+
+	self assert: seg declarations first entityName equals: 'bar'.
+	self assert: seg declarations first typeSpec entityName equals: 'integer'.
+	
+	self assert: seg declarations first dimensions size equals: 2.
+	self assert: seg declarations first dimensions first entityName equals: 'n'.
+	self assert: seg declarations first dimensions second entityName equals: 'm'.
+
+]
+
+{ #category : #'tests-esope' }
+JsonToIASTVisitorTest >> testSegmentDeclarationWithArrayPointeurAttribute [
+
+"
+      subroutine hello
+c@_   segment, foo
+c@_     pointeur bar(n, m).titi
+c@_   end segment
+      end
+"
+	| programFile seg |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment, foo","span":"(2:1)-(2:18)","tag":"comment"},{"anno":[],"comment":"@_     pointeur bar(n, m).titi","span":"(3:1)-(3:31)","tag":"comment"},{"anno":[],"comment":"@_   end segment","span":"(4:1)-(4:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(5:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	self assert: programFile body first body size equals: 1.
+	seg := programFile body first body first.
+
+	self assert: seg class equals: IASTEsopeSegment.
+	self assert: seg entityName equals: 'foo'.
+	self assert: seg declarations size equals: 1.
+
+	self assert: seg declarations first entityName equals: 'bar(n, m).titi'.
+
 ]
 
 { #category : #'tests-esope' }
@@ -1366,8 +1547,8 @@ c@_   end segment
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment, user","span":"(2:1)-(2:19)","tag":"comment"},{"anno":[],"label":null,"span":"(3:9)-(3:26)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(3:22)-(3:26)","type":"scalar","variable":{"anno":[],"span":"(3:22)-(3:26)","tag":"value","value":{"contents":"uname","tag":"variable"}}}],"span":"(3:22)-(3:26)"},"span":"(3:9)-(3:26)","tag":"declaration","type":{"anno":[],"base_type":"character","selector":{"anno":[],"kind":null,"length":{"anno":[],"span":"(3:19)-(3:20)","tag":"value","value":{"contents":["40",null],"tag":"integer"}},"span":"(3:18)-(3:20)"},"span":"(3:9)-(3:20)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(4:9)-(4:24)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(4:17)-(4:19)","type":"scalar","variable":{"anno":[],"span":"(4:17)-(4:19)","tag":"value","value":{"contents":"uid","tag":"variable"}}},{"anno":[],"initial":null,"length":null,"span":"(4:22)-(4:24)","type":"scalar","variable":{"anno":[],"span":"(4:22)-(4:24)","tag":"value","value":{"contents":"age","tag":"variable"}}}],"span":"(4:17)-(4:24)"},"span":"(4:9)-(4:24)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(4:9)-(4:15)"}},"tag":"statement"},{"anno":[],"comment":"@_   end segment","span":"(5:1)-(5:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(6:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
-	seg := programFile progUnits first body first.
+	self assert: programFile body first body size equals: 1.
+	seg := programFile body first body first.
 
 	self assert: seg class equals: IASTEsopeSegment.
 	self assert: seg entityName equals: 'user'.
@@ -1389,8 +1570,8 @@ c@_   segsup, lb
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segsup, lb","span":"(2:1)-(2:16)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
-	seg := programFile progUnits first body first.
+	self assert: programFile body first body size equals: 1.
+	seg := programFile body first body first.
 
 	self assert: seg class equals: IASTEsopeSegCommand.
 	self assert: seg entityName equals: 'lb'.
@@ -1405,7 +1586,7 @@ c@_   segsup, lb
 { #category : #'tests-statement' }
 JsonToIASTVisitorTest >> testSpecialSubroutine [
 
-	"      subroutine __$__
+	"      subroutine _$aFile_inc
       integer l
 c@_   segment point
       real abs, ord
@@ -1416,19 +1597,19 @@ c@_   end segment
 
 	| programFile entity dummySub segment |
 	programFile := self visitJsonCode:
-		               '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:15)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:15)-(2:15)","type":"scalar","variable":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"l","tag":"variable"}}}],"span":"(2:15)-(2:15)"},"span":"(2:7)-(2:15)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"},{"anno":[],"comment":"@_   segment point","span":"(3:1)-(3:19)","tag":"comment"},{"anno":[],"label":null,"span":"(4:7)-(4:19)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(4:12)-(4:14)","type":"scalar","variable":{"anno":[],"span":"(4:12)-(4:14)","tag":"value","value":{"contents":"abs","tag":"variable"}}},{"anno":[],"initial":null,"length":null,"span":"(4:17)-(4:19)","type":"scalar","variable":{"anno":[],"span":"(4:17)-(4:19)","tag":"value","value":{"contents":"ord","tag":"variable"}}}],"span":"(4:12)-(4:19)"},"span":"(4:7)-(4:19)","tag":"declaration","type":{"anno":[],"base_type":"real","selector":null,"span":"(4:7)-(4:10)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(5:7)-(5:25)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(5:21)-(5:25)","type":"scalar","variable":{"anno":[],"span":"(5:21)-(5:25)","tag":"value","value":{"contents":"label","tag":"variable"}}}],"span":"(5:21)-(5:25)"},"span":"(5:7)-(5:25)","tag":"declaration","type":{"anno":[],"base_type":"character","selector":{"anno":[],"kind":null,"length":{"anno":[],"span":"(5:17)-(5:19)","tag":"value","value":{"contents":"l","tag":"variable"}},"span":"(5:16)-(5:19)"},"span":"(5:7)-(5:19)"}},"tag":"statement"},{"anno":[],"comment":"@_   end segment","span":"(6:1)-(6:17)","tag":"comment"}],"name":"__$__","options":[null,null],"span":"(1:7)-(7:9)","subprograms":null,"tag":"subroutine"}]}'.
+		               '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:15)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:15)-(2:15)","type":"scalar","variable":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"l","tag":"variable"}}}],"span":"(2:15)-(2:15)"},"span":"(2:7)-(2:15)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"},{"anno":[],"comment":"@_   segment point","span":"(3:1)-(3:19)","tag":"comment"},{"anno":[],"label":null,"span":"(4:7)-(4:19)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(4:12)-(4:14)","type":"scalar","variable":{"anno":[],"span":"(4:12)-(4:14)","tag":"value","value":{"contents":"abs","tag":"variable"}}},{"anno":[],"initial":null,"length":null,"span":"(4:17)-(4:19)","type":"scalar","variable":{"anno":[],"span":"(4:17)-(4:19)","tag":"value","value":{"contents":"ord","tag":"variable"}}}],"span":"(4:12)-(4:19)"},"span":"(4:7)-(4:19)","tag":"declaration","type":{"anno":[],"base_type":"real","selector":null,"span":"(4:7)-(4:10)"}},"tag":"statement"},{"anno":[],"label":null,"span":"(5:7)-(5:25)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(5:21)-(5:25)","type":"scalar","variable":{"anno":[],"span":"(5:21)-(5:25)","tag":"value","value":{"contents":"label","tag":"variable"}}}],"span":"(5:21)-(5:25)"},"span":"(5:7)-(5:25)","tag":"declaration","type":{"anno":[],"base_type":"character","selector":{"anno":[],"kind":null,"length":{"anno":[],"span":"(5:17)-(5:19)","tag":"value","value":{"contents":"l","tag":"variable"}},"span":"(5:16)-(5:19)"},"span":"(5:7)-(5:19)"}},"tag":"statement"},{"anno":[],"comment":"@_   end segment","span":"(6:1)-(6:17)","tag":"comment"}],"name":"_$aFile_inc","options":[null,null],"span":"(1:7)-(7:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	dummySub := programFile progUnits first.
+	dummySub := programFile body first.
 	self assert: dummySub class equals: IASTIncludedFile.
 	self assert: dummySub body size equals: 2.
 	self assert: dummySub localVariables size equals: 1.
 
-	entity := programFile progUnits first body first.
+	entity := programFile body first body first.
 	self assert: entity first class equals: IASTVariable.
 	self assert: entity first entityName equals: 'l'.
 
-	segment := programFile progUnits first body second.
+	segment := programFile body first body second.
 	self assert: segment class equals: IASTEsopeSegment.
 	self assert: segment entityName equals: 'point'.
 	self assert: segment declarations size equals: 3.
@@ -1459,9 +1640,9 @@ JsonToIASTVisitorTest >> testStringVariableDeclaration [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:21)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:19)-(2:21)","type":"scalar","variable":{"anno":[],"span":"(2:19)-(2:21)","tag":"value","value":{"contents":"str","tag":"variable"}}}],"span":"(2:19)-(2:21)"},"span":"(2:7)-(2:21)","tag":"declaration","type":{"anno":[],"base_type":"character","selector":{"anno":[],"kind":null,"length":{"anno":[],"span":"(2:17)-(2:17)","tag":"value","value":{"contents":["8",null],"tag":"integer"}},"span":"(2:16)-(2:17)"},"span":"(2:7)-(2:17)"}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first  size equals: 1.
+	self assert: programFile body first body first  size equals: 1.
 
-	var := programFile progUnits first body first first.
+	var := programFile body first body first first.
 	self assert: var class equals: IASTVariable.
 	self assert: var entityName equals: 'str'.
 	self assert: var typeSpec class equals: IASTTypeRef.
@@ -1479,9 +1660,9 @@ JsonToIASTVisitorTest >> testSubroutineInvocation [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:25)","statement":{"anno":[],"arguments":{"anno":[],"list":[],"span":"(2:25)-(2:25)"},"function":{"anno":[],"span":"(2:12)-(2:25)","tag":"value","value":{"contents":"somesubroutine","tag":"variable"}},"span":"(2:7)-(2:25)","tag":"call"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
+	self assert: programFile body first body size equals: 1.
 
-	stmt := programFile progUnits first body first.
+	stmt := programFile body first body first.
 	self assert: stmt class equals: IASTInvocation.
 	self assert: stmt entityName equals: 'somesubroutine'.
 	self assert: stmt arguments size equals: 0
@@ -1498,9 +1679,9 @@ JsonToIASTVisitorTest >> testSubroutineInvocationWithArguments [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:36)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:27)-(2:29)","tag":"value","value":{"contents":"bar","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:27)-(2:29)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:31)-(2:31)","tag":"value","value":{"contents":["5",null],"tag":"integer"}},"tag":"expr"},"name":null,"span":"(2:31)-(2:31)"},{"anno":[],"expr":{"contents":{"anno":[],"span":"(2:33)-(2:35)","tag":"value","value":{"contents":"baz","tag":"variable"}},"tag":"expr"},"name":null,"span":"(2:33)-(2:35)"}],"span":"(2:26)-(2:36)"},"function":{"anno":[],"span":"(2:12)-(2:25)","tag":"value","value":{"contents":"somesubroutine","tag":"variable"}},"span":"(2:7)-(2:36)","tag":"call"},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body size equals: 1.
+	self assert: programFile body first body size equals: 1.
 
-	stmt := programFile progUnits first body first.
+	stmt := programFile body first body first.
 	self assert: stmt class equals: IASTInvocation.
 	self assert: stmt entityName equals: 'somesubroutine'.
 	self assert: stmt arguments size equals: 2.
@@ -1524,22 +1705,22 @@ JsonToIASTVisitorTest >> testTwoIntegerVariableDeclarations [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:17)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:15)-(2:15)","type":"scalar","variable":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"contents":"i","tag":"variable"}}},{"anno":[],"initial":null,"length":null,"span":"(2:17)-(2:17)","type":"scalar","variable":{"anno":[],"span":"(2:17)-(2:17)","tag":"value","value":{"contents":"j","tag":"variable"}}}],"span":"(2:15)-(2:17)"},"span":"(2:7)-(2:17)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(2:7)-(2:13)"}},"tag":"statement"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 2.
+	self assert: programFile body first body first size equals: 2.
 
-	var := programFile progUnits first body first first.
+	var := programFile body first body first first.
 	self assert: var class equals: IASTVariable.
 	self assert: var entityName equals: 'i'.
 	self assert: var typeSpec class equals: IASTTypeRef.
 	self assert: var typeSpec entityName equals: 'integer'.
 
-	var := programFile progUnits first body first second.
+	var := programFile body first body first second.
 	self assert: var class equals: IASTVariable.
 	self assert: var entityName equals: 'j'.
 	self assert: var typeSpec class equals: IASTTypeRef.
 	self assert: var typeSpec entityName equals: 'integer'.
 ]
 
-{ #category : #'tests-esope' }
+{ #category : #'tests-statement' }
 JsonToIASTVisitorTest >> testWriteStatementWithStringArgument [
 	"
       subroutine print
@@ -1550,11 +1731,21 @@ JsonToIASTVisitorTest >> testWriteStatementWithStringArgument [
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:25)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:19)-(2:25)","tag":"value","value":{"contents":"hello","tag":"string"}}],"span":"(2:19)-(2:25)"},"format":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:14)-(2:14)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:14)-(2:14)"},{"anno":[],"expr":{"anno":[],"span":"(2:16)-(2:16)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:16)-(2:16)"}],"span":"(2:13)-(2:17)"},"span":"(2:8)-(2:25)","tag":"write"},"tag":"statement"}],"name":"print","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile progUnits first body first size equals: 1.
-	stmt := programFile progUnits first body first first.
+	self assert: programFile body first body first size equals: 1.
+	stmt := programFile body first body first first.
 	self assert: stmt class equals: IASTInvocation.
 	self assert: stmt entityName equals: 'write'.
 	self assert: stmt arguments size equals: 0.
+]
+
+{ #category : #running }
+JsonToIASTVisitorTest >> visitF77Code: f77Code [
+	| visitor |
+	visitor := JsonToIASTVisitor new.
+	^visitor visitProgramFile: 
+		(NeoJSONReader 
+			fromString: (FortranProjectImporter parseString: f77Code)
+		)
 ]
 
 { #category : #running }

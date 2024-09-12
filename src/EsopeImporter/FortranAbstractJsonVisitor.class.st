@@ -22,7 +22,7 @@ FortranAbstractJsonVisitor >> esopeCommand: anEsopeCommentString [
 	^(wordBoundaries size > 2)
 		ifTrue: [
 			{ (anEsopeCommentString copyFrom: wordBoundaries first to: wordBoundaries second) .
-			  (anEsopeCommentString copyFrom: wordBoundaries third to: wordBoundaries fourth) }
+			  (anEsopeCommentString copyFrom: wordBoundaries third to: wordBoundaries last) }
 		]
 		ifFalse: [ { anEsopeCommentString copyFrom: wordBoundaries first to: wordBoundaries second } ]
 ]
@@ -201,11 +201,13 @@ FortranAbstractJsonVisitor >> visitAttributes: aNode [
 	^nil
 ]
 
-{ #category : #'visiting expression' }
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitBackspaceStatement: aBackspaceStatementNode [
 
-	^self visitJsonMap: aBackspaceStatementNode keys: #( span specification )
-
+	^{
+		self visitSpan: (aBackspaceStatementNode at: 'span') .
+		self visitIOParameters: (aBackspaceStatementNode at: 'specification')
+	}
 ]
 
 { #category : #'visiting statement' }
@@ -472,6 +474,12 @@ FortranAbstractJsonVisitor >> visitDo_spec: aDoSpecNode [
 ]
 
 { #category : #'visiting statement' }
+FortranAbstractJsonVisitor >> visitDouble_precisionBaseType: aString [
+	^aString
+
+]
+
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitElements: anImplicitElementsNode [
 	^(anImplicitElementsNode at: 'list')
 		collect: [ :each | self visitImplicitStatementRange: each ]
@@ -522,7 +530,7 @@ FortranAbstractJsonVisitor >> visitEqv: aEqvtoOperatorNode [
 
 { #category : #'visiting esope' }
 FortranAbstractJsonVisitor >> visitEsopeComment: anEsopeCommentNode [
-	"we separate each Esope command in a different visit methdo to give opportunity to
+	"we separate each Esope command in a different visit method to give opportunity to
 	 concrete visitors (subclasses) to treat them differently.
 	 But here, they are pretty much all the same, so they come down to the same treatment"
 
@@ -930,6 +938,12 @@ FortranAbstractJsonVisitor >> visitIntegerLiteralValue: anIntegerLiteralValueNod
 ]
 
 { #category : #visiting }
+FortranAbstractJsonVisitor >> visitIntrinsic: anIntrinsicIdentifier [
+	^anIntrinsicIdentifier at: 'contents'
+
+]
+
+{ #category : #'visiting statement' }
 FortranAbstractJsonVisitor >> visitIntrinsicStatement: anIntrinsicStatement [
 
 	^self visitJsonMap: anIntrinsicStatement keys: #(span vars)
@@ -1354,10 +1368,9 @@ FortranAbstractJsonVisitor >> visitSpan: aSpanString [
 ]
 
 { #category : #'visiting expression' }
-FortranAbstractJsonVisitor >> visitSpecification: aSpecificationNode [
+FortranAbstractJsonVisitor >> visitSpecification: aSpecificationCollection [
 
-	^self visitJsonElement: aSpecificationNode
-
+	^self visitIOParameters: aSpecificationCollection 
 ]
 
 { #category : #visiting }

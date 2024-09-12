@@ -1,6 +1,8 @@
 "
 This trait is used by Famix models.
 It provides an API for creating entities and adding them to the model.
+
+
 "
 Trait {
 	#name : #FamixEsopeTEntityCreator,
@@ -38,50 +40,8 @@ FamixEsopeTEntityCreator >> newImplicitPointer [
 ]
 
 { #category : #'entity creation' }
-FamixEsopeTEntityCreator >> newSegact [
-
-	<generated>
-	^ self add: FamixEsopeSegact new
-]
-
-{ #category : #'entity creation' }
-FamixEsopeTEntityCreator >> newSegadj [
-
-	<generated>
-	^ self add: FamixEsopeSegadj new
-]
-
-{ #category : #'entity creation' }
-FamixEsopeTEntityCreator >> newSegdes [
-
-	<generated>
-	^ self add: FamixEsopeSegdes new
-]
-
-{ #category : #'entity creation' }
-FamixEsopeTEntityCreator >> newSegini [
-
-	<generated>
-	^ self add: FamixEsopeSegini new
-]
-
-{ #category : #'entity creation' }
 FamixEsopeTEntityCreator >> newSegment [
 
 	<generated>
 	^ self add: FamixEsopeSegment new
-]
-
-{ #category : #'entity creation' }
-FamixEsopeTEntityCreator >> newSegprt [
-
-	<generated>
-	^ self add: FamixEsopeSegprt new
-]
-
-{ #category : #'entity creation' }
-FamixEsopeTEntityCreator >> newSegsup [
-
-	<generated>
-	^ self add: FamixEsopeSegsup new
 ]

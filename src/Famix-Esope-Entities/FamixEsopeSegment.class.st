@@ -20,6 +20,18 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 
 `MYSEG` is the name of the class of the structure materialized by this segment. A structure belonging to the class `MYSEG` will contain an integer `scalar`, an array of integers `array`, a matrix `row x col` of integer, ... and finally a string of NBCA characters called `CHAI`.
 
+
+## Relations
+======================
+
+### Children
+| Relation | Origin | Opposite | Type | Comment |
+|---|
+| `attributes` | `FamixTWithAttributes` | `parentType` | `FamixTAttribute` | List of attributes declared by this type.|
+| `dimentionalIntegers` | `FamixEsopeSegment` | `segment` | `FamixEsopeDimentionalInteger` | |
+
+
+
 "
 Class {
 	#name : #FamixEsopeSegment,

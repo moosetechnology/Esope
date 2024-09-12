@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'sixSpaces'
 	],
-	#category : #'EsopeImporter-Tests-Rewriter'
+	#category : 'EsopeImporter-Tests-Rewriter'
 }
 
 { #category : #accessing }
@@ -67,6 +67,20 @@ EsopeRewriterTest >> testEsopeDotTransformationInsideInvocationOrArraySubscript 
 	self
 		assert: (parser applySlashTransformation: actualSource)
 		equals: expectedSource
+]
+
+{ #category : #tests }
+EsopeRewriterTest >> testEsopeLineWithLabel [
+
+	| actualSource expectedSource |
+	actualSource := '40    SEGINI,P
+'.
+	expectedSource := 'c@_40 SEGINI,P
+'.
+
+	self parse: actualSource rule: #segini.
+	self assert: parser generatedCode equals: expectedSource.
+
 ]
 
 { #category : #'tests-transformation' }

@@ -4,7 +4,7 @@ Class {
 	#instVars : [
 		'entities'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR'
 }
 
 { #category : #'instance creation' }
@@ -44,6 +44,11 @@ IASTVarEso >> initialize [
 	super initialize.
 
 	entities := OrderedCollection new
+]
+
+{ #category : #testing }
+IASTVarEso >> isEsope [
+	^true
 ]
 
 { #category : #testing }

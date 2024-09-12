@@ -37,18 +37,35 @@ IASTToFamixFortranVisitor >> f77sourcefile: anObject [
 	f77sourcefile := anObject
 ]
 
+{ #category : #visiting }
+IASTToFamixFortranVisitor >> iASTProgramUnit: aProgramUnit toFamix: aFamixFortranClass [
+
+	| progUnit |
+	progUnit := (self newEntity: aFamixFortranClass)
+		            sourceAnchor:
+			            (self visitIndexedFileAnchor: aProgramUnit sourceAnchor);
+		            name: aProgramUnit entityName;
+		            yourself.
+	stack push: progUnit.
+
+	self createSymbolTableFor: progUnit.
+
+	aProgramUnit body ifNotNil: [ :body | 
+		body deepFlatten do: [ :each |
+			(each isNil or: [ each isPoint])
+			ifFalse: [ each accept: self] ]
+	].
+
+	stack pop.
+	^ progUnit
+]
+
 { #category : #initialization }
 IASTToFamixFortranVisitor >> initialize [
 
 	super initialize.
 	model := FamixEsopeModel new.
 	f77sourcefile := ''
-]
-
-{ #category : #testing }
-IASTToFamixFortranVisitor >> isDummySubroutine: name [
-
-	^ name sameAs: '__$__'
 ]
 
 { #category : #visiting }
@@ -58,14 +75,24 @@ IASTToFamixFortranVisitor >> visit: anIASTModel [
 ]
 
 { #category : #visiting }
+IASTToFamixFortranVisitor >> visitExpression: anExpression [
+
+	anExpression isCollection
+		ifFalse: [ anExpression accept: self ]
+		ifTrue: [ 
+			anExpression do: [ :subExpr |
+				self visitExpression: subExpr ]
+		]
+]
+
+{ #category : #visiting }
 IASTToFamixFortranVisitor >> visitIASTBlockData: aBlockData [
 
 	| blockdata |
 	blockdata := self model newPUBlockdata
-		             sourceAnchor:
-			             (self visitIndexedFileAnchor: aBlockData sourceAnchor);
-		             name: aBlockData entityName;
-		             yourself.
+		sourceAnchor: (self visitIndexedFileAnchor: aBlockData sourceAnchor);
+		name: aBlockData entityName;
+		yourself.
 	stack push: blockdata.
 
 	"prossess accesses"
@@ -83,17 +110,12 @@ IASTToFamixFortranVisitor >> visitIASTBlockData: aBlockData [
 { #category : #visiting }
 IASTToFamixFortranVisitor >> visitIASTComment: aComment [
 
-	| comment |
-	comment := aComment isProgUnit
-		           ifTrue: [ self newEntity: FamixF77PUComment ]
-		           ifFalse: [ 
-			           (self newEntity: FamixF77Comment)
-				           isEsope: aComment isEsope;
-				           commentedEntity: stack top ].
-	^ comment
-		  sourceAnchor: (self visitIndexedFileAnchor: aComment sourceAnchor);
-		  content: aComment text;
-		  yourself
+	^(self newEntity: FamixF77Comment)
+		content: aComment text ;
+		commentedEntity: stack top ;
+		sourceAnchor: (self visitIndexedFileAnchor: aComment sourceAnchor) ;
+		isEsope: aComment isEsope ;
+		yourself
 ]
 
 { #category : #visiting }
@@ -130,7 +152,7 @@ IASTToFamixFortranVisitor >> visitIASTFunction: aFunction [
 
 	| function |
 	function := self
-		            visitIASTProgramUnit: aFunction
+		            iASTProgramUnit: aFunction
 		            toFamix: FamixF77PUFunction.
 	aFunction parameters do: [ :parameter | 
 		function addParameter: (parameter accept: self) ].
@@ -170,26 +192,30 @@ IASTToFamixFortranVisitor >> visitIASTIncludedFile: anIncludedFile [
 		endLine: anIncludedFile sourceAnchor endLine - 1.
 
 	^ self
-		  visitIASTProgramUnit: anIncludedFile
+		  iASTProgramUnit: anIncludedFile
 		  toFamix: FamixF77IncludedFile
 ]
 
 { #category : #visiting }
 IASTToFamixFortranVisitor >> visitIASTInvocation: anInvocation [
 
+	anInvocation arguments do: [ :expression |
+		self visitExpression: expression ].
+
 	^ self model newInvocation
-		  sourceAnchor:
-			  (self visitIndexedFileAnchor: anInvocation sourceAnchor);
-		  attributeAt: #entity put: anInvocation;
-		  sender: stack top;
-		  yourself
+		sourceAnchor:
+			(self visitIndexedFileAnchor: anInvocation sourceAnchor);
+		attributeAt: #entity put: anInvocation;
+		signature: anInvocation entityName ;
+		sender: stack top;
+		yourself
 ]
 
 { #category : #visiting }
 IASTToFamixFortranVisitor >> visitIASTMainProgram: aMainProgram [
 
 	^ self
-		  visitIASTProgramUnit: aMainProgram
+		  iASTProgramUnit: aMainProgram
 		  toFamix: FamixF77PUMain
 ]
 
@@ -205,38 +231,30 @@ IASTToFamixFortranVisitor >> visitIASTProgramFile: aProgramFile [
 
 	stack push: progFile.
 
-	aProgramFile progUnits do: [ :progUnit |
-		progFile addProgramUnit: (progUnit accept: self) ].
+	aProgramFile body do: [ :child || famixComment |
+		famixComment := child accept: self.
+		child isComment
+		ifTrue: [ famixComment commentedEntity: progFile ]
+		ifFalse: [ progFile addProgramUnit: famixComment ]
+	].
 
 	stack pop.
 	^ progFile
 ]
 
 { #category : #visiting }
-IASTToFamixFortranVisitor >> visitIASTProgramUnit: aProgramUnit toFamix: aFamixFortranClass [
+IASTToFamixFortranVisitor >> visitIASTStatementFunction: aStatementFunctionNode [
 
-	| progUnit |
-	progUnit := (self newEntity: aFamixFortranClass)
-		            sourceAnchor:
-			            (self visitIndexedFileAnchor: aProgramUnit sourceAnchor);
-		            name: aProgramUnit entityName;
-		            yourself.
-	stack push: progUnit.
+	| function |
+	function := self
+		iASTProgramUnit: aStatementFunctionNode
+		toFamix: FamixF77StatementFunction.
+	aStatementFunctionNode parameters do: [ :parameter | 
+		function addParameter: (parameter accept: self) ].
+	
+	stack top addStatementFunction: function.
 
-	self createSymbolTableFor: progUnit.
-
-	aProgramUnit body ifNotNil: [ :body | 
-			(body deepFlatten reject: #isPoint) do: [ :expr | expr accept: self ]
-	].
-
-	stack pop.
-	^ progUnit
-]
-
-{ #category : #visiting }
-IASTToFamixFortranVisitor >> visitIASTStFunction: aStFunctionNode [
-
-	self shouldBeImplemented 
+	^ function
 ]
 
 { #category : #visiting }
@@ -244,8 +262,9 @@ IASTToFamixFortranVisitor >> visitIASTSubroutine: aSubroutine [
 
 	| subroutine |
 	subroutine := self
-		              visitIASTProgramUnit: aSubroutine
-		              toFamix: FamixF77PUSubroutine.
+		iASTProgramUnit: aSubroutine
+		toFamix: FamixF77PUSubroutine.
+
 	aSubroutine parameters do: [ :parameter | 
 		subroutine addParameter: (parameter accept: self) ].
 

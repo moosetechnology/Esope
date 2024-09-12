@@ -7,7 +7,7 @@ Class {
 		'implicits',
 		'annotations'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR'
 }
 
 { #category : #accessing }
@@ -78,6 +78,19 @@ IASTProgramUnit >> implicits: anObject [
 { #category : #accessing }
 IASTProgramUnit >> invocations [
 	^self filterBodyWith: [ :entity | entity isInvocation ]
+]
+
+{ #category : #testing }
+IASTProgramUnit >> isProgUnit [
+
+	^true
+]
+
+{ #category : #testing }
+IASTProgramUnit >> isProgUnit: anObject [
+
+	"ignored
+	 polymorphism with IASTComment"
 ]
 
 { #category : #accessing }

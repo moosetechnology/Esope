@@ -22,19 +22,18 @@ IASTToFamixEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
 { #category : #visiting }
 IASTToFamixEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
 
-	| varsNames |
+	| varsNames pointer |
 	varsNames := aPointerVar entityName substrings: '.'.
-	varsNames size < 2 ifTrue: [ ^ self ].
-	"declaredType:
-			  (self
-				   newType: varsNames second
-				   sourceAnchor: aPointerVar sourceAnchor);"
-	^ (self model newVariableNamed: varsNames first)
-		  sourceAnchor:
-			  (self visitIndexedFileAnchor: aPointerVar sourceAnchor);
-		  isEsope: true;
-		  segment: varsNames second;
-		  yourself
+	
+	pointer := (self model newVariableNamed: varsNames first)
+		sourceAnchor: (self visitIndexedFileAnchor: aPointerVar sourceAnchor);
+		isEsope: true;
+		yourself.
+	
+	varsNames size > 1 
+		ifTrue: [ pointer segment: varsNames second ].
+
+	^ pointer
 ]
 
 { #category : #visiting }
@@ -55,8 +54,8 @@ IASTToFamixEsopeVisitor >> visitIASTEsopeSegment: aSegment [
 	| segment |
 	segment := self model newSegment
 		           sourceAnchor:
-			           (self visitIndexedFileAnchor: aSegment sourceAnchor);
-		           name: aSegment entityName;
+			           (self visitIndexedFileAnchor: aSegment sourceAnchor) ;
+		           name: aSegment entityName asLowercase ;
 		           yourself.
 	stack push: segment.
 	self createSymbolTableFor: segment.
@@ -99,7 +98,6 @@ IASTToFamixEsopeVisitor >> visitIASTVarEsoAt: aVarEsoAt [
 
 	attributeAccess := (aVarEsoAt entities second) accept: self.
 	attributeAccess attributeAt: #parentAccess put: famixAccess.
-	famixAccess attributeAt: #attributeAccess put: attributeAccess.
 
 	^famixAccess
 ]

@@ -4,9 +4,9 @@ Class {
 	#instVars : [
 		'filename',
 		'version',
-		'progUnits'
+		'body'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR'
 }
 
 { #category : #accessing }
@@ -18,7 +18,19 @@ IASTProgramFile >> accept: aVisitor [
 { #category : #accessing }
 IASTProgramFile >> addProgramUnit: anObject [
 
-	^ self progUnits add: anObject
+	^ self body add: anObject
+]
+
+{ #category : #accessing }
+IASTProgramFile >> body [
+
+	^ body
+]
+
+{ #category : #accessing }
+IASTProgramFile >> body: anObject [
+
+	body := anObject
 ]
 
 { #category : #accessing }
@@ -40,20 +52,8 @@ IASTProgramFile >> initialize [
 
 	"Default value initialization"
 	version := 'Fortran77'.
-	progUnits := OrderedCollection new.
+	body := OrderedCollection new.
 
-]
-
-{ #category : #accessing }
-IASTProgramFile >> progUnits [
-
-	^ progUnits
-]
-
-{ #category : #accessing }
-IASTProgramFile >> progUnits: anObject [
-
-	progUnits := anObject
 ]
 
 { #category : #accessing }

@@ -29,7 +29,7 @@ IASTAbstractFamixVisitor >> createFamixF77Access: anIastObject [
 { #category : #'private-creation' }
 IASTAbstractFamixVisitor >> createImplicitsDictionaryFor: anEntity [
 
-	anEntity attributeAt: #dicImplicit put: self defaultImplicit
+	anEntity attributeAt: #implicitDictionary put: self defaultImplicit
 ]
 
 { #category : #'private-creation' }
@@ -168,6 +168,9 @@ IASTAbstractFamixVisitor >> visitIASTTypeRef: aType [
 	- sourceAnchor: ...
 	- entityName: TypeCharacter
 	- kind: nil"
+	
+	aType ifNil: [ ^nil ].
+
 	^(self retrieveTypeFrom: aType entityName)
 		"sourceAnchor: (self visitIndexedFileAnchor: aType sourceAnchor);"
 		length: aType length;

@@ -1,7 +1,7 @@
 Class {
 	#name : #BaselineOfEsope,
 	#superclass : #BaselineOf,
-	#category : #BaselineOfEsope
+	#category : 'BaselineOfEsope'
 }
 
 { #category : #baselines }
@@ -38,7 +38,6 @@ BaselineOfEsope >> defineGroups: spec [
 { #category : #baselines }
 BaselineOfEsope >> definePackages: spec [
 	spec
-		repository: 'github://moosetechnology/Esope';
 		package: 'EsopeImporter' with: [ spec requires: #('Famix-Esope-Entities' PetitParser2 NeoJSON) ];
 		package: 'EsopeImporter-Tests' with: [ spec requires: #(EsopeImporter) ];
 		package: 'Famix-Esope-Entities' with: [ spec requires: #(FamixFortran) ];

@@ -12,7 +12,7 @@ Class {
 		'entityName',
 		'declarations'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR'
 }
 
 { #category : #visiting }
@@ -55,6 +55,11 @@ IASTEsopeSegment >> entityName [
 IASTEsopeSegment >> entityName: anObject [
 
 	entityName := anObject
+]
+
+{ #category : #testing }
+IASTEsopeSegment >> isEsope [
+	^true
 ]
 
 { #category : #testing }

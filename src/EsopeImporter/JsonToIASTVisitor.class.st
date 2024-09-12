@@ -25,10 +25,33 @@ JsonToIASTVisitor >> createEsopeCommand: anEsopeCommentNode [
 	| data |
 	data := self processEsopeComment: anEsopeCommentNode.
 	^ IASTEsopeSegCommand new
-		  sourceAnchor: (self makeIndexedAnchor: data second);
-		  esopeCommand: data third;
-		  entityName: data fourth;
+		  sourceAnchor: (self makeIndexedAnchor: data second) ;
+		  esopeCommand: data third asLowercase ;
+		  entityName: data fourth asLowercase ;
 		  yourself
+]
+
+{ #category : #'private - utilities' }
+JsonToIASTVisitor >> createStatementFunctionOrVarAccess: data [
+
+	(self isSpecialEsopeFunctionName: data second entityName)
+	ifTrue: [ ^(IASTVarEso newFrom: data second entityName)
+		entityName: data second entityName ;
+		entities: (data third reject: #isNil) ;
+		isWrite: true ;
+		yourself ].
+
+	(data third anySatisfy: #isNil)
+	ifTrue: [ ^IASTVarAccess new
+		entityName: data second entityName ;
+		isWrite: true ;
+		yourself ].
+
+	^IASTStatementFunction new
+		entityName: data second entityName ;
+		parameters: (self varAccessToParameter: data third) ;
+		body: (data fourth isCollection ifTrue: [ data fourth ] ifFalse: [ { data fourth } ]) ;
+		yourself
 ]
 
 { #category : #accessing }
@@ -93,6 +116,16 @@ JsonToIASTVisitor >> onFile: aProgramFileNode [
 ]
 
 { #category : #'private - utilities' }
+JsonToIASTVisitor >> varAccessToParameter: aCollection [
+
+	^aCollection collect: [ :varAccess |
+		IASTParameter new
+			entityName: varAccess entityName ;
+			yourself
+	]
+]
+
+{ #category : #'private - utilities' }
 JsonToIASTVisitor >> varAccessesToParams: varAccesses [
 
 	^varAccesses
@@ -146,6 +179,12 @@ JsonToIASTVisitor >> visitAssign_expression: anAssignExpressionNode [
 ]
 
 { #category : #'visiting statement' }
+JsonToIASTVisitor >> visitBackspaceStatement: aBackspaceStatementNode [
+
+	^(super visitBackspaceStatement: aBackspaceStatementNode) second
+]
+
+{ #category : #'visiting statement' }
 JsonToIASTVisitor >> visitBinary: anNode [
 
 	| data |
@@ -195,6 +234,7 @@ JsonToIASTVisitor >> visitCallStatement: aCallNode [
 JsonToIASTVisitor >> visitCommonGroup: aCommonGroupNode [
 	| data |
 	data := self visitCommonGroupName: (aCommonGroupNode at: 'name').
+
 	^IASTVariable new
 		sourceAnchor: (self makeIndexedAnchor: data first) ;
 		entityName: (data second) ;
@@ -242,17 +282,23 @@ JsonToIASTVisitor >> visitDeclarationStatement: aDeclarationStatementNode [
 
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitDeclarator: aDeclaratorNode [
-	^self visitDeclaratorVariable: (aDeclaratorNode at: 'variable')
+	^self visitDeclaratorVariable: aDeclaratorNode
 ]
 
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitDeclaratorVariable: aDeclaratorVariableNode [
-	| data |
-	data := super visitDeclaratorVariable: aDeclaratorVariableNode.
+	| data dimensions |
+	data := super visitDeclaratorVariable: (aDeclaratorVariableNode at: 'variable').
+	dimensions := (aDeclaratorVariableNode at: 'dims' ifAbsent: []) 
+		ifNotNil: [ :dims | self visitDims: dims ].
 
 	^IASTVariable new
 		sourceAnchor: (self makeIndexedAnchor: data first) ;
 		entityName: data second ;
+		dimensions: (dimensions 
+			ifNotNil: [  dimensions collect: [:dim | dim third] ] 
+			ifNil: [ #() ] 
+		); 
 		yourself
 	
 	
@@ -261,6 +307,18 @@ JsonToIASTVisitor >> visitDeclaratorVariable: aDeclaratorVariableNode [
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitDeclarators: aDeclaratorsList [
 	^(super visitDeclarators: aDeclaratorsList) second
+]
+
+{ #category : #'visiting expression' }
+JsonToIASTVisitor >> visitDeref: aDerefNode [
+	"span expression field"
+
+	| data |
+	data := super visitDeref: aDerefNode.
+
+	data second dereferencedVariable: data third.
+
+	^data second
 ]
 
 { #category : #'visiting statement' }
@@ -297,22 +355,30 @@ JsonToIASTVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
 JsonToIASTVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
 
 	| data |
+	self flag: #FIXME. "Related to #esopeCommand: we take until the last but here we do not want the last  double quote char
+	So in the entityName, we remove this char. Need to find a better way to do that.
+	"
 	data := super visitEsopeIncludeComment: anEsopeIncludeCommentNode.
 	^ IASTInclude new
 		  sourceAnchor: (self makeIndexedAnchor: data second);
-		  entityName: data fourth;
+		  entityName: data fourth allButLast;
 		  includeCommand: data third;
 		  yourself
 ]
 
 { #category : #'visiting esope' }
 JsonToIASTVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
-	| data |
+	| data pointer |
 	data := super visitEsopePointeurComment: anEsopeCommentNode.
-	^IASTEsopePointer new
+	
+	pointer := IASTEsopePointer new
 		sourceAnchor: (self makeIndexedAnchor: data second) ;
 		entityName: data fourth ;
 		yourself.
+	
+	^entityStack
+		ifNotEmpty: [ entityStack top addAllDeclarations: { pointer } . nil ]
+		ifEmpty: [ pointer ]
 
 ]
 
@@ -383,6 +449,13 @@ JsonToIASTVisitor >> visitExternalStatement: anExternalStatementNode [
 ]
 
 { #category : #'visiting statement' }
+JsonToIASTVisitor >> visitFormatStatement: aFormatStatement [
+
+	^nil
+
+]
+
+{ #category : #'visiting statement' }
 JsonToIASTVisitor >> visitFortranComment: aFortranCommentNode [
 	| data |
 	data := super visitFortranComment: aFortranCommentNode.
@@ -413,22 +486,16 @@ JsonToIASTVisitor >> visitFunctionParameters: aParameterList [
 
 { #category : #'visiting statement' }
 JsonToIASTVisitor >> visitFunctionStatement: aFunctionNode [
-	"for now assuming this is an ESOat/ar/sl function"
-	| data fct fctName |
+	| data entity |
 	data := super visitFunctionStatement: aFunctionNode.
-	
-	fctName := data second entityName.
-	fct := (self isSpecialEsopeFunctionName: fctName)
-		ifTrue: [ IASTVarEso newFrom: fctName ]
-		ifFalse: 	[ IASTStFunction new  ].
 
-	fct sourceAnchor: (self makeIndexedAnchor: data first).
-	fct	isWrite: true.
-	fct	entities: (data third reject: #isNil).
+	entity := self createStatementFunctionOrVarAccess: data.
 
-	^data fourth
-		ifNil: [ { fct } ]
-		ifNotNil: [ { fct . data fourth } ]
+	entity sourceAnchor: (self makeIndexedAnchor: data first).
+
+	^data fourth  "body?"
+		ifNil: [ { entity } ]
+		ifNotNil: [ { entity . data fourth } ]
 ]
 
 { #category : #'visiting prog-unit' }
@@ -473,6 +540,21 @@ JsonToIASTVisitor >> visitFunction_call: aFunctionCallNode [
 JsonToIASTVisitor >> visitGotoStatement: aGotoStatementNode [
 
 	^nil
+]
+
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitIOParameter: anIOParameterNode [
+	"span name expr"
+
+	| data ioParam |
+	data := super visitIOParameter: anIOParameterNode.
+	ioParam := data second
+		ifNotNil: [:varName | IASTVarAccess new entityName: varName ; isWrite: true ; yourself ]
+		ifNil: [ nil ].
+
+	^{ ioParam
+	 .
+	 data third } reject: #isNil
 ]
 
 { #category : #'visiting statement' }
@@ -524,6 +606,17 @@ JsonToIASTVisitor >> visitInteger: anIntegerNode [
 ]
 
 { #category : #'visiting statement' }
+JsonToIASTVisitor >> visitIntrinsicStatement: anIntrinsicStatement [
+	"span vars"
+	| data |
+
+	data := super visitIntrinsicStatement: anIntrinsicStatement.
+
+	"declare the functions?"
+	^nil
+]
+
+{ #category : #'visiting statement' }
 JsonToIASTVisitor >> visitItems: anImplicitItemsNode [
 	"'items' in implicit statement"
 
@@ -558,6 +651,41 @@ JsonToIASTVisitor >> visitMain: aMainProgramNode [
 { #category : #'visiting prog-unit' }
 JsonToIASTVisitor >> visitMiFilename: aString [
 	f77sourcefile := aString
+]
+
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitOpenStatement: anOpenStatement [ 
+
+	^nil
+]
+
+{ #category : #'visiting statement' }
+JsonToIASTVisitor >> visitParameterStatement: aParameterStatementNode [ 
+	"span declarators
+
+	 Variable in PARAMETER statement will come back as IASTVariable-s
+	 We need them to be IASTVarAccess"
+
+	| data |
+	data := super visitParameterStatement: aParameterStatementNode.
+
+	^data second collect: [ :v |
+		IASTVarAccess new
+			isWrite: true ;
+			entityName: v entityName ;
+			sourceAnchor: v sourceAnchor ;
+			yourself
+	]
+]
+
+{ #category : #'visiting prog-unit' }
+JsonToIASTVisitor >> visitProgram_units: aCollection [
+
+	| data |
+	data := super visitProgram_units: aCollection.
+
+	data do: [ :each | each isProgUnit: true ].
+	^data
 ]
 
 { #category : #'visiting expression' }
@@ -686,6 +814,7 @@ JsonToIASTVisitor >> visitVariable: aVariableNode [
 	| data |
 	data := super visitVariable: aVariableNode.
 	self flag: #FIXME. "Adding sourceAnchor ? "
+
 	^IASTVarAccess new
 		isWrite: false ;
 		entityName: data ;

@@ -1,3 +1,6 @@
+"
+I register errors during the import process and allow to proceed, ignoring them
+"
 Class {
 	#name : #FortranErrorManager,
 	#superclass : #Object,
@@ -6,7 +9,7 @@ Class {
 		'errors',
 		'stop'
 	],
-	#category : #'EsopeImporter-Importer'
+	#category : 'EsopeImporter-Importer'
 }
 
 { #category : #accessing }
@@ -25,14 +28,13 @@ FortranErrorManager >> enterFile: aFilename [
 FortranErrorManager >> error: anException [
 
 	stop ifTrue: [ anException pass ].
+	(anException isKindOf: Halt) ifTrue: [ anException pass ].
 
 	errors add: (
-		String streamContents: [ :stream |
-			contexts do: [ :context | stream << context ] separatedBy: [ stream << ' / ' ].
-			stream
-				<< ' -- ' ;
-				<< anException messageText
+		(String streamContents: [ :stream |
+			contexts do: [ :context | stream << context ] separatedBy: [ stream << ' / ' ]
 		])
+		-> 	anException)
 ]
 
 { #category : #accessing }
@@ -47,30 +49,21 @@ FortranErrorManager >> handleErrorsFor: context running: runningBlock [
 	 2. executes the runningBlock
 	 3. in case of Error register it"
 
-	^self handleErrorsFor: context running: runningBlock onErrorDo: [ :err | nil ]
-]
-
-{ #category : #api }
-FortranErrorManager >> handleErrorsFor: context running: runningBlock onErrorDo: errorBlock [
-	"1. register the context
-	 2. executes the runningBlock
-	 3. in case of Error register it
-	 4. and executes the errorBlock"
-
 	| value |
 
 	self enterContext: context.
 
 	[ value := runningBlock value ]
-	on: Error
-	do: [ :err |
-		self error: err.
-		value := errorBlock value: err
-	].
+		on: Exception
+		do: [ :err |
+			self error: err.
+			err resume
+		].
 
 	self leaveContext.
-	
+
 	^value
+
 ]
 
 { #category : #initialization }

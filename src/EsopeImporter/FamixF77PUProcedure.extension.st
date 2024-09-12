@@ -3,14 +3,8 @@ Extension { #name : #FamixF77PUProcedure }
 { #category : #'*EsopeImporter' }
 FamixF77PUProcedure >> allLocalVariables [
 
-	^self localVariables
-	,
-	self parameters
-	,
-	(self includes
-		flatCollect: [ :include | 
-			   include included ifNil: [ #() ] ifNotNil: [ :included | included localVariables ] ]
-	)
+	^self parameters , super allLocalVariables
+
 ]
 
 { #category : #'*EsopeImporter' }

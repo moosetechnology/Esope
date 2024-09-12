@@ -5,7 +5,7 @@ Class {
 		'entityName',
 		'command'
 	],
-	#category : #'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR'
 }
 
 { #category : #visiting }
@@ -36,4 +36,9 @@ IASTEsopeSegCommand >> esopeCommand [
 IASTEsopeSegCommand >> esopeCommand: anObject [
 
 	command := anObject
+]
+
+{ #category : #testing }
+IASTEsopeSegCommand >> isEsope [
+	^true
 ]
