@@ -1,6 +1,6 @@
-Extension { #name : #FamixEsopeImportingContext }
+Extension { #name : 'FamixEsopeImportingContext' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixEsopeImportingContext class >> metamodel [
 	"temporary solution to issue https://github.com/moosetechnology/Famix/issues/808"
 

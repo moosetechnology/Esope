@@ -1,6 +1,6 @@
-Extension { #name : #FamixF77PUBlockdata }
+Extension { #name : 'FamixF77PUBlockdata' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77PUBlockdata >> resolveVariable: variableName with: resolver [
 
 	self shouldBeImplemented

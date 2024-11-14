@@ -1,6 +1,6 @@
-Extension { #name : #FamixF77Invocation }
+Extension { #name : 'FamixF77Invocation' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77Invocation >> famixImportSanityCheck [
 
 	| sig |

@@ -1,6 +1,6 @@
-Extension { #name : #FamixF77PUMain }
+Extension { #name : 'FamixF77PUMain' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77PUMain >> allTypes [
 
 	self flag: #FIXME. "Find better way to flatmap types"

@@ -1,13 +1,15 @@
 Class {
-	#name : #IASTVarEso,
-	#superclass : #IASTVarAccess,
+	#name : 'IASTVarEso',
+	#superclass : 'IASTVarAccess',
 	#instVars : [
 		'entities'
 	],
-	#category : 'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 IASTVarEso class >> newFrom: aString [
 	self subclassesDo: [ :subclass |
 		(subclass realName asLowercase endsWith: aString asLowercase)
@@ -16,42 +18,42 @@ IASTVarEso class >> newFrom: aString [
 	NotYetImplemented signalFor: 'IASTVarEso subclass for: ' , aString
 ]
 
-{ #category : #'instance creation' }
+{ #category : 'instance creation' }
 IASTVarEso class >> realName [
 	self subclassResponsibility 
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTVarEso >> arguments: aCollection [
 
 	self entities: aCollection
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTVarEso >> entities [
 
 	^ entities
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTVarEso >> entities: anObject [
 
 	entities := anObject
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 IASTVarEso >> initialize [
 	super initialize.
 
 	entities := OrderedCollection new
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 IASTVarEso >> isEsope [
 	^true
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 IASTVarEso >> isVarAccess [
 	^false
 ]

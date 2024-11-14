@@ -1,6 +1,6 @@
-Extension { #name : #MooseObject }
+Extension { #name : 'MooseObject' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 MooseObject >> getAndRemoveAttribute: aSymbol [
 
 	| value |

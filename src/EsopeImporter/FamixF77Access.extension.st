@@ -1,6 +1,6 @@
-Extension { #name : #FamixF77Access }
+Extension { #name : 'FamixF77Access' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77Access >> famixImportSanityCheck [
 
 	super famixImportSanityCheck.
