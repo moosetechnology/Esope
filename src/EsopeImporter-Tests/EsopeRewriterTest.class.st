@@ -1,18 +1,20 @@
 Class {
-	#name : #EsopeRewriterTest,
-	#superclass : #PP2CompositeNodeTest,
+	#name : 'EsopeRewriterTest',
+	#superclass : 'PP2CompositeNodeTest',
 	#instVars : [
 		'sixSpaces'
 	],
-	#category : 'EsopeImporter-Tests-Rewriter'
+	#category : 'EsopeImporter-Tests-Rewriter',
+	#package : 'EsopeImporter-Tests',
+	#tag : 'Rewriter'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 EsopeRewriterTest >> parserClass [
 	^ PPEsopeRewriter 
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 EsopeRewriterTest >> setUp [
 
 	super setUp.
@@ -20,7 +22,7 @@ EsopeRewriterTest >> setUp [
 	sixSpaces := '      '
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testCommentLine [
 
 	| sourcecode |
@@ -31,7 +33,7 @@ EsopeRewriterTest >> testCommentLine [
 	self assert: parser generatedCode equals: sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testCommentLineWithStar [
 
 	| sourcecode |
@@ -42,13 +44,13 @@ EsopeRewriterTest >> testCommentLineWithStar [
 	self assert: parser generatedCode equals: sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testEsoArImplicit [
 
 	self assert: (parser applyTransformation: 'a(b)') equals: 'a(b)'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testEsoSlImplicit [
 	| code |
 	code := String tab , 'a(/b)', String lf.
@@ -57,7 +59,7 @@ EsopeRewriterTest >> testEsoSlImplicit [
 	self assert: parser generatedCode equals: '        a(S__/b)', String lf.
 ]
 
-{ #category : #'tests-transformation' }
+{ #category : 'tests-transformation' }
 EsopeRewriterTest >> testEsopeDotTransformationInsideInvocationOrArraySubscript [
 
 	| actualSource expectedSource |
@@ -69,7 +71,7 @@ EsopeRewriterTest >> testEsopeDotTransformationInsideInvocationOrArraySubscript 
 		equals: expectedSource
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testEsopeLineWithLabel [
 
 	| actualSource expectedSource |
@@ -83,7 +85,7 @@ EsopeRewriterTest >> testEsopeLineWithLabel [
 
 ]
 
-{ #category : #'tests-transformation' }
+{ #category : 'tests-transformation' }
 EsopeRewriterTest >> testEsopeSlashTransformationInsideInvocationOrArraySubscript [
 
 	| actualSource expectedSource |
@@ -95,7 +97,7 @@ EsopeRewriterTest >> testEsopeSlashTransformationInsideInvocationOrArraySubscrip
 		equals: expectedSource
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testFortranLine [
 
 	| sourcecode |
@@ -106,21 +108,21 @@ EsopeRewriterTest >> testFortranLine [
 	self assert: parser generatedCode equals: sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testFortranLineEsoAt [
 
 	self parse: sixSpaces , 'rlist.ilist=0', String lf rule: #fortranLine.
 	self assert: parser generatedCode equals: sixSpaces , 'rlist.ilist=0', String lf.
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testFortranLineEsoSlash [
 
 	self parse: '        lxs=xs.cstg(/1)', String lf rule: #fortranLine.
 	self assert: parser generatedCode equals: '        lxs=xs.cstg(S__/1)', String lf
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testFortranLineNoEsoAt [
 
 	self
@@ -135,7 +137,7 @@ EsopeRewriterTest >> testFortranLineNoEsoAt [
 '
 ]
 
-{ #category : #'tests-todo' }
+{ #category : 'tests-todo' }
 EsopeRewriterTest >> testFortranLineStartWithTab [
 	| sourcecode |
 	sourcecode := String tab , '   call procedure', String lf.
@@ -144,7 +146,7 @@ EsopeRewriterTest >> testFortranLineStartWithTab [
 	self assert: parser generatedCode equals: '           call procedure', String lf.
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testNoTranslateFormat [
 
 	| sourcecode |
@@ -156,7 +158,7 @@ EsopeRewriterTest >> testNoTranslateFormat [
 		equals:  sourcecode 
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testPointer [
 
 	| sourcecode |
@@ -166,7 +168,7 @@ EsopeRewriterTest >> testPointer [
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testPointerWithSpaces [
 
 	| sourcecode |
@@ -176,7 +178,7 @@ EsopeRewriterTest >> testPointerWithSpaces [
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testPointers [
 
 	| sourcecode |
@@ -186,7 +188,7 @@ EsopeRewriterTest >> testPointers [
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testSegact [
 
 	| sourcecode |
@@ -196,7 +198,7 @@ EsopeRewriterTest >> testSegact [
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testSegactWithSpaces [
 
 	| sourcecode |
@@ -206,7 +208,7 @@ EsopeRewriterTest >> testSegactWithSpaces [
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testSegadj [
 
 	| sourcecode |
@@ -216,7 +218,7 @@ EsopeRewriterTest >> testSegadj [
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testSegdefFromBorbk [
 
 	| rewriterdCode inputCode |
@@ -234,7 +236,7 @@ c@_   endsegment
 	self assert: parser generatedCode equals: rewriterdCode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testSegdefUpperCase [
 
 	| rewriterdCode inputCode |
@@ -252,7 +254,7 @@ c@_   endsegment
 	self assert: parser generatedCode equals: rewriterdCode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testSegdes [
 
 	| sourcecode |
@@ -262,7 +264,7 @@ EsopeRewriterTest >> testSegdes [
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testSegini [
 
 	| sourcecode |
@@ -272,7 +274,7 @@ EsopeRewriterTest >> testSegini [
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testSegment [
 
 	| finalcode sourcecode |
@@ -284,7 +286,7 @@ EsopeRewriterTest >> testSegment [
 	self assert: parser generatedCode equals: finalcode
 ]
 
-{ #category : #'tests-todo' }
+{ #category : 'tests-todo' }
 EsopeRewriterTest >> testSegmentArcopySaphtool [
 	| actualSource expectedSource |
 
@@ -302,7 +304,7 @@ c@_   ENDSEGMENT
 	self assert: parser generatedCode equals: expectedSource.
 ]
 
-{ #category : #'tests-todo' }
+{ #category : 'tests-todo' }
 EsopeRewriterTest >> testSegmentSimpleWithMoreThanSixSpaces [
 	| actualSource expectedSource |
 
@@ -320,7 +322,7 @@ c@_     end segment
 	self assert: parser generatedCode equals: expectedSource.
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testSegprt [
 
 	| sourcecode |
@@ -330,7 +332,7 @@ EsopeRewriterTest >> testSegprt [
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testSegsup [
 
 	| sourcecode |
@@ -340,7 +342,7 @@ EsopeRewriterTest >> testSegsup [
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeArray [
 
 	
@@ -349,7 +351,7 @@ EsopeRewriterTest >> testTranslateEsopeArray [
 	self assert: parser generatedCode equals: sixSpaces , 'ab.cd(ef)', String lf
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeArrayAndEsopeAtWithExpressionAsSubscript [
 
 	self
@@ -357,7 +359,7 @@ EsopeRewriterTest >> testTranslateEsopeArrayAndEsopeAtWithExpressionAsSubscript 
 		equals: 'ur.ubb(S__/jr + 1)'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeArrayAsFunctionStatement [
 
 	self
@@ -365,7 +367,7 @@ EsopeRewriterTest >> testTranslateEsopeArrayAsFunctionStatement [
 		equals: 'ur.ubb(//jr) = ur.ubb(S__/jr + 1)'
 ]
 
-{ #category : #'tests-todo' }
+{ #category : 'tests-todo' }
 EsopeRewriterTest >> testTranslateEsopeArrayDotInsidePar [
 
 	| code |
@@ -376,7 +378,7 @@ EsopeRewriterTest >> testTranslateEsopeArrayDotInsidePar [
 		assert: parser generatedCode equals: code
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeArrayNew [
 
 	self
@@ -384,7 +386,7 @@ EsopeRewriterTest >> testTranslateEsopeArrayNew [
 		equals: 'ab.cd'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeArrayNewWithSubscript [
 
 	self
@@ -392,7 +394,7 @@ EsopeRewriterTest >> testTranslateEsopeArrayNewWithSubscript [
 		equals: 'ab.cd(i, j+1)'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeArrayRelbk [
 
 	self
@@ -400,7 +402,7 @@ EsopeRewriterTest >> testTranslateEsopeArrayRelbk [
 		equals: 'ur.ubb(jr) = ur.ubb(jr + 1)'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeArrayWithExpression [
 
 	self
@@ -408,7 +410,7 @@ EsopeRewriterTest >> testTranslateEsopeArrayWithExpression [
 		equals: 'ur.ubb(S__/jr/1)'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeAtBinaryOperator [
 
 	self
@@ -420,7 +422,7 @@ EsopeRewriterTest >> testTranslateEsopeAtBinaryOperator [
 		equals: '              if((rlist.ilist).gt.nlist)then'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeAtEqOperator [
 
 	self
@@ -428,20 +430,20 @@ EsopeRewriterTest >> testTranslateEsopeAtEqOperator [
 		equals: '         if(lxs.eq.0)then'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeAtNoDot [
 
 	self assert: (parser applyTransformation: 'abc') equals: 'abc'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeAtOneDot [
 	self
 		assert: (parser applySlashTransformation: 'abc.def')
 		equals: 'abc.def'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeAtTwoDots [
 
 	self
@@ -449,7 +451,7 @@ EsopeRewriterTest >> testTranslateEsopeAtTwoDots [
 		equals: 'abc.def=opq.xyz'
 ]
 
-{ #category : #'tests-todo' }
+{ #category : 'tests-todo' }
 EsopeRewriterTest >> testTranslateEsopeIFLogical [
 
 	| sourcecode |
@@ -460,7 +462,7 @@ EsopeRewriterTest >> testTranslateEsopeIFLogical [
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
-{ #category : #'tests-todo' }
+{ #category : 'tests-todo' }
 EsopeRewriterTest >> testTranslateEsopeIFLogicalWithLineContinuation [
 
 	| sourcecode |
@@ -473,7 +475,7 @@ EsopeRewriterTest >> testTranslateEsopeIFLogicalWithLineContinuation [
 	self assert: parser generatedCode equals: '      ' , sourcecode
 ]
 
-{ #category : #'tests-todo' }
+{ #category : 'tests-todo' }
 EsopeRewriterTest >> testTranslateEsopeIFLogicalWithSlash [
 
 	| sourcecode |
@@ -485,7 +487,7 @@ EsopeRewriterTest >> testTranslateEsopeIFLogicalWithSlash [
 	self assert: parser generatedCode equals: 'c@_   ' , sourcecode
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeMultipleSlashes [
 
 	self parse: sixSpaces, 'abc.def(/def.xyz)=opq.xyz(/abc.def)', String lf rule: #fortranLine.
@@ -493,7 +495,7 @@ EsopeRewriterTest >> testTranslateEsopeMultipleSlashes [
 	self assert: parser generatedCode equals: sixSpaces, 'abc.def(S__/def.xyz)=opq.xyz(S__/abc.def)', String lf
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeNotDot [
 
 	self
@@ -501,7 +503,7 @@ EsopeRewriterTest >> testTranslateEsopeNotDot [
 		equals: '      A=.NOT.B '
 ]
 
-{ #category : #'tests-todo' }
+{ #category : 'tests-todo' }
 EsopeRewriterTest >> testTranslateEsopeSlash10 [
 
 	| sourcecode |
@@ -512,7 +514,7 @@ EsopeRewriterTest >> testTranslateEsopeSlash10 [
 	self assert: parser generatedCode equals: sixSpaces , '   A = B ( S__/1 )' , String lf
 ]
 
-{ #category : #'tests-todo' }
+{ #category : 'tests-todo' }
 EsopeRewriterTest >> testTranslateEsopeSlash20 [
 
 	| sourcecode |
@@ -525,7 +527,7 @@ EsopeRewriterTest >> testTranslateEsopeSlash20 [
 	self assert: parser generatedCode equals: sixSpaces , '   A = B ( S__/1 )', String lf
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeSlashEsopeAt [
 
 	self parse: sixSpaces, 'abc.def(/1)', String lf rule: #fortranLine.
@@ -535,7 +537,7 @@ EsopeRewriterTest >> testTranslateEsopeSlashEsopeAt [
 		equals: sixSpaces, 'abc.def(S__/1)', String lf
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeSlashNone [
 
 	self
@@ -543,7 +545,7 @@ EsopeRewriterTest >> testTranslateEsopeSlashNone [
 		equals: 'abc.def'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeSlashOne [
 
 	self
@@ -551,7 +553,7 @@ EsopeRewriterTest >> testTranslateEsopeSlashOne [
 		equals: 'S__(D__(abc,def),1)'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeSlashSlash [
 
 	self
@@ -560,7 +562,7 @@ EsopeRewriterTest >> testTranslateEsopeSlashSlash [
 		equals: 'C     //fin repeter "decouper chaque chaine"'
 ]
 
-{ #category : #'tests-todo' }
+{ #category : 'tests-todo' }
 EsopeRewriterTest >> testTranslateEsopeSlashWithDotInsidePar [
 
 	| code |
@@ -572,7 +574,7 @@ EsopeRewriterTest >> testTranslateEsopeSlashWithDotInsidePar [
 		equals: sixSpaces , 'rlist.elist(S__/rlist.ilist)=ms' , String lf
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeRewriterTest >> testTranslateEsopeSlashWithSpacesBeforeLeftPar [
 
 	self

@@ -1,18 +1,20 @@
 Class {
-	#name : #EsopeGrammarTest,
-	#superclass : #PP2CompositeNodeTest,
+	#name : 'EsopeGrammarTest',
+	#superclass : 'PP2CompositeNodeTest',
 	#instVars : [
 		'sixSpaces'
 	],
-	#category : 'EsopeImporter-Tests-Rewriter'
+	#category : 'EsopeImporter-Tests-Rewriter',
+	#package : 'EsopeImporter-Tests',
+	#tag : 'Rewriter'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 EsopeGrammarTest >> parserClass [
 	^ PPEsopeGrammar
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 EsopeGrammarTest >> setUp [
 
 	super setUp.
@@ -20,7 +22,7 @@ EsopeGrammarTest >> setUp [
 	sixSpaces := '      '.
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testCommentLine [
 
 	self
@@ -34,7 +36,7 @@ EsopeGrammarTest >> testCommentLine [
 		rule: #commentLine
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testEmptyLine [
 
 	self
@@ -43,7 +45,7 @@ EsopeGrammarTest >> testEmptyLine [
 		rule: #emptyLine
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testEndOfLine [
 
 	self parse: String cr rule: #endOfLine.
@@ -53,7 +55,7 @@ EsopeGrammarTest >> testEndOfLine [
 	self parse: String lf rule: #endOfLine
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testEndSegment [
 
 	| segment |
@@ -68,7 +70,7 @@ EsopeGrammarTest >> testEndSegment [
 	self fail: '      end segment,values' rule: #endSegment
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testFortranLine [
 
 	self
@@ -79,7 +81,7 @@ EsopeGrammarTest >> testFortranLine [
 	self parse: String cr rule: #fortranLine
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testFortranLineEmpty [
 
 	self
@@ -88,7 +90,7 @@ EsopeGrammarTest >> testFortranLineEmpty [
 		rule: #fortranLine
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testInclude [
 
 	self
@@ -106,7 +108,7 @@ EsopeGrammarTest >> testInclude [
 		rule: #include
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testIncludeDoubleQuote [
 
 
@@ -116,7 +118,7 @@ EsopeGrammarTest >> testIncludeDoubleQuote [
 		rule: #include.
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testIncludeMixed [
 
 
@@ -126,7 +128,7 @@ EsopeGrammarTest >> testIncludeMixed [
 		rule: #include.
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testIncludeNotDoubleQuote [
 
 
@@ -136,7 +138,7 @@ EsopeGrammarTest >> testIncludeNotDoubleQuote [
 		rule: #include.
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testLines [
 
 	| aLine |
@@ -149,7 +151,7 @@ EsopeGrammarTest >> testLines [
 	self parse: aLine , (sixSpaces , 'end' , String cr)
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testOptionalBlanks [
 
 	self parse: '     ' rule: #optionalBlanks.
@@ -158,7 +160,7 @@ EsopeGrammarTest >> testOptionalBlanks [
 	self parse: '' rule: #optionalBlanks
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testPointer [
 
 	self
@@ -168,7 +170,7 @@ EsopeGrammarTest >> testPointer [
 	self fail: 'pointeur splist.list' rule: #pointer
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testPointerExtraSpaces [
 
 	self
@@ -177,7 +179,7 @@ EsopeGrammarTest >> testPointerExtraSpaces [
 		rule: #pointer
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testPointers [
 
 	self
@@ -187,7 +189,7 @@ EsopeGrammarTest >> testPointers [
 	self fail: 'pointeur splist.list' rule: #pointer
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testSegact [
 
 	self parse: sixSpaces , 'segact,splist' , String cr rule: #segact.
@@ -196,7 +198,7 @@ EsopeGrammarTest >> testSegact [
 	self fail: 'segact,splist' , String cr rule: #segact
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testSegadj [
 
 	self
@@ -206,7 +208,7 @@ EsopeGrammarTest >> testSegadj [
 	self fail: 'segadj,alist' rule: #segadj
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testSegadjVcAcc226 [
 
 	self
@@ -216,7 +218,7 @@ EsopeGrammarTest >> testSegadjVcAcc226 [
 	self fail: 'segadj,pval' rule: #segadj
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testSegdes [
 
 	self
@@ -230,7 +232,7 @@ EsopeGrammarTest >> testSegdes [
 	self fail: 'segdes,alist' rule: #segdes
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testSegini [
 
 	self
@@ -240,7 +242,7 @@ EsopeGrammarTest >> testSegini [
 	self fail: 'segini,rlist' rule: #segini
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testSegment [
 
 	| segment |
@@ -263,7 +265,7 @@ EsopeGrammarTest >> testSegment [
 	self fail: '      segment,values' rule: #segment
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testSegmentSimpleWithMoreThanSixSpaces [
 
 	| segment |
@@ -275,7 +277,7 @@ EsopeGrammarTest >> testSegmentSimpleWithMoreThanSixSpaces [
 	self parse: segment
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testSegprt [
 
 	self
@@ -285,7 +287,7 @@ EsopeGrammarTest >> testSegprt [
 	self fail: 'segprt,rlist' rule: #segprt
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 EsopeGrammarTest >> testSegsup [
 
 	self
