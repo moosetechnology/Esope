@@ -1,25 +1,27 @@
 Class {
-	#name : #IASTSubroutine,
-	#superclass : #IASTProgramUnit,
+	#name : 'IASTSubroutine',
+	#superclass : 'IASTProgramUnit',
 	#instVars : [
 		'parameters'
 	],
-	#category : 'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTSubroutine >> accept: aVisitor [
 
 	^ aVisitor visitIASTSubroutine: self.
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTSubroutine >> parameters [
 
 	^ parameters ifNil: [ parameters := #() ]
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTSubroutine >> parameters: aNodes [
 
 	parameters := aNodes ifNil: [ #(  ) ] ifNotNil: [ 

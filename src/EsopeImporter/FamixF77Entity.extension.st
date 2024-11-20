@@ -1,17 +1,17 @@
-Extension { #name : #FamixF77Entity }
+Extension { #name : 'FamixF77Entity' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77Entity >> famixImportSanityCheck [
 	"nothing special by default"
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77Entity >> isEsopeSegment [
 
 	^false
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77Entity >> sanityCheck: aBlock description: aString [
 	"copied from Object>>assert:description: with our own exception"
 

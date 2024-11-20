@@ -2,29 +2,31 @@
 I register errors during the import process and allow to proceed, ignoring them
 "
 Class {
-	#name : #FortranErrorManager,
-	#superclass : #Object,
+	#name : 'FortranErrorManager',
+	#superclass : 'Object',
 	#instVars : [
 		'contexts',
 		'errors',
 		'stop'
 	],
-	#category : 'EsopeImporter-Importer'
+	#category : 'EsopeImporter-Importer',
+	#package : 'EsopeImporter',
+	#tag : 'Importer'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FortranErrorManager >> enterContext: aString [
 
 	contexts addLast: aString
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FortranErrorManager >> enterFile: aFilename [
 
 	self enterContext: 'file:' , aFilename
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FortranErrorManager >> error: anException [
 
 	stop ifTrue: [ anException pass ].
@@ -37,13 +39,13 @@ FortranErrorManager >> error: anException [
 		-> 	anException)
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FortranErrorManager >> errors [
 
 	^ errors
 ]
 
-{ #category : #api }
+{ #category : 'api' }
 FortranErrorManager >> handleErrorsFor: context running: runningBlock [
 	"1. register the context
 	 2. executes the runningBlock
@@ -66,7 +68,7 @@ FortranErrorManager >> handleErrorsFor: context running: runningBlock [
 
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 FortranErrorManager >> initialize [ 
 
 	super initialize.
@@ -76,49 +78,49 @@ FortranErrorManager >> initialize [
 	stop := false
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 FortranErrorManager >> isEmpty [
 
 	^errors isEmpty
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 FortranErrorManager >> isNotEmpty [
 
 	^errors isNotEmpty
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FortranErrorManager >> leaveContext [
 
 	contexts removeLast
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FortranErrorManager >> leaveFile [
 
 	self leaveContext
 ]
 
-{ #category : #'error management' }
+{ #category : 'error management' }
 FortranErrorManager >> resumeOnError [
 
 	self stopOnError: false
 ]
 
-{ #category : #'error management' }
+{ #category : 'error management' }
 FortranErrorManager >> stop [
 
 	^stop
 ]
 
-{ #category : #'error management' }
+{ #category : 'error management' }
 FortranErrorManager >> stopOnError [
 
 	self stopOnError: true
 ]
 
-{ #category : #'error management' }
+{ #category : 'error management' }
 FortranErrorManager >> stopOnError: aBoolean [
 
 	stop := aBoolean
