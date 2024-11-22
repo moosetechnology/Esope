@@ -1,10 +1,12 @@
 Class {
-	#name : #JsonToIASTVisitorTest,
-	#superclass : #TestCase,
-	#category : #'EsopeImporter-Tests-Visitor'
+	#name : 'JsonToIASTVisitorTest',
+	#superclass : 'TestCase',
+	#category : 'EsopeImporter-Tests-Visitor',
+	#package : 'EsopeImporter-Tests',
+	#tag : 'Visitor'
 }
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testAccessArrayWithIndices [
 	"subroutine hello
 	  integer arr(10)
@@ -32,7 +34,7 @@ JsonToIASTVisitorTest >> testAccessArrayWithIndices [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testAccessArrayWithIndicesLiteral [
 	"subroutine hello
 	  integer arr(10)
@@ -56,7 +58,7 @@ JsonToIASTVisitorTest >> testAccessArrayWithIndicesLiteral [
 	self assert: var indices first isNil.
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testAccessArrayWithSeveralIndices [
 	"subroutine hello
 	  integer arr(10, 10, 10)
@@ -87,7 +89,7 @@ JsonToIASTVisitorTest >> testAccessArrayWithSeveralIndices [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testAssignementStatement [
 	"subroutine hello
       someVar = otherVar
@@ -111,7 +113,7 @@ JsonToIASTVisitorTest >> testAssignementStatement [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testAssignementStatementWithComplexRHS [
 	"subroutine hello
       someVar = otherVar + thirdVar
@@ -137,7 +139,7 @@ JsonToIASTVisitorTest >> testAssignementStatementWithComplexRHS [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testAssignementStatementWithEsoAt [
 	"subroutine hello
       someVar = D__(var,1)
@@ -158,7 +160,7 @@ JsonToIASTVisitorTest >> testAssignementStatementWithEsoAt [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testBackspaceStatement [
 	"
       program toto
@@ -189,7 +191,7 @@ JsonToIASTVisitorTest >> testBackspaceStatement [
 
 ]
 
-{ #category : #'tests-progUnit' }
+{ #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testBlockDataWithOneCommon [
 	"blockdata hello
       common /mycom/ i
@@ -212,7 +214,7 @@ JsonToIASTVisitorTest >> testBlockDataWithOneCommon [
 
 ]
 
-{ #category : #'tests-progUnit' }
+{ #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testBlockDataWithOneCommonOneData [
 	"block data hello
       common /mycom/ i
@@ -236,7 +238,7 @@ JsonToIASTVisitorTest >> testBlockDataWithOneCommonOneData [
 	self assert: blockdata comments isEmpty.
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testCallToWrite [
 	"subroutine mysub (msg)
       write(*,*) msg
@@ -262,7 +264,7 @@ JsonToIASTVisitorTest >> testCallToWrite [
 
 ]
 
-{ #category : #'tests-progUnit' }
+{ #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testComment [
 	"c     blah"
 	| programFile stmt |
@@ -283,7 +285,7 @@ JsonToIASTVisitorTest >> testComment [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testCommentInside [
 	"integer function hello()
 c     blah
@@ -301,7 +303,7 @@ c     blah
 
 ]
 
-{ #category : #'tests-progUnit' }
+{ #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testCommentOutside [
 	"c     blah
       integer function hello()
@@ -319,7 +321,7 @@ JsonToIASTVisitorTest >> testCommentOutside [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testContinueStatement [
 "      PROGRAM MYPROG
       continue
@@ -333,7 +335,7 @@ JsonToIASTVisitorTest >> testContinueStatement [
 	self assert: programFile body first body isEmpty
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testDeref [
 	"subroutine hello
 	   ptr.att = 5
@@ -361,7 +363,7 @@ JsonToIASTVisitorTest >> testDeref [
 
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testESOAtWithArrayArgument [
 "Special case of a D__ function call with an array as argument
 
@@ -397,7 +399,7 @@ JsonToIASTVisitorTest >> testESOAtWithArrayArgument [
 
 ]
 
-{ #category : #'tests-progUnit' }
+{ #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testEmptyBlockData [
 	"BLOCK data hello
       end
@@ -415,7 +417,7 @@ JsonToIASTVisitorTest >> testEmptyBlockData [
 	self assert: block comments isEmpty.
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testEmptyExitStatement [
 "      PROGRAM MYPROG
       exit
@@ -429,7 +431,7 @@ JsonToIASTVisitorTest >> testEmptyExitStatement [
 	self assert: programFile body first body isEmpty
 ]
 
-{ #category : #'tests-progUnit' }
+{ #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testEmptyFunction [
 	"integer function hello()
       end
@@ -458,7 +460,7 @@ JsonToIASTVisitorTest >> testEmptyFunction [
 
 ]
 
-{ #category : #'tests-progUnit' }
+{ #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testEmptyFunctionWithArguments [
 	"integer function hello(i,j)
       end
@@ -481,7 +483,7 @@ JsonToIASTVisitorTest >> testEmptyFunctionWithArguments [
 
 ]
 
-{ #category : #'tests-progUnit' }
+{ #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testEmptyProgram [
 	"program hello
       end
@@ -508,7 +510,7 @@ JsonToIASTVisitorTest >> testEmptyProgram [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testEmptyReturnStatement [
 "      subroutine hello
       return
@@ -523,7 +525,7 @@ JsonToIASTVisitorTest >> testEmptyReturnStatement [
 	self assert: fct body isEmpty
 ]
 
-{ #category : #'tests-progUnit' }
+{ #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testEmptySubroutine [
 	"subroutine hello
       end
@@ -549,7 +551,7 @@ JsonToIASTVisitorTest >> testEmptySubroutine [
 	self assert: sub sourceAnchor endColumn equals: 10.
 ]
 
-{ #category : #'tests-progUnit' }
+{ #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testEmptySubroutineOneParam [
 	"subroutine hello( name )
       end
@@ -566,7 +568,7 @@ JsonToIASTVisitorTest >> testEmptySubroutineOneParam [
 	self assert: sub body isEmpty.
 ]
 
-{ #category : #'tests-progUnit' }
+{ #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testEmptySubroutineTwoParams [
 	"subroutine hello( param1, param2 )
       end
@@ -585,7 +587,7 @@ JsonToIASTVisitorTest >> testEmptySubroutineTwoParams [
 	self assert: sub body isEmpty.
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testEsoArTwoArgs [
 	"subroutine hello()
         d__(baz,bar) = 5
@@ -603,7 +605,7 @@ JsonToIASTVisitorTest >> testEsoArTwoArgs [
 
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testEsoArWithDotArg [
 
 "      subroutine hello( )
@@ -646,7 +648,7 @@ JsonToIASTVisitorTest >> testEsoArWithDotArg [
 
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testEsoArWithEsoAtArg [
 	"      subroutine hello( )
 	     d__(baz,bar(2)) = 5
@@ -676,7 +678,7 @@ JsonToIASTVisitorTest >> testEsoArWithEsoAtArg [
 
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testEsoArWithVarArg [
 
 	"      subroutine hello( )
@@ -709,7 +711,7 @@ JsonToIASTVisitorTest >> testEsoArWithVarArg [
 	self assert: arg arguments first entityName equals: 'i'
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testEsoAtOneArg [
 	"      subroutine hello( )
         d__(baz,2) = 5.3
@@ -729,7 +731,7 @@ JsonToIASTVisitorTest >> testEsoAtOneArg [
 	self deny: stmt entities first isWrite
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testEsoAtTwoArgs [
 	"      subroutine hello( )
         d__(baz,bar) = 5
@@ -751,7 +753,7 @@ JsonToIASTVisitorTest >> testEsoAtTwoArgs [
 	]
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testEsoAtTwoArgsReceivesVar [
 	"      subroutine hello( )
         d__(baz,bar) = otherVar
@@ -772,7 +774,7 @@ JsonToIASTVisitorTest >> testEsoAtTwoArgsReceivesVar [
 	self deny: var isWrite.
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testEsoSl [
 	"      subroutine hello( )
         n = s__(a,i)
@@ -794,7 +796,7 @@ JsonToIASTVisitorTest >> testEsoSl [
 	self assert: stmt entities second entityName equals: 'i'
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testEsoSlWithDot [
 	"      subroutine hello( )
         n = s__(d__(p,a),i)
@@ -820,7 +822,7 @@ JsonToIASTVisitorTest >> testEsoSlWithDot [
 	self assert: stmt entities second entityName equals: 'i'
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testEsoSlWithTwoDot [
 	"      subroutine hello( )
         n = s__(d__(p,a),d__(p,i))
@@ -849,7 +851,7 @@ JsonToIASTVisitorTest >> testEsoSlWithTwoDot [
 	self assert: stmt entities second entities second entityName equals: 'i'.
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testEsopeIfCommentStatement [
 "      subroutine sub()
 c@_   IF (N.GT.0) SEGINI P
@@ -878,7 +880,7 @@ c@_   IF (N.GT.0) SEGINI P
 	self assert: seg sourceAnchor endColumn equals: 29
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testFunctionWithFunctionInvocation [
 "      integer function efunc()
       i = ifunc (i, j)
@@ -899,7 +901,7 @@ JsonToIASTVisitorTest >> testFunctionWithFunctionInvocation [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testGotoStatement [
 "      PROGRAM MYPROG
       goto 100
@@ -913,7 +915,7 @@ JsonToIASTVisitorTest >> testGotoStatement [
 	self assert: programFile body first body isEmpty
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testIfStatement [
 "      integer function hello()
       if(a) a=1
@@ -931,7 +933,7 @@ JsonToIASTVisitorTest >> testIfStatement [
 	self assert: fct body first second first entityName equals: 'a'.
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testImplicitNoneStatement [
 	"PROGRAM MYPROG
        implicit none
@@ -949,7 +951,7 @@ JsonToIASTVisitorTest >> testImplicitNoneStatement [
 	self assert: stmt rules isNil.
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testImplicitStatementSeveralRanges [
 	"PROGRAM MYPROG
        implicit character (c-e, h, l-m)
@@ -986,7 +988,7 @@ JsonToIASTVisitorTest >> testImplicitStatementSeveralRanges [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testImplicitStatementSimpleChar [
 	"PROGRAM MYPROG
        implicit character (c)
@@ -1015,7 +1017,7 @@ JsonToIASTVisitorTest >> testImplicitStatementSimpleChar [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testImplicitStatementSimpleRange [
 	"PROGRAM MYPROG
        implicit character (c-e)
@@ -1040,7 +1042,7 @@ JsonToIASTVisitorTest >> testImplicitStatementSimpleRange [
 
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testIncludeFile [
 
 	"      subroutine hello( )
@@ -1060,7 +1062,7 @@ c@_#include ""file.inc""
 	self assert: stmt entityName equals: 'file.inc'
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testIntegerVariableDeclaration [
 	"subroutine hello
       integer i
@@ -1081,7 +1083,7 @@ JsonToIASTVisitorTest >> testIntegerVariableDeclaration [
 	self assert: var sourceAnchor class equals: IASTIndexedFileAnchor
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testIntrinsicStatement [
 "      subroutine hello
       intrinsic SIN, COS
@@ -1096,7 +1098,7 @@ JsonToIASTVisitorTest >> testIntrinsicStatement [
 	"note: currently not declaring the intrinsic sub-prgrams"
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testMultipleStatements [
 	"subroutine hello
       integer someVar
@@ -1126,7 +1128,7 @@ JsonToIASTVisitorTest >> testMultipleStatements [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testParameterStatement [
 "      subroutine paramstmt
       PARAMETER (LEGERE=1, GRAVE=2, FATALE=3, FINALE=4)
@@ -1155,7 +1157,7 @@ JsonToIASTVisitorTest >> testParameterStatement [
 	self assert: access sourceAnchor endColumn equals: 33
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testPointeurDeclaration [
 "      subroutine hello
 c@_   pointeur p1.pstr
@@ -1177,7 +1179,7 @@ c@_   pointeur p1.pstr
 	self assert: seg sourceAnchor endColumn equals: 23
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testProgramWithEmptyDoStatement [
 	"program hello
       do i=1, n
@@ -1197,7 +1199,7 @@ JsonToIASTVisitorTest >> testProgramWithEmptyDoStatement [
 
 ]
 
-{ #category : #'tests-progUnit' }
+{ #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testProgramWithMultipleProgUnits [
 	"program myprog
       end
@@ -1232,7 +1234,7 @@ JsonToIASTVisitorTest >> testProgramWithMultipleProgUnits [
 	self assert: node parameters first entityName equals: 'msg'.
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testProgramWithOneStatement [
 	"program hello
       a = -b
@@ -1253,7 +1255,7 @@ JsonToIASTVisitorTest >> testProgramWithOneStatement [
 	self assert: prog body first size equals: 2.
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testProgramWithSimpleIfElseStatementWitBody [
 	"program hello
       if (i < j) then
@@ -1279,7 +1281,7 @@ JsonToIASTVisitorTest >> testProgramWithSimpleIfElseStatementWitBody [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWitBody [
 	"program hello
       if (i < j) then
@@ -1301,7 +1303,7 @@ JsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWitBody [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWithoutBody [
 	"program hello
       if (i < j) then
@@ -1321,7 +1323,7 @@ JsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWithoutBody [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testReturnConstantStatement [
 "      integer function hello()
       return 42
@@ -1336,7 +1338,7 @@ JsonToIASTVisitorTest >> testReturnConstantStatement [
 	self assert: fct body isEmpty
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testReturnStatement [
 "      integer function hello()
       return someVar
@@ -1352,7 +1354,7 @@ JsonToIASTVisitorTest >> testReturnStatement [
 	self assert: fct body first entityName equals: 'somevar'.
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testSegactCommand [
 	"subroutine hello
 c@_   segact, lb
@@ -1375,7 +1377,7 @@ c@_   segact, lb
 	self assert: seg sourceAnchor endColumn equals: 17
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testSegadjCommand [
 	"subroutine hello
 c@_   segadj,lb
@@ -1398,7 +1400,7 @@ c@_   segadj,lb
 	self assert: seg sourceAnchor endColumn equals: 16
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testSeginiCommand [
 	"subroutine hello
 c@_   segini,lb
@@ -1421,7 +1423,7 @@ c@_   segini,lb
 	self assert: seg sourceAnchor endColumn equals: 16
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testSegmentDeclarationEmpty [
 	"subroutine hello
 c@_   segment,user
@@ -1447,7 +1449,7 @@ c@_   end segment
 	self assert: seg sourceAnchor endColumn equals: 18
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testSegmentDeclarationWithArrayAttribute [
 
 	"
@@ -1476,7 +1478,7 @@ c@_   end segment
 
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testSegmentDeclarationWithArrayAttributes [
 
 "      subroutine hello
@@ -1504,7 +1506,7 @@ c@_   end segment
 
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testSegmentDeclarationWithArrayPointeurAttribute [
 
 "
@@ -1528,7 +1530,7 @@ c@_   end segment
 
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testSegmentDeclarationWithContent [
 	"subroutine hello
 c@_   segment, user
@@ -1554,7 +1556,7 @@ c@_   end segment
 
 ]
 
-{ #category : #'tests-esope' }
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testSegsupCommand [
 	"subroutine hello
 c@_   segsup, lb
@@ -1577,7 +1579,7 @@ c@_   segsup, lb
 	self assert: seg sourceAnchor endColumn equals: 17
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testSpecialSubroutine [
 
 	"      subroutine _$aFile_inc
@@ -1624,7 +1626,7 @@ c@_   end segment
 	self assert: entity typeSpec entityName equals: 'character'
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testStringVariableDeclaration [
 	"subroutine hello
       character*8 str
@@ -1644,7 +1646,7 @@ JsonToIASTVisitorTest >> testStringVariableDeclaration [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testSubroutineInvocation [
 	"subroutine hello
       call someSubRoutine
@@ -1663,7 +1665,7 @@ JsonToIASTVisitorTest >> testSubroutineInvocation [
 
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testSubroutineInvocationWithArguments [
 	"subroutine hello
       call someSubRoutine(bar,5,baz)
@@ -1689,7 +1691,7 @@ JsonToIASTVisitorTest >> testSubroutineInvocationWithArguments [
 	self assert: arg entityName equals: 'baz'.
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testTwoIntegerVariableDeclarations [
 	"subroutine hello
       integer i,j
@@ -1714,7 +1716,7 @@ JsonToIASTVisitorTest >> testTwoIntegerVariableDeclarations [
 	self assert: var typeSpec entityName equals: 'integer'.
 ]
 
-{ #category : #'tests-statement' }
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testWriteStatementWithStringArgument [
 	"
       subroutine print
@@ -1732,7 +1734,7 @@ JsonToIASTVisitorTest >> testWriteStatementWithStringArgument [
 	self assert: stmt arguments size equals: 0.
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 JsonToIASTVisitorTest >> visitF77Code: f77Code [
 	| visitor |
 	visitor := JsonToIASTVisitor new.
@@ -1742,7 +1744,7 @@ JsonToIASTVisitorTest >> visitF77Code: f77Code [
 		)
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 JsonToIASTVisitorTest >> visitJsonCode: jsonCode [
 	| visitor |
 	visitor := JsonToIASTVisitor new.
