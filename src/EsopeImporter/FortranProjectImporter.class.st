@@ -644,7 +644,10 @@ FortranProjectImporter >> writeFakeEsopeProgramUnit: name from: content on: writ
 		<< name;
 		cr;
 		<< content.
-	(String crlf includes: content last)
+	(
+		content isNotEmpty 
+			and: [ String crlf includes: content last ]
+	)
 		ifFalse: [ writeStream cr ].
 	writeStream
 		<< '      end';
