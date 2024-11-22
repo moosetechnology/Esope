@@ -662,6 +662,34 @@ FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointers [
 	self assert: entity declaredType equals: type
 ]
 
+{ #category : 'tests' }
+FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointersStubSegment [
+
+	| sub entity var |
+	"
+      subroutine demo
+      pointeur p.point
+      end
+	"
+	var := self newEntity: FamixF77Variable named: 'p'.
+	var segment: 'point'.
+	var isEsope: true.
+
+	sub := (self newPU: 'demo')
+		addLocalVariable: var;
+		yourself.
+
+	resolver resolveDeclaredTypeOfPointers.
+
+	self assert: sub localVariables size equals: 1.
+
+	entity := sub localVariables anyOne.
+	self assert: entity declaredType class equals: FamixEsopeSegment.
+	self assert: entity declaredType name equals: 'point'.
+	self assert: entity declaredType isStub
+		
+]
+
 { #category : 'test - implicit' }
 FamixEsopeResolverTest >> testResolveImplicitFunctionType [
 

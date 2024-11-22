@@ -324,16 +324,22 @@ FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
 FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 	"sets the declaredType of pointer esopeVariable"
 
-	| segments |
+	| allSegments segment segmentName |
 
-	segments := self model allWithType: FamixEsopeSegment.
-	segments
-		detect: [ :segment |
-			aFamixVariable segment
-				ifNil: [ segment name = aFamixVariable name ]
-				ifNotNil: [ :declaredSegment | segment name = declaredSegment ]
-		]
-		ifFound: [ :segment | aFamixVariable declaredType: segment ]
+	allSegments := self model allWithType: FamixEsopeSegment.
+	segmentName := aFamixVariable segment
+		ifNil: [ aFamixVariable name ]
+		ifNotNil: [ :declaredSegmentName | declaredSegmentName ].
+
+	segment := allSegments
+		detect: [ :seg | seg name = segmentName ]
+		ifNone: [ self model newSegment
+			name: segmentName ;
+			isStub: true ;
+			yourself
+		].
+
+	aFamixVariable declaredType: segment.
 ]
 
 { #category : 'symbols resolution' }
@@ -461,11 +467,11 @@ FamixEsopeResolver >> resolvingSteps [
 
 		#resolveAccesses
 		#resolveImplicits
+		#resolveDeclaredTypeOfPointers
 	 	#resolveInvocations
 	)
 
-	"#propagatePointerType
-	#resolveDeclaredTypeOfPointers"
+	"#propagatePointerType"
 
 ]
 
