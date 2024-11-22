@@ -1,6 +1,6 @@
-Extension { #name : #FamixF77IncludedFile }
+Extension { #name : 'FamixF77IncludedFile' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77IncludedFile >> allTypes [
 
 	"empty collection because because members of included files are treated by the including files"
@@ -8,7 +8,7 @@ FamixF77IncludedFile >> allTypes [
 	^#()
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77IncludedFile >> createUnresolveVariable: variableName with: resolver [
 	"If a variable was not resolved within the IncludedFile, it means it depends on
 	 its includer to define this variable.
@@ -18,7 +18,7 @@ FamixF77IncludedFile >> createUnresolveVariable: variableName with: resolver [
 
 ]
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixF77IncludedFile >> famixImportSanityCheck [
 
 	super famixImportSanityCheck.

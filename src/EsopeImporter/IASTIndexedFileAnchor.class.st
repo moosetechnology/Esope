@@ -1,6 +1,6 @@
 Class {
-	#name : #IASTIndexedFileAnchor,
-	#superclass : #Object,
+	#name : 'IASTIndexedFileAnchor',
+	#superclass : 'Object',
 	#instVars : [
 		'startLine',
 		'startColumn',
@@ -8,69 +8,71 @@ Class {
 		'endColumn',
 		'fileName'
 	],
-	#category : 'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTIndexedFileAnchor >> accept: aVisitor [
 	^aVisitor visitIndexedFileAnchor: self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTIndexedFileAnchor >> endColumn [
 
 	^ endColumn
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTIndexedFileAnchor >> endColumn: anObject [
 
 	endColumn := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTIndexedFileAnchor >> endLine [
 
 	^ endLine
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTIndexedFileAnchor >> endLine: anObject [
 
 	endLine := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTIndexedFileAnchor >> fileName [
 
 	^ fileName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTIndexedFileAnchor >> fileName: anObject [
 
 	fileName := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTIndexedFileAnchor >> startColumn [
 
 	^ startColumn
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTIndexedFileAnchor >> startColumn: anObject [
 
 	startColumn := anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTIndexedFileAnchor >> startLine [
 
 	^ startLine
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTIndexedFileAnchor >> startLine: anObject [
 
 	startLine := anObject

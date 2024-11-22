@@ -1,1 +1,1 @@
-Package { #name : #EsopeImporter }
+Package { #name : 'EsopeImporter' }

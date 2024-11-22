@@ -1,16 +1,18 @@
 Class {
-	#name : #IASTEsopePointer,
-	#superclass : #IASTEntityRef,
-	#category : 'EsopeImporter-AST-IR'
+	#name : 'IASTEsopePointer',
+	#superclass : 'IASTEntityRef',
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 IASTEsopePointer >> accept: aVisitor [
 
 	^ aVisitor visitIASTEsopePointer: self
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 IASTEsopePointer >> isEsope [
 	^true
 ]

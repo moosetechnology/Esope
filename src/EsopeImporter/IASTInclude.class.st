@@ -6,27 +6,29 @@ We use the `includeCommand` to distinguish between the kind of include:
  - `include` 
 "
 Class {
-	#name : #IASTInclude,
-	#superclass : #IASTProgramUnit,
+	#name : 'IASTInclude',
+	#superclass : 'IASTProgramUnit',
 	#instVars : [
 		'includeCommand'
 	],
-	#category : 'EsopeImporter-AST-IR'
+	#category : 'EsopeImporter-AST-IR',
+	#package : 'EsopeImporter',
+	#tag : 'AST-IR'
 }
 
-{ #category : #visiting }
+{ #category : 'visiting' }
 IASTInclude >> accept: aVisitor [
 
 	^ aVisitor visitIASTInclude: self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTInclude >> includeCommand [
 
 	^ includeCommand
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 IASTInclude >> includeCommand: anObject [
 
 	includeCommand := anObject

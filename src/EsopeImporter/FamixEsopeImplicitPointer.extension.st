@@ -1,6 +1,6 @@
-Extension { #name : #FamixEsopeImplicitPointer }
+Extension { #name : 'FamixEsopeImplicitPointer' }
 
-{ #category : #'*EsopeImporter' }
+{ #category : '*EsopeImporter' }
 FamixEsopeImplicitPointer class >> metamodel [
 	"temporary solution to issue https://github.com/moosetechnology/Famix/issues/808"
 
