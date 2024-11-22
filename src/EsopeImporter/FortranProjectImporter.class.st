@@ -254,13 +254,13 @@ FortranProjectImporter >> fakeEsopeProgramUnit: includedFile from: sourceFolder 
 	destFile ensureCreateFile.
 
 	destFile writeStreamDo: [ :tmpStream |
-		tmpStream
-			<< '      subroutine _$' ;
-			<< (includedFile basename copy replaceAll: $. with: $_) ;
-			cr ;
-			<< includedFile contents ;
-			<< '      end' ;
-			cr ]
+		self 
+			writeFakeEsopeProgramUnit: (includedFile basename copy replaceAll: $. with: $_)
+			from: includedFile contents
+			on: tmpStream
+		]
+
+
 ]
 
 { #category : 'accessing' }
@@ -634,4 +634,22 @@ FortranProjectImporter >> workingFortranName [
 FortranProjectImporter >> workingJsonName [
 	
 	^'tmpJsonImport'
+]
+
+{ #category : 'constants' }
+FortranProjectImporter >> writeFakeEsopeProgramUnit: name from: content on: writeStream [
+
+	writeStream
+		<< '      subroutine _$';
+		<< name;
+		cr;
+		<< content.
+	(
+		content isNotEmpty 
+			and: [ String crlf includes: content last ]
+	)
+		ifFalse: [ writeStream cr ].
+	writeStream
+		<< '      end';
+		cr
 ]
