@@ -245,6 +245,7 @@ PPEsopeRewriter >> initialize [
 { #category : 'rules' }
 PPEsopeRewriter >> isCommentStatement: aText [
 
+	aText ifEmpty: [ ^false ].
 	^ 'Cc*' includes: aText first
 ]
 
