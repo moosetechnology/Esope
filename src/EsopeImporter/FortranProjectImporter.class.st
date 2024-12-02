@@ -482,13 +482,13 @@ FortranProjectImporter >> newResolver [
 ]
 
 { #category : 'private - import' }
-FortranProjectImporter >> parseFortran77: srcFile from: src to: dest [
-	"runs fortran77 parser on localPath in srcFolder to JSON file in destFolder"
+FortranProjectImporter >> parseFortran77: srcFile from: srcDir to: destDir [
+	"runs fortran77 parser on localPath in srcDir to JSON file in destDir"
 
 	| localizedFile destFile cmdReturn |
 
-	localizedFile := srcFile relativeTo: src.
-	destFile := (self appendPath: localizedFile toParent: dest) withExtension: 'json'.
+	localizedFile := srcFile relativeTo: srcDir.
+	destFile := (self appendPath: localizedFile toParent: destDir) withExtension: 'json'.
 	destFile ensureCreateFile.
 
 	cmdReturn := self parseFortran77File: srcFile to: destFile.
