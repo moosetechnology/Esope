@@ -349,9 +349,6 @@ FortranProjectImporter >> import [
 
 	srcFolder ifNil: [ Warning signal: 'Set source folder first' ].
 
-	errorHandler := FortranErrorManager new.
-	errorHandler stopOnError: self stopOnError.
-
 	UIManager default displayProgress: ''
 		from: 0 to: (self importSteps size - 1)
 		during: [:bar |
@@ -432,6 +429,16 @@ FortranProjectImporter >> includedNamesIn: srcFileReference [
 	errorHandler leaveContext.
 	
 	^value
+
+]
+
+{ #category : 'run' }
+FortranProjectImporter >> initialize [
+
+	super initialize.
+
+	errorHandler := FortranErrorManager new.
+	errorHandler stopOnError: self stopOnError.
 
 ]
 
