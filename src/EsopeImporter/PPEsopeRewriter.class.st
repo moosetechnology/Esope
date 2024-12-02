@@ -245,6 +245,7 @@ PPEsopeRewriter >> initialize [
 { #category : 'rules' }
 PPEsopeRewriter >> isCommentStatement: aText [
 
+	aText ifEmpty: [ ^false ].
 	^ 'Cc*' includes: aText first
 ]
 
@@ -366,12 +367,12 @@ PPEsopeRewriter >> replaceCrByLf: aText [
 
 { #category : 'utilities' }
 PPEsopeRewriter >> rewriteFrom: esopeFile to: annotatedFile [
+	"Note: end-of-line character may be an issue on none Linux computers
+	 Could use `OSPlatform current lineEnding` to get the 'correct line-ending'"
 
-	| code |
 	self parse: esopeFile contents.
-	code := self replaceCrByLf: self generatedCode.
 	
-	annotatedFile writeStreamDo: [ :fileStream |  fileStream << code ]
+	annotatedFile writeStreamDo: [ :fileStream |  fileStream << self generatedCode ]
 ]
 
 { #category : 'utilities' }
