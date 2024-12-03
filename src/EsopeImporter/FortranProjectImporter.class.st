@@ -474,6 +474,12 @@ FortranProjectImporter >> jsonASTToIAST [
 
 ]
 
+{ #category : 'private - helpers' }
+FortranProjectImporter >> newLine [
+
+	^ OSPlatform current lineEnding
+]
+
 { #category : 'private - import' }
 FortranProjectImporter >> newResolver [
 
@@ -649,14 +655,14 @@ FortranProjectImporter >> writeFakeEsopeProgramUnit: name from: content on: writ
 	writeStream
 		<< '      subroutine _$';
 		<< name;
-		cr;
+		<< self newLine ;
 		<< content.
 	(
 		content isNotEmpty 
 			and: [ String crlf includes: content last ]
 	)
-		ifFalse: [ writeStream cr ].
+		ifFalse: [ writeStream << self newLine ].
 	writeStream
 		<< '      end';
-		cr
+		<< self newLine
 ]

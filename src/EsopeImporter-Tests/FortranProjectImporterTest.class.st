@@ -186,7 +186,7 @@ FortranProjectImporterTest >> testFakeEsopeProgramUnitFromTo [
 
 	(fileSystem  / 'inc') createDirectory.
 	srcFile := (fileSystem / 'inc' / 'included.h').
-	srcFile writeStreamDo: [:st | st << 'a line' ; cr].
+	srcFile writeStreamDo: [:st | st << 'a line' << OSPlatform current lineEnding ].
 
 	importer
 		fakeEsopeProgramUnit: srcFile
@@ -199,7 +199,7 @@ FortranProjectImporterTest >> testFakeEsopeProgramUnitFromTo [
 	self assert: resultFile contents equals: '      subroutine _$included_h
 a line
       end
-'
+' withPlatformLineEndings
 ]
 
 { #category : 'tests - import steps' }
@@ -325,7 +325,7 @@ FortranProjectImporterTest >> testJsonASTToIAST [
       someVar = 3 * someVar
       end"
 
-	| jsonFile programFile stmt |
+	| jsonFile  stmt |
 
 	jsonFile := importer tempJsonFolder / 'sources/aFile.json'.
 	jsonFile ensureCreateFile.
