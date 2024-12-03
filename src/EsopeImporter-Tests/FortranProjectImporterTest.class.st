@@ -325,7 +325,7 @@ FortranProjectImporterTest >> testJsonASTToIAST [
       someVar = 3 * someVar
       end"
 
-	| jsonFile programFile stmt |
+	| jsonFile  stmt |
 
 	jsonFile := importer tempJsonFolder / 'sources/aFile.json'.
 	jsonFile ensureCreateFile.
