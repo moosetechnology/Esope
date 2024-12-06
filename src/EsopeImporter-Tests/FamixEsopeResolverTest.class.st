@@ -1000,6 +1000,19 @@ FamixEsopeResolverTest >> testResolveIncludeDirective [
 	self assert: sub inclusions anyOne includedBy equals: main
 ]
 
+{ #category : 'test - implicit' }
+FamixEsopeResolverTest >> testResolveIntegerFunctionType [
+
+	| fct |
+	fct := self defaultFunction: 'f'.
+	fct declaredType: (FamixF77TypeIntrinsic new name: #integer).
+
+	resolver resolveImplicitFunctionType: fct.
+
+	self assert: fct declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: fct declaredType name equals: #integer
+]
+
 { #category : 'tests' }
 FamixEsopeResolverTest >> testResolveInvocationToIntrinsic [
 	| invocation callee caller |
