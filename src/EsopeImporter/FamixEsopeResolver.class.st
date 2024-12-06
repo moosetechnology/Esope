@@ -240,7 +240,7 @@ FamixEsopeResolver >> resolveAccess: aFamixAccess [
 	iastVariable := aFamixAccess getAndRemoveAttribute: #entity.
 	self assert: iastVariable isNotNil.
 
-	aFamixAccess variable: (self ensureVariableNamed: iastVariable entityName in: aFamixAccess accessor).
+	aFamixAccess variable: (self ensureVariableNamed: iastVariable entityName trim in: aFamixAccess accessor).
 
 	"(aFamixAccess class = FamixEsopeCommand)
 	ifTrue: [
