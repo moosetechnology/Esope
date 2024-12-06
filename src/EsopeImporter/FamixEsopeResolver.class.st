@@ -30,6 +30,9 @@ FamixEsopeResolver class >> on: aMooseModel [
 { #category : 'symbols resolution' }
 FamixEsopeResolver >> ensureVariableNamed: variableName in: famixProgramUnit [
 
+	(famixProgramUnit class = FamixF77PUFunction and: [ variableName = famixProgramUnit name ])
+		ifTrue: [ ^nil ].
+
 	^(self resolveVariableNamed: variableName in: famixProgramUnit)
 		ifNotNil: [ :localVar | localVar ]
 		ifNil: [ famixProgramUnit createUnresolveVariable: variableName with: self ]
@@ -240,7 +243,8 @@ FamixEsopeResolver >> resolveAccess: aFamixAccess [
 	iastVariable := aFamixAccess getAndRemoveAttribute: #entity.
 	self assert: iastVariable isNotNil.
 
-	aFamixAccess variable: (self ensureVariableNamed: iastVariable entityName trim in: aFamixAccess accessor).
+	(self ensureVariableNamed: iastVariable entityName trim in: aFamixAccess accessor)
+		ifNotNil: [ :variable |	aFamixAccess variable: variable ].
 
 	"(aFamixAccess class = FamixEsopeCommand)
 	ifTrue: [

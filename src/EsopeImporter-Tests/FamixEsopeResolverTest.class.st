@@ -691,6 +691,21 @@ FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointersStubSegment [
 ]
 
 { #category : 'test - implicit' }
+FamixEsopeResolverTest >> testResolveFunctionNameAsNonLocalVariable [
+
+	| fct access |
+	
+	access := self newEntity: FamixF77Access.
+	access attributeAt: #entity put: (self defaultIASTVarAccess: 'f').
+	fct := self defaultFunction: 'f'.
+	fct addAccess: access.
+
+	resolver resolveAccesses.
+
+	self assert: fct localVariables size equals: 0
+]
+
+{ #category : 'test - implicit' }
 FamixEsopeResolverTest >> testResolveImplicitFunctionType [
 
 	| fct |
