@@ -150,6 +150,7 @@ IASTToFamixFortranVisitor >> visitIASTFunction: aFunction [
 	function := self
 		            iASTProgramUnit: aFunction
 		            toFamix: FamixF77PUFunction.
+	function declaredType: (aFunction returnType accept: self).
 	aFunction parameters do: [ :parameter | 
 		function addParameter: (parameter accept: self) ].
 
