@@ -693,13 +693,13 @@ FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointersStubSegment [
 { #category : 'test - implicit' }
 FamixEsopeResolverTest >> testResolveImplicitFunctionType [
 
-	| sub |
-	sub := self defaultFunction: 'f'.
+	| fct |
+	fct := self defaultFunction: 'f'.
 
-	resolver resolveImplicitFunctionType: sub.
+	resolver resolveImplicitFunctionType: fct.
 
-	self assert: sub declaredType class equals: FamixF77TypeIntrinsic.
-	self assert: sub declaredType name equals: 'real'
+	self assert: fct declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: fct declaredType name equals: 'real'
 ]
 
 { #category : 'test - implicit' }
@@ -1015,7 +1015,7 @@ FamixEsopeResolverTest >> testResolveIntegerFunctionType [
 
 { #category : 'tests' }
 FamixEsopeResolverTest >> testResolveInvocationToIntrinsic [
-	| invocation callee caller |
+	| invocation caller |
 	
 	caller := (self defaultMain: 'main')
 		addOutgoingInvocation: (self defaultInvocation: 'cos');
