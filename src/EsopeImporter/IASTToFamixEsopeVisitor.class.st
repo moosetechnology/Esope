@@ -6,6 +6,24 @@ Class {
 	#tag : 'Visitor'
 }
 
+{ #category : 'private - helpers' }
+IASTToFamixEsopeVisitor >> checkForModSuffix: aFamixEsopeCommand [ 
+	| value |
+	value := aFamixEsopeCommand attributeAt: #entity ifAbsent: [ nil ].
+	value ifNotNil: [ 
+		| name index |
+		name := value entityName.
+		index := name indexOf: $*.
+		index > 1
+			ifTrue: [
+				value entityName: (name copyFrom: 1 to: index - 1).
+				((name copyFrom: index + 1 to: name size) asLowercase = 'nomod')
+					ifTrue: [ value isWritable: false ]
+					ifFalse: [ value isWritable: true ]
+			]
+	]
+]
+
 { #category : 'private-creation' }
 IASTToFamixEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
 
@@ -34,13 +52,18 @@ IASTToFamixEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
 { #category : 'visiting' }
 IASTToFamixEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 
-	^ (self model newCommand)
+	| esopeCommand |
+	
+	esopeCommand := (self model newCommand)
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: aSegmentCommand sourceAnchor);
 		  attributeAt: #entity put: aSegmentCommand;
 		  commandName: aSegmentCommand esopeCommand;
 		  accessor: stack top;
-		  yourself
+		  yourself.
+		
+	self checkForModSuffix: esopeCommand.
+	^esopeCommand 
 ]
 
 { #category : 'visiting' }

@@ -691,15 +691,30 @@ FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointersStubSegment [
 ]
 
 { #category : 'test - implicit' }
+FamixEsopeResolverTest >> testResolveFunctionNameAsNonLocalVariable [
+
+	| fct access |
+	
+	access := self newEntity: FamixF77Access.
+	access attributeAt: #entity put: (self defaultIASTVarAccess: 'f').
+	fct := self defaultFunction: 'f'.
+	fct addAccess: access.
+
+	resolver resolveAccesses.
+
+	self assert: fct localVariables size equals: 0
+]
+
+{ #category : 'test - implicit' }
 FamixEsopeResolverTest >> testResolveImplicitFunctionType [
 
-	| sub |
-	sub := self defaultFunction: 'f'.
+	| fct |
+	fct := self defaultFunction: 'f'.
 
-	resolver resolveImplicitFunctionType: sub.
+	resolver resolveImplicitFunctionType: fct.
 
-	self assert: sub declaredType class equals: FamixF77TypeIntrinsic.
-	self assert: sub declaredType name equals: 'real'
+	self assert: fct declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: fct declaredType name equals: 'real'
 ]
 
 { #category : 'test - implicit' }
@@ -1000,9 +1015,22 @@ FamixEsopeResolverTest >> testResolveIncludeDirective [
 	self assert: sub inclusions anyOne includedBy equals: main
 ]
 
+{ #category : 'test - implicit' }
+FamixEsopeResolverTest >> testResolveIntegerFunctionType [
+
+	| fct |
+	fct := self defaultFunction: 'f'.
+	fct declaredType: (FamixF77TypeIntrinsic new name: #integer).
+
+	resolver resolveImplicitFunctionType: fct.
+
+	self assert: fct declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: fct declaredType name equals: #integer
+]
+
 { #category : 'tests' }
 FamixEsopeResolverTest >> testResolveInvocationToIntrinsic [
-	| invocation callee caller |
+	| invocation caller |
 	
 	caller := (self defaultMain: 'main')
 		addOutgoingInvocation: (self defaultInvocation: 'cos');

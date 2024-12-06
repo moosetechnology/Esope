@@ -181,6 +181,7 @@ IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
 	- dereferencedVariable for example: deref.var(...) "
 
 	"Distinguish external accesses from other accesses"
+
 	aVarAccess isExternal ifTrue: [
 		^self model newExternalDeclaration
 			name: aVarAccess entityName;
@@ -191,7 +192,8 @@ IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
 
 	aVarAccess indices deepFlatten
 		do: [ :indice |
-			indice class = IASTVarAccess
+
+			(indice class = IASTVarAccess and: [ (indice entityName asLowercase = 's__') not ])
 				ifTrue: [ (self createFamixF77Access: indice) isWrite: indice isWrite  ] 
 		].
 	aVarAccess dereferencedVariable 

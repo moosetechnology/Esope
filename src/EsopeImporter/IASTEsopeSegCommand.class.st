@@ -3,7 +3,8 @@ Class {
 	#superclass : 'IASTAbstractEntity',
 	#instVars : [
 		'entityName',
-		'command'
+		'command',
+		'isWritable'
 	],
 	#category : 'EsopeImporter-AST-IR',
 	#package : 'EsopeImporter',
@@ -43,4 +44,16 @@ IASTEsopeSegCommand >> esopeCommand: anObject [
 { #category : 'testing' }
 IASTEsopeSegCommand >> isEsope [
 	^true
+]
+
+{ #category : 'accessing' }
+IASTEsopeSegCommand >> isWritable [
+
+	^ isWritable
+]
+
+{ #category : 'accessing' }
+IASTEsopeSegCommand >> isWritable: anObject [
+
+	isWritable := anObject
 ]
