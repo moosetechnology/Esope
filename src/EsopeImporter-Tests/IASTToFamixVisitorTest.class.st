@@ -608,6 +608,33 @@ c@_      pointeur a2(n).aseg
 ]
 
 { #category : 'tests-esope' }
+IASTToFamixVisitorTest >> testFamixEsopeSlash [
+	
+	"In instruction `lb.uref(S__/1)` we just use the s__ for simplicity of the test"
+	"
+	lb.uref(S__/1)
+	"
+
+	| iastVar uref |
+	uref := self defaultVarAccess: 'uref' isWrite: false.
+	
+	iastVar := self defaultVarAccess: 'lb' isWrite: true.
+	iastVar indices: { self defaultVarAccess: 's__' isWrite: false }.
+	iastVar dereferencedVariable: uref.
+
+	programFile body: { IASTSubroutine new
+		entityName: 'sub';
+		body: { iastVar } ;
+		yourself
+	}.
+
+	programFile accept: visitor.
+
+	self assert:  visitor model allAccesses size equals: 2.
+	self assert: (visitor model allLocalVariables) size equals: 0
+]
+
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopeSlashWithLitteralDim [
 
 	"
