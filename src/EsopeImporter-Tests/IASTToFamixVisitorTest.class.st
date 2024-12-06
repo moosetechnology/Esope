@@ -390,6 +390,38 @@ IASTToFamixVisitorTest >> testFamixEsopeAccessorsWithArgsWithDot [
 ]
 
 { #category : 'tests-esope' }
+IASTToFamixVisitorTest >> testFamixEsopeCommandSegactWithSuffix [
+
+	"
+	segact ptr*NOMOD
+	"
+
+	| famixSegxxx iastSegxxx progFile value |
+	iastSegxxx := self defaultSegmentComand: 'segact' on: 'ptr*NOMOD'.
+
+	programFile body: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: { iastSegxxx };
+			 yourself }.
+
+	progFile := programFile accept: visitor.
+	
+	self assert: progFile programUnits size equals: 1.
+
+	self assert: (visitor model allWithType: FamixEsopeCommand) size equals: 1.
+	famixSegxxx := (visitor model allWithType: FamixEsopeCommand) first.
+	self assert: famixSegxxx commandName equals: 'segact'.
+	
+	value := famixSegxxx attributeAt: #entity ifAbsent: [ nil ].
+	self assert: value isNotNil.
+	
+	self assert: value class equals: IASTEsopeSegCommand.
+	self assert: value entityName equals: 'ptr'.
+	self deny: value isWritable.
+
+]
+
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopeCommandSegini [
 
 	"
