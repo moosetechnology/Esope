@@ -345,6 +345,8 @@ FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 { #category : 'symbols resolution' }
 FamixEsopeResolver >> resolveImplicitFunctionType: function [
 
+	function declaredType ifNotNil: [ ^self ].
+	
 	function declaredType:
 		(self resolveTypeName:
 			(function implicitTypeFor: function name)).

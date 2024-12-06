@@ -860,6 +860,27 @@ IASTToFamixVisitorTest >> testFamixFortran77PUFunction [
 ]
 
 { #category : 'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77PUFunctionWithDeclaredType [
+
+	| entity |
+	programFile body: { IASTFunction new
+			 entityName: 'fct';
+			 returnType: (IASTTypeRef new entityName: 'integer');
+			 yourself }.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 1.
+
+	entity := entity programUnits first.
+	self assert: entity class equals: FamixF77PUFunction.
+	self assert: entity name equals: 'fct'.
+	self assert: entity declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: entity declaredType name equals: 'integer'.
+	self assert: entity programFile isNotNil.
+]
+
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77PUFunctionWithParameter [
 
 	| entity param |
