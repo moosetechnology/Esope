@@ -14,7 +14,7 @@ Class {
 { #category : 'visiting' }
 IASTIOStatement >> accept: aVisitor [
 
-	^ aVisitor visitIOStatement: self
+	^ aVisitor visitIASTIOStatement: self
 ]
 
 { #category : 'accessing' }

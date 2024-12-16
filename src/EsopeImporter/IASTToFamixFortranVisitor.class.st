@@ -65,6 +65,13 @@ IASTToFamixFortranVisitor >> initialize [
 ]
 
 { #category : 'visiting' }
+IASTToFamixFortranVisitor >> ioStatements [
+
+	^ #( write read close open rewind backspace decode encode endfile
+	     inquire )
+]
+
+{ #category : 'visiting' }
 IASTToFamixFortranVisitor >> visit: anIASTModel [
 
 	^ anIASTModel accept: self
@@ -158,6 +165,18 @@ IASTToFamixFortranVisitor >> visitIASTFunction: aFunction [
 		function addParameter: (parameter accept: self) ].
 
 	^ function
+]
+
+{ #category : 'visiting' }
+IASTToFamixFortranVisitor >> visitIASTIOStatement: anIOStatement [
+
+	^ (anIOStatement arguments
+		   ifNotNil: [ :arguments |
+			   arguments collect: [ :argument | argument accept: self ] ]
+		   ifNil: [ #(  ) ]) , (anIOStatement format
+		   ifNotNil: [ :format |
+		   format collect: [ :each | each accept: self ] ]
+		   ifNil: [ #(  ) ])
 ]
 
 { #category : 'visiting' }

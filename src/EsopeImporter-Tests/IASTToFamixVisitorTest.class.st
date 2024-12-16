@@ -1004,12 +1004,12 @@ IASTToFamixVisitorTest >> testFamixFortran77WriteInvocation [
 	write(unit=var)
 	end "
 
-	| entity caller |
+	| entity caller iastEntity |
 
 
 	caller := IASTMainProgram new
 			entityName: 'main';
-			body: { IASTInvocation new entityName: 'write'; indices: { IASTVarAccess new entityName: 'unit'. IASTVarAccess new entityName: 'var' }; yourself };
+			body: { IASTIOStatement new entityName: 'write'; format: { IASTVarAccess new entityName: 'var' }; yourself };
 			yourself.
 	programFile body: { caller }.
 
@@ -1020,7 +1020,11 @@ IASTToFamixVisitorTest >> testFamixFortran77WriteInvocation [
 	self assert: entity programUnits first outgoingInvocations size equals: 0.
 
 	self assert: entity programUnits first accesses size equals: 1.
-	self assert: entity programUnits first accesses name equals: 'var'.
+	
+	iastEntity := entity programUnits first accesses first attributeAt: #entity ifAbsent: [ nil ].
+	self assert: iastEntity  isNotNil.
+	
+	self assert: iastEntity entityName equals:  'var'.
 ]
 
 { #category : 'tests-fortran' }

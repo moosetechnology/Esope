@@ -825,6 +825,16 @@ FortranAbstractJsonVisitor >> visitIOParameters: anIOParametersCollection [
 ]
 
 { #category : 'visiting statement' }
+FortranAbstractJsonVisitor >> visitIOStatement: anIOStatementNode [
+
+	^ {
+		  (self visitSpan: (anIOStatementNode at: 'span')).
+		  (self visitIOParameters: (anIOStatementNode at: 'format')).
+		  (self visitArguments: (anIOStatementNode at: 'arguments')) 
+		}
+]
+
+{ #category : 'visiting statement' }
 FortranAbstractJsonVisitor >> visitIf: anIfNode [
 	"The THEN-Part is in 'conditions', the ELSE-PART in 'blocks', if no ELSE-PART, then 'blocks' is nil'
 	 ignoring key: end_label"
@@ -1255,11 +1265,7 @@ FortranAbstractJsonVisitor >> visitRange: aRangeNode [
 { #category : 'visiting statement' }
 FortranAbstractJsonVisitor >> visitReadStatement: aReadStatementNode [
 
-	^{
-		self visitSpan: (aReadStatementNode at: 'span') .
-		self visitIOParameters: (aReadStatementNode at: 'format') .
-		self visitArguments: (aReadStatementNode at: 'arguments')
-	}
+	^ self visitIOStatement: aReadStatementNode
 ]
 
 { #category : 'visiting expression' }
@@ -1509,9 +1515,5 @@ FortranAbstractJsonVisitor >> visitVars: anExternalStatementVarList [
 { #category : 'visiting statement' }
 FortranAbstractJsonVisitor >> visitWriteStatement: aWriteStatementNode [
 
-	^{
-		self visitSpan: (aWriteStatementNode at: 'span') .
-		self visitIOParameters: (aWriteStatementNode at: 'format') .
-		self visitArguments: (aWriteStatementNode at: 'arguments')
-	}
+	^ self visitIOStatement: aWriteStatementNode
 ]
