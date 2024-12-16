@@ -291,6 +291,23 @@ IASTToFamixFortranVisitor >> visitIASTSubroutine: aSubroutine [
 ]
 
 { #category : 'visiting' }
+IASTToFamixFortranVisitor >> visitIASTVarAccess: aVarAccess [
+
+	aVarAccess isExternal ifTrue: [
+		^ self model newExternalDeclaration
+			  name: aVarAccess entityName;
+			  sourceAnchor:
+				  (self visitIndexedFileAnchor: aVarAccess sourceAnchor);
+			  programUnit: stack top;
+			  yourself ].
+
+	(aVarAccess isFuntionReturn: stack top) 
+		ifTrue: [ ^ nil ].
+
+	^ super visitIASTVarAccess: aVarAccess
+]
+
+{ #category : 'visiting' }
 IASTToFamixFortranVisitor >> visitIASTVarEso: aVarEso [
 
 	| varsAccesses |

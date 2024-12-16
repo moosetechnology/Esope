@@ -1027,6 +1027,28 @@ IASTToFamixVisitorTest >> testFamixFortran77WriteInvocation [
 	self assert: iastEntity entityName equals:  'var'.
 ]
 
+{ #category : 'tests-esope' }
+IASTToFamixVisitorTest >> testFamixFunctionReturnValue [
+	"
+	function f()
+	f = 2
+	end
+	"
+
+	| entity |
+	entity := IASTFunction new entityName: 'f'.
+	entity body: { (IASTVarAccess new
+			 entityName: 'f';
+			 isWrite: true) }.
+
+	entity accept: visitor.
+
+	self
+		assert:
+		(visitor model allWithType: FamixF77PUFunction) anyOne accesses size
+		equals: 0
+]
+
 { #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testImplicitWithRange [
 
