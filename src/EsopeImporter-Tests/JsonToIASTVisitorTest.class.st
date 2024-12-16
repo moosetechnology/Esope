@@ -238,32 +238,6 @@ JsonToIASTVisitorTest >> testBlockDataWithOneCommonOneData [
 	self assert: blockdata comments isEmpty.
 ]
 
-{ #category : 'tests-statement' }
-JsonToIASTVisitorTest >> testCallToWrite [
-	"subroutine mysub (msg)
-      write(*,*) msg
-      end
-"
-
-	| programFile stmt arg |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(1:25)-(1:27)","tag":"value","value":{"contents":"msg","tag":"variable"}}],"span":"(1:25)-(1:27)"},"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:20)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:18)-(2:20)","tag":"value","value":{"contents":"msg","tag":"variable"}}],"span":"(2:18)-(2:20)"},"format":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:13)-(2:13)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:13)-(2:13)"},{"anno":[],"expr":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:15)-(2:15)"}],"span":"(2:12)-(2:16)"},"span":"(2:7)-(2:20)","tag":"write"},"tag":"statement"}],"name":"mysub","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
-
-
-	self assert: programFile body first body size equals: 1.
-
-	stmt := programFile body first body first.
-	self assert: stmt first class equals: IASTInvocation.
-	self assert: stmt first entityName equals: 'write'.
-	self assert: stmt first arguments size equals: 1.
-	self assert: stmt first sourceAnchor isNotNil.
-
-	arg := stmt first arguments first.
-	self assert: arg class equals: IASTVarAccess.
-	self assert: arg entityName equals: 'msg'.
-	self deny: arg isWrite
-
-]
-
 { #category : 'tests-progUnit' }
 JsonToIASTVisitorTest >> testComment [
 	"c     blah"
@@ -1717,21 +1691,110 @@ JsonToIASTVisitorTest >> testTwoIntegerVariableDeclarations [
 ]
 
 { #category : 'tests-statement' }
+JsonToIASTVisitorTest >> testWriteStatementWithFormat [
+	"subroutine mysub
+      write(unit=1,fmt=var) 'msg'
+      end
+"
+
+	| programFile stmt arg |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:35)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:31)-(2:35)","tag":"value","value":{"contents":"msg","tag":"string"}}],"span":"(2:31)-(2:35)"},"format":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:20)-(2:20)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"name":"unit","span":"(2:15)-(2:20)"},{"anno":[],"expr":{"anno":[],"span":"(2:26)-(2:28)","tag":"value","value":{"contents":"var","tag":"variable"}},"name":"fmt","span":"(2:22)-(2:28)"}],"span":"(2:14)-(2:29)"},"span":"(2:9)-(2:35)","tag":"write"},"tag":"statement"}],"name":"mysub","options":[null,null],"span":"(1:8)-(3:11)","subprograms":null,"tag":"subroutine"}]}'.
+
+
+	self assert: programFile body first body size equals: 1.
+
+	stmt := programFile body first body first.
+	self assert: stmt class equals: IASTIOStatement.
+	self assert: stmt entityName equals: 'write'.
+	self assert: stmt arguments size equals: 0.
+	self assert: stmt format size equals: 1.
+	self assert: stmt sourceAnchor isNotNil.
+
+	arg := stmt format first.
+	self assert: arg class equals: IASTVarAccess.
+	self assert: arg entityName equals: 'var'.
+	self deny: arg isWrite
+
+]
+
+{ #category : 'tests-statement' }
+JsonToIASTVisitorTest >> testWriteStatementWithFormatSeveralAcesses [
+	"subroutine mysub
+      write(unit=f,fmt=var) 'msg'
+      end
+"
+
+	| programFile stmt arg |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:35)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:31)-(2:35)","tag":"value","value":{"contents":"msg","tag":"string"}}],"span":"(2:31)-(2:35)"},"format":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:20)-(2:20)","tag":"value","value":{"contents":"f","tag":"variable"}},"name":"unit","span":"(2:15)-(2:20)"},{"anno":[],"expr":{"anno":[],"span":"(2:26)-(2:28)","tag":"value","value":{"contents":"var","tag":"variable"}},"name":"fmt","span":"(2:22)-(2:28)"}],"span":"(2:14)-(2:29)"},"span":"(2:9)-(2:35)","tag":"write"},"tag":"statement"}],"name":"mysub","options":[null,null],"span":"(1:8)-(3:11)","subprograms":null,"tag":"subroutine"}]}'.
+
+
+	self assert: programFile body first body size equals: 1.
+
+	stmt := programFile body first body first.
+	self assert: stmt class equals: IASTIOStatement.
+	self assert: stmt entityName equals: 'write'.
+	self assert: stmt arguments size equals: 0.
+	self assert: stmt format size equals: 2.
+	self assert: stmt sourceAnchor isNotNil.
+
+	arg := stmt format first.
+	self assert: arg class equals: IASTVarAccess.
+	self assert: arg entityName equals: 'f'.
+	self deny: arg isWrite.
+
+	arg := stmt format second.
+	self assert: arg class equals: IASTVarAccess.
+	self assert: arg entityName equals: 'var'.
+	self deny: arg isWrite
+
+]
+
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testWriteStatementWithStringArgument [
 	"
       subroutine print
        write(*,*) 'hello'      
       end	
 	"
+
 	| programFile stmt |
-	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:25)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:19)-(2:25)","tag":"value","value":{"contents":"hello","tag":"string"}}],"span":"(2:19)-(2:25)"},"format":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:14)-(2:14)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:14)-(2:14)"},{"anno":[],"expr":{"anno":[],"span":"(2:16)-(2:16)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:16)-(2:16)"}],"span":"(2:13)-(2:17)"},"span":"(2:8)-(2:25)","tag":"write"},"tag":"statement"}],"name":"print","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+	programFile := self visitJsonCode:
+		               '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:25)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:19)-(2:25)","tag":"value","value":{"contents":"hello","tag":"string"}}],"span":"(2:19)-(2:25)"},"format":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:14)-(2:14)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:14)-(2:14)"},{"anno":[],"expr":{"anno":[],"span":"(2:16)-(2:16)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:16)-(2:16)"}],"span":"(2:13)-(2:17)"},"span":"(2:8)-(2:25)","tag":"write"},"tag":"statement"}],"name":"print","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
-	self assert: programFile body first body first size equals: 1.
-	stmt := programFile body first body first first.
-	self assert: stmt class equals: IASTInvocation.
+	self assert: programFile body first body size equals: 1.
+	stmt := programFile body first body first.
+	self assert: stmt class equals: IASTIOStatement.
 	self assert: stmt entityName equals: 'write'.
 	self assert: stmt arguments size equals: 0.
+	self assert: stmt format size equals: 0
+]
+
+{ #category : 'tests-statement' }
+JsonToIASTVisitorTest >> testWriteStatementWithVarArguments [
+	"subroutine mysub (msg)
+      write(*,*) msg
+      end
+"
+
+	| programFile stmt arg |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"<stdin>"},"program_units":[{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(1:26)-(1:28)","tag":"value","value":{"contents":"msg","tag":"variable"}}],"span":"(1:26)-(1:28)"},"blocks":[{"anno":[],"label":null,"span":"(2:9)-(2:22)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:20)-(2:22)","tag":"value","value":{"contents":"msg","tag":"variable"}}],"span":"(2:20)-(2:22)"},"format":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:15)-(2:15)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:15)-(2:15)"},{"anno":[],"expr":{"anno":[],"span":"(2:17)-(2:17)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:17)-(2:17)"}],"span":"(2:14)-(2:18)"},"span":"(2:9)-(2:22)","tag":"write"},"tag":"statement"}],"name":"mysub","options":[null,null],"span":"(1:8)-(3:11)","subprograms":null,"tag":"subroutine"}]}'.
+
+
+	self assert: programFile body first body size equals: 1.
+
+	stmt := programFile body first body first.
+	self assert: stmt class equals: IASTIOStatement.
+	self assert: stmt entityName equals: 'write'.
+	self assert: stmt arguments size equals: 1.
+	self assert: stmt format size equals: 0.
+	self assert: stmt sourceAnchor isNotNil.
+
+	arg := stmt arguments first.
+	self assert: arg class equals: IASTVarAccess.
+	self assert: arg entityName equals: 'msg'.
+	self deny: arg isWrite
+
 ]
 
 { #category : 'running' }

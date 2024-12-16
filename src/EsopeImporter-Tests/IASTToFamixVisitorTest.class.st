@@ -707,13 +707,13 @@ IASTToFamixVisitorTest >> testFamixFortran77 [
 { #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77Call [
 	"subroutine mysub
-      write(*,*) msg
+      fct(msg)
       end
 "
 
 	| entity iastCall |
 	iastCall := IASTInvocation new
-		entityName: 'write' ;
+		entityName: 'fct' ;
 		arguments: { IASTVarAccess new entityName: 'msg' ; isWrite: false ; yourself } ;
 		sourceAnchor: self defaultAnchor ;
 		yourself.
@@ -996,6 +996,31 @@ IASTToFamixVisitorTest >> testFamixFortran77Subroutine [
 	self assert: entity name equals: 'sub'.
 	self assert: entity programFile isNotNil.
 	self assert: entity parameters size equals: 0
+]
+
+{ #category : 'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77WriteInvocation [
+	"program main
+	write(unit=var)
+	end "
+
+	| entity caller |
+
+
+	caller := IASTMainProgram new
+			entityName: 'main';
+			body: { IASTInvocation new entityName: 'write'; indices: { IASTVarAccess new entityName: 'unit'. IASTVarAccess new entityName: 'var' }; yourself };
+			yourself.
+	programFile body: { caller }.
+
+	programFile accept: visitor.
+	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
+	
+	self assert: entity programUnits first class equals: FamixF77PUMain.
+	self assert: entity programUnits first outgoingInvocations size equals: 0.
+
+	self assert: entity programUnits first accesses size equals: 1.
+	self assert: entity programUnits first accesses name equals: 'var'.
 ]
 
 { #category : 'tests-fortran' }
