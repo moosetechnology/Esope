@@ -62,6 +62,13 @@ IASTVarAccess >> isExternal [
 	^ annotations = 'external'
 ]
 
+{ #category : 'accessing - testing' }
+IASTVarAccess >> isFuntionReturn: aParent [
+
+	^ (aParent class = FamixF77PUFunction)
+		and: [ aParent name = self entityName ]
+]
+
 { #category : 'testing' }
 IASTVarAccess >> isVarAccess [
 	^true

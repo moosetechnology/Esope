@@ -244,15 +244,7 @@ FamixEsopeResolver >> resolveAccess: aFamixAccess [
 	self assert: iastVariable isNotNil.
 
 	(self ensureVariableNamed: iastVariable entityName trim in: aFamixAccess accessor)
-		ifNotNil: [ :variable |	aFamixAccess variable: variable ].
-
-	"(aFamixAccess class = FamixEsopeCommand)
-	ifTrue: [
-		(aFamixAccess variable declaredType class = FamixEsopeSegment)
-			ifFalse: [
-				aFamixAccess variable declaredType: (self resolveTypeName: aFamixAccess variable name)
-			]
-	]"
+		ifNotNil: [ :variable |	aFamixAccess variable: variable ]
 
 ]
 
@@ -407,15 +399,13 @@ FamixEsopeResolver >> resolveIncludes [
 
 { #category : 'symbols resolution' }
 FamixEsopeResolver >> resolveInvocables: invocable [
-
-	(model allWithSubTypesOf: FamixF77PUProcedure)
-		do: [ :entity |
-			((entity name = invocable entityName) "and:
-			[ entity parameters size = (invocable arguments ifNil: [ #() ]) size ]")
-				ifTrue: [ ^ entity ]
-		].
-
-	^nil
+	^(model allWithSubTypesOf: FamixF77PUProcedure)
+		detect: [ :entity | 
+			(entity name = invocable entityName)
+				"and: [ entity parameters size = (invocable arguments ifNil: [ #() ]) size ]"
+		]
+		ifFound: [ :entity | entity ]
+		ifNone: [ nil ]
 ]
 
 { #category : 'symbols resolution' }

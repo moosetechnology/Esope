@@ -65,6 +65,13 @@ IASTToFamixFortranVisitor >> initialize [
 ]
 
 { #category : 'visiting' }
+IASTToFamixFortranVisitor >> ioStatements [
+
+	^ #( write read close open rewind backspace decode encode endfile
+	     inquire )
+]
+
+{ #category : 'visiting' }
 IASTToFamixFortranVisitor >> visit: anIASTModel [
 
 	^ anIASTModel accept: self
@@ -158,6 +165,18 @@ IASTToFamixFortranVisitor >> visitIASTFunction: aFunction [
 		function addParameter: (parameter accept: self) ].
 
 	^ function
+]
+
+{ #category : 'visiting' }
+IASTToFamixFortranVisitor >> visitIASTIOStatement: anIOStatement [
+
+	^ (anIOStatement arguments
+		   ifNotNil: [ :arguments |
+			   arguments collect: [ :argument | argument accept: self ] ]
+		   ifNil: [ #(  ) ]) , (anIOStatement format
+		   ifNotNil: [ :format |
+		   format collect: [ :each | each accept: self ] ]
+		   ifNil: [ #(  ) ])
 ]
 
 { #category : 'visiting' }
@@ -269,6 +288,23 @@ IASTToFamixFortranVisitor >> visitIASTSubroutine: aSubroutine [
 		subroutine addParameter: (parameter accept: self) ].
 
 	^ subroutine
+]
+
+{ #category : 'visiting' }
+IASTToFamixFortranVisitor >> visitIASTVarAccess: aVarAccess [
+
+	aVarAccess isExternal ifTrue: [
+		^ self model newExternalDeclaration
+			  name: aVarAccess entityName;
+			  sourceAnchor:
+				  (self visitIndexedFileAnchor: aVarAccess sourceAnchor);
+			  programUnit: stack top;
+			  yourself ].
+
+	(aVarAccess isFuntionReturn: stack top) 
+		ifTrue: [ ^ nil ].
+
+	^ super visitIASTVarAccess: aVarAccess
 ]
 
 { #category : 'visiting' }

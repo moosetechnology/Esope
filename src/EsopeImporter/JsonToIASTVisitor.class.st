@@ -75,6 +75,14 @@ JsonToIASTVisitor >> initialize [
 	entityStack := Stack new
 ]
 
+{ #category : 'visiting statement' }
+JsonToIASTVisitor >> ioStatementFormat [
+
+	^ #( access blank direct end err exist file fmt form formatted
+	     iostat name named nextrec number opened rec recl sequential
+	     status unformatted unit )
+]
+
 { #category : 'private - utilities' }
 JsonToIASTVisitor >> isSpecialEsopeFunctionName: aString [
 	aString isString ifFalse: [ ^false ].
@@ -91,6 +99,13 @@ JsonToIASTVisitor >> makeIndexedAnchor: aPointPair [
 		  endColumn: aPointPair second y ;
 		  fileName: f77sourcefile;
 		  yourself
+]
+
+{ #category : 'visiting statement' }
+JsonToIASTVisitor >> makeIoFormat: aCollection [
+
+	^ aCollection flattened 
+			reject: [ :each | self ioStatementFormat includes: each entityName asLowercase ]
 ]
 
 { #category : 'accessing' }
@@ -532,6 +547,18 @@ JsonToIASTVisitor >> visitIOParameter: anIOParameterNode [
 ]
 
 { #category : 'visiting statement' }
+JsonToIASTVisitor >> visitIOStatement: anIOStatement [
+	| data |
+	data := super visitIOStatement: anIOStatement.
+
+	^ IASTIOStatement new
+			sourceAnchor: (self makeIndexedAnchor: data first) ;
+			arguments: data third ;
+			format: (self makeIoFormat: data second) ;
+			yourself
+]
+
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitIf: anIfNode [
 	"super visit keys: #(span label conditions blocks)"
 
@@ -676,6 +703,14 @@ JsonToIASTVisitor >> visitProgram_units: aCollection [
 	^data
 ]
 
+{ #category : 'visiting statement' }
+JsonToIASTVisitor >> visitReadStatement: aReadStatementNode [
+
+	^ (super visitReadStatement: aReadStatementNode)
+		  entityName: 'read';
+		  yourself
+]
+
 { #category : 'visiting expression' }
 JsonToIASTVisitor >> visitReal: aRealNode [
 	^nil
@@ -812,12 +847,8 @@ JsonToIASTVisitor >> visitVariable: aVariableNode [
 
 { #category : 'visiting statement' }
 JsonToIASTVisitor >> visitWriteStatement: aWriteStatementNode [
-	| data |
-	data := super visitWriteStatement: aWriteStatementNode.
 
-	^{ IASTInvocation new
-		sourceAnchor: (self makeIndexedAnchor: data first) ;
-		entityName: 'write' ;
-		arguments: data third ;
-		yourself }
+	^ (super visitWriteStatement: aWriteStatementNode)
+		  entityName: 'write';
+		  yourself
 ]
