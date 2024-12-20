@@ -206,12 +206,9 @@ JsonToIASTVisitor >> visitCallStatement: aCallNode [
 	| astNode data |
 	data := super visitCallStatement: aCallNode.
 
-	astNode := (self isEsopeTransformation: data second)
-		           ifTrue: [ IASTVarEso newFrom: data second ]
-		           ifFalse: [ 
-			           IASTInvocation new
-				           entityName: data second;
-				           yourself ].
+	astNode := IASTInvocation new
+		           entityName: data second;
+		           yourself.
 
 	^ astNode
 		  sourceAnchor: (self makeIndexedAnchor: data first);
