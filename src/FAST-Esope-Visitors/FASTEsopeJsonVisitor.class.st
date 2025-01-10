@@ -13,12 +13,10 @@ FASTEsopeJsonVisitor >> esopeCommand: anEsopeCommentString [
 	| wordBoundaries |
 	wordBoundaries := self findWordBoundaries: anEsopeCommentString.
 
-	^(wordBoundaries size > 2)
-		ifTrue: [
-			{ (anEsopeCommentString copyFrom: wordBoundaries first to: wordBoundaries second) .
-			  (anEsopeCommentString copyFrom: wordBoundaries third to: wordBoundaries last) }
-		]
-		ifFalse: [ { anEsopeCommentString copyFrom: wordBoundaries first to: wordBoundaries second } ]
+	^(1 to: wordBoundaries size by: 2) collect: [ :i |
+		anEsopeCommentString copyFrom: (wordBoundaries at: i) to: (wordBoundaries at: i+1)
+	]
+	
 ]
 
 { #category : 'visiting esope' }
@@ -71,6 +69,23 @@ FASTEsopeJsonVisitor >> processEsopeComment: anEsopeCommentNode [
 { #category : 'helpers' }
 FASTEsopeJsonVisitor >> processEsopeIfComment: anEsopeIfCommentNode [ 
 	self shouldBeImplemented.
+]
+
+{ #category : 'visiting esope' }
+FASTEsopeJsonVisitor >> processEsopeNode: anEsopeCommandNode command: esopeCommandClass [
+
+	| data variables |
+
+	data := self processEsopeComment: anEsopeCommandNode.
+
+	variables := (data allButFirst: 3) collect: [ :name |
+		(self model newScalarVariable)
+			name: name;
+			yourself
+		].
+	^(self newEntity: esopeCommandClass atPosition: data second)
+		variables: variables ;
+		yourself
 ]
 
 { #category : 'visiting esope' }
@@ -137,28 +152,35 @@ FASTEsopeJsonVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
 { #category : 'visiting esope' }
 FASTEsopeJsonVisitor >> visitEsopeSegactComment: anEsopeCommentNode [
 
-	^self processEsopeComment: anEsopeCommentNode
+	^self processEsopeNode: anEsopeCommentNode command: FASTEsopeSegact 
 
 ]
 
 { #category : 'visiting esope' }
 FASTEsopeJsonVisitor >> visitEsopeSegadjComment: anEsopeCommentNode [
 
-	^self processEsopeComment: anEsopeCommentNode
+	^self processEsopeNode: anEsopeCommentNode command: FASTEsopeSegadj 
+
+]
+
+{ #category : 'visiting esope' }
+FASTEsopeJsonVisitor >> visitEsopeSegcopComment: anEsopeCommentNode [
+
+	^self shouldBeImplemented 
 
 ]
 
 { #category : 'visiting esope' }
 FASTEsopeJsonVisitor >> visitEsopeSegdesComment: anEsopeCommentNode [
 
-	^self processEsopeComment: anEsopeCommentNode
+	^self processEsopeNode: anEsopeCommentNode command: FASTEsopeSegdes
 
 ]
 
 { #category : 'visiting esope' }
 FASTEsopeJsonVisitor >> visitEsopeSeginiComment: anEsopeCommentNode [
 
-	^self processEsopeComment: anEsopeCommentNode
+	^self processEsopeNode: anEsopeCommentNode command: FASTEsopeSegini 
 
 ]
 
@@ -180,9 +202,23 @@ FASTEsopeJsonVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
 ]
 
 { #category : 'visiting esope' }
+FASTEsopeJsonVisitor >> visitEsopeSegmovComment: anEsopeCommentNode [
+
+	^self shouldBeImplemented 
+
+]
+
+{ #category : 'visiting esope' }
+FASTEsopeJsonVisitor >> visitEsopeSegprtComment: anEsopeCommentNode [
+
+	^self processEsopeNode: anEsopeCommentNode command: FASTEsopeSegprt
+
+]
+
+{ #category : 'visiting esope' }
 FASTEsopeJsonVisitor >> visitEsopeSegsupComment: anEsopeCommentNode [
 
-	^self processEsopeComment: anEsopeCommentNode
+	^self processEsopeNode: anEsopeCommentNode command: FASTEsopeSegsup 
 
 ]
 
