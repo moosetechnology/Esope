@@ -1,6 +1,9 @@
 Class {
 	#name : 'FASTEsopeJsonVisitor',
 	#superclass : 'FASTFortranJsonVisitor',
+	#instVars : [
+		'inSegmentDeclaration'
+	],
 	#category : 'FAST-Esope-Visitors',
 	#package : 'FAST-Esope-Visitors'
 }
@@ -32,6 +35,14 @@ FASTEsopeJsonVisitor >> esopeExtraSpan: commentSpan comment: commentText command
 	^{ (commentSpan first x @ (commentSpan first y + commandStart))
 		. commentSpan second }.
 
+]
+
+{ #category : 'initialization' }
+FASTEsopeJsonVisitor >> initialize [ 
+
+	super initialize.
+
+	inSegmentDeclaration := false.
 ]
 
 { #category : 'testing' }
@@ -98,6 +109,20 @@ FASTEsopeJsonVisitor >> visitComment: aCommentNode [
 		ifTrue: [  self visitEsopeComment: aCommentNode ]
 		ifFalse: [ super  visitComment: aCommentNode ]
 	
+]
+
+{ #category : 'visiting statement' }
+FASTEsopeJsonVisitor >> visitDeclarationStatement: aDeclarationStatementNode [
+
+	| data |
+	data := super visitDeclarationStatement: aDeclarationStatementNode.
+
+	^inSegmentDeclaration 
+		ifTrue: [
+			segmentDeclarations last addStatement: data.
+			nil
+		]
+		ifFalse: [ data ]
 ]
 
 { #category : 'visiting esope' }
