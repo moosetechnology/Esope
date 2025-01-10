@@ -54,28 +54,30 @@ FortranAbstractJsonVisitor >> findWordBoundaries: anEsopeCommentString [
 	"
 
 	wordBoundaries := OrderedCollection new: 6.
-	i := 1.
+	i := 6. "because we start at column 6 (ignore first fast 5 characters)"
 	inWord := false.
 
 	(anEsopeCommentString allButFirst: 5) do: [ :char | "for now, treat . as a letter: lb.pstr"
 		(char isLetter or: [ char isDigit or: [ char = $. ]])
 			ifTrue: [ 
 				inWord ifFalse: [ "begining of a word"
-					wordBoundaries add: i + 5.
+					wordBoundaries add: i.
 					inWord := true ] ]
 			ifFalse: [ 
-				inWord ifTrue: [ "end of a word"
-					wordBoundaries add: i + 4.
+				inWord ifTrue: [ "put the end of the previous word"
+					wordBoundaries add: i - 1.
 					inWord := false ] ].
 		i := i + 1 ].
-	wordBoundaries add: i + 4.
+
+	 "deal with the end of the last word"
+	inWord ifTrue: [ wordBoundaries add: i - 1 ].
 
 	self flag: #FIXME. "Do not forget to grab the '#' to distinguish between #include and include statement.
 	2 dont take the #
 	3 take the #
 	"
 	(anEsopeCommentString beginsWith: '@_#include') ifTrue: [ 
-		wordBoundaries at: 1 put: wordBoundaries first - 2 ].
+		wordBoundaries at: 1 put: 4 ].
 
 	^ wordBoundaries
 ]
@@ -83,13 +85,6 @@ FortranAbstractJsonVisitor >> findWordBoundaries: anEsopeCommentString [
 { #category : 'testing' }
 FortranAbstractJsonVisitor >> isEsopeComment: aCommentString [
 	^aCommentString asLowercase beginsWith: '@_' 
-]
-
-{ #category : 'testing' }
-FortranAbstractJsonVisitor >> isEsopeTransformation: aString [
-
-	aString isString ifFalse: [ ^ false ].
-	^ #( #d__ #s__ ) includes: aString
 ]
 
 { #category : 'testing' }
@@ -119,11 +114,6 @@ FortranAbstractJsonVisitor >> processEsopeComment: anEsopeCommentNode [
 			command: esopeCommand
 	}
 	, esopeCommand
-]
-
-{ #category : 'helpers' }
-FortranAbstractJsonVisitor >> processEsopeIfComment: anEsopeIfCommentNode [ 
-	self shouldBeImplemented.
 ]
 
 { #category : 'visiting expression' }
@@ -269,13 +259,9 @@ FortranAbstractJsonVisitor >> visitCloseStatement: aCloseStatementNode [
 
 { #category : 'visiting statement' }
 FortranAbstractJsonVisitor >> visitComment: aCommentNode [
-	"Separates comments that are genuine fortran comments and the one that contain Esope commands"
-	| content |
-	content := aCommentNode at: 'comment'.
-
-	^(self isEsopeComment: content)
-		ifTrue: [  self visitEsopeComment: aCommentNode ]
-		ifFalse: [ self visitFortranComment: aCommentNode ]
+	1halt.
+	^{ self visitSpan: (aCommentNode at: 'span') .
+	  aCommentNode at: 'comment' }
 	
 ]
 
@@ -543,74 +529,6 @@ FortranAbstractJsonVisitor >> visitEsopeEndComment: anEsopeCommentNode [
 		subclasses should override #visitEsopeEndSegmentComment: not this method"
 
 	^self visitEsopeEndsegmentComment: anEsopeCommentNode 
-]
-
-{ #category : 'visiting esope' }
-FortranAbstractJsonVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
-
-	^self processEsopeComment: anEsopeCommentNode
-
-]
-
-{ #category : 'visiting' }
-FortranAbstractJsonVisitor >> visitEsopeIfComment: anEsopeIfCommentNode [ 
-	^self processEsopeIfComment: anEsopeIfCommentNode
-]
-
-{ #category : 'visiting esope' }
-FortranAbstractJsonVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
-
-	^self processEsopeComment: anEsopeIncludeCommentNode
-
-]
-
-{ #category : 'visiting esope' }
-FortranAbstractJsonVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
-
-	^self processEsopeComment: anEsopeCommentNode
-
-]
-
-{ #category : 'visiting esope' }
-FortranAbstractJsonVisitor >> visitEsopeSegactComment: anEsopeCommentNode [
-
-	^self processEsopeComment: anEsopeCommentNode
-
-]
-
-{ #category : 'visiting esope' }
-FortranAbstractJsonVisitor >> visitEsopeSegadjComment: anEsopeCommentNode [
-
-	^self processEsopeComment: anEsopeCommentNode
-
-]
-
-{ #category : 'visiting esope' }
-FortranAbstractJsonVisitor >> visitEsopeSegdesComment: anEsopeCommentNode [
-
-	^self processEsopeComment: anEsopeCommentNode
-
-]
-
-{ #category : 'visiting esope' }
-FortranAbstractJsonVisitor >> visitEsopeSeginiComment: anEsopeCommentNode [
-
-	^self processEsopeComment: anEsopeCommentNode
-
-]
-
-{ #category : 'visiting esope' }
-FortranAbstractJsonVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
-
-	^self processEsopeComment: anEsopeCommentNode
-
-]
-
-{ #category : 'visiting esope' }
-FortranAbstractJsonVisitor >> visitEsopeSegsupComment: anEsopeCommentNode [
-
-	^self processEsopeComment: anEsopeCommentNode
-
 ]
 
 { #category : 'visiting statement' }

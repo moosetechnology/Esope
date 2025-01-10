@@ -206,17 +206,26 @@ JsonToIASTVisitor >> visitCallStatement: aCallNode [
 	| astNode data |
 	data := super visitCallStatement: aCallNode.
 
-	astNode := (self isEsopeTransformation: data second)
-		           ifTrue: [ IASTVarEso newFrom: data second ]
-		           ifFalse: [ 
-			           IASTInvocation new
-				           entityName: data second;
-				           yourself ].
+	astNode := IASTInvocation new
+		           entityName: data second;
+		           yourself.
 
 	^ astNode
 		  sourceAnchor: (self makeIndexedAnchor: data first);
 		  arguments: data third;
 		  yourself
+]
+
+{ #category : 'visiting' }
+JsonToIASTVisitor >> visitComment: aCommentNode [
+	"Separates comments that are genuine fortran comments and the one that contain Esope commands"
+	| content |
+	content := aCommentNode at: 'comment'.
+
+	^(self isEsopeComment: content)
+		ifTrue: [  self visitEsopeComment: aCommentNode ]
+		ifFalse: [ self visitFortranComment: aCommentNode ]
+	
 ]
 
 { #category : 'visiting statement' }
@@ -332,7 +341,7 @@ JsonToIASTVisitor >> visitDo_spec: aDoSpecNode [
 JsonToIASTVisitor >> visitEsopeEndsegmentComment: anEsopeCommentNode [
 	"updates end of current Esope segment"
 	| span |
-	span := (super visitEsopeEndsegmentComment: anEsopeCommentNode) first.
+	span := (self processEsopeComment: anEsopeCommentNode) first.
 
 	entityStack pop sourceAnchor
 		endLine: (span second x) ;
@@ -347,10 +356,10 @@ JsonToIASTVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
 	self flag: #FIXME. "Related to #esopeCommand: we take until the last but here we do not want the last  double quote char
 	So in the entityName, we remove this char. Need to find a better way to do that.
 	"
-	data := super visitEsopeIncludeComment: anEsopeIncludeCommentNode.
+	data := self processEsopeComment: anEsopeIncludeCommentNode.
 	^ IASTInclude new
 		  sourceAnchor: (self makeIndexedAnchor: data second);
-		  entityName: data fourth allButLast;
+		  entityName: data fourth ;
 		  includeCommand: data third;
 		  yourself
 ]
@@ -358,7 +367,7 @@ JsonToIASTVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
 { #category : 'visiting esope' }
 JsonToIASTVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
 	| data pointer |
-	data := super visitEsopePointeurComment: anEsopeCommentNode.
+	data := self processEsopeComment: anEsopeCommentNode.
 	
 	pointer := IASTEsopePointer new
 		sourceAnchor: (self makeIndexedAnchor: data second) ;
@@ -405,7 +414,7 @@ JsonToIASTVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
 	 endLine/endColumn will be updated in #visitEsopeEndsegmentComment:"
 
 	| data seg |
-	data := super visitEsopeSegmentComment: anEsopeCommentNode.
+	data := self processEsopeComment: anEsopeCommentNode.
 	seg := IASTEsopeSegment new
 		sourceAnchor: (self makeIndexedAnchor: data second) ;
 		entityName: data fourth ;
