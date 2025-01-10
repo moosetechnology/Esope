@@ -12,6 +12,37 @@ Class {
 }
 
 { #category : 'private - helpers' }
+FortranAbstractJsonVisitor >> esopeCommand: anEsopeCommentString [
+	"returns a collection of 2 words: {'command' . 'argument'}
+	first word after Esope marker is the 'command', after comes the 'argument'"
+
+	| wordBoundaries |
+	wordBoundaries := self findWordBoundaries: anEsopeCommentString.
+
+	^(wordBoundaries size > 2)
+		ifTrue: [
+			{ (anEsopeCommentString copyFrom: wordBoundaries first to: wordBoundaries second) .
+			  (anEsopeCommentString copyFrom: wordBoundaries third to: wordBoundaries last) }
+		]
+		ifFalse: [ { anEsopeCommentString copyFrom: wordBoundaries first to: wordBoundaries second } ]
+]
+
+{ #category : 'visiting esope' }
+FortranAbstractJsonVisitor >> esopeExtraSpan: commentSpan comment: commentText command: esopeCommand [
+	"Compute the span of just the Esope command (without 'C@_  ')
+	 - same start line
+	 - start column must ignore 'C@_  '
+	 - same end point"
+
+	| commandStart |
+	commandStart := (commentText indexOfSubCollection: (esopeCommand first)).
+
+	^{ (commentSpan first x @ (commentSpan first y + commandStart))
+		. commentSpan second }.
+
+]
+
+{ #category : 'private - helpers' }
 FortranAbstractJsonVisitor >> findWordBoundaries: anEsopeCommentString [
 
 	"search for word boundaries starting from 6th position"
@@ -23,30 +54,37 @@ FortranAbstractJsonVisitor >> findWordBoundaries: anEsopeCommentString [
 	"
 
 	wordBoundaries := OrderedCollection new: 6.
-	i := 1.
+	i := 6. "because we start at column 6 (ignore first fast 5 characters)"
 	inWord := false.
 
 	(anEsopeCommentString allButFirst: 5) do: [ :char | "for now, treat . as a letter: lb.pstr"
 		(char isLetter or: [ char isDigit or: [ char = $. ]])
 			ifTrue: [ 
 				inWord ifFalse: [ "begining of a word"
-					wordBoundaries add: i + 5.
+					wordBoundaries add: i.
 					inWord := true ] ]
 			ifFalse: [ 
-				inWord ifTrue: [ "end of a word"
-					wordBoundaries add: i + 4.
+				inWord ifTrue: [ "put the end of the previous word"
+					wordBoundaries add: i - 1.
 					inWord := false ] ].
 		i := i + 1 ].
-	wordBoundaries add: i + 4.
+
+	 "deal with the end of the last word"
+	inWord ifTrue: [ wordBoundaries add: i - 1 ].
 
 	self flag: #FIXME. "Do not forget to grab the '#' to distinguish between #include and include statement.
 	2 dont take the #
 	3 take the #
 	"
 	(anEsopeCommentString beginsWith: '@_#include') ifTrue: [ 
-		wordBoundaries at: 1 put: wordBoundaries first - 2 ].
+		wordBoundaries at: 1 put: 4 ].
 
 	^ wordBoundaries
+]
+
+{ #category : 'testing' }
+FortranAbstractJsonVisitor >> isEsopeComment: aCommentString [
+	^aCommentString asLowercase beginsWith: '@_' 
 ]
 
 { #category : 'testing' }
@@ -56,6 +94,26 @@ FortranAbstractJsonVisitor >> isTaggedStatement: aStatementNode [
 
 	^ (aStatementNode at: 'statement' ifAbsent: [ aStatementNode ]) 
 		  includesKey: 'tag'
+]
+
+{ #category : 'visiting esope' }
+FortranAbstractJsonVisitor >> processEsopeComment: anEsopeCommentNode [
+	"For Esope comments the treatment is similar for most of them
+	 We also return 2 spans:
+	- the usual one which is the span of the entire comment
+	- the span of just the Esope statement (without 'C@_  ')"
+
+	| esopeCommand commentSpan |
+	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
+	commentSpan := self visitSpan: (anEsopeCommentNode at: 'span').
+
+	^{ commentSpan .
+		self
+			esopeExtraSpan: commentSpan
+			comment: (anEsopeCommentNode at: 'comment')
+			command: esopeCommand
+	}
+	, esopeCommand
 ]
 
 { #category : 'visiting expression' }
@@ -201,7 +259,7 @@ FortranAbstractJsonVisitor >> visitCloseStatement: aCloseStatementNode [
 
 { #category : 'visiting statement' }
 FortranAbstractJsonVisitor >> visitComment: aCommentNode [
-	
+	1halt.
 	^{ self visitSpan: (aCommentNode at: 'span') .
 	  aCommentNode at: 'comment' }
 	
@@ -449,6 +507,28 @@ FortranAbstractJsonVisitor >> visitEquivalenceStatement: anEquivalenceStatementN
 FortranAbstractJsonVisitor >> visitEqv: aEqvtoOperatorNode [
 
 	^ '.eqv.'
+]
+
+{ #category : 'visiting esope' }
+FortranAbstractJsonVisitor >> visitEsopeComment: anEsopeCommentNode [
+	"we separate each Esope command in a different visit method to give opportunity to
+	 concrete visitors (subclasses) to treat them differently.
+	 But here, they are pretty much all the same, so they come down to the same treatment"
+
+	| key esopeCommand |
+	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
+	key := 'Esope' , esopeCommand first asLowercase capitalized
+	       , 'Comment'.
+
+	^ self visitKey: key value: anEsopeCommentNode
+]
+
+{ #category : 'visiting esope' }
+FortranAbstractJsonVisitor >> visitEsopeEndComment: anEsopeCommentNode [
+	"delegate to a method with a more explicit name
+		subclasses should override #visitEsopeEndSegmentComment: not this method"
+
+	^self visitEsopeEndsegmentComment: anEsopeCommentNode 
 ]
 
 { #category : 'visiting statement' }

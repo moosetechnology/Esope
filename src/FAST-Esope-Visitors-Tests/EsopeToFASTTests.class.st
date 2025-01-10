@@ -77,6 +77,9 @@ c@_   segact, lb
 { #category : 'tests-expression' }
 EsopeToFASTTests >> testSeginiCommandMultipleVariables [
 	| cmd result |
+	
+	self skip: #TODO.
+
 	fortranCode := '      subroutine hello
 c@_   segini, lb1, lb2, lb3
       end

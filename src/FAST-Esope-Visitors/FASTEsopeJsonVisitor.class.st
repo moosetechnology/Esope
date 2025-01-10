@@ -8,35 +8,6 @@ Class {
 	#package : 'FAST-Esope-Visitors'
 }
 
-{ #category : 'private - helpers' }
-FASTEsopeJsonVisitor >> esopeCommand: anEsopeCommentString [
-	"returns a collection of 2 words: {'command' . 'argument'}
-	first word after Esope marker is the 'command', after comes the 'argument'"
-
-	| wordBoundaries |
-	wordBoundaries := self findWordBoundaries: anEsopeCommentString.
-
-	^(1 to: wordBoundaries size by: 2) collect: [ :i |
-		anEsopeCommentString copyFrom: (wordBoundaries at: i) to: (wordBoundaries at: i+1)
-	]
-	
-]
-
-{ #category : 'visiting esope' }
-FASTEsopeJsonVisitor >> esopeExtraSpan: commentSpan comment: commentText command: esopeCommand [
-	"Compute the span of just the Esope command (without 'C@_  ')
-	 - same start line
-	 - start column must ignore 'C@_  '
-	 - same end point"
-
-	| commandStart |
-	commandStart := (commentText indexOfSubCollection: (esopeCommand first)).
-
-	^{ (commentSpan first x @ (commentSpan first y + commandStart))
-		. commentSpan second }.
-
-]
-
 { #category : 'initialization' }
 FASTEsopeJsonVisitor >> initialize [ 
 
@@ -46,35 +17,10 @@ FASTEsopeJsonVisitor >> initialize [
 ]
 
 { #category : 'testing' }
-FASTEsopeJsonVisitor >> isEsopeComment: aCommentString [
-	^aCommentString asLowercase beginsWith: '@_' 
-]
-
-{ #category : 'testing' }
 FASTEsopeJsonVisitor >> isEsopeTransformation: aString [
 
 	aString isString ifFalse: [ ^ false ].
 	^ #( #d__ #s__ ) includes: aString
-]
-
-{ #category : 'visiting esope' }
-FASTEsopeJsonVisitor >> processEsopeComment: anEsopeCommentNode [
-	"For Esope comments the treatment is similar for most of them
-	 We also return 2 spans:
-	- the usual one which is the span of the entire comment
-	- the span of just the Esope statement (without 'C@_  ')"
-
-	| esopeCommand commentSpan |
-	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
-	commentSpan := self visitSpan: (anEsopeCommentNode at: 'span').
-
-	^{ commentSpan .
-		self
-			esopeExtraSpan: commentSpan
-			comment: (anEsopeCommentNode at: 'comment')
-			command: esopeCommand
-	}
-	, esopeCommand
 ]
 
 { #category : 'helpers' }
@@ -123,20 +69,6 @@ FASTEsopeJsonVisitor >> visitDeclarationStatement: aDeclarationStatementNode [
 			nil
 		]
 		ifFalse: [ data ]
-]
-
-{ #category : 'visiting esope' }
-FASTEsopeJsonVisitor >> visitEsopeComment: anEsopeCommentNode [
-	"we separate each Esope command in a different visit method to give opportunity to
-	 concrete visitors (subclasses) to treat them differently.
-	 But here, they are pretty much all the same, so they come down to the same treatment"
-
-	| key esopeCommand |
-	esopeCommand := self esopeCommand: (anEsopeCommentNode at: 'comment').
-	key := 'Esope' , esopeCommand first asLowercase capitalized
-	       , 'Comment'.
-
-	^ self visitKey: key value: anEsopeCommentNode
 ]
 
 { #category : 'visiting esope' }
