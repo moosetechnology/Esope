@@ -163,23 +163,6 @@ FASTEsopeJsonVisitor >> visitEsopeSeginiComment: anEsopeCommentNode [
 ]
 
 { #category : 'visiting' }
-FASTEsopeJsonVisitor >> visitEsopeSegment: anEsopeNode [
-	"Source anchor for the segment is wrong,
-	 endLine/endColumn will be updated in #visitEsopeEndsegment:"
-
-	| data |
-	data := super visitEsopeSegment: anEsopeNode.
-
-	inSegmentDeclaration := true.
-	segmentDeclarations add: ((self newEntity: FASTEsopeSegment atPosition: data second)
-		name: data fourth ;
-		yourself).
-	
-	^nil
-	
-]
-
-{ #category : 'visiting' }
 FASTEsopeJsonVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
 	"Source anchor for the segment is wrong,
 	 endLine/endColumn will be updated in #visitEsopeEndsegmentComment:"
