@@ -39,6 +39,23 @@ EsopeToFASTTests >> testDerefAccess [
 ]
 
 { #category : 'tests-expression' }
+EsopeToFASTTests >> testFortranComment [
+
+	| result cmt |
+	fortranCode := '      integer function aFct()
+C comment in a function''s body
+      end
+'.
+	jsonCode := '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":" comment in a function''s body","span":"(2:1)-(2:30)","tag":"comment"}],"name":"afct","result":null,"span":"(1:7)-(3:9)","subprograms":null,"tag":"function","type":{"anno":[],"base_type":"integer","selector":null,"span":"(1:7)-(1:13)"}}]}'.
+	result := self visitJsonCode.
+
+	cmt := result first statementBlock comments anyOne.
+	self assert: cmt content equals: 'C comment in a function''s body'.
+	self assert: cmt startPos equals: 31.
+	self assert: cmt endPos equals: 60.
+]
+
+{ #category : 'tests-expression' }
 EsopeToFASTTests >> testSegactCommand [
 	| cmd result |
 	fortranCode := '      subroutine hello

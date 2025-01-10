@@ -96,7 +96,7 @@ FASTEsopeJsonVisitor >> visitComment: aCommentNode [
 
 	^(self isEsopeComment: content)
 		ifTrue: [  self visitEsopeComment: aCommentNode ]
-		ifFalse: [ self visitFortranComment: aCommentNode ]
+		ifFalse: [ super  visitComment: aCommentNode ]
 	
 ]
 
@@ -220,14 +220,4 @@ FASTEsopeJsonVisitor >> visitEsopeSegsupComment: anEsopeCommentNode [
 
 	^self processEsopeNode: anEsopeCommentNode command: FASTEsopeSegsup 
 
-]
-
-{ #category : 'visiting statement' }
-FASTEsopeJsonVisitor >> visitFortranComment: aFortranCommentNode [
-	"A real Fortran comment as opposed to a comment that contains an Esope command
-	cannot call visitJsonMap: because contains a key 'comment' that would recursively loop on this method"
-
-	^{ self visitSpan: (aFortranCommentNode at: 'span') .
-	  aFortranCommentNode at: 'comment' }
-	
 ]
