@@ -111,7 +111,7 @@ FASTEsopeJsonVisitor >> visitEsopePointeurComment: anEsopePointerNode [
 	| data pointeur |
 	data := self processEsopeComment: anEsopePointerNode.
 
-	pointeur := model newPointeurDeclarationStatement.
+	pointeur := self newEntity: FASTEsopePointeurDeclarationStatement atPosition: data second.
 		
 	(data allButFirst: 3) 
 		do: [ :each | | typeAndVarName |
