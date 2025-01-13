@@ -9,10 +9,13 @@ change `/path/to/...` in the importer initialiser, regardless of your project's 
 
 ### Initialise the project importer
 ```st
-importer := FortranProjectImporter new
-	srcFolders:  { '/path/to/source'. '/path/to/anothersource' };
- 	includeFolders: { '/path/to/include'. '/path/to/anotherinclude' };
-	yourself.
+importer := FortranProjectImporter new.
+
+model := importer 
+	sourceFolder: '/path/to/project/rootdir'; 
+	includeFolder: '/path/to/include/folder'; 
+	import
+
 ```
 ### Construct the model
 ```st

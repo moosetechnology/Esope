@@ -4,16 +4,19 @@ Class {
 	#instVars : [
 		'inSegmentDeclaration'
 	],
-	#category : 'FAST-Esope-Visitors',
-	#package : 'FAST-Esope-Visitors'
+	#category : 'FAST-Esope-Visitors-Visitor',
+	#package : 'FAST-Esope-Visitors',
+	#tag : 'Visitor'
 }
 
 { #category : 'initialization' }
-FASTEsopeJsonVisitor >> initialize [ 
+FASTEsopeJsonVisitor >> initialize [
 
 	super initialize.
 
-	inSegmentDeclaration := false.
+	model := FASTEsopeModel new.
+
+	inSegmentDeclaration := false
 ]
 
 { #category : 'testing' }
@@ -95,15 +98,33 @@ FASTEsopeJsonVisitor >> visitEsopeIfComment: anEsopeIfCommentNode [
 { #category : 'visiting esope' }
 FASTEsopeJsonVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
 
-	^self processEsopeComment: anEsopeIncludeCommentNode
-
+	| data |
+	data := self processEsopeComment: anEsopeIncludeCommentNode.
+	
+	^(self newEntity: FASTEsopeCppIncludeStatement atPosition: data second)
+		filename: data fourth
 ]
 
 { #category : 'visiting esope' }
-FASTEsopeJsonVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
+FASTEsopeJsonVisitor >> visitEsopePointeurComment: anEsopePointerNode [
 
-	^self processEsopeComment: anEsopeCommentNode
+	| data pointeur |
+	data := self processEsopeComment: anEsopePointerNode.
 
+	pointeur := self newEntity: FASTEsopePointeurDeclarationStatement atPosition: data second.
+		
+	(data allButFirst: 3) 
+		do: [ :each | | typeAndVarName |
+			typeAndVarName := each splitOn: '.'.
+			pointeur 
+				addVariableDeclarationStatement: (model newVariableDeclarationStatement 
+					declaredType: (model newPointerTypeNamed: typeAndVarName second); 
+					addDeclarator: (model newVariableDeclarator name: typeAndVarName first);
+					yourself
+				)
+		].
+
+	^pointeur
 ]
 
 { #category : 'visiting esope' }

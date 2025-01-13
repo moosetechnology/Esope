@@ -1,8 +1,9 @@
 Class {
 	#name : 'EsopeToFASTTests',
 	#superclass : 'AbstractJsonToFASTTests',
-	#category : 'FAST-Esope-Visitors-Tests',
-	#package : 'FAST-Esope-Visitors-Tests'
+	#category : 'FAST-Esope-Visitors-Tests-Visitor',
+	#package : 'FAST-Esope-Visitors-Tests',
+	#tag : 'Visitor'
 }
 
 { #category : 'running' }
@@ -56,6 +57,84 @@ C comment in a function''s body
 ]
 
 { #category : 'tests-expression' }
+EsopeToFASTTests >> testIncludeStatement [
+	| cmd result |
+	
+	fortranCode := '      subroutine hello
+c@_#include "file.inc"
+      end
+'.
+
+	jsonCode := '{"meta":{"miVersion":"fortran77","miFilename":"/Users/sow/Documents/Pharo/images/FAST-Esope-fix/srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_#include \"file.inc\"","span":"(2:1)-(2:22)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	result := self visitJsonCode.
+
+	cmd := result first statementBlock statements first.
+	self assert: cmd class equals: FASTEsopeCppIncludeStatement.
+	self assert: cmd filename equals: 'file.inc'.
+	self assert: cmd startPos equals: 28.
+	self assert: cmd endPos equals: 45.
+]
+
+{ #category : 'tests-expression' }
+EsopeToFASTTests >> testPointerMultipleDeclarations [
+	| cmd result varDecl |
+	
+	self skip: #TODO.
+	
+	fortranCode := '      subroutine hello
+c@_   pointeur pt.seg1, q.seg2
+      end
+'.
+
+	jsonCode := '{"meta":{"miVersion":"fortran77","miFilename":"/Users/sow/Documents/Pharo/images/FAST-Esope-fix/srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   pointeur pt.seg1, q.seg2","span":"(2:1)-(2:30)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	result := self visitJsonCode.
+
+	cmd := result first statementBlock statements first.
+	self assert: cmd class equals: FASTEsopePointeurDeclarationStatement.
+
+	self assert: cmd variableDeclarationStatements size equals: 1.
+
+	varDecl := cmd variableDeclarationStatements first.
+
+	self assert: varDecl declaredType class equals: FASTEsopePointerType.
+	self assert: varDecl declaredType name equals: 'seg1'.
+	self assert: varDecl declarators size equals: 1.
+	self assert: varDecl declarators first class equals: FASTFortranVariableDeclarator.
+	self assert: varDecl declarators first name equals: 'ptr1'.
+]
+
+{ #category : 'tests-expression' }
+EsopeToFASTTests >> testPointerOneDeclaration [
+	| cmd result varDecl |
+	
+	fortranCode := '      subroutine hello
+c@_   pointeur ptr1.seg1
+      end
+'.
+
+	jsonCode := '{"meta":{"miVersion":"fortran77","miFilename":"/Users/sow/Documents/Pharo/images/FAST-Esope-fix/srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   pointeur ptr1.seg1","span":"(2:1)-(2:24)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	result := self visitJsonCode.
+
+	cmd := result first statementBlock statements first.
+	self assert: cmd class equals: FASTEsopePointeurDeclarationStatement.
+	self assert: cmd startPos equals: 30.
+	self assert: cmd endPos equals: 47.
+
+	self assert: cmd variableDeclarationStatements size equals: 1.
+
+	varDecl := cmd variableDeclarationStatements first.
+
+	self assert: varDecl declaredType class equals: FASTEsopePointerType.
+	self assert: varDecl declaredType name equals: 'seg1'.
+	self assert: varDecl declarators size equals: 1.
+	self assert: varDecl declarators first class equals: FASTFortranVariableDeclarator.
+	self assert: varDecl declarators first name equals: 'ptr1'.
+]
+
+{ #category : 'tests-expression' }
 EsopeToFASTTests >> testSegactCommand [
 	| cmd result |
 	fortranCode := '      subroutine hello
@@ -72,6 +151,63 @@ c@_   segact, lb
 
 	self assert: cmd variables size equals: 1.
 	self assert: cmd variables first name equals: 'lb'.
+]
+
+{ #category : 'tests' }
+EsopeToFASTTests >> testSegadjCommand [
+	
+	| result cmd |
+	fortranCode := '      PROGRAM MYPROG
+C@_     segadj,pt
+      END
+'.
+	jsonCode := '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"comment":"@_     segadj,pt","span":"(2:1)-(2:17)","tag":"comment"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+	result := self visitJsonCode.
+
+	cmd := result first statementBlock statements first.
+	self assert: cmd class equals: FASTEsopeSegadj.	
+	self assert: cmd variables size equals: 1.
+	self assert: cmd variables first name equals: 'pt'.
+	self assert: cmd startPos equals: 30.
+	self assert: cmd endPos equals: 38.
+]
+
+{ #category : 'tests' }
+EsopeToFASTTests >> testSegdesCommand [
+	
+	| result stmt |
+	fortranCode := '      PROGRAM MYPROG
+C@_     segdes,pt
+      END
+'.
+	jsonCode := '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"comment":"@_     segdes,pt","span":"(2:1)-(2:17)","tag":"comment"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+	result := self visitJsonCode.
+
+	stmt := result first statementBlock statements first.
+	self assert: stmt class equals: FASTEsopeSegdes.		
+	self assert: stmt variables size equals: 1.
+	self assert: stmt variables first name equals: 'pt'.
+	self assert: stmt startPos equals: 30.
+	self assert: stmt endPos equals: 38.
+]
+
+{ #category : 'tests' }
+EsopeToFASTTests >> testSeginiCommand [
+	
+	| result cmd |
+	fortranCode := '      PROGRAM MYPROG
+C@_     segini,pt
+      END
+'.
+	jsonCode := '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"comment":"@_     segini,pt","span":"(2:1)-(2:17)","tag":"comment"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+	result := self visitJsonCode.
+
+	cmd := result first statementBlock statements first.
+	self assert: cmd class equals: FASTEsopeSegini.		
+	self assert: cmd variables size equals: 1.
+	self assert: cmd variables first name equals: 'pt'.
+	self assert: cmd startPos equals: 30.
+	self assert: cmd endPos equals: 38.
 ]
 
 { #category : 'tests-expression' }
@@ -99,7 +235,30 @@ c@_   segini, lb1, lb2, lb3
 ]
 
 { #category : 'tests' }
-EsopeToFASTTests >> testSegment [
+EsopeToFASTTests >> testSegmentEmpty [
+
+	| result seg declaration |
+	fortranCode := '      subroutine hello
+c@_   segment, foo
+c@_   end segment
+      end
+'.
+
+	jsonCode := '{"meta":{"miVersion":"fortran77","miFilename":"/Users/sow/Documents/Pharo/images/FAST-Esope-fix/srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment, foo","span":"(2:1)-(2:18)","tag":"comment"},{"anno":[],"comment":"@_   end segment","span":"(3:1)-(3:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	result := self visitJsonCode.
+
+	self assert: result first declarations size equals: 1.
+	seg := result first declarations anyOne.
+	
+	self assert: seg class equals: FASTEsopeSegment.
+	self assert: seg name equals: 'foo'.
+
+	self assert: seg statements size equals: 0.
+]
+
+{ #category : 'tests' }
+EsopeToFASTTests >> testSegmentWithDeclaration [
 
 	| result seg declaration declarator |
 	fortranCode := '      subroutine hello
@@ -109,7 +268,7 @@ c@_   end segment
       end
 '.
 
-	jsonCode :=  '{"meta":{"miVersion":"fortran77","miFilename":"/Users/sow/Documents/Pharo/images/M12_241203_PairYC/srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment, foo","span":"(2:1)-(2:18)","tag":"comment"},{"anno":[],"label":null,"span":"(3:9)-(3:19)","statement":{"anno":[],"attributes":null,"declarators":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(3:17)-(3:19)","type":"scalar","variable":{"anno":[],"span":"(3:17)-(3:19)","tag":"value","value":{"contents":"bar","tag":"variable"}}}],"span":"(3:17)-(3:19)"},"span":"(3:9)-(3:19)","tag":"declaration","type":{"anno":[],"base_type":"integer","selector":null,"span":"(3:9)-(3:15)"}},"tag":"statement"},{"anno":[],"comment":"@_   end segment","span":"(4:1)-(4:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(5:9)","subprograms":null,"tag":"subroutine"}]}'.
+	jsonCode := self fortranParser parseString: fortranCode.
 
 	result := self visitJsonCode.
 
@@ -150,4 +309,23 @@ c@_   segprt lb
 
 	self assert: cmd variables size equals: 1.
 	self assert: cmd variables first name equals: 'lb'.
+]
+
+{ #category : 'tests' }
+EsopeToFASTTests >> testSegsupCommand [
+	
+	| result cmd |
+	fortranCode := '      PROGRAM MYPROG
+C@_     segsup,pt
+      END
+'.
+	jsonCode := '{"meta":{"miVersion":"fortran77","miFilename":"fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"comment":"@_     segsup,pt","span":"(2:1)-(2:17)","tag":"comment"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+	result := self visitJsonCode.
+
+	cmd := result first statementBlock statements first.
+	self assert: cmd class equals: FASTEsopeSegsup.		
+	self assert: cmd variables size equals: 1.
+	self assert: cmd variables first name equals: 'pt'.
+	self assert: cmd startPos equals: 30.
+	self assert: cmd endPos equals: 38.
 ]
