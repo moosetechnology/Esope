@@ -77,6 +77,35 @@ c@_#include "file.inc"
 ]
 
 { #category : 'tests-expression' }
+EsopeToFASTTests >> testPointerMultipleDeclarations [
+	| cmd result varDecl |
+	
+	self skip: #TODO.
+	
+	fortranCode := '      subroutine hello
+c@_   pointeur pt.seg1, q.seg2
+      end
+'.
+
+	jsonCode := '{"meta":{"miVersion":"fortran77","miFilename":"/Users/sow/Documents/Pharo/images/FAST-Esope-fix/srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   pointeur pt.seg1, q.seg2","span":"(2:1)-(2:30)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	result := self visitJsonCode.
+
+	cmd := result first statementBlock statements first.
+	self assert: cmd class equals: FASTEsopePointeurDeclarationStatement.
+
+	self assert: cmd variableDeclarationStatements size equals: 1.
+
+	varDecl := cmd variableDeclarationStatements first.
+
+	self assert: varDecl declaredType class equals: FASTEsopePointerType.
+	self assert: varDecl declaredType name equals: 'seg1'.
+	self assert: varDecl declarators size equals: 1.
+	self assert: varDecl declarators first class equals: FASTFortranVariableDeclarator.
+	self assert: varDecl declarators first name equals: 'ptr1'.
+]
+
+{ #category : 'tests-expression' }
 EsopeToFASTTests >> testPointerOneDeclaration [
 	| cmd result varDecl |
 	
