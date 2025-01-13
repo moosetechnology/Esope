@@ -4,16 +4,19 @@ Class {
 	#instVars : [
 		'inSegmentDeclaration'
 	],
-	#category : 'FAST-Esope-Visitors',
-	#package : 'FAST-Esope-Visitors'
+	#category : 'FAST-Esope-Visitors-Visitor',
+	#package : 'FAST-Esope-Visitors',
+	#tag : 'Visitor'
 }
 
 { #category : 'initialization' }
-FASTEsopeJsonVisitor >> initialize [ 
+FASTEsopeJsonVisitor >> initialize [
 
 	super initialize.
 
-	inSegmentDeclaration := false.
+	model := FASTEsopeModel new.
+
+	inSegmentDeclaration := false
 ]
 
 { #category : 'testing' }
