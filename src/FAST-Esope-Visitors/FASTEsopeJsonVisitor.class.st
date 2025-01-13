@@ -103,10 +103,25 @@ FASTEsopeJsonVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
 ]
 
 { #category : 'visiting esope' }
-FASTEsopeJsonVisitor >> visitEsopePointeurComment: anEsopeCommentNode [
+FASTEsopeJsonVisitor >> visitEsopePointeurComment: anEsopePointerNode [
 
-	^self processEsopeComment: anEsopeCommentNode
+	| data pointeur |
+	data := self processEsopeComment: anEsopePointerNode.
 
+	pointeur := model newPointeurDeclarationStatement.
+		
+	(data allButFirst: 3) 
+		do: [ :each | | typeAndVarName |
+			typeAndVarName := each splitOn: '.'.
+			pointeur 
+				addVariableDeclarationStatement: (model newVariableDeclarationStatement 
+					declaredType: (model newPointerTypeNamed: typeAndVarName second); 
+					addDeclarator: (model newVariableDeclarator name: typeAndVarName first);
+					yourself
+				)
+		].
+
+	^pointeur
 ]
 
 { #category : 'visiting esope' }
