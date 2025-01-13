@@ -98,8 +98,11 @@ FASTEsopeJsonVisitor >> visitEsopeIfComment: anEsopeIfCommentNode [
 { #category : 'visiting esope' }
 FASTEsopeJsonVisitor >> visitEsopeIncludeComment: anEsopeIncludeCommentNode [
 
-	^self processEsopeComment: anEsopeIncludeCommentNode
-
+	| data |
+	data := self processEsopeComment: anEsopeIncludeCommentNode.
+	
+	^(self newEntity: FASTEsopeCppIncludeStatement atPosition: data second)
+		filename: data fourth
 ]
 
 { #category : 'visiting esope' }
