@@ -1,8 +1,9 @@
 Class {
 	#name : 'EsopeToFASTTests',
 	#superclass : 'AbstractJsonToFASTTests',
-	#category : 'FAST-Esope-Visitors-Tests',
-	#package : 'FAST-Esope-Visitors-Tests'
+	#category : 'FAST-Esope-Visitors-Tests-Visitor',
+	#package : 'FAST-Esope-Visitors-Tests',
+	#tag : 'Visitor'
 }
 
 { #category : 'running' }
@@ -53,6 +54,33 @@ C comment in a function''s body
 	self assert: cmt content equals: 'C comment in a function''s body'.
 	self assert: cmt startPos equals: 31.
 	self assert: cmt endPos equals: 60.
+]
+
+{ #category : 'tests-expression' }
+EsopeToFASTTests >> testPointerOneDeclaration [
+	| cmd result varDecl |
+	
+	fortranCode := '      subroutine hello
+c@_   pointeur ptr1.seg1
+      end
+'.
+
+	jsonCode := '{"meta":{"miVersion":"fortran77","miFilename":"/Users/sow/Documents/Pharo/images/FAST-Esope-fix/srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   pointeur ptr1.seg1","span":"(2:1)-(2:24)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+	result := self visitJsonCode.
+
+	cmd := result first statementBlock statements first.
+	self assert: cmd class equals: FASTEsopePointeurDeclarationStatement.
+
+	self assert: cmd variableDeclarationStatements size equals: 1.
+
+	varDecl := cmd variableDeclarationStatements first.
+
+	self assert: varDecl declaredType class equals: FASTEsopePointerType.
+	self assert: varDecl declaredType name equals: 'seg1'.
+	self assert: varDecl declarators size equals: 1.
+	self assert: varDecl declarators first class equals: FASTFortranVariableDeclarator.
+	self assert: varDecl declarators first name equals: 'ptr1'.
 ]
 
 { #category : 'tests-expression' }
