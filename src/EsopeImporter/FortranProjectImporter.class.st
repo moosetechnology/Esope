@@ -240,7 +240,7 @@ FortranProjectImporter >> extensionsEsope [
 { #category : 'constants' }
 FortranProjectImporter >> extensionsFortran [
 
-	^#(f for)
+	^#(f for F90)
 ]
 
 { #category : 'accessing' }
