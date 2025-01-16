@@ -474,13 +474,17 @@ FortranProjectImporter >> jsonASTToIAST [
 			iastEntity := nil.
 			jsonDOM := nil.
 			errorHandler enterContext: jsonFile fullName.
+
 			[ jsonDOM := NeoJSONReader fromString: code ]
 			on: NeoJSONParseError
 			do: [  JsonASTParseException signal: code ].
+		
 		 	jsonDOM ifNotNil: [ iastEntity := visitor visitProgramFile: jsonDOM ].
+			
 			errorHandler leaveContext.
 			iastEntity
 		]
+	thenReject: #isNil
 
 ]
 
