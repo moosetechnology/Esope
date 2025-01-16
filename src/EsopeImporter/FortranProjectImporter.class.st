@@ -59,7 +59,8 @@ Class {
 		'resolver',
 		'withSanityChecks',
 		'includeFolder',
-		'srcFolder'
+		'srcFolder',
+		'withEsope'
 	],
 	#category : 'EsopeImporter-Importer',
 	#package : 'EsopeImporter',
@@ -210,6 +211,8 @@ FortranProjectImporter >> errors [
 FortranProjectImporter >> esopeToFortran [
 	"'de-esopifying Esope files to be able to parse them in Fortran
 	The result goes in the FortranWorkingDirectory"
+
+	withEsope ifFalse: [ ^self ].
 
 	(self collectFilesIn: self tempEsopeFolder) do: [ :path |
 		self
@@ -402,6 +405,8 @@ FortranProjectImporter >> includeFolder: folder [
 { #category : 'run' }
 FortranProjectImporter >> includedFilesToEsope [
 
+	withEsope ifFalse: [ ^self ].
+
 	self collectIncludedFileNames
 		do: [ :fileName |
 			errorHandler enterContext: fileName.
@@ -439,6 +444,8 @@ FortranProjectImporter >> includedNamesIn: srcFileReference [
 FortranProjectImporter >> initialize [
 
 	super initialize.
+
+	withEsope := true.
 
 	errorHandler := FortranErrorManager new.
 	errorHandler stopOnError: self stopOnError.
@@ -488,6 +495,12 @@ FortranProjectImporter >> newResolver [
 
 	^resolver := (FamixEsopeResolver on: famixModel)
 		errorHandler: errorHandler
+]
+
+{ #category : 'accessing' }
+FortranProjectImporter >> noEsope [
+
+	withEsope := false
 ]
 
 { #category : 'private - import' }
@@ -620,6 +633,12 @@ FortranProjectImporter >> unquoteIncludedFile: fileName [
 	^(#( $" $< ) includes: fileName first)
 		ifTrue: [ fileName copyFrom: 2 to: fileName size -1 ]
 		ifFalse: [ fileName ]
+]
+
+{ #category : 'accessing' }
+FortranProjectImporter >> withEsope [
+
+	^withEsope
 ]
 
 { #category : 'accessing' }
