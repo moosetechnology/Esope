@@ -246,7 +246,7 @@ FortranProjectImporter >> extensionsFortran [
 { #category : 'accessing' }
 FortranProjectImporter >> f77parser [
 
-	^ 'fortran-src-extras serialize -t json -v77l encode '
+	^ 'fortran-src-extras serialize -t json -v90 encode '
 ]
 
 { #category : 'private - import' }
