@@ -42,12 +42,3 @@ FamixF77StatementFunction >> implicitTypeFor: variableName [
 
 	^parentEntity implicitTypeFor: variableName
 ]
-
-{ #category : '*EsopeImporter' }
-FamixF77StatementFunction >> programFile [
-
-	"This should be an extension of Famix-Fortran-Visitor or something like that.
-	 but that package does not exist..."
-
-	^parentEntity programFile
-]
