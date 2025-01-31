@@ -21,15 +21,17 @@ As in Fortran, we are led to have a declarative instruction of the SEGMENT and t
 
 "
 Class {
-	#name : #FamixEsopeCommand,
-	#superclass : #FamixF77Access,
+	#name : 'FamixEsopeCommand',
+	#superclass : 'FamixF77Access',
 	#instVars : [
 		'#commandName => FMProperty'
 	],
-	#category : #'Famix-Esope-Entities-Entities'
+	#category : 'Famix-Esope-Entities-Entities',
+	#package : 'Famix-Esope-Entities',
+	#tag : 'Entities'
 }
 
-{ #category : #meta }
+{ #category : 'meta' }
 FamixEsopeCommand class >> annotation [
 
 	<FMClass: #Command super: #FamixF77Access>
@@ -38,7 +40,7 @@ FamixEsopeCommand class >> annotation [
 	^ self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FamixEsopeCommand >> commandName [
 
 	<FMProperty: #commandName type: #String>
@@ -50,7 +52,7 @@ FamixEsopeCommand >> commandName [
 	^ commandName
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FamixEsopeCommand >> commandName: anObject [
 	<generated>
 	commandName := anObject

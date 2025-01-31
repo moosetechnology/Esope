@@ -5,12 +5,14 @@ Im an implicit pointer, Im created when a segment is defined.
 
 "
 Class {
-	#name : #FamixEsopeImplicitPointer,
-	#superclass : #FamixF77Variable,
-	#category : #'Famix-Esope-Entities-Entities'
+	#name : 'FamixEsopeImplicitPointer',
+	#superclass : 'FamixF77Variable',
+	#category : 'Famix-Esope-Entities-Entities',
+	#package : 'Famix-Esope-Entities',
+	#tag : 'Entities'
 }
 
-{ #category : #meta }
+{ #category : 'meta' }
 FamixEsopeImplicitPointer class >> annotation [
 
 	<FMClass: #ImplicitPointer super: #FamixF77Variable>

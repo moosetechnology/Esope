@@ -5,11 +5,13 @@ It provides an API for creating entities and adding them to the model.
 
 "
 Trait {
-	#name : #FamixEsopeTEntityCreator,
-	#category : #'Famix-Esope-Entities-Model'
+	#name : 'FamixEsopeTEntityCreator',
+	#category : 'Famix-Esope-Entities-Model',
+	#package : 'Famix-Esope-Entities',
+	#tag : 'Model'
 }
 
-{ #category : #meta }
+{ #category : 'meta' }
 FamixEsopeTEntityCreator classSide >> annotation [
 
 	<FMClass: #TEntityCreator super: #Object>
@@ -18,28 +20,35 @@ FamixEsopeTEntityCreator classSide >> annotation [
 	^ self
 ]
 
-{ #category : #'entity creation' }
+{ #category : 'entity creation' }
 FamixEsopeTEntityCreator >> newCommand [
 
 	<generated>
 	^ self add: FamixEsopeCommand new
 ]
 
-{ #category : #'entity creation' }
+{ #category : 'entity creation' }
 FamixEsopeTEntityCreator >> newDimentionalInteger [
 
 	<generated>
 	^ self add: FamixEsopeDimentionalInteger new
 ]
 
-{ #category : #'entity creation' }
+{ #category : 'entity creation' }
 FamixEsopeTEntityCreator >> newImplicitPointer [
 
 	<generated>
 	^ self add: FamixEsopeImplicitPointer new
 ]
 
-{ #category : #'entity creation' }
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newPointer [
+
+	<generated>
+	^ self add: FamixEsopePointer new
+]
+
+{ #category : 'entity creation' }
 FamixEsopeTEntityCreator >> newSegment [
 
 	<generated>
