@@ -13,15 +13,17 @@ I am a parameter for arrays in a segment
 
 "
 Class {
-	#name : #FamixEsopeDimentionalInteger,
-	#superclass : #FamixF77Variable,
+	#name : 'FamixEsopeDimentionalInteger',
+	#superclass : 'FamixF77Variable',
 	#instVars : [
 		'#segment => FMOne type: #FamixEsopeSegment opposite: #dimentionalIntegers'
 	],
-	#category : #'Famix-Esope-Entities-Entities'
+	#category : 'Famix-Esope-Entities-Entities',
+	#package : 'Famix-Esope-Entities',
+	#tag : 'Entities'
 }
 
-{ #category : #meta }
+{ #category : 'meta' }
 FamixEsopeDimentionalInteger class >> annotation [
 
 	<FMClass: #DimentionalInteger super: #FamixF77Variable>
@@ -30,7 +32,7 @@ FamixEsopeDimentionalInteger class >> annotation [
 	^ self
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FamixEsopeDimentionalInteger >> segment [
 	"Relation named: #segment type: #FamixEsopeSegment opposite: #dimentionalIntegers"
 
@@ -39,14 +41,14 @@ FamixEsopeDimentionalInteger >> segment [
 	^ segment
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FamixEsopeDimentionalInteger >> segment: anObject [
 
 	<generated>
 	segment := anObject
 ]
 
-{ #category : #navigation }
+{ #category : 'navigation' }
 FamixEsopeDimentionalInteger >> segmentGroup [
 	<generated>
 	<navigation: 'Segment'>

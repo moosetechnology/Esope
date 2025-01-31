@@ -3,68 +3,84 @@ This class is used to choose the entities to be imported when loading a model fr
 It is used by `MiImportingContextPresenter` in a `MiImportModelFromFileDialog` to import a FamixEsopeModel.
 "
 Class {
-	#name : #FamixEsopeImportingContext,
-	#superclass : #FamixImportingContext,
-	#category : #'Famix-Esope-Entities-Import'
+	#name : 'FamixEsopeImportingContext',
+	#superclass : 'FamixImportingContext',
+	#category : 'Famix-Esope-Entities-Import',
+	#package : 'Famix-Esope-Entities',
+	#tag : 'Import'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FamixEsopeImportingContext class >> importedMetamodel [
 
 	<generated>
 	^ FamixEsopeModel metamodel
 ]
 
-{ #category : #importing }
+{ #category : 'importing' }
 FamixEsopeImportingContext >> importCommand [
 
 	<generated>
 	^ self importConcreteEntity: (self class fm3ClassNamed: #Command)
 ]
 
-{ #category : #importing }
+{ #category : 'importing' }
 FamixEsopeImportingContext >> importDimentionalInteger [
 
 	<generated>
 	^ self importConcreteEntity: (self class fm3ClassNamed: #DimentionalInteger)
 ]
 
-{ #category : #importing }
+{ #category : 'importing' }
 FamixEsopeImportingContext >> importImplicitPointer [
 
 	<generated>
 	^ self importConcreteEntity: (self class fm3ClassNamed: #ImplicitPointer)
 ]
 
-{ #category : #importing }
+{ #category : 'importing' }
+FamixEsopeImportingContext >> importPointer [
+
+	<generated>
+	^ self importConcreteEntity: (self class fm3ClassNamed: #Pointer)
+]
+
+{ #category : 'importing' }
 FamixEsopeImportingContext >> importSegment [
 
 	<generated>
 	^ self importConcreteEntity: (self class fm3ClassNamed: #Segment)
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 FamixEsopeImportingContext >> shouldImportCommand [
 
 	<generated>
 	^ self shouldImport: #Command
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 FamixEsopeImportingContext >> shouldImportDimentionalInteger [
 
 	<generated>
 	^ self shouldImport: #DimentionalInteger
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 FamixEsopeImportingContext >> shouldImportImplicitPointer [
 
 	<generated>
 	^ self shouldImport: #ImplicitPointer
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
+FamixEsopeImportingContext >> shouldImportPointer [
+
+	<generated>
+	^ self shouldImport: #Pointer
+]
+
+{ #category : 'testing' }
 FamixEsopeImportingContext >> shouldImportSegment [
 
 	<generated>

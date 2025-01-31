@@ -1,38 +1,40 @@
 Class {
-	#name : #FamixEsopeModel,
-	#superclass : #MooseModel,
+	#name : 'FamixEsopeModel',
+	#superclass : 'MooseModel',
 	#traits : 'FamixEsopeTEntityCreator + FamixF77TEntityCreator + FamixFortranTEntityCreator',
 	#classTraits : 'FamixEsopeTEntityCreator classTrait + FamixF77TEntityCreator classTrait + FamixFortranTEntityCreator classTrait',
-	#category : #'Famix-Esope-Entities-Model'
+	#category : 'Famix-Esope-Entities-Model',
+	#package : 'Famix-Esope-Entities',
+	#tag : 'Model'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FamixEsopeModel class >> allSubmetamodelsPackagesNames [
 	<generated>
 	^ #(#'Moose-Query' #'Famix-Traits' #'Famix-FortranUDT-Entities' #'Famix-Fortran77-Entities')
 ]
 
-{ #category : #meta }
+{ #category : 'meta' }
 FamixEsopeModel class >> annotation [
 	<FMClass: #FamixEsopeModel super: #MooseModel>
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 ]
 
-{ #category : #testing }
+{ #category : 'testing' }
 FamixEsopeModel class >> canBeImportedFromFile [
 	<generated>
 	^true
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FamixEsopeModel class >> importingContextClass [
 
 	<generated>
 	^ FamixEsopeImportingContext
 ]
 
-{ #category : #initialization }
+{ #category : 'initialization' }
 FamixEsopeModel >> initialize [
 
 	super initialize.
@@ -41,7 +43,7 @@ FamixEsopeModel >> initialize [
 	self attributeAt: #unknownType put: [ self newTypeUnknown ]
 ]
 
-{ #category : #'entity creation' }
+{ #category : 'entity creation' }
 FamixEsopeModel >> intrinsicTypes [
 
 	^ {

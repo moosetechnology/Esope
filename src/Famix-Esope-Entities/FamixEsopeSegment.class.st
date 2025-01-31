@@ -34,17 +34,19 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 
 "
 Class {
-	#name : #FamixEsopeSegment,
-	#superclass : #FamixF77Type,
+	#name : 'FamixEsopeSegment',
+	#superclass : 'FamixF77Type',
 	#traits : 'FamixTWithAttributes',
 	#classTraits : 'FamixTWithAttributes classTrait',
 	#instVars : [
 		'#dimentionalIntegers => FMMany type: #FamixEsopeDimentionalInteger opposite: #segment'
 	],
-	#category : #'Famix-Esope-Entities-Entities'
+	#category : 'Famix-Esope-Entities-Entities',
+	#package : 'Famix-Esope-Entities',
+	#tag : 'Entities'
 }
 
-{ #category : #meta }
+{ #category : 'meta' }
 FamixEsopeSegment class >> annotation [
 
 	<FMClass: #Segment super: #FamixF77Type>
@@ -53,13 +55,13 @@ FamixEsopeSegment class >> annotation [
 	^ self
 ]
 
-{ #category : #adding }
+{ #category : 'adding' }
 FamixEsopeSegment >> addDimentionalInteger: anObject [
 	<generated>
 	^ self dimentionalIntegers add: anObject
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FamixEsopeSegment >> dimentionalIntegers [
 	"Relation named: #dimentionalIntegers type: #FamixEsopeDimentionalInteger opposite: #segment"
 
@@ -68,14 +70,14 @@ FamixEsopeSegment >> dimentionalIntegers [
 	^ dimentionalIntegers
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FamixEsopeSegment >> dimentionalIntegers: anObject [
 
 	<generated>
 	dimentionalIntegers value: anObject
 ]
 
-{ #category : #navigation }
+{ #category : 'navigation' }
 FamixEsopeSegment >> dimentionalIntegersGroup [
 	<generated>
 	<navigation: 'DimentionalIntegers'>
