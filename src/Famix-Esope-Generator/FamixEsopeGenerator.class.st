@@ -72,8 +72,8 @@ Pointeur --|> Integer
 ```
 "
 Class {
-	#name : #FamixEsopeGenerator,
-	#superclass : #FamixMetamodelGenerator,
+	#name : 'FamixEsopeGenerator',
+	#superclass : 'FamixMetamodelGenerator',
 	#instVars : [
 		'attribute',
 		'implicitPointer',
@@ -82,24 +82,26 @@ Class {
 		'access',
 		'variable',
 		'type',
-		'dimentionalInteger'
+		'dimentionalInteger',
+		'pointer'
 	],
-	#category : #'Famix-Esope-Generator'
+	#category : 'Famix-Esope-Generator',
+	#package : 'Famix-Esope-Generator'
 }
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FamixEsopeGenerator class >> packageName [
 
 	^ #'Famix-Esope-Entities'
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FamixEsopeGenerator class >> prefix [
 
 	^ #FamixEsope
 ]
 
-{ #category : #accessing }
+{ #category : 'accessing' }
 FamixEsopeGenerator class >> submetamodels [
 
 	^ {
@@ -107,17 +109,17 @@ FamixEsopeGenerator class >> submetamodels [
 		  FamixFortranUDTGenerator }
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentAccesPointer [
 	^'Accessing a pointer `Pointeur` pointing to a segment'
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentAccessToDimensions [
 	^ 'Les accès aux dimensions de la forme `abc.def(/1)`'
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentAttribute [
 	^ '# Attribute
 A `segment` entity is a grouping of Fortran variables defined by the programmer.
@@ -140,13 +142,13 @@ the segment `myseg` have the following attributes: `scalar`, `array`, `matrix`, 
 '
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentAttributeAssignment [
 	^ 'Les instructions d’affectation de champs pour les instructions pointées de la
 forme `abc.def=variable/value`'
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentCommand [
 
 	^ '# Handling of data structures: `SEGMENT`
@@ -163,51 +165,51 @@ As in Fortran, we are led to have a declarative instruction of the SEGMENT and t
 '
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentEAccess [
 	^ 'Comment for abstract class EsopeFunction parent of EsoAt, EsoAr, EsoSl'
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentEsoar [
 	^''
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentEsoat [
 	^''
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentEsopeType [
 
 	^ 'I am a fortran type + esope type (pointeur)'
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentEsosl [
 	^''
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentFVariable [
 
 	^ 'comment for name of variable pointer'
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentImplicitPointer [
 
 	^ 'Im an implicit pointer, Im created when a segment is defined.
 	'
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentParameter [
 	^''
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentPointer [
 
 	^ '# Creating and initializing a SEGMENT:
@@ -227,7 +229,7 @@ The creation of a myseg class structure is done by calling `segini` function and
 '
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentSegment [
 
 	^ ' # Segment:
@@ -253,19 +255,19 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 '
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentType [
 
 	^ 'comment for type'
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> commentUnknown [
 
 	^ 'This entity do not exist or wrongly processed'
 ]
 
-{ #category : #definition }
+{ #category : 'definition' }
 FamixEsopeGenerator >> defineClasses [
 
 	super defineClasses.
@@ -285,6 +287,8 @@ FamixEsopeGenerator >> defineClasses [
 	implicitPointer := self
 		                   newClassNamed: #ImplicitPointer
 		                   comment: self commentImplicitPointer.
+		
+	pointer := self newClassNamed: #Pointer comment: self commentPointer.
 
 	segment := self
 		           newClassNamed: #Segment
@@ -295,7 +299,7 @@ FamixEsopeGenerator >> defineClasses [
 	variable := self remoteEntity: #Variable withPrefix: #FamixF77
 ]
 
-{ #category : #definition }
+{ #category : 'definition' }
 FamixEsopeGenerator >> defineHierarchy [
 
 	super defineHierarchy.
@@ -306,6 +310,8 @@ FamixEsopeGenerator >> defineHierarchy [
 	command --|> access.
 
 	implicitPointer --|> variable.
+	
+	pointer --|> variable.
 
 	segment --|> type.
 	segment --|> #TWithAttributes.
@@ -313,7 +319,7 @@ FamixEsopeGenerator >> defineHierarchy [
 	dimentionalInteger --|> variable
 ]
 
-{ #category : #definition }
+{ #category : 'definition' }
 FamixEsopeGenerator >> defineProperties [
 
 	super defineProperties.
@@ -325,7 +331,7 @@ FamixEsopeGenerator >> defineProperties [
 		it can be a better solution to use inheritance.'
 ]
 
-{ #category : #definition }
+{ #category : 'definition' }
 FamixEsopeGenerator >> defineRelations [
 
 	super defineRelations.
@@ -333,13 +339,13 @@ FamixEsopeGenerator >> defineRelations [
 	segment <>-* dimentionalInteger
 ]
 
-{ #category : #comment }
+{ #category : 'comment' }
 FamixEsopeGenerator >> dimentionalIntegerComment [
 
 	^ 'I am a parameter for arrays in a segment'
 ]
 
-{ #category : #definition }
+{ #category : 'definition' }
 FamixEsopeGenerator >> newBuilder [
 	^super newBuilder
 		  withFileImport;
