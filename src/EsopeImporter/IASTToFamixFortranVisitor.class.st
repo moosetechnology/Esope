@@ -206,6 +206,8 @@ IASTToFamixFortranVisitor >> visitIASTInclude: anInclude [
 { #category : 'visiting' }
 IASTToFamixFortranVisitor >> visitIASTIncludedFile: anIncludedFile [
 
+	self flag: '#FIXME: error with sourceAnchor'.
+
 	anIncludedFile sourceAnchor
 		startLine: anIncludedFile sourceAnchor startLine + 1;
 		endLine: anIncludedFile sourceAnchor endLine - 1.
