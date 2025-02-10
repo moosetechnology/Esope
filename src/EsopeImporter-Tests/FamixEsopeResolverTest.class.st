@@ -690,6 +690,63 @@ FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointersStubSegment [
 		
 ]
 
+{ #category : 'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveExternalFunction [
+	"subroutine sub
+	 integer n
+	 external fct
+	 integer fct
+	 end
+	"
+
+	| subroutine  |
+
+	subroutine := (self defaultSubroutine: 'main')
+		addLocalVariable: (self defaultVariable: 'aVar' withType: #integer) ;
+		addExternalDeclaration: (self externalDeclaration: 'fct') ;
+		addLocalVariable: (self defaultVariable: 'fct' withType: #integer) ;
+		yourself.
+
+	self assert: subroutine localVariables size equals: 2.
+	self assert: subroutine externalDeclarations size equals: 1.
+
+ 	resolver resolve.
+
+	self assert: subroutine localVariables size equals: 1.
+	self assert: (resolver model allWithType: FamixF77Variable) size equals: 1.
+	self assert: subroutine localVariables anyOne name equals: 'aVar'.
+
+	self assert: subroutine externalDeclarations size equals: 1.
+	self assert: (resolver model allWithType: FamixF77ExternalDeclaration) size equals: 1.
+	self assert: (resolver model allWithType: FamixF77ExternalDeclaration) anyOne name equals: 'fct'.
+]
+
+{ #category : 'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveExternalFunctionWithoutVariableDeclaration [
+	"subroutine sub
+	 external fct
+	 end
+	"
+
+	| subroutine  |
+
+	subroutine := (self defaultSubroutine: 'main')
+		addExternalDeclaration: (self externalDeclaration: 'fct') ;
+		yourself.
+
+	self assert: subroutine localVariables size equals: 0.
+	self assert: subroutine externalDeclarations size equals: 1.
+
+ 	resolver resolve.
+
+	self assert: subroutine localVariables size equals: 0.
+	self assert: (resolver model allWithType: FamixF77Variable) size equals: 0.
+
+	self assert: subroutine externalDeclarations size equals: 1.
+	self assert: (resolver model allWithType: FamixF77ExternalDeclaration) size equals: 1.
+	self assert: (resolver model allWithType: FamixF77ExternalDeclaration) anyOne name equals: 'fct'.
+]
+
 { #category : 'test - implicit' }
 FamixEsopeResolverTest >> testResolveFunctionNameAsNonLocalVariable [
 

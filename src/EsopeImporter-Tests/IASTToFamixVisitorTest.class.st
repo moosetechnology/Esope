@@ -680,6 +680,38 @@ c  ptr.attr(/1)
 ]
 
 { #category : 'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixExternalDeclaration [
+
+	| entity external iastVar |
+	
+	iastVar := self defaultVarAccess: 'fct' isWrite: false.
+	iastVar annotations: 'external'.
+
+	programFile body: { IASTSubroutine new
+		entityName: 'sub';
+		body: { iastVar } ;
+		yourself
+	}.
+
+	entity := programFile accept: visitor.
+
+	self assert: entity programUnits size equals: 1.
+
+	entity := entity programUnits first.
+	self assert: entity class equals: FamixF77PUSubroutine.
+	self assert: entity name equals: 'sub'.
+	self assert: entity programFile isNotNil.
+
+	self assert: entity accesses size equals: 0.
+	self assert: entity externalDeclarations size equals: 1.
+	
+	external := entity externalDeclarations anyOne.
+	self assert: external class equals: FamixF77ExternalDeclaration.
+	self assert: external name equals: 'fct'.
+	self assert: external programUnit equals: entity.
+]
+
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77 [
 
 	| entity |
