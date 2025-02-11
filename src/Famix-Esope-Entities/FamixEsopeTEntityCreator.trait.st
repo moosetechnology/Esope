@@ -42,6 +42,13 @@ FamixEsopeTEntityCreator >> newImplicitPointer [
 ]
 
 { #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newIntrinsicProcedure [
+
+	<generated>
+	^ self add: FamixEsopeIntrinsicProcedure new
+]
+
+{ #category : 'entity creation' }
 FamixEsopeTEntityCreator >> newPointer [
 
 	<generated>

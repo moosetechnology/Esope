@@ -13,10 +13,16 @@ Class {
 	#tag : 'Importer'
 }
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private-helper' }
+FamixEsopeResolver class >> esopeIntrinsicRoutines [
+
+	^#( ooostp ooossg oooeta  actstr desstr mypnt )
+]
+
+{ #category : 'private-helper' }
 FamixEsopeResolver class >> intrinsicRoutines [
 
-	^#( abort . abs . access . achar . acos . adjustl . adjustr . aimag . aint . alarm . all . allocated . alog . alog10 . amax0 . amax1 . amin0 . amin1 . amod . and . anint . any . asin . associated . atan . atan2 . besj0 . besj1 . besjn . besy0 . besy1 . besyn . bit_size . btest . cabs . ccos . ceiling . cexp . char . chdir . chmod . clog . cmplx . complex . conjg . cos . cosh . count . cpu_time . cshift . csin . csqrt . ctime . ctime . dabs . dacos . dasin . datan . datan2 . date_and_time . dbesj0 . dbesj1 . dbesjn . dbesy0 . dbesy1 . dbesyn . dble . dcos . dcosh . ddim . derf . derfc . dexp . digits . dim . dint . dlog . dlog10 . dmax1 . dmin1 . dmod . dnint . dot_product . dprod . dsign . dsin . dsinh . dsqrt . dtan . dtanh . dtime . eoshift . epsilon . erf . erfc . etime . etime . exit . exp . exponent . fdate . fdate . fget . fgetc . float . floor . flush . fnum . fput . fputc . fraction . fseek . fstat . fstat . ftell . ftell . gerror . getarg . getcwd . getcwd . getenv . getgid . getlog . getpid . getuid . gmtime . hostnm . hostnm . huge . iabs . iachar . iand . iargc . ibclr . ibits . ibset . ichar . idate . idim . idint . idnint . ieor . ierrno . ifix . imag . imagpart . index . int . int2 . int8 . ior . irand . isatty . ishft . ishftc . isign . itime . kill . kind . lbound . len . len_trim . lge . lgt . link . lle . llt . lnblnk . loc . log . log10 . logical . long . lshift . lstat . lstat . ltime . matmul . max . max0 . max1 . maxexponent . maxloc . maxval . mclock . mclock8 . merge . min . min0 . min1 . minexponent . minloc . minval . mod . modulo . mvbits . nearest . nint . not . or . pack . perror . precision . present . product . radix . rand . random_number . random_seed . range . real . realpart . rename . repeat . reshape . rrspacing . rshift . scale . scan . second . second . selected_int_kind . selected_real_kind . set_exponent . shape . short . sign . signal . sin . sinh . sleep . sngl . spacing . spread . sqrt . srand . stat . stat . sum . symlnk . system . system_clock . tan . tanh . time . time8 . tiny . transfer . transpose . trim . ttynam . ttynam . ubound . umask . unlink . unpack . verify . write . xor . zabs . zcos . zexp . zlog . zsin . zsqrt )
+	^#( abort abs access achar acos adjustl adjustr aimag aint alarm all allocated alog alog10 amax0 amax1 amin0 amin1 amod and anint any asin associated atan atan2 besj0 besj1 besjn besy0 besy1 besyn bit_size btest cabs ccos ceiling cexp char chdir chmod clog cmplx complex conjg cos cosh count cpu_time cshift csin csqrt ctime ctime dabs dacos dasin datan datan2 date_and_time dbesj0 dbesj1 dbesjn dbesy0 dbesy1 dbesyn dble dcos dcosh ddim derf derfc dexp digits dim dint dlog dlog10 dmax1 dmin1 dmod dnint dot_product dprod dsign dsin dsinh dsqrt dtan dtanh dtime eoshift epsilon erf erfc etime etime exit exp exponent fdate fdate fget fgetc float floor flush fnum fput fputc fraction fseek fstat fstat ftell ftell gerror getarg getcwd getcwd getenv getgid getlog getpid getuid gmtime hostnm hostnm huge iabs iachar iand iargc ibclr ibits ibset ichar idate idim idint idnint ieor ierrno ifix imag imagpart index int int2 int8 ior irand isatty ishft ishftc isign itime kill kind lbound len len_trim lge lgt link lle llt lnblnk loc log log10 logical long lshift lstat lstat ltime matmul max max0 max1 maxexponent maxloc maxval mclock mclock8 merge min min0 min1 minexponent minloc minval mod modulo mvbits nearest nint not or pack perror precision present product radix rand random_number random_seed range real realpart rename repeat reshape rrspacing rshift scale scan second second selected_int_kind selected_real_kind set_exponent shape short sign signal sin sinh sleep sngl spacing spread sqrt srand stat stat sum symlnk system system_clock tan tanh time time8 tiny transfer transpose trim ttynam ttynam ubound umask unlink unpack verify write xor zabs zcos zexp zlog zsin zsqrt )
 ]
 
 { #category : 'private-helper' }
@@ -173,7 +179,8 @@ FamixEsopeResolver >> requalifyFunctionDeclarations [
 	We know it is a function because there is an 'external' declaration for that name"
 
 	(model allWithType: FamixF77ExternalDeclaration) do: [ :external |
-		self requalifyFunctionDeclaration: external
+		self requalifyFunctionDeclaration: external.
+		self resolveExternalDeclaration: external
 	]
 ]
 
@@ -336,6 +343,24 @@ FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 		].
 
 	aFamixVariable declaredType: segment.
+]
+
+{ #category : 'symbols resolution' }
+FamixEsopeResolver >> resolveExternalDeclaration: external [
+	
+	(model allWithSubTypesOf: FamixF77PUProcedure)
+		detect: [ :procedure | procedure name = external name ]
+		ifFound: [ :procedure | 
+			external externalProcedure: procedure.	
+		]
+		ifNone: [
+			(self class esopeIntrinsicRoutines includes: external name)
+				ifTrue: [ 
+					self flag: '#FIXME: At this point, we will create a FamixEsopeIntrinsicRoutine ???'.
+					external externalProcedure: (self model newIntrinsicProcedure name: external name) 
+				]
+				ifFalse: [ self flag: '#FIXME: What to do in this case ? :( '. ]
+		]
 ]
 
 { #category : 'symbols resolution' }
