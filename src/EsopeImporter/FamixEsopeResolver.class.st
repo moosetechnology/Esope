@@ -13,6 +13,12 @@ Class {
 	#tag : 'Importer'
 }
 
+{ #category : 'private-helper' }
+FamixEsopeResolver class >> esopeIntrinsicRoutines [
+
+	^#( ooostp ooossg oooeta  actstr desstr mypnt )
+]
+
 { #category : 'as yet unclassified' }
 FamixEsopeResolver class >> intrinsicRoutines [
 
