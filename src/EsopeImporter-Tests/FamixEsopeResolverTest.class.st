@@ -728,6 +728,39 @@ FamixEsopeResolverTest >> testResolveExternalDeclarationWhereProcedureIsInTheMod
 ]
 
 { #category : 'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveExternalDeclarationWhereProcedureIsNotInTheModel [
+	"fct is not defined in the model"
+
+	"subroutine sub
+	 external fct
+	 end
+	"
+
+	| subroutine externalResolved |
+
+	subroutine := (self defaultSubroutine: 'main')
+		addExternalDeclaration: (self externalDeclaration: 'fct') ;
+		yourself.
+
+	self assert: subroutine localVariables size equals: 0.
+	self assert: subroutine externalDeclarations size equals: 1.
+
+ 	resolver resolve.
+
+	self assert: subroutine localVariables size equals: 0.
+	self assert: (resolver model allWithType: FamixF77Variable) size equals: 0.
+
+	self assert: subroutine externalDeclarations size equals: 1.
+	self assert: (resolver model allWithType: FamixF77ExternalDeclaration) size equals: 1.
+
+	externalResolved := (resolver model allWithType: FamixF77ExternalDeclaration) anyOne.
+	self assert: externalResolved class equals: FamixF77ExternalDeclaration.
+	self assert: externalResolved name equals: 'fct'.
+
+	self assert: externalResolved externalProcedure isNotNil.
+]
+
+{ #category : 'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveExternalFunction [
 	"subroutine sub
 	 integer n
