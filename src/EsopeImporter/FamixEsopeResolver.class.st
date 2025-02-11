@@ -347,8 +347,13 @@ FamixEsopeResolver >> resolveExternalDeclaration: external [
 		ifFound: [ :procedure | 
 			external externalProcedure: procedure.	
 		]
-		ifNone: [ 
-			self flag: '#TODO: At this point, we will create a FamixEsopeIntrinsicRoutine'
+		ifNone: [
+			(self class esopeIntrinsicRoutines includes: external name)
+				ifTrue: [ 
+					self flag: '#FIXME: At this point, we will create a FamixEsopeIntrinsicRoutine ???'.
+					external externalProcedure: (self model newIntrinsicProcedure name: external name) 
+				]
+				ifFalse: [ self flag: '#FIXME: What to do in this case ? :( '. ]
 		]
 ]
 
