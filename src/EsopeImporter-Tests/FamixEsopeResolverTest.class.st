@@ -691,6 +691,43 @@ FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointersStubSegment [
 ]
 
 { #category : 'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveExternalDeclarationWhereProcedureIsInTheModel [
+	"fct is defined in the model"
+
+	"subroutine sub
+	 external fct
+	 end
+	"
+
+	| subroutine  externalFunction externalResolved |
+
+	subroutine := (self defaultSubroutine: 'main')
+		addExternalDeclaration: (self externalDeclaration: 'fct') ;
+		yourself.
+
+	self assert: subroutine localVariables size equals: 0.
+	self assert: subroutine externalDeclarations size equals: 1.
+	
+	externalFunction := FamixF77PUFunction new 
+		name: 'fct';
+		mooseModel: resolver model;
+		yourself.
+
+ 	resolver resolve.
+
+	self assert: subroutine localVariables size equals: 0.
+	self assert: (resolver model allWithType: FamixF77Variable) size equals: 0.
+
+	self assert: subroutine externalDeclarations size equals: 1.
+	self assert: (resolver model allWithType: FamixF77ExternalDeclaration) size equals: 1.
+
+	externalResolved := (resolver model allWithType: FamixF77ExternalDeclaration) anyOne.
+	self assert: externalResolved class equals: FamixF77ExternalDeclaration.
+	self assert: externalResolved name equals: 'fct'.
+	self assert: externalResolved externalProcedure equals: externalFunction
+]
+
+{ #category : 'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveExternalFunction [
 	"subroutine sub
 	 integer n

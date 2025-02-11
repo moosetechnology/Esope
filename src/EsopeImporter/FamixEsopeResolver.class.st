@@ -173,7 +173,8 @@ FamixEsopeResolver >> requalifyFunctionDeclarations [
 	We know it is a function because there is an 'external' declaration for that name"
 
 	(model allWithType: FamixF77ExternalDeclaration) do: [ :external |
-		self requalifyFunctionDeclaration: external
+		self requalifyFunctionDeclaration: external.
+		self resolveExternalDeclaration: external
 	]
 ]
 
@@ -336,6 +337,19 @@ FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 		].
 
 	aFamixVariable declaredType: segment.
+]
+
+{ #category : 'symbols resolution' }
+FamixEsopeResolver >> resolveExternalDeclaration: external [
+	
+	(model allWithSubTypesOf: FamixF77PUProcedure)
+		detect: [ :procedure | procedure name = external name ]
+		ifFound: [ :procedure | 
+			external externalProcedure: procedure.	
+		]
+		ifNone: [ 
+			self flag: '#TODO: At this point, we will create a FamixEsopeIntrinsicRoutine'
+		]
 ]
 
 { #category : 'symbols resolution' }
