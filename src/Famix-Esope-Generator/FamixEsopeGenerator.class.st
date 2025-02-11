@@ -83,7 +83,9 @@ Class {
 		'variable',
 		'type',
 		'dimentionalInteger',
-		'pointer'
+		'pointer',
+		'intrinsicRoutine',
+		'intrinsicProcedure'
 	],
 	#category : 'Famix-Esope-Generator',
 	#package : 'Famix-Esope-Generator'
@@ -287,6 +289,10 @@ FamixEsopeGenerator >> defineClasses [
 	implicitPointer := self
 		                   newClassNamed: #ImplicitPointer
 		                   comment: self commentImplicitPointer.
+	
+	intrinsicProcedure := self newClassNamed: #IntrinsicProcedure comment: 'Procedure defined in esope itself'.
+	
+	intrinsicRoutine := self remoteEntity: #IntrinsicRoutine withPrefix: #FamixF77.
 		
 	pointer := self newClassNamed: #Pointer comment: self commentPointer.
 
@@ -310,6 +316,8 @@ FamixEsopeGenerator >> defineHierarchy [
 	command --|> access.
 
 	implicitPointer --|> variable.
+	
+	intrinsicProcedure --|> intrinsicRoutine.
 	
 	pointer --|> variable.
 
