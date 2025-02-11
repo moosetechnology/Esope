@@ -854,6 +854,32 @@ c@_   IF (N.GT.0) SEGINI P
 	self assert: seg sourceAnchor endColumn equals: 29
 ]
 
+{ #category : 'tests-progUnit' }
+JsonToIASTVisitorTest >> testExternalStatement [
+	"external fct"
+	| programFile stmt |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:18)","statement":{"anno":[],"span":"(2:7)-(2:18)","tag":"external","vars":{"anno":[],"list":[{"anno":[],"span":"(2:16)-(2:18)","tag":"value","value":{"contents":"fct","tag":"variable"}}],"span":"(2:16)-(2:18)"}},"tag":"statement"}],"name":"main","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+
+	self assert: programFile body size equals: 1.
+	stmt := programFile body first.
+	self assert: stmt class equals: IASTMainProgram.
+	self assert: stmt body size equals: 1.
+	stmt := stmt body anyOne first.
+	
+	self assert: stmt class equals: IASTVarAccess.
+	self assert: stmt entityName equals: 'fct'.
+	self assert: stmt annotations equals: 'external'.
+
+	self assert: stmt sourceAnchor notNil.
+	self assert: stmt sourceAnchor class equals: IASTIndexedFileAnchor.
+	self assert: stmt sourceAnchor fileName equals: './fortran77.f'.
+	self assert: stmt sourceAnchor startLine equals: 2.
+	self assert: stmt sourceAnchor startColumn equals: 16.
+	self assert: stmt sourceAnchor endLine equals: 2.
+	self assert: stmt sourceAnchor endColumn equals: 19.
+
+]
+
 { #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testFunctionWithFunctionInvocation [
 "      integer function efunc()
