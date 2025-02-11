@@ -39,6 +39,13 @@ FamixEsopeImportingContext >> importImplicitPointer [
 ]
 
 { #category : 'importing' }
+FamixEsopeImportingContext >> importIntrinsicProcedure [
+
+	<generated>
+	^ self importConcreteEntity: (self class fm3ClassNamed: #IntrinsicProcedure)
+]
+
+{ #category : 'importing' }
 FamixEsopeImportingContext >> importPointer [
 
 	<generated>
@@ -71,6 +78,13 @@ FamixEsopeImportingContext >> shouldImportImplicitPointer [
 
 	<generated>
 	^ self shouldImport: #ImplicitPointer
+]
+
+{ #category : 'testing' }
+FamixEsopeImportingContext >> shouldImportIntrinsicProcedure [
+
+	<generated>
+	^ self shouldImport: #IntrinsicProcedure
 ]
 
 { #category : 'testing' }
