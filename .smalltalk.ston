@@ -2,7 +2,8 @@ SmalltalkCISpec {
   #loading : [
     SCIMetacelloLoadSpec {
       #baseline : 'Esope',
-      #directory : 'src'
+      #directory : 'src',
+      #load : [ 'all' ]
     }
   ]
 }
