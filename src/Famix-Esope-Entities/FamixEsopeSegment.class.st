@@ -27,6 +27,7 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
+| `accesses` | `FamixEsopeSegment` | `segment` | `FamixF77Access` | |
 | `attributes` | `FamixTWithAttributes` | `parentType` | `FamixTAttribute` | List of attributes declared by this type.|
 | `segmentParameters` | `FamixEsopeSegment` | `segment` | `FamixEsopeSegmentParameter` | |
 
@@ -53,6 +54,36 @@ FamixEsopeSegment class >> annotation [
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 	^ self
+]
+
+{ #category : 'accessing' }
+FamixEsopeSegment >> accesses [
+	"Relation named: #accesses type: #FamixF77Access opposite: #segment"
+
+	<generated>
+	<derived>
+	<FMProperty: #accesses type: #FamixF77Access opposite: #segment>
+	^ self attributeAt: #accesses ifAbsentPut: [ FMMultivalueLink on: self opposite: #segment: ]
+]
+
+{ #category : 'accessing' }
+FamixEsopeSegment >> accesses: anObject [
+
+	<generated>
+	self accesses value: anObject
+]
+
+{ #category : 'navigation' }
+FamixEsopeSegment >> accessesGroup [
+	<generated>
+	<navigation: 'Accesses'>
+	^ MooseSpecializedGroup withAll: self accesses asSet
+]
+
+{ #category : 'adding' }
+FamixEsopeSegment >> addAccess: anObject [
+	<generated>
+	^ self accesses add: anObject
 ]
 
 { #category : 'adding' }
