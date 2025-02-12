@@ -443,7 +443,12 @@ FamixEsopeResolver >> resolveInvocation: anInvocation [
 	(self resolveInvocables: invocated)
 		ifNotNil: [ :invocatedFound | anInvocation addCandidate: invocatedFound ]
 		ifNil: [ (self isIntrinsicRoutine: invocated)
-			ifTrue: [ anInvocation addCandidate: (model newIntrinsicRoutine name: invocated entityName) ] ]
+			ifTrue: [ anInvocation addCandidate: (self model newIntrinsicRoutine name: invocated entityName) ]
+			ifFalse: [ 
+				(self class esopeIntrinsicRoutines includes: invocated entityName)
+					ifTrue: [ anInvocation addCandidate: (self model newIntrinsicProcedure name: invocated entityName) ]
+			] 
+		]
 ]
 
 { #category : 'run' }
