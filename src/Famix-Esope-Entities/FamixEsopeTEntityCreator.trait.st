@@ -28,13 +28,6 @@ FamixEsopeTEntityCreator >> newCommand [
 ]
 
 { #category : 'entity creation' }
-FamixEsopeTEntityCreator >> newDimentionalInteger [
-
-	<generated>
-	^ self add: FamixEsopeDimentionalInteger new
-]
-
-{ #category : 'entity creation' }
 FamixEsopeTEntityCreator >> newImplicitPointer [
 
 	<generated>
@@ -60,4 +53,11 @@ FamixEsopeTEntityCreator >> newSegment [
 
 	<generated>
 	^ self add: FamixEsopeSegment new
+]
+
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newSegmentParameter [
+
+	<generated>
+	^ self add: FamixEsopeSegmentParameter new
 ]

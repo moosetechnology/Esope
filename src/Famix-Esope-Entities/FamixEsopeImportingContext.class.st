@@ -25,13 +25,6 @@ FamixEsopeImportingContext >> importCommand [
 ]
 
 { #category : 'importing' }
-FamixEsopeImportingContext >> importDimentionalInteger [
-
-	<generated>
-	^ self importConcreteEntity: (self class fm3ClassNamed: #DimentionalInteger)
-]
-
-{ #category : 'importing' }
 FamixEsopeImportingContext >> importImplicitPointer [
 
 	<generated>
@@ -59,18 +52,18 @@ FamixEsopeImportingContext >> importSegment [
 	^ self importConcreteEntity: (self class fm3ClassNamed: #Segment)
 ]
 
+{ #category : 'importing' }
+FamixEsopeImportingContext >> importSegmentParameter [
+
+	<generated>
+	^ self importConcreteEntity: (self class fm3ClassNamed: #SegmentParameter)
+]
+
 { #category : 'testing' }
 FamixEsopeImportingContext >> shouldImportCommand [
 
 	<generated>
 	^ self shouldImport: #Command
-]
-
-{ #category : 'testing' }
-FamixEsopeImportingContext >> shouldImportDimentionalInteger [
-
-	<generated>
-	^ self shouldImport: #DimentionalInteger
 ]
 
 { #category : 'testing' }
@@ -99,4 +92,11 @@ FamixEsopeImportingContext >> shouldImportSegment [
 
 	<generated>
 	^ self shouldImport: #Segment
+]
+
+{ #category : 'testing' }
+FamixEsopeImportingContext >> shouldImportSegmentParameter [
+
+	<generated>
+	^ self shouldImport: #SegmentParameter
 ]

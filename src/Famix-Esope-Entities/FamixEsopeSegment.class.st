@@ -28,7 +28,7 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `attributes` | `FamixTWithAttributes` | `parentType` | `FamixTAttribute` | List of attributes declared by this type.|
-| `dimentionalIntegers` | `FamixEsopeSegment` | `segment` | `FamixEsopeDimentionalInteger` | |
+| `segmentParameters` | `FamixEsopeSegment` | `segment` | `FamixEsopeSegmentParameter` | |
 
 
 
@@ -39,7 +39,7 @@ Class {
 	#traits : 'FamixTWithAttributes',
 	#classTraits : 'FamixTWithAttributes classTrait',
 	#instVars : [
-		'#dimentionalIntegers => FMMany type: #FamixEsopeDimentionalInteger opposite: #segment'
+		'#segmentParameters => FMMany type: #FamixEsopeSegmentParameter opposite: #segment'
 	],
 	#category : 'Famix-Esope-Entities-Entities',
 	#package : 'Famix-Esope-Entities',
@@ -56,30 +56,30 @@ FamixEsopeSegment class >> annotation [
 ]
 
 { #category : 'adding' }
-FamixEsopeSegment >> addDimentionalInteger: anObject [
+FamixEsopeSegment >> addSegmentParameter: anObject [
 	<generated>
-	^ self dimentionalIntegers add: anObject
+	^ self segmentParameters add: anObject
 ]
 
 { #category : 'accessing' }
-FamixEsopeSegment >> dimentionalIntegers [
-	"Relation named: #dimentionalIntegers type: #FamixEsopeDimentionalInteger opposite: #segment"
+FamixEsopeSegment >> segmentParameters [
+	"Relation named: #segmentParameters type: #FamixEsopeSegmentParameter opposite: #segment"
 
 	<generated>
 	<derived>
-	^ dimentionalIntegers
+	^ segmentParameters
 ]
 
 { #category : 'accessing' }
-FamixEsopeSegment >> dimentionalIntegers: anObject [
+FamixEsopeSegment >> segmentParameters: anObject [
 
 	<generated>
-	dimentionalIntegers value: anObject
+	segmentParameters value: anObject
 ]
 
 { #category : 'navigation' }
-FamixEsopeSegment >> dimentionalIntegersGroup [
+FamixEsopeSegment >> segmentParametersGroup [
 	<generated>
-	<navigation: 'DimentionalIntegers'>
-	^ MooseSpecializedGroup withAll: self dimentionalIntegers asSet
+	<navigation: 'SegmentParameters'>
+	^ MooseSpecializedGroup withAll: self segmentParameters asSet
 ]
