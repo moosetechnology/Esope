@@ -24,6 +24,13 @@ IASTToFamixEsopeVisitor >> checkForModSuffix: aFamixEsopeCommand [
 	]
 ]
 
+{ #category : 'visiting' }
+IASTToFamixEsopeVisitor >> isAFortranIntrinsicType: typeName [
+
+	^ (#( character integer logical complex real 'double precision' )
+		   includes: typeName) not
+]
+
 { #category : 'private-creation' }
 IASTToFamixEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
 
@@ -70,6 +77,11 @@ IASTToFamixEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 IASTToFamixEsopeVisitor >> visitIASTEsopeSegment: aSegment [
 
 	| segment |
+	
+	self flag: '#TODO: if we have accesses in the segment, we have to deal with them
+		see visitIASTVariable:
+	'.
+	
 	segment := self model newSegment
 		           sourceAnchor:
 			           (self visitIndexedFileAnchor: aSegment sourceAnchor) ;
@@ -78,7 +90,7 @@ IASTToFamixEsopeVisitor >> visitIASTEsopeSegment: aSegment [
 	stack push: segment.
 	self createSymbolTableFor: segment.
 	segment attributes: (aSegment declarations collect: [ :variable |
-			variable isEsope: true.
+			variable isEsope: (self isAFortranIntrinsicType: variable typeSpec entityName).
 			variable accept: (self spawn: IASTToFamixFortranVisitor) ]).
 
 	^ stack pop
