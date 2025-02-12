@@ -557,6 +557,55 @@ IASTToFamixVisitorTest >> testFamixEsopeSegment [
 ]
 
 { #category : 'tests-esope' }
+IASTToFamixVisitorTest >> testFamixEsopeSegmentWithAcces [
+
+	"
+	segment foo
+	 integer bar(nb)
+	end segment
+	"
+
+	| segment entity attribute |
+	self skip: '#TODO: must be pass to handle correctly accesses in segment'.
+
+	segment := IASTEsopeSegment new
+		  entityName: 'foo';
+		  declarations: {
+				IASTVariable new
+		  			entityName: 'bar';
+		  			typeSpec: (IASTTypeRef new entityName: 'integer');
+					dimensions: (IASTVarAccess new entityName: 'nb' );
+		  			yourself
+		  };
+		  yourself.
+
+	programFile body: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: { segment };
+			 yourself }.
+
+	entity := programFile accept: visitor.
+	
+	self assert: entity programUnits size equals: 1.
+
+	self assert: (visitor model allWithType: FamixEsopeSegment) size equals: 1.
+	entity := (visitor model allWithType: FamixEsopeSegment) first.
+	self assert: entity name equals: 'foo'.
+	self assert: entity isType.
+	
+	self assert: entity attributes size equals: 1.
+	attribute := entity attributes anyOne.
+	self assert: attribute class equals: FamixFortranAttribute.
+	self assert: attribute name equals: 'bar'.
+	self assert: attribute declaredType name equals: 'integer'.
+	
+		
+	self assert: entity accesses size equals: 1.
+	self assert: attribute class equals: FamixF77Access.
+	self assert: attribute name equals: 'nb'.
+]
+
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopeSegmentWithPointeur [
 
 	"
