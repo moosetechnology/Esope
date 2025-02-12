@@ -345,7 +345,7 @@ FamixEsopeGenerator >> defineRelations [
 	super defineRelations.
 
 	segment <>-* segmentParameter.
-	segment <>-* access
+	(segment property: #accesses) <>-* (access property: #accessor)
 ]
 
 { #category : 'definition' }
