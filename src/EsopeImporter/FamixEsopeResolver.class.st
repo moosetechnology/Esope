@@ -342,11 +342,13 @@ FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 		ifNotNil: [ :declaredSegmentName | declaredSegmentName ].
 
 	segment := allSegments
-		detect: [ :seg | seg name = segmentName ]
-		ifNone: [ self model newSegment
-			name: segmentName ;
-			isStub: true ;
-			yourself
+		detect: [ :seg | seg name asLowercase = segmentName asLowercase ]
+		ifNone: [ 
+			self flag: 'WARGNING: If any segment with this found in the model, we create stub one'.
+			self model newSegment
+				name: segmentName ;
+				isStub: true ;
+				yourself
 		].
 
 	aFamixVariable declaredType: segment.
