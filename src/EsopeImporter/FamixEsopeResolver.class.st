@@ -16,7 +16,7 @@ Class {
 { #category : 'private-helper' }
 FamixEsopeResolver class >> esopeIntrinsicRoutines [
 
-	^#( ooostp ooossg oooeta  actstr desstr mypnt )
+	^#( ooostp ooossg oooeta inistr ajpnt actstr desstr supstr mypnt )
 ]
 
 { #category : 'private-helper' }
@@ -443,7 +443,12 @@ FamixEsopeResolver >> resolveInvocation: anInvocation [
 	(self resolveInvocables: invocated)
 		ifNotNil: [ :invocatedFound | anInvocation addCandidate: invocatedFound ]
 		ifNil: [ (self isIntrinsicRoutine: invocated)
-			ifTrue: [ anInvocation addCandidate: (model newIntrinsicRoutine name: invocated entityName) ] ]
+			ifTrue: [ anInvocation addCandidate: (self model newIntrinsicRoutine name: invocated entityName) ]
+			ifFalse: [ 
+				(self class esopeIntrinsicRoutines includes: invocated entityName)
+					ifTrue: [ anInvocation addCandidate: (self model newIntrinsicProcedure name: invocated entityName) ]
+			] 
+		]
 ]
 
 { #category : 'run' }
