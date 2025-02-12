@@ -16,7 +16,7 @@ Class {
 { #category : 'private-helper' }
 FamixEsopeResolver class >> esopeIntrinsicRoutines [
 
-	^#( ooostp ooossg oooeta  actstr desstr mypnt )
+	^#( ooostp ooossg oooeta inistr ajpnt actstr desstr supstr mypnt )
 ]
 
 { #category : 'private-helper' }
