@@ -13,13 +13,15 @@ Class {
 { #category : 'private-creation' }
 IASTAbstractFamixVisitor >> createFamixF77Access: anIastObject [
 
-	^ self model newAccess
+	| access |
+	access := self model newAccess
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: anIastObject sourceAnchor);
 		  attributeAt: #entity put: anIastObject;
-		  isWrite: false ;
-		  accessor: stack top;
-		  yourself
+		  isWrite: false;
+		  yourself.
+	stack top addAccess: access.
+	^access
 ]
 
 { #category : 'private-creation' }
