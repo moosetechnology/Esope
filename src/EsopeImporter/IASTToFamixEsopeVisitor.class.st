@@ -36,8 +36,8 @@ IASTToFamixEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
 IASTToFamixEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
 
 	| varsNames pointer |
-	varsNames := aPointerVar entityName substrings: '.'.
-	
+	varsNames := $. split: aPointerVar entityName.
+
 	pointer := (self model newVariableNamed: varsNames first)
 		sourceAnchor: (self visitIndexedFileAnchor: aPointerVar sourceAnchor);
 		isEsope: true;
