@@ -315,7 +315,7 @@ FamixEsopeResolver >> resolveAttributeAccess: anAccess forPointer: aPointerVaria
 FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
 	"sets the declaredType of pointers"
 
-	(self model allWithSubTypesOf: FamixF77Variable) 
+	(self model allWithType: FamixF77Variable) 
 		do: [ :var | 
 			var isEsope ifTrue: [ self resolveEsopeVariable: var ]
 		].
@@ -342,11 +342,13 @@ FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 		ifNotNil: [ :declaredSegmentName | declaredSegmentName ].
 
 	segment := allSegments
-		detect: [ :seg | seg name = segmentName ]
-		ifNone: [ self model newSegment
-			name: segmentName ;
-			isStub: true ;
-			yourself
+		detect: [ :seg | seg name asLowercase = segmentName asLowercase ]
+		ifNone: [ 
+			self flag: 'WARGNING: If any segment with this found in the model, we create stub one'.
+			self model newSegment
+				name: segmentName ;
+				isStub: true ;
+				yourself
 		].
 
 	aFamixVariable declaredType: segment.

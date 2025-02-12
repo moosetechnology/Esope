@@ -336,6 +336,11 @@ IASTToFamixFortranVisitor >> visitIASTVarEsoSl: aVarEso [
 IASTToFamixFortranVisitor >> visitIASTVariable: aVariable [
 
 	| var |
+	self flag: '#TODO: we need to visit aVariable dimensions if any
+		- In case of segment: add it as parameter (subclass of access)
+		- For ProgramUnit add it as access
+	'.
+
 	var := (self newEntity: stack top localVariableClass)
 		       sourceAnchor:
 			       (self visitIndexedFileAnchor: aVariable sourceAnchor);
