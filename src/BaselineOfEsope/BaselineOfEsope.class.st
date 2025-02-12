@@ -13,6 +13,7 @@ BaselineOfEsope >> baseline: spec [
 		do: [
 			spec blessing: #baseline.
 			spec description: 'Esope related packages'.
+			spec repository: 'github://moosetechnology/Esope'.
 			self defineDependencies: spec.
 			self definePackages: spec.
 			self defineGroups: spec ]
