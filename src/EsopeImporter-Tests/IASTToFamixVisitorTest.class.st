@@ -574,7 +574,7 @@ IASTToFamixVisitorTest >> testFamixEsopeSegmentWithAcces [
 				IASTVariable new
 		  			entityName: 'bar';
 		  			typeSpec: (IASTTypeRef new entityName: 'integer');
-					dimensions: (IASTVarAccess new entityName: 'nb' );
+					dimensions: { IASTVarAccess new entityName: 'nb'  };
 		  			yourself
 		  };
 		  yourself.
