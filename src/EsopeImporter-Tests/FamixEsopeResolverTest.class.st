@@ -1251,7 +1251,7 @@ FamixEsopeResolverTest >> testResolveSegmentWithAttributes [
       ENDSEGMENT
       end
 	"
-		segment := self defaultSegment: 'PSTR' with: { 
+	segment := self defaultSegment: 'PSTR' with: { 
 			           (#NOMCOD -> #character).
 			           (#DATE -> #character) }.
 
