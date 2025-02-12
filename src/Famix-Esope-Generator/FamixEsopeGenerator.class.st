@@ -82,10 +82,10 @@ Class {
 		'access',
 		'variable',
 		'type',
-		'dimentionalInteger',
 		'pointer',
 		'intrinsicRoutine',
-		'intrinsicProcedure'
+		'intrinsicProcedure',
+		'segmentParameter'
 	],
 	#category : 'Famix-Esope-Generator',
 	#package : 'Famix-Esope-Generator'
@@ -282,9 +282,9 @@ FamixEsopeGenerator >> defineClasses [
 		           newClassNamed: #Command
 		           comment: self commentCommand.
 
-	dimentionalInteger := self
-		                      newClassNamed: #DimentionalInteger
-		                      comment: self dimentionalIntegerComment.
+	segmentParameter := self
+		                      newClassNamed: #SegmentParameter
+		                      comment: self segmentParameterComment.
 
 	implicitPointer := self
 		                   newClassNamed: #ImplicitPointer
@@ -324,7 +324,7 @@ FamixEsopeGenerator >> defineHierarchy [
 	segment --|> type.
 	segment --|> #TWithAttributes.
 
-	dimentionalInteger --|> variable
+	segmentParameter --|> variable
 ]
 
 { #category : 'definition' }
@@ -344,13 +344,7 @@ FamixEsopeGenerator >> defineRelations [
 
 	super defineRelations.
 
-	segment <>-* dimentionalInteger
-]
-
-{ #category : 'comment' }
-FamixEsopeGenerator >> dimentionalIntegerComment [
-
-	^ 'I am a parameter for arrays in a segment'
+	segment <>-* segmentParameter
 ]
 
 { #category : 'definition' }
@@ -358,4 +352,10 @@ FamixEsopeGenerator >> newBuilder [
 	^super newBuilder
 		  withFileImport;
 		  yourself
+]
+
+{ #category : 'comment' }
+FamixEsopeGenerator >> segmentParameterComment [
+
+	^ 'I am a parameter for arrays in a segment'
 ]

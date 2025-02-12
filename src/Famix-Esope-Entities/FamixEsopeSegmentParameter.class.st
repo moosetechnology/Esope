@@ -7,16 +7,16 @@ I am a parameter for arrays in a segment
 ### Parents
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `segment` | `FamixEsopeDimentionalInteger` | `dimentionalIntegers` | `FamixEsopeSegment` | |
+| `segment` | `FamixEsopeSegmentParameter` | `segmentParameters` | `FamixEsopeSegment` | |
 
 
 
 "
 Class {
-	#name : 'FamixEsopeDimentionalInteger',
+	#name : 'FamixEsopeSegmentParameter',
 	#superclass : 'FamixF77Variable',
 	#instVars : [
-		'#segment => FMOne type: #FamixEsopeSegment opposite: #dimentionalIntegers'
+		'#segment => FMOne type: #FamixEsopeSegment opposite: #segmentParameters'
 	],
 	#category : 'Famix-Esope-Entities-Entities',
 	#package : 'Famix-Esope-Entities',
@@ -24,17 +24,17 @@ Class {
 }
 
 { #category : 'meta' }
-FamixEsopeDimentionalInteger class >> annotation [
+FamixEsopeSegmentParameter class >> annotation [
 
-	<FMClass: #DimentionalInteger super: #FamixF77Variable>
+	<FMClass: #SegmentParameter super: #FamixF77Variable>
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 	^ self
 ]
 
 { #category : 'accessing' }
-FamixEsopeDimentionalInteger >> segment [
-	"Relation named: #segment type: #FamixEsopeSegment opposite: #dimentionalIntegers"
+FamixEsopeSegmentParameter >> segment [
+	"Relation named: #segment type: #FamixEsopeSegment opposite: #segmentParameters"
 
 	<generated>
 	<container>
@@ -42,14 +42,14 @@ FamixEsopeDimentionalInteger >> segment [
 ]
 
 { #category : 'accessing' }
-FamixEsopeDimentionalInteger >> segment: anObject [
+FamixEsopeSegmentParameter >> segment: anObject [
 
 	<generated>
 	segment := anObject
 ]
 
 { #category : 'navigation' }
-FamixEsopeDimentionalInteger >> segmentGroup [
+FamixEsopeSegmentParameter >> segmentGroup [
 	<generated>
 	<navigation: 'Segment'>
 	^ MooseSpecializedGroup with: self segment

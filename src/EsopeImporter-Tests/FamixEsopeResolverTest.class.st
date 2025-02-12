@@ -1239,3 +1239,44 @@ FamixEsopeResolverTest >> testResolveInvocationsWrongArgumentNumber [
 
 	self assert: invocation candidates size equals: 0
 ]
+
+{ #category : 'tests' }
+FamixEsopeResolverTest >> testResolveSegmentWithAttributes [
+
+	| sub entity segment attribute |
+	"
+      subroutine demo
+      SEGMENT , PSTR
+        CHARACTER*8 NOMCOD, DATE
+      ENDSEGMENT
+      end
+	"
+		segment := self defaultSegment: 'PSTR' with: { 
+			           (#NOMCOD -> #character).
+			           (#DATE -> #character) }.
+
+	sub := (self newPU: 'demo')
+		addType: segment;
+		yourself.
+
+	resolver resolve.
+
+	self assert: sub localVariables size equals: 0.
+	self assert: sub types size equals: 1.
+
+	entity := sub types anyOne.
+	self assert: entity class equals: FamixEsopeSegment.
+	self assert: entity name equals: 'PSTR'.
+	self assert: entity attributes size equals: 2.
+	
+	attribute := entity attributes first.
+	self assert: attribute class equals: FamixFortranAttribute.
+	self assert: attribute declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: attribute name equals: 'NOMCOD'.
+	
+	attribute := entity attributes second.
+	self assert: attribute class equals: FamixFortranAttribute.
+	self assert: attribute declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: attribute name equals: 'DATE'.
+		
+]

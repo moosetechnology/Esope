@@ -15,8 +15,15 @@ Class {
 
 { #category : 'private-helper' }
 FamixEsopeResolver class >> esopeIntrinsicRoutines [
+	"The following routines will not be translated
+		ooostp
+		ooossg
+		oooeta
+		actstr
+		desstr
+	"
 
-	^#( ooostp ooossg oooeta inistr ajpnt actstr desstr supstr mypnt )
+	^#( ooostp ooossg oooeta actstr desstr inistr supstr ajpnt mypnt dupstr copstr )
 ]
 
 { #category : 'private-helper' }
