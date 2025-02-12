@@ -348,8 +348,12 @@ IASTToFamixFortranVisitor >> visitIASTVariable: aVariable [
 				 isEsope: aVariable isEsope;
 		       declaredType: (self visitIASTTypeRef: aVariable typeSpec);
 		       yourself.
+
 	"stack top symbolTable at: var name put: var."
 	self symbolTable: stack top at: var name put: var. 
+
+	aVariable dimensions ifNotNil: [ :dimensions | dimensions do: [ :dimension | dimension accept: self ] ].
+
 	stack top addLocalVariable: var.
 	^ var
 ]
