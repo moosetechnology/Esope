@@ -565,13 +565,11 @@ IASTToFamixVisitorTest >> testFamixEsopeSegmentWithAcces [
 	end segment
 	"
 
-	| segment entity attribute |
-	self skip: '#TODO: must be pass to handle correctly accesses in segment'.
+	| segment entity attribute access |
 
 	segment := IASTEsopeSegment new
 		  entityName: 'foo';
-		  declarations: {
-				IASTVariable new
+		  declarations: { IASTVariable new
 		  			entityName: 'bar';
 		  			typeSpec: (IASTTypeRef new entityName: 'integer');
 					dimensions: { IASTVarAccess new entityName: 'nb'  };
@@ -601,8 +599,9 @@ IASTToFamixVisitorTest >> testFamixEsopeSegmentWithAcces [
 	
 		
 	self assert: entity accesses size equals: 1.
-	self assert: attribute class equals: FamixF77Access.
-	self assert: attribute name equals: 'nb'.
+	access := entity accesses anyOne.
+	self assert: access class equals: FamixF77Access.
+	self assert: access segment equals: entity
 ]
 
 { #category : 'tests-esope' }
