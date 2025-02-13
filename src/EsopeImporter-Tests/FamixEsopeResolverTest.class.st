@@ -35,7 +35,7 @@ FamixEsopeResolverTest >> testMakePointerFromVariable [
 	resolver model newAccess
 		accessor: subroutine ;
 		variable: variable.
-	esopeCommand := resolver model newCommand
+	esopeCommand := resolver model newCommandSegini
 		accessor: subroutine ;
 		variable: pointer.
 
