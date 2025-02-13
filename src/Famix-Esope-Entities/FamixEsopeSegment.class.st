@@ -27,8 +27,12 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 ### Children
 | Relation | Origin | Opposite | Type | Comment |
 |---|
-| `accesses` | `FamixEsopeSegment` | `segment` | `FamixF77Access` | |
 | `segmentParameters` | `FamixEsopeSegment` | `segment` | `FamixEsopeSegmentParameter` | |
+
+### Outgoing dependencies
+| Relation | Origin | Opposite | Type | Comment |
+|---|
+| `accesses` | `FamixTWithAccesses` | `accessor` | `FamixTAccess` | Accesses to variables made by this behaviour.|
 
 
 
@@ -36,6 +40,8 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 Class {
 	#name : 'FamixEsopeSegment',
 	#superclass : 'FamixFortranUserDefinedType',
+	#traits : 'FamixTWithAccesses',
+	#classTraits : 'FamixTWithAccesses classTrait',
 	#instVars : [
 		'#segmentParameters => FMMany type: #FamixEsopeSegmentParameter opposite: #segment'
 	],
@@ -51,37 +57,6 @@ FamixEsopeSegment class >> annotation [
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 	^ self
-]
-
-{ #category : 'accessing' }
-FamixEsopeSegment >> accesses [
-	"Relation named: #accesses type: #FamixF77Access opposite: #segment"
-
-	<generated>
-	<derived>
-	<FMProperty: #accesses type: #FamixF77Access opposite: #segment>
-	<package: #'Carrefour-Esope-Model'>
-	^ self attributeAt: #accesses ifAbsentPut: [ FMMultivalueLink on: self opposite: #segment: ]
-]
-
-{ #category : 'accessing' }
-FamixEsopeSegment >> accesses: anObject [
-
-	<generated>
-	self accesses value: anObject
-]
-
-{ #category : 'navigation' }
-FamixEsopeSegment >> accessesGroup [
-	<generated>
-	<navigation: 'Accesses'>
-	^ MooseSpecializedGroup withAll: self accesses asSet
-]
-
-{ #category : 'adding' }
-FamixEsopeSegment >> addAccess: anObject [
-	<generated>
-	^ self accesses add: anObject
 ]
 
 { #category : 'adding' }

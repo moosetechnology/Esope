@@ -332,6 +332,7 @@ FamixEsopeGenerator >> defineHierarchy [
 	pointer --|> variable.
 
 	segment --|> userDefinedType.
+	segment --|> #TWithAccesses.
 
 	segmentParameter --|> variable
 ]
@@ -341,8 +342,7 @@ FamixEsopeGenerator >> defineRelations [
 
 	super defineRelations.
 
-	segment <>-* segmentParameter.
-	segment <>-* access
+	segment <>-* segmentParameter
 ]
 
 { #category : 'definition' }
