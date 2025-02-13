@@ -601,7 +601,8 @@ IASTToFamixVisitorTest >> testFamixEsopeSegmentWithAcces [
 	self assert: entity accesses size equals: 1.
 	access := entity accesses anyOne.
 	self assert: access class equals: FamixF77Access.
-	self assert: access segment equals: entity
+	self assert: access accessor equals: entity.
+	self assert: (access attributeAt: #entity ifAbsent: [nil]) entityName equals: 'nb'
 ]
 
 { #category : 'tests-esope' }
