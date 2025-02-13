@@ -281,9 +281,8 @@ FamixEsopeGenerator >> defineClasses [
 
 	access := self remoteEntity: #Access withPrefix: #FamixF77.
 
-	command := self newClassNamed: #Command comment: self commentCommand.
+	command := self newAbstractClassNamed: #Command comment: self commentCommand.
 
-	self flag: '#TODO: make command Abstract'.
 	commandSegini := self newClassNamed: #CommandSegini.
 	commandSegadj := self newClassNamed: #CommandSegadj.
 	commandSegsup := self newClassNamed: #CommandSegsup.
@@ -319,7 +318,6 @@ FamixEsopeGenerator >> defineHierarchy [
 
 	command --|> access.
 
-	self flag: '#TODO:'.
 	commandSegini --|> command.
 	commandSegadj --|> command.
 	commandSegsup --|> command.
@@ -336,19 +334,6 @@ FamixEsopeGenerator >> defineHierarchy [
 	segment --|> userDefinedType.
 
 	segmentParameter --|> variable
-]
-
-{ #category : 'definition' }
-FamixEsopeGenerator >> defineProperties [
-
-	super defineProperties.
-
-	self flag: '#TODO: '.
-	(command property: #commandName type: #String) comment:
-		'Carrying the actual name of the esope command.
-		
-		Instead of using a property to distinguish esope''s commands,
-		it can be a better solution to use inheritance.'
 ]
 
 { #category : 'definition' }
