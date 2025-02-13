@@ -21,13 +21,6 @@ FamixEsopeTEntityCreator classSide >> annotation [
 ]
 
 { #category : 'entity creation' }
-FamixEsopeTEntityCreator >> newCommand [
-
-	<generated>
-	^ self add: FamixEsopeCommand new
-]
-
-{ #category : 'entity creation' }
 FamixEsopeTEntityCreator >> newCommandSegact [
 
 	<generated>

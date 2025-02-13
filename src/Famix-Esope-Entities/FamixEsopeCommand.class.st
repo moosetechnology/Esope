@@ -12,20 +12,11 @@ As in Fortran, we are led to have a declarative instruction of the SEGMENT and t
     - `segadj`: ADJust the size of a segment.	
 
 
-## Properties
-======================
-
-| Name | Type | Default value | Comment |
-|---|
-| `commandName` | `String` | nil | Carrying the actual name of the esope command. 		 		Instead of using a property to distinguish esope's commands, 		it can be a better solution to use inheritance.|
 
 "
 Class {
 	#name : 'FamixEsopeCommand',
 	#superclass : 'FamixF77Access',
-	#instVars : [
-		'#commandName => FMProperty'
-	],
 	#category : 'Famix-Esope-Entities-Entities',
 	#package : 'Famix-Esope-Entities',
 	#tag : 'Entities'
@@ -37,23 +28,13 @@ FamixEsopeCommand class >> annotation [
 	<FMClass: #Command super: #FamixF77Access>
 	<package: #'Famix-Esope-Entities'>
 	<generated>
+	<abstract>
 	^ self
 ]
 
-{ #category : 'accessing' }
-FamixEsopeCommand >> commandName [
+{ #category : 'testing' }
+FamixEsopeCommand class >> isAbstract [
 
-	<FMProperty: #commandName type: #String>
 	<generated>
-	<FMComment: 'Carrying the actual name of the esope command.
-		
-		Instead of using a property to distinguish esope''s commands,
-		it can be a better solution to use inheritance.'>
-	^ commandName
-]
-
-{ #category : 'accessing' }
-FamixEsopeCommand >> commandName: anObject [
-	<generated>
-	commandName := anObject
+	^ self == FamixEsopeCommand
 ]

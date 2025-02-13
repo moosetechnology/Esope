@@ -18,13 +18,6 @@ FamixEsopeImportingContext class >> importedMetamodel [
 ]
 
 { #category : 'importing' }
-FamixEsopeImportingContext >> importCommand [
-
-	<generated>
-	^ self importConcreteEntity: (self class fm3ClassNamed: #Command)
-]
-
-{ #category : 'importing' }
 FamixEsopeImportingContext >> importCommandSegact [
 
 	<generated>
@@ -99,13 +92,6 @@ FamixEsopeImportingContext >> importSegmentParameter [
 
 	<generated>
 	^ self importConcreteEntity: (self class fm3ClassNamed: #SegmentParameter)
-]
-
-{ #category : 'testing' }
-FamixEsopeImportingContext >> shouldImportCommand [
-
-	<generated>
-	^ self shouldImport: #Command
 ]
 
 { #category : 'testing' }
