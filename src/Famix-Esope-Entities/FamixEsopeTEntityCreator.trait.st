@@ -28,6 +28,48 @@ FamixEsopeTEntityCreator >> newCommand [
 ]
 
 { #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegact [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegact new
+]
+
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegadj [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegadj new
+]
+
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegdes [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegdes new
+]
+
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegini [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegini new
+]
+
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegprt [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegprt new
+]
+
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegsup [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegsup new
+]
+
+{ #category : 'entity creation' }
 FamixEsopeTEntityCreator >> newImplicitPointer [
 
 	<generated>
