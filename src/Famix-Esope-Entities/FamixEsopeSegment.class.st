@@ -60,6 +60,7 @@ FamixEsopeSegment >> accesses [
 	<generated>
 	<derived>
 	<FMProperty: #accesses type: #FamixF77Access opposite: #segment>
+	<package: #'Carrefour-Esope-Model'>
 	^ self attributeAt: #accesses ifAbsentPut: [ FMMultivalueLink on: self opposite: #segment: ]
 ]
 
