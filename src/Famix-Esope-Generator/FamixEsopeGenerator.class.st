@@ -275,8 +275,8 @@ FamixEsopeGenerator >> defineClasses [
 
 	access := self remoteEntity: #Access withPrefix: #FamixF77.
 
-	command := self newAbstractClassNamed: #Command comment: self commentCommand.
-	self flag: '#TODO: 
+	command := self newClassNamed: #Command comment: self commentCommand.
+	self flag: '#TODO: make command Abstract
 	commandSegini := self newClassNamed: #CommandSegini.
 	commandSegadj := self newClassNamed: #CommandSegadj.
 	commandSegsup := self newClassNamed: #CommandSegsup.
