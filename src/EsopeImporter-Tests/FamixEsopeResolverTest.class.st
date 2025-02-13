@@ -939,8 +939,7 @@ FamixEsopeResolverTest >> testResolveImplicitPointer [
 		yourself.
 
 	var := self defaultVariable: 'point' withType: (self defaultType: 'real').
-	(self newEntity: FamixEsopeCommand)
-		commandName: 'segini' ;
+	(self newEntity: FamixEsopeCommandSegini)
 		accessor: sub ;
 		variable: var.
 
