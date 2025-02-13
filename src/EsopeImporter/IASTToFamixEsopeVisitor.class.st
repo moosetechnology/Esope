@@ -60,9 +60,10 @@ IASTToFamixEsopeVisitor >> visitIASTEsopePointer: aPointerVar [
 IASTToFamixEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 
 	| esopeCommand |
-
+1halt.
 	self flag: '#TODO: usage of command subclasses'.
-	esopeCommand := (self model newCommand)
+
+	esopeCommand := (self model newEsopeCommand: aSegmentCommand esopeCommand)
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: aSegmentCommand sourceAnchor);
 		  attributeAt: #entity put: aSegmentCommand;

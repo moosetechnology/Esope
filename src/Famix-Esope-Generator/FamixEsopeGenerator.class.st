@@ -84,7 +84,13 @@ Class {
 		'intrinsicRoutine',
 		'intrinsicProcedure',
 		'segmentParameter',
-		'userDefinedType'
+		'userDefinedType',
+		'commandSegini',
+		'commandSegadj',
+		'commandSegsup',
+		'commandSegprt',
+		'commandSegact',
+		'commandSegdes'
 	],
 	#category : 'Famix-Esope-Generator',
 	#package : 'Famix-Esope-Generator'
@@ -276,13 +282,14 @@ FamixEsopeGenerator >> defineClasses [
 	access := self remoteEntity: #Access withPrefix: #FamixF77.
 
 	command := self newClassNamed: #Command comment: self commentCommand.
-	self flag: '#TODO: make command Abstract
+
+	self flag: '#TODO: make command Abstract'.
 	commandSegini := self newClassNamed: #CommandSegini.
 	commandSegadj := self newClassNamed: #CommandSegadj.
 	commandSegsup := self newClassNamed: #CommandSegsup.
 	commandSegprt := self newClassNamed: #CommandSegprt.
 	commandSegact := self newClassNamed: #CommandSegact.
-	commandSegdes := self newClassNamed: #CommandSegdes.'.
+	commandSegdes := self newClassNamed: #CommandSegdes.
 
 	segmentParameter := self
 		                      newClassNamed: #SegmentParameter
@@ -312,13 +319,13 @@ FamixEsopeGenerator >> defineHierarchy [
 
 	command --|> access.
 
-	self flag: '#TODO: 
+	self flag: '#TODO:'.
 	commandSegini --|> command.
 	commandSegadj --|> command.
 	commandSegsup --|> command.
 	commandSegprt --|> command.
 	commandSegact --|> command.
-	commandSegdes --|> command.'.
+	commandSegdes --|> command.
 
 	implicitPointer --|> variable.
 	
