@@ -408,9 +408,9 @@ IASTToFamixVisitorTest >> testFamixEsopeCommandSegactWithSuffix [
 	
 	self assert: progFile programUnits size equals: 1.
 
-	self assert: (visitor model allWithType: FamixEsopeCommand) size equals: 1.
-	famixSegxxx := (visitor model allWithType: FamixEsopeCommand) first.
-	self assert: famixSegxxx commandName equals: 'segact'.
+	self assert: (visitor model allWithSubTypesOf: FamixEsopeCommand) size equals: 1.
+	famixSegxxx := (visitor model allWithSubTypesOf: FamixEsopeCommand) first.
+	self assert: famixSegxxx class equals: FamixEsopeCommandSegact.
 	
 	value := famixSegxxx attributeAt: #entity ifAbsent: [ nil ].
 	self assert: value isNotNil.
@@ -440,9 +440,9 @@ IASTToFamixVisitorTest >> testFamixEsopeCommandSegini [
 	
 	self assert: progFile programUnits size equals: 1.
 
-	self assert: (visitor model allWithType: FamixEsopeCommand) size equals: 1.
-	famixSegini := (visitor model allWithType: FamixEsopeCommand) first.
-	self assert: famixSegini commandName equals: 'segini'.
+	self assert: (visitor model allWithSubTypesOf: FamixEsopeCommand) size equals: 1.
+	famixSegini := (visitor model allWithSubTypesOf: FamixEsopeCommand) anyOne.
+	self assert: famixSegini class equals: FamixEsopeCommandSegini.
 ]
 
 { #category : 'tests-esope' }
