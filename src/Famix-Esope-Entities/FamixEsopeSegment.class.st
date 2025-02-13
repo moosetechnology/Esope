@@ -28,7 +28,6 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 | Relation | Origin | Opposite | Type | Comment |
 |---|
 | `accesses` | `FamixEsopeSegment` | `segment` | `FamixF77Access` | |
-| `attributes` | `FamixTWithAttributes` | `parentType` | `FamixTAttribute` | List of attributes declared by this type.|
 | `segmentParameters` | `FamixEsopeSegment` | `segment` | `FamixEsopeSegmentParameter` | |
 
 
@@ -36,9 +35,7 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 "
 Class {
 	#name : 'FamixEsopeSegment',
-	#superclass : 'FamixF77Type',
-	#traits : 'FamixTWithAttributes',
-	#classTraits : 'FamixTWithAttributes classTrait',
+	#superclass : 'FamixFortranUserDefinedType',
 	#instVars : [
 		'#segmentParameters => FMMany type: #FamixEsopeSegmentParameter opposite: #segment'
 	],
@@ -50,7 +47,7 @@ Class {
 { #category : 'meta' }
 FamixEsopeSegment class >> annotation [
 
-	<FMClass: #Segment super: #FamixF77Type>
+	<FMClass: #Segment super: #FamixFortranUserDefinedType>
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 	^ self
