@@ -75,17 +75,16 @@ Class {
 	#name : 'FamixEsopeGenerator',
 	#superclass : 'FamixMetamodelGenerator',
 	#instVars : [
-		'attribute',
 		'implicitPointer',
 		'segment',
 		'command',
 		'access',
 		'variable',
-		'type',
 		'pointer',
 		'intrinsicRoutine',
 		'intrinsicProcedure',
-		'segmentParameter'
+		'segmentParameter',
+		'userDefinedType'
 	],
 	#category : 'Famix-Esope-Generator',
 	#package : 'Famix-Esope-Generator'
@@ -276,11 +275,14 @@ FamixEsopeGenerator >> defineClasses [
 
 	access := self remoteEntity: #Access withPrefix: #FamixF77.
 
-	attribute := self remoteEntity: #Attribute withPrefix: #FamixFortran.
-
-	command := self
-		           newClassNamed: #Command
-		           comment: self commentCommand.
+	command := self newAbstractClassNamed: #Command comment: self commentCommand.
+	self flag: '#TODO: 
+	commandSegini := self newClassNamed: #CommandSegini.
+	commandSegadj := self newClassNamed: #CommandSegadj.
+	commandSegsup := self newClassNamed: #CommandSegsup.
+	commandSegprt := self newClassNamed: #CommandSegprt.
+	commandSegact := self newClassNamed: #CommandSegact.
+	commandSegdes := self newClassNamed: #CommandSegdes.'.
 
 	segmentParameter := self
 		                      newClassNamed: #SegmentParameter
@@ -296,13 +298,11 @@ FamixEsopeGenerator >> defineClasses [
 		
 	pointer := self newClassNamed: #Pointer comment: self commentPointer.
 
-	segment := self
-		           newClassNamed: #Segment
-		           comment: self commentSegment.
+	segment := self newClassNamed: #Segment comment: self commentSegment.
 
-	type := self remoteEntity: #Type withPrefix: #FamixF77.
+	userDefinedType := self remoteEntity: #UserDefinedType withPrefix: #FamixFortran.
 
-	variable := self remoteEntity: #Variable withPrefix: #FamixF77
+	variable := self remoteEntity: #Variable withPrefix: #FamixF77.
 ]
 
 { #category : 'definition' }
@@ -310,10 +310,15 @@ FamixEsopeGenerator >> defineHierarchy [
 
 	super defineHierarchy.
 
-	attribute --|> #TAttribute.
-	attribute --|> variable.
-
 	command --|> access.
+
+	self flag: '#TODO: 
+	commandSegini --|> command.
+	commandSegadj --|> command.
+	commandSegsup --|> command.
+	commandSegprt --|> command.
+	commandSegact --|> command.
+	commandSegdes --|> command.'.
 
 	implicitPointer --|> variable.
 	
@@ -321,8 +326,7 @@ FamixEsopeGenerator >> defineHierarchy [
 	
 	pointer --|> variable.
 
-	segment --|> type.
-	segment --|> #TWithAttributes.
+	segment --|> userDefinedType.
 
 	segmentParameter --|> variable
 ]
@@ -332,6 +336,7 @@ FamixEsopeGenerator >> defineProperties [
 
 	super defineProperties.
 
+	self flag: '#TODO: '.
 	(command property: #commandName type: #String) comment:
 		'Carrying the actual name of the esope command.
 		
