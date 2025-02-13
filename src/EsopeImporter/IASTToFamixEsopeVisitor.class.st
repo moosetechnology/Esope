@@ -67,7 +67,6 @@ IASTToFamixEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: aSegmentCommand sourceAnchor);
 		  attributeAt: #entity put: aSegmentCommand;
-		  commandName: aSegmentCommand esopeCommand;
 		  accessor: stack top;
 		  yourself.
 		
