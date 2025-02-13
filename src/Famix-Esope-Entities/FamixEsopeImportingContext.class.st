@@ -18,10 +18,45 @@ FamixEsopeImportingContext class >> importedMetamodel [
 ]
 
 { #category : 'importing' }
-FamixEsopeImportingContext >> importCommand [
+FamixEsopeImportingContext >> importCommandSegact [
 
 	<generated>
-	^ self importConcreteEntity: (self class fm3ClassNamed: #Command)
+	^ self importConcreteEntity: (self class fm3ClassNamed: #CommandSegact)
+]
+
+{ #category : 'importing' }
+FamixEsopeImportingContext >> importCommandSegadj [
+
+	<generated>
+	^ self importConcreteEntity: (self class fm3ClassNamed: #CommandSegadj)
+]
+
+{ #category : 'importing' }
+FamixEsopeImportingContext >> importCommandSegdes [
+
+	<generated>
+	^ self importConcreteEntity: (self class fm3ClassNamed: #CommandSegdes)
+]
+
+{ #category : 'importing' }
+FamixEsopeImportingContext >> importCommandSegini [
+
+	<generated>
+	^ self importConcreteEntity: (self class fm3ClassNamed: #CommandSegini)
+]
+
+{ #category : 'importing' }
+FamixEsopeImportingContext >> importCommandSegprt [
+
+	<generated>
+	^ self importConcreteEntity: (self class fm3ClassNamed: #CommandSegprt)
+]
+
+{ #category : 'importing' }
+FamixEsopeImportingContext >> importCommandSegsup [
+
+	<generated>
+	^ self importConcreteEntity: (self class fm3ClassNamed: #CommandSegsup)
 ]
 
 { #category : 'importing' }
@@ -60,10 +95,45 @@ FamixEsopeImportingContext >> importSegmentParameter [
 ]
 
 { #category : 'testing' }
-FamixEsopeImportingContext >> shouldImportCommand [
+FamixEsopeImportingContext >> shouldImportCommandSegact [
 
 	<generated>
-	^ self shouldImport: #Command
+	^ self shouldImport: #CommandSegact
+]
+
+{ #category : 'testing' }
+FamixEsopeImportingContext >> shouldImportCommandSegadj [
+
+	<generated>
+	^ self shouldImport: #CommandSegadj
+]
+
+{ #category : 'testing' }
+FamixEsopeImportingContext >> shouldImportCommandSegdes [
+
+	<generated>
+	^ self shouldImport: #CommandSegdes
+]
+
+{ #category : 'testing' }
+FamixEsopeImportingContext >> shouldImportCommandSegini [
+
+	<generated>
+	^ self shouldImport: #CommandSegini
+]
+
+{ #category : 'testing' }
+FamixEsopeImportingContext >> shouldImportCommandSegprt [
+
+	<generated>
+	^ self shouldImport: #CommandSegprt
+]
+
+{ #category : 'testing' }
+FamixEsopeImportingContext >> shouldImportCommandSegsup [
+
+	<generated>
+	^ self shouldImport: #CommandSegsup
 ]
 
 { #category : 'testing' }

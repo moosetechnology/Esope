@@ -21,10 +21,45 @@ FamixEsopeTEntityCreator classSide >> annotation [
 ]
 
 { #category : 'entity creation' }
-FamixEsopeTEntityCreator >> newCommand [
+FamixEsopeTEntityCreator >> newCommandSegact [
 
 	<generated>
-	^ self add: FamixEsopeCommand new
+	^ self add: FamixEsopeCommandSegact new
+]
+
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegadj [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegadj new
+]
+
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegdes [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegdes new
+]
+
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegini [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegini new
+]
+
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegprt [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegprt new
+]
+
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegsup [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegsup new
 ]
 
 { #category : 'entity creation' }

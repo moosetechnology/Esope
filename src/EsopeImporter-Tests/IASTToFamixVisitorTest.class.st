@@ -408,9 +408,9 @@ IASTToFamixVisitorTest >> testFamixEsopeCommandSegactWithSuffix [
 	
 	self assert: progFile programUnits size equals: 1.
 
-	self assert: (visitor model allWithType: FamixEsopeCommand) size equals: 1.
-	famixSegxxx := (visitor model allWithType: FamixEsopeCommand) first.
-	self assert: famixSegxxx commandName equals: 'segact'.
+	self assert: (visitor model allWithSubTypesOf: FamixEsopeCommand) size equals: 1.
+	famixSegxxx := (visitor model allWithSubTypesOf: FamixEsopeCommand) first.
+	self assert: famixSegxxx class equals: FamixEsopeCommandSegact.
 	
 	value := famixSegxxx attributeAt: #entity ifAbsent: [ nil ].
 	self assert: value isNotNil.
@@ -440,9 +440,9 @@ IASTToFamixVisitorTest >> testFamixEsopeCommandSegini [
 	
 	self assert: progFile programUnits size equals: 1.
 
-	self assert: (visitor model allWithType: FamixEsopeCommand) size equals: 1.
-	famixSegini := (visitor model allWithType: FamixEsopeCommand) first.
-	self assert: famixSegini commandName equals: 'segini'.
+	self assert: (visitor model allWithSubTypesOf: FamixEsopeCommand) size equals: 1.
+	famixSegini := (visitor model allWithSubTypesOf: FamixEsopeCommand) anyOne.
+	self assert: famixSegini class equals: FamixEsopeCommandSegini.
 ]
 
 { #category : 'tests-esope' }
@@ -554,6 +554,54 @@ IASTToFamixVisitorTest >> testFamixEsopeSegment [
 	self assert: attribute class equals: FamixFortranAttribute.
 	self assert: attribute name equals: 'age'.
 	self assert: attribute declaredType name equals: 'integer'.
+]
+
+{ #category : 'tests-esope' }
+IASTToFamixVisitorTest >> testFamixEsopeSegmentWithAcces [
+
+	"
+	segment foo
+	 integer bar(nb)
+	end segment
+	"
+
+	| segment entity attribute access |
+
+	segment := IASTEsopeSegment new
+		  entityName: 'foo';
+		  declarations: { IASTVariable new
+		  			entityName: 'bar';
+		  			typeSpec: (IASTTypeRef new entityName: 'integer');
+					dimensions: { IASTVarAccess new entityName: 'nb'  };
+		  			yourself
+		  };
+		  yourself.
+
+	programFile body: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: { segment };
+			 yourself }.
+
+	entity := programFile accept: visitor.
+	
+	self assert: entity programUnits size equals: 1.
+
+	self assert: (visitor model allWithType: FamixEsopeSegment) size equals: 1.
+	entity := (visitor model allWithType: FamixEsopeSegment) first.
+	self assert: entity name equals: 'foo'.
+	self assert: entity isType.
+	
+	self assert: entity attributes size equals: 1.
+	attribute := entity attributes anyOne.
+	self assert: attribute class equals: FamixFortranAttribute.
+	self assert: attribute name equals: 'bar'.
+	self assert: attribute declaredType name equals: 'integer'.
+	
+		
+	self assert: entity accesses size equals: 1.
+	access := entity accesses anyOne.
+	self assert: access class equals: FamixF77Access.
+	self assert: access segment equals: entity
 ]
 
 { #category : 'tests-esope' }

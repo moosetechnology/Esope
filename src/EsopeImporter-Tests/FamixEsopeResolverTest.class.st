@@ -35,7 +35,7 @@ FamixEsopeResolverTest >> testMakePointerFromVariable [
 	resolver model newAccess
 		accessor: subroutine ;
 		variable: variable.
-	esopeCommand := resolver model newCommand
+	esopeCommand := resolver model newCommandSegini
 		accessor: subroutine ;
 		variable: pointer.
 
@@ -939,8 +939,7 @@ FamixEsopeResolverTest >> testResolveImplicitPointer [
 		yourself.
 
 	var := self defaultVariable: 'point' withType: (self defaultType: 'real').
-	(self newEntity: FamixEsopeCommand)
-		commandName: 'segini' ;
+	(self newEntity: FamixEsopeCommandSegini)
 		accessor: sub ;
 		variable: var.
 
