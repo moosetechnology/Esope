@@ -6,6 +6,26 @@ FamixEsopeSegment >> addLocalVariable: aVariable [
 ]
 
 { #category : '*EsopeImporter' }
+FamixEsopeSegment >> allLocalVariables [
+
+	^ self typeContainer allLocalVariables
+]
+
+{ #category : '*EsopeImporter' }
+FamixEsopeSegment >> allTypes [
+
+	^ self typeContainer allTypes
+]
+
+{ #category : '*EsopeImporter' }
+FamixEsopeSegment >> createUnresolveVariable: aString with: aFamixEsopeResolver [
+
+	^ self typeContainer
+		  createUnresolveVariable: aString
+		  with: aFamixEsopeResolver
+]
+
+{ #category : '*EsopeImporter' }
 FamixEsopeSegment >> isEsopeSegment [
 
 	^true
