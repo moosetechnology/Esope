@@ -32,6 +32,15 @@ IASTToFamixEsopeVisitor >> isAFortranIntrinsicType: typeName [
 ]
 
 { #category : 'private-creation' }
+IASTToFamixEsopeVisitor >> newEsopeCommand: esopeCommandName [
+
+	| selector |
+	selector := ('newCommand' , esopeCommandName asLowercase capitalized) asSymbol.
+
+	^self model perform: selector
+]
+
+{ #category : 'private-creation' }
 IASTToFamixEsopeVisitor >> newType: typeName sourceAnchor: sourceAnchor [
 
 	sourceAnchor startColumn: sourceAnchor endColumn - typeName size.
@@ -63,7 +72,7 @@ IASTToFamixEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 
 	self flag: '#TODO: usage of command subclasses'.
 
-	esopeCommand := (self model newEsopeCommand: aSegmentCommand esopeCommand)
+	esopeCommand := (self newEsopeCommand: aSegmentCommand esopeCommand)
 		  sourceAnchor:
 			  (self visitIndexedFileAnchor: aSegmentCommand sourceAnchor);
 		  attributeAt: #entity put: aSegmentCommand;
