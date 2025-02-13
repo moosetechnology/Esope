@@ -18,6 +18,59 @@ FamixEsopeResolverTest >> setUp [
 ]
 
 { #category : 'tests' }
+FamixEsopeResolverTest >> testFamixEsopeSegmentWithAccessToLocalVariable [
+
+    "
+    subroutine demo
+    integer nb
+    segment foo
+     integer bar(nb) ! We only consider the 'nb' access in the model, the 'bar' variable declaration is not necessary for this test.
+    end segment
+    end subroutine
+    "
+
+    | access sub  variable |
+
+    access := (self defaultAccess: 'nb').
+
+    variable := self defaultVariable: 'nb' withType: #integer.
+    sub := (self newPU: 'demo')
+        addLocalVariable: variable;
+        addType: ( (self defaultSegment: 'PSTR' with: #()) addAccess: access );
+        yourself.
+
+    resolver resolveAccesses.
+
+    self assert: access variable equals: variable
+]
+
+{ #category : 'tests' }
+FamixEsopeResolverTest >> testFamixEsopeSegmentWithAccessToUndeclaredVariable [
+
+    "
+    subroutine demo
+    segment foo
+     integer bar(nb) ! We only consider the 'nb' access in the model, the 'bar' variable declaration is not necessary for this test
+    end segment
+    end subroutine
+    "
+
+    | access sub |
+
+    access := (self defaultAccess: 'nb').
+    sub := (self newPU: 'demo')
+         addType: ( (self defaultSegment: 'PSTR' with: #()) addAccess: access );
+        yourself.
+
+    resolver resolveAccesses.
+
+    self assert: access variable isNotNil.
+    self assert: access variable class equals: FamixF77Variable.
+    self assert: access variable parentBehaviouralEntity equals: sub.
+    self assert: access variable name equals: 'nb'
+]
+
+{ #category : 'tests' }
 FamixEsopeResolverTest >> testMakePointerFromVariable [
 	"We have a pointer variable and a normal variable with the same name
 	 the 2nd should be merged into the 1st which keeps its declared type and
