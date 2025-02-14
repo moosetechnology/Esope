@@ -305,9 +305,20 @@ FamixEsopeResolver >> resolveAttributeAccess: anAccess forPointer: aPointerVaria
 	variableAccessed := anAccess getAndRemoveAttribute: #entity.
 	self assert: variableAccessed isNotNil.
 
-	aPointerVariable declaredType attributes
-		detect: [ :att | att name = variableAccessed entityName ]
-		ifFound: [ :att | anAccess variable: att ].
+	aPointerVariable declaredType 
+		ifNotNil: [ :declaredType |
+			declaredType attributes
+				detect: [ :att | att name asLowercase = variableAccessed entityName asLowercase ]
+				ifFound: [ :att | anAccess variable: att ]
+				ifNone: [ 
+					"What to do if we have any attribute match? Nothing for Now"	
+				]
+			]
+		ifNil: [ 
+			self resolveDeclaredTypeOfPointers.
+			anAccess attributeAt: #entity put: variableAccessed.
+			self resolveAttributeAccess: anAccess forPointer: aPointerVariable
+		]
 
 ]
 
