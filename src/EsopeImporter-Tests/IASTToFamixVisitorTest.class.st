@@ -491,7 +491,7 @@ IASTToFamixVisitorTest >> testFamixEsopePointerDeclaration [
 "
 
 	| entity |
-	programFile := self jsonToIAST: '{"meta":{"miVersion":"fortran77","miFilename":"/home/anquetil/Pharo/images/carrefourFortran-0901/Fortran/fortran77.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"comment":"@_   segment, pers","span":"(2:1)-(2:19)","tag":"comment"},{"anno":[],"comment":"@_   end segment","span":"(3:1)-(3:17)","tag":"comment"},{"anno":[],"comment":"@_   pointeur p1.pers","span":"(4:1)-(4:22)","tag":"comment"}],"name":"main","span":"(1:7)-(5:9)","subprograms":null,"tag":"main"}]}'.
+	programFile := self jsonToIAST: '{"meta":{"miVersion":"fortran77","miFilename":"./srcCodeOrigin.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"comment":"@_   segment, pers","span":"(2:1)-(2:19)","tag":"comment"},{"anno":[],"comment":"@_   end segment","span":"(3:1)-(3:17)","tag":"comment"},{"anno":[],"comment":"@_   pointeur p1.pers","span":"(4:1)-(4:22)","tag":"comment"}],"name":"main","span":"(1:7)-(5:9)","subprograms":null,"tag":"main"}]}'.
 	entity := programFile accept: visitor.
 
 	self assert: entity programUnits size equals: 1.
