@@ -11,9 +11,7 @@ BaselineOfEsope >> baseline: spec [
 	spec
 		for: #common
 		do: [
-			spec blessing: #baseline.
 			spec description: 'Esope related packages'.
-			spec repository: 'github://moosetechnology/Esope'.
 			self defineDependencies: spec.
 			self definePackages: spec.
 			self defineGroups: spec ]
@@ -47,5 +45,5 @@ BaselineOfEsope >> definePackages: spec [
 		package: 'EsopeImporter-Tests' with: [ spec requires: #(EsopeImporter) ];
 		package: 'Famix-Esope-Entities' with: [ spec requires: #(FamixFortran) ];
 		package: 'Famix-Esope-Generator' with: [ spec requires: #(FamixFortran) ];
-		package: 'Famix-Esope-Tests' with: [ spec requires: #(FamixFortran) ]
+		package: 'Famix-Esope-Tests' with: [ spec requires: #('Famix-Esope-Entities') ]
 ]
