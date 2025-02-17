@@ -96,7 +96,7 @@ IASTAbstractFamixVisitor >> retrieveTypeFrom: aName [
 	 ) at: aName ifAbsent: self typeNotFoundBlock.
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'spawn' }
 IASTAbstractFamixVisitor >> spawn: aVisitorClass [
 	^aVisitorClass new
 		model: self model ;
@@ -116,13 +116,13 @@ IASTAbstractFamixVisitor >> stack: anObject [
 	stack := anObject
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'symbols resolution' }
 IASTAbstractFamixVisitor >> symbolTable: anEntity at: key [
 
 	^ anEntity attributeAt: key asSymbol ifAbsent: [  ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'symbols resolution' }
 IASTAbstractFamixVisitor >> symbolTable: anEntity at: key put: value [
 
 	(self symbolTable: anEntity at: #symbolTable)
