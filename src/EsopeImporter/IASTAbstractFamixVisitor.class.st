@@ -87,14 +87,24 @@ IASTAbstractFamixVisitor >> newEntity: aClass [
 { #category : 'initialization' }
 IASTAbstractFamixVisitor >> retrieveTypeFrom: aName [
 
+	| typeNotFoundBlock |
+	typeNotFoundBlock := [ self newEntity: FamixF77TypeUnknown ].
+
 	^ (self model 
 		attributeAt: #instrinsicTypes
 		ifAbsent: [
 		   self model
 			   attributeAt: #unknownType
-			   ifAbsent: self typeNotFoundBlock.
+			   ifAbsent: typeNotFoundBlock.
 		]
-	 ) at: aName ifAbsent: self typeNotFoundBlock.
+	 ) at: aName ifAbsent: typeNotFoundBlock.
+]
+
+{ #category : 'private - helpers' }
+IASTAbstractFamixVisitor >> setIntrinsicTypes [
+
+	model attributeAt: #instrinsicTypes put: model intrinsicTypes.
+	model attributeAt: #unknownType put: [ model newTypeUnknown ]
 ]
 
 { #category : 'spawn' }
