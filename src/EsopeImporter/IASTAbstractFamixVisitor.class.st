@@ -84,19 +84,6 @@ IASTAbstractFamixVisitor >> newEntity: aClass [
 ]
 
 { #category : 'initialization' }
-IASTAbstractFamixVisitor >> retrieveType: aTypeName from: aMooseModel [
-
-	^ (aMooseModel
-		attributeAt: #instrinsicTypes
-		ifAbsent: [
-		   aMooseModel
-			   attributeAt: #unknownType
-			   ifAbsent: self typeNotFoundBlock.
-		]
-	 ) at: aTypeName ifAbsent: self typeNotFoundBlock.
-]
-
-{ #category : 'initialization' }
 IASTAbstractFamixVisitor >> retrieveTypeFrom: aName [
 
 	^ (self model 
@@ -141,12 +128,6 @@ IASTAbstractFamixVisitor >> symbolTable: anEntity at: key put: value [
 	(self symbolTable: anEntity at: #symbolTable)
 		at: key asSymbol
 		put: value
-]
-
-{ #category : 'initialization' }
-IASTAbstractFamixVisitor >> typeNotFoundBlock [
-
-	^ [ self newEntity: FamixF77TypeUnknown ]
 ]
 
 { #category : 'visiting' }
