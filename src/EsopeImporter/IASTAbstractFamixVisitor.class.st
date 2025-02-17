@@ -72,7 +72,8 @@ IASTAbstractFamixVisitor >> model [
 { #category : 'accessing' }
 IASTAbstractFamixVisitor >> model: anObject [
 
-	model := anObject
+	model := anObject.
+	self setIntrinsicTypes
 ]
 
 { #category : 'private-creation' }
@@ -84,32 +85,29 @@ IASTAbstractFamixVisitor >> newEntity: aClass [
 ]
 
 { #category : 'initialization' }
-IASTAbstractFamixVisitor >> retrieveType: aTypeName from: aMooseModel [
-
-	^ (aMooseModel
-		attributeAt: #instrinsicTypes
-		ifAbsent: [
-		   aMooseModel
-			   attributeAt: #unknownType
-			   ifAbsent: self typeNotFoundBlock.
-		]
-	 ) at: aTypeName ifAbsent: self typeNotFoundBlock.
-]
-
-{ #category : 'initialization' }
 IASTAbstractFamixVisitor >> retrieveTypeFrom: aName [
+
+	| typeNotFoundBlock |
+	typeNotFoundBlock := [ self newEntity: FamixF77TypeUnknown ].
 
 	^ (self model 
 		attributeAt: #instrinsicTypes
 		ifAbsent: [
 		   self model
 			   attributeAt: #unknownType
-			   ifAbsent: self typeNotFoundBlock.
+			   ifAbsent: typeNotFoundBlock.
 		]
-	 ) at: aName ifAbsent: self typeNotFoundBlock.
+	 ) at: aName ifAbsent: typeNotFoundBlock.
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'private - helpers' }
+IASTAbstractFamixVisitor >> setIntrinsicTypes [
+
+	model attributeAt: #instrinsicTypes put: model intrinsicTypes.
+	model attributeAt: #unknownType put: [ model newTypeUnknown ]
+]
+
+{ #category : 'spawn' }
 IASTAbstractFamixVisitor >> spawn: aVisitorClass [
 	^aVisitorClass new
 		model: self model ;
@@ -129,24 +127,18 @@ IASTAbstractFamixVisitor >> stack: anObject [
 	stack := anObject
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'symbols resolution' }
 IASTAbstractFamixVisitor >> symbolTable: anEntity at: key [
 
 	^ anEntity attributeAt: key asSymbol ifAbsent: [  ]
 ]
 
-{ #category : 'as yet unclassified' }
+{ #category : 'symbols resolution' }
 IASTAbstractFamixVisitor >> symbolTable: anEntity at: key put: value [
 
 	(self symbolTable: anEntity at: #symbolTable)
 		at: key asSymbol
 		put: value
-]
-
-{ #category : 'initialization' }
-IASTAbstractFamixVisitor >> typeNotFoundBlock [
-
-	^ [ self newEntity: FamixF77TypeUnknown ]
 ]
 
 { #category : 'visiting' }
@@ -183,21 +175,25 @@ IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
 	- dereferencedVariable for example: deref.var(...) "
 
 	"Distinguish external accesses from other accesses"
+	
+	| mainAccess |
+	mainAccess := (self createFamixF77Access: aVarAccess).
+	mainAccess isWrite: aVarAccess isWrite.
 
 	aVarAccess indices deepFlatten
 		do: [ :indice |
-
 			(indice class = IASTVarAccess and: [ (indice entityName asLowercase = 's__') not ])
 				ifTrue: [ (self createFamixF77Access: indice) isWrite: indice isWrite  ] 
 		].
 	
 	aVarAccess dereferencedVariable 
 		ifNotNil: [ :dereferencedVariable | 
-			(self createFamixF77Access: dereferencedVariable) isWrite: dereferencedVariable isWrite
+			(self createFamixF77Access: dereferencedVariable) 
+				isWrite: dereferencedVariable isWrite;
+				attributeAt: #parentAccess put: mainAccess
 		].
 
-
-	^(self createFamixF77Access: aVarAccess) isWrite: aVarAccess isWrite
+	^ mainAccess 
 ]
 
 { #category : 'visiting' }
