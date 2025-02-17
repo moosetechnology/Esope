@@ -583,6 +583,18 @@ FortranProjectImporter >> stopOnError: anObject [
 	stopOnError := anObject
 ]
 
+{ #category : 'private - helpers' }
+FortranProjectImporter >> subroutineNamed: name [
+
+	| prefix |
+
+	prefix := '_$'.
+
+	^(name beginsWith: prefix)
+		ifTrue: [ name ]
+		ifFalse: [ prefix , name ]
+]
+
 { #category : 'accessing' }
 FortranProjectImporter >> tempEsopeFolder [
 
@@ -656,14 +668,11 @@ FortranProjectImporter >> workingJsonName [
 FortranProjectImporter >> writeFakeEsopeProgramUnit: name from: content on: writeStream [
 
 	writeStream
-		<< '      subroutine _$';
-		<< name;
-		<< self newLine ;
+		<< '      subroutine ';
+		<< (self subroutineNamed: name);
+		<< self newLine;
 		<< content.
-	(
-		content isNotEmpty 
-			and: [ String crlf includes: content last ]
-	)
+	(content isNotEmpty and: [ String crlf includes: content last ])
 		ifFalse: [ writeStream << self newLine ].
 	writeStream
 		<< '      end';
