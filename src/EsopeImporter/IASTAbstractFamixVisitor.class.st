@@ -72,7 +72,8 @@ IASTAbstractFamixVisitor >> model [
 { #category : 'accessing' }
 IASTAbstractFamixVisitor >> model: anObject [
 
-	model := anObject
+	model := anObject.
+	self setIntrinsicTypes
 ]
 
 { #category : 'private-creation' }
