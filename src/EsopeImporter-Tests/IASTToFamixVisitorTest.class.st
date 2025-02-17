@@ -25,6 +25,12 @@ IASTToFamixVisitorTest >> anchorFrom: startPoint to: endPoint [
 		  yourself
 ]
 
+{ #category : 'tests-esope' }
+IASTToFamixVisitorTest >> attribute: symbol for: famixEntity [
+
+	^ famixEntity attributeAt: symbol ifAbsent: [ nil ]
+]
+
 { #category : 'running' }
 IASTToFamixVisitorTest >> defaultAnchor [
 
@@ -479,6 +485,42 @@ IASTToFamixVisitorTest >> testFamixEsopePointerAccess [
 		(acc attributeAt: #entity ifAbsent: ["impossible"]) entityName = 'ptr']).
 	self assert: (accesses anySatisfy: [ : acc |
 		(acc attributeAt: #entity ifAbsent: ["impossible"]) entityName = 'att']).
+]
+
+{ #category : 'tests-esope' }
+IASTToFamixVisitorTest >> testFamixEsopePointerAccessWithSegment [
+	"SUBROUTINE sub
+      ptr.att = 5
+      END
+	"
+
+	| accesses iastVar segment access |
+	iastVar := self defaultVarAccess: 'ptr' isWrite: true.
+	iastVar dereferencedVariable: (self defaultVarAccess: 'att' isWrite: false).
+	
+	visitor model: FamixEsopeModel new.
+	segment := (visitor model newSegment name: 'foo').
+	segment addAttribute: (visitor model newAttributeNamed: 'att').
+	(visitor model newVariableNamed: 'ptr') declaredType: segment.
+
+	programFile body: { IASTSubroutine new
+		entityName: 'sub';
+		body: { iastVar } ;
+		yourself
+	}.
+
+	programFile accept: visitor.
+
+	accesses := visitor model allAccesses.
+	self assert: accesses size equals: 2.
+
+	access := accesses detect: [:each | 
+		(self attribute: #entity for: each) ~= iastVar ].
+
+	self assert: (self attribute: #parentAccess for: access) isNotNil.
+
+	access := self attribute: #parentAccess for: access.
+	self assert:  (self attribute: #entity for: access) entityName equals: 'ptr'.
 ]
 
 { #category : 'tests-esope' }
