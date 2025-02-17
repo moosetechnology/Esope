@@ -210,7 +210,9 @@ IASTToFamixFortranVisitor >> visitIASTIncludedFile: anIncludedFile [
 
 	anIncludedFile sourceAnchor
 		startLine: anIncludedFile sourceAnchor startLine + 1;
-		endLine: anIncludedFile sourceAnchor endLine - 1.
+		startColumn: 1;
+		endLine: anIncludedFile sourceAnchor endLine - 1;
+		endColumn: 1.
 
 	^ self
 		  iASTProgramUnit: anIncludedFile
