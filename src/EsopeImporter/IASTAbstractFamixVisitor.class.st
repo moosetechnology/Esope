@@ -11,17 +11,16 @@ Class {
 }
 
 { #category : 'private-creation' }
-IASTAbstractFamixVisitor >> createFamixF77Access: anIastObject [
+IASTAbstractFamixVisitor >> createFamixF77Access: anIastAccess [
+	"For each FamixF77Access we create, we hide the anIastAccess in entityAttributes with the key '#entity'.
+	so that the resolver can use the information carried by anIastAccess to resolve that access."
 
-	| access |
-	access := self model newAccess
-		  sourceAnchor:
-			  (self visitIndexedFileAnchor: anIastObject sourceAnchor);
-		  attributeAt: #entity put: anIastObject;
-		  isWrite: false;
-		  yourself.
-	stack top addAccess: access.
-	^access
+	^self model newAccess
+		sourceAnchor: (self visitIndexedFileAnchor: anIastAccess sourceAnchor);
+		attributeAt: #entity put: anIastAccess;
+		isWrite: false;
+		accessor: stack top;
+		yourself
 ]
 
 { #category : 'private-creation' }
@@ -172,7 +171,9 @@ IASTAbstractFamixVisitor >> visitIASTTypeRef: aType [
 IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
 	"an aVarAccess can have:
 	- indices for example: varAccess(i, j, k) -> i j k are indices
-	- dereferencedVariable for example: deref.var(...) "
+	- dereferencedVariable for example: aVarAccess.deref(...) -> deref is dereferencedVariable
+	
+	mainAccess correspond to aVarAccess"
 
 	"Distinguish external accesses from other accesses"
 	
@@ -182,7 +183,7 @@ IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
 
 	aVarAccess indices deepFlatten
 		do: [ :indice |
-			(indice class = IASTVarAccess and: [ (indice entityName asLowercase = 's__') not ])
+			(indice class = IASTVarAccess and: [ indice entityName asLowercase ~= 's__' ])
 				ifTrue: [ (self createFamixF77Access: indice) isWrite: indice isWrite  ] 
 		].
 	
@@ -193,7 +194,7 @@ IASTAbstractFamixVisitor >> visitIASTVarAccess: aVarAccess [
 				attributeAt: #parentAccess put: mainAccess
 		].
 
-	^ mainAccess 
+	^ mainAccess
 ]
 
 { #category : 'visiting' }

@@ -338,6 +338,46 @@ JsonToIASTVisitorTest >> testDeref [
 ]
 
 { #category : 'tests-esope' }
+JsonToIASTVisitorTest >> testDerefAccessWithDim [
+
+	"      PROGRAM MYPROG
+       var = lb.att(S__/2)
+      END
+"
+
+	| programFile stmt varAccess entity |
+	programFile := self visitJsonCode:
+		               '{"meta":{"miVersion":"fortran77","miFilename":"./srcCodeOrigin.f"},"program_units":[{"anno":[],"blocks":[{"anno":[],"label":null,"span":"(2:8)-(2:26)","statement":{"anno":[],"expression":{"anno":[],"expression":{"anno":[],"expression":{"anno":[],"span":"(2:14)-(2:15)","tag":"value","value":{"contents":"lb","tag":"variable"}},"field":{"anno":[],"span":"(2:17)-(2:19)","tag":"value","value":{"contents":"att","tag":"variable"}},"span":"(2:14)-(2:19)","tag":"deref"},"indices":{"anno":[],"list":[{"anno":[],"index":{"anno":[],"left":{"anno":[],"span":"(2:21)-(2:23)","tag":"value","value":{"contents":"s__","tag":"variable"}},"op":{"tag":"division"},"right":{"anno":[],"span":"(2:25)-(2:25)","tag":"value","value":{"contents":["2",null],"tag":"integer"}},"span":"(2:21)-(2:25)","tag":"binary"},"name":null,"span":"(2:21)-(2:25)","tag":"single"}],"span":"(2:21)-(2:25)"},"span":"(2:14)-(2:26)","tag":"subscript"},"span":"(2:8)-(2:26)","tag":"assign_expression","target":{"anno":[],"span":"(2:8)-(2:10)","tag":"value","value":{"contents":"var","tag":"variable"}}},"tag":"statement"}],"name":"myprog","span":"(1:7)-(3:9)","subprograms":null,"tag":"main"}]}'.
+
+
+	self assert: programFile body first body size equals: 1.
+
+	stmt := programFile body first body first.
+	
+	self assert: stmt size equals: 2.
+
+	varAccess := stmt first.
+	self assert: varAccess class equals: IASTVarAccess.
+	self assert: varAccess entityName equals: 'var'.
+
+	varAccess := stmt second.
+	self assert: varAccess class equals: IASTVarAccess.
+	self assert: varAccess entityName equals: 'lb'.
+	self assert: varAccess dereferencedVariable isNotNil.
+	
+	entity := varAccess dereferencedVariable.
+	self assert: entity class equals: IASTVarAccess.
+	self assert: entity entityName equals: 'att'.
+
+	self assert: varAccess indices size equals: 1.
+	self assert: varAccess indices anyOne size equals: 1.
+	entity := varAccess indices anyOne anyOne.
+	self assert: entity class equals: IASTVarAccess.
+	self assert: entity entityName equals: 's__'.
+
+]
+
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testESOAtWithArrayArgument [
 "Special case of a D__ function call with an array as argument
 
