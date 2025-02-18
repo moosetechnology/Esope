@@ -338,7 +338,7 @@ JsonToIASTVisitorTest >> testDeref [
 ]
 
 { #category : 'tests-esope' }
-JsonToIASTVisitorTest >> testDerefAccessWithDim [
+JsonToIASTVisitorTest >> testDerefFieldAccessWithDim [
 
 	"      PROGRAM MYPROG
        var = lb.att(S__/2)
