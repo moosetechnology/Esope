@@ -21,9 +21,10 @@ FamixEsopeResolver class >> esopeIntrinsicRoutines [
 		oooeta
 		actstr
 		desstr
+		oooxln ???
 	"
 
-	^#( ooostp ooossg oooeta actstr desstr inistr supstr ajpnt mypnt dupstr copstr typpnt )
+	^#( oooeta ooossg ooostp oooxln actstr desstr inistr supstr ajpnt mypnt dupstr copstr typpnt dimstr )
 ]
 
 { #category : 'private-helper' }
