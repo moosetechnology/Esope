@@ -23,7 +23,7 @@ FamixEsopeResolver class >> esopeIntrinsicRoutines [
 		desstr
 	"
 
-	^#( ooostp ooossg oooeta actstr desstr inistr supstr ajpnt mypnt dupstr copstr )
+	^#( ooostp ooossg oooeta actstr desstr inistr supstr ajpnt mypnt dupstr copstr typpnt )
 ]
 
 { #category : 'private-helper' }
@@ -374,10 +374,10 @@ FamixEsopeResolver >> resolveExternalDeclaration: external [
 			external externalProcedure: procedure.	
 		]
 		ifNone: [
-			(self class esopeIntrinsicRoutines includes: external name)
+			(self class esopeIntrinsicRoutines includes: external name asLowercase)
 				ifTrue: [ 
 					self flag: '#FIXME: At this point, we will create a FamixEsopeIntrinsicRoutine ???'.
-					external externalProcedure: (self model newIntrinsicProcedure name: external name) 
+					external externalProcedure: (self model newIntrinsicProcedure name: external name asLowercase) 
 				]
 				ifFalse: [ self flag: '#FIXME: What to do in this case ? :( '. ]
 		]
