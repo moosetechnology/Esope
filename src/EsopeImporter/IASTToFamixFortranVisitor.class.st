@@ -256,11 +256,11 @@ IASTToFamixFortranVisitor >> visitIASTProgramFile: aProgramFile [
 
 	stack push: progFile.
 
-	aProgramFile body do: [ :child || famixComment |
-		famixComment := child accept: self.
+	aProgramFile body do: [ :child || famixEntity |
+		famixEntity := child accept: self.
 		child isComment
-		ifTrue: [ famixComment commentedEntity: progFile ]
-		ifFalse: [ progFile addProgramUnit: famixComment ]
+		ifTrue: [ famixEntity commentedEntity: progFile ]
+		ifFalse: [ progFile addProgramUnit: famixEntity ]
 	].
 
 	stack pop.
