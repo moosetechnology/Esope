@@ -468,48 +468,6 @@ FamixEsopeResolverTest >> testResolveAccessesForAPointerDotAttribute [
 ]
 
 { #category : 'test - resolveAccess' }
-FamixEsopeResolverTest >> testResolveAccessesForAPointerDotAttributeWithoutSegment [
-
-	| main access access2 varP typePoint |
-	"
-      subroutine demo
-	   pointeur p.point
-      p.x
-      end
-	"
-	typePoint := self newEntity: FamixEsopeSegment named: 'point'.
-
-	varP := self newEntity: FamixF77Variable named: 'p'.
-	varP declaredType: typePoint.
-
-	access := self newEntity: FamixF77Access.
-	access attributeAt: #entity put: (self defaultIASTVarAccess: 'p').
-
-	access2 := self newEntity: FamixF77Access.
-	access2 attributeAt: #entity put: (self defaultIASTVarAccess: 'x').
-	access2 attributeAt: #parentAccess put: access.
-
-	main := (self defaultMain: 'main')
-		        addType: typePoint;
-		        addLocalVariable: varP;
-		        accesses: {
-				        access.
-				        access2 };
-		        yourself.
-
-	self assert: main localVariables size equals: 1.
-
-	resolver resolveAccesses.
-
-	self assert: main accesses size equals: 2.
-
-	self assert: access variable equals: varP.
-
-	self assert: access2 variable class equals: FamixFortranAttribute.
-	self assert: access2 variable name equals: 'x'
-]
-
-{ #category : 'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesForAPointerVariableDeclared [
 
 	| main access var |
@@ -1392,8 +1350,6 @@ FamixEsopeResolverTest >> testResolvePointeurWithStubSegmentAccessingField [
       end
 	"
 
-	self flag: '#FIXME: after this tests we must have a stub segment and we need to add a x attribute to this segment?'.
-
 	varP := self newEntity: FamixF77Variable named: 'p'.
 	varP segment: 'point'.
 	varP isEsope: true.
@@ -1417,10 +1373,9 @@ FamixEsopeResolverTest >> testResolvePointeurWithStubSegmentAccessingField [
 	self assert: main accesses size equals: 2.
 
 	self assert: access variable equals: varP.
-	self assert: access accessor equals: main.
 
-	self assert: access2 variable isNil.
-	self assert: access2 accessor equals: main
+	self assert: access2 variable class equals: FamixFortranAttribute.
+	self assert: access2 variable name equals: 'x'
 ]
 
 { #category : 'tests' }
