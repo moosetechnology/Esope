@@ -114,9 +114,8 @@ IASTToFamixFortranVisitor >> visitIASTBlockData: aBlockData [
 IASTToFamixFortranVisitor >> visitIASTComment: aComment [
 
 	^(self newEntity: FamixF77Comment)
-		content: aComment text ;
 		commentedEntity: stack top ;
-		sourceAnchor: (self visitIndexedFileAnchor: aComment sourceAnchor) ;
+		sourceAnchor: (FamixF77SourceTextAnchor new source: aComment text) ;
 		isEsope: aComment isEsope ;
 		yourself
 ]
