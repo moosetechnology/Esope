@@ -202,7 +202,7 @@ IASTToFamixVisitorTest >> testComment [
 	programFile body: { IASTMainProgram new
 			 entityName: 'main';
 			 body: { IASTComment new
-		           text: 'a normal comment';
+		           text: 'a normal comment' ;
 		           yourself. };
 			 yourself }.
 
@@ -213,7 +213,7 @@ IASTToFamixVisitorTest >> testComment [
 
 	comment := entity programUnits first comments first.
 	self assert: comment class equals: FamixF77Comment.
-	self assert: comment content equals: 'a normal comment'.
+	self assert: comment sourceText equals: 'a normal comment'.
 	self deny: comment isEsope.
 	
 	self assert: comment commentedEntity equals: entity programUnits first.
