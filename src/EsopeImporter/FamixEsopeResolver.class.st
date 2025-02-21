@@ -308,12 +308,13 @@ FamixEsopeResolver >> resolveAttributeAccess: anAccess forPointer: aPointerVaria
 
 	aPointerVariable declaredType 
 		ifNotNil: [ :declaredType |
-			declaredType attributes
-				detect: [ :att | att name asLowercase = variableAccessed entityName asLowercase ]
-				ifFound: [ :att | anAccess variable: att ]
-				ifNone: [ 
-					"What to do if we have any attribute match? Nothing for Now"	
-				]
+			anAccess variable: 
+				(declaredType attributes
+					detect: [ :att | att name asLowercase = variableAccessed entityName asLowercase ]
+					ifNone: [
+						(model newAttributeNamed: variableAccessed entityName asLowercase)
+							isStub: true
+					])
 			]
 		ifNil: [ 
 			self resolveDeclaredTypeOfPointers.

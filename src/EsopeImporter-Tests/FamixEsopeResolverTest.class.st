@@ -1350,8 +1350,6 @@ FamixEsopeResolverTest >> testResolvePointeurWithStubSegmentAccessingField [
       end
 	"
 
-	self flag: '#FIXME: after this tests we must have a stub segment and we need to add a x attribute to this segment?'.
-
 	varP := self newEntity: FamixF77Variable named: 'p'.
 	varP segment: 'point'.
 	varP isEsope: true.
@@ -1375,10 +1373,9 @@ FamixEsopeResolverTest >> testResolvePointeurWithStubSegmentAccessingField [
 	self assert: main accesses size equals: 2.
 
 	self assert: access variable equals: varP.
-	self assert: access accessor equals: main.
 
-	self assert: access2 variable isNil.
-	self assert: access2 accessor equals: main
+	self assert: access2 variable class equals: FamixFortranAttribute.
+	self assert: access2 variable name equals: 'x'
 ]
 
 { #category : 'tests' }
