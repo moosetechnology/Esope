@@ -202,6 +202,9 @@ FamixEsopeResolver >> requalifyParameterDeclaration: param [
 		do: [ :varDeclaration |
 			(varDeclaration = param)
 			ifFalse: [
+				varDeclaration declaredType 
+					ifNil: [ self resolveDeclaredTypeOfPointers ]. 
+
 				param declaredType: varDeclaration declaredType.
 				self mergeVariable: varDeclaration into: param
 			]
@@ -295,7 +298,7 @@ FamixEsopeResolver >> resolveAsImplicitAttribute: variableName in: anAccessor [
 FamixEsopeResolver >> resolveAsLocalVariable: variableName in: anAccessor [
 
 	^anAccessor allLocalVariables
-		select: [ :entity | entity name = variableName ]
+		select: [ :entity | entity name asLowercase = variableName asLowercase ]
 ]
 
 { #category : 'symbols resolution' }

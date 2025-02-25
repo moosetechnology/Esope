@@ -1292,6 +1292,38 @@ FamixEsopeResolverTest >> testResolveInvocationsWrongArgumentNumber [
 	self assert: invocation candidates size equals: 0
 ]
 
+{ #category : 'tests' }
+FamixEsopeResolverTest >> testResolvePointeurParameter [
+
+	| sub entity var |
+	"
+       subroutine relbk(lib)
+       pointeur lib.PSTR
+       end
+	"
+	var := self newEntity: FamixF77Variable named: 'p'.
+	var segment: 'point'.
+	var isEsope: true.
+
+	sub := (self newPU: 'relbk')
+		addParameter: (self defaultParameter: 'p');
+		addLocalVariable: var;
+		yourself.
+
+	resolver resolve.
+
+	self assert: sub localVariables size equals: 0.
+	self assert: (resolver model allWithType: FamixF77Variable) isEmpty.
+
+	self assert: sub parameters size equals: 1.
+
+	entity := sub parameters anyOne.
+	self assert: entity declaredType class equals: FamixEsopeSegment.
+	self assert: entity declaredType name equals: 'point'.
+	self assert: entity declaredType isStub
+		
+]
+
 { #category : 'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolvePointeurWithDeclaredSegmentAccessingField [
 
