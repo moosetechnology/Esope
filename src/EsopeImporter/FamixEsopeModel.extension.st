@@ -18,3 +18,10 @@ FamixEsopeModel >> intrinsicTypes [
 		  (#character -> (self newTypeIntrinsic name: #character)) }
 		  asDictionary
 ]
+
+{ #category : '*EsopeImporter' }
+FamixEsopeModel >> setIntrinsicTypes [
+
+	self attributeAt: #instrinsicTypes put: self intrinsicTypes.
+	self attributeAt: #unknownType put: [ self newTypeUnknown ]
+]
