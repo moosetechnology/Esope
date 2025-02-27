@@ -4,9 +4,7 @@ Extension { #name : 'FamixEsopeModel' }
 FamixEsopeModel >> initialize [
 
 	super initialize.
-	self name: 'EsopeMooseModel'.
-	self attributeAt: #instrinsicTypes put: self intrinsicTypes.
-	self attributeAt: #unknownType put: [ self newTypeUnknown ]
+	self name: 'EsopeMooseModel'
 ]
 
 { #category : '*EsopeImporter' }
