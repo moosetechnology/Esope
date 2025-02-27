@@ -4,9 +4,7 @@ Extension { #name : 'FamixEsopeModel' }
 FamixEsopeModel >> initialize [
 
 	super initialize.
-	self name: 'EsopeMooseModel'.
-	self attributeAt: #instrinsicTypes put: self intrinsicTypes.
-	self attributeAt: #unknownType put: [ self newTypeUnknown ]
+	self name: 'EsopeMooseModel'
 ]
 
 { #category : '*EsopeImporter' }
@@ -19,4 +17,11 @@ FamixEsopeModel >> intrinsicTypes [
 		  (#logical -> (self newTypeIntrinsic name: #logical)).
 		  (#character -> (self newTypeIntrinsic name: #character)) }
 		  asDictionary
+]
+
+{ #category : '*EsopeImporter' }
+FamixEsopeModel >> setIntrinsicTypes [
+
+	self attributeAt: #instrinsicTypes put: self intrinsicTypes.
+	self attributeAt: #unknownType put: [ self newTypeUnknown ]
 ]

@@ -72,7 +72,7 @@ IASTAbstractFamixVisitor >> model [
 IASTAbstractFamixVisitor >> model: anObject [
 
 	model := anObject.
-	self setIntrinsicTypes
+	model setIntrinsicTypes
 ]
 
 { #category : 'private-creation' }
@@ -97,13 +97,6 @@ IASTAbstractFamixVisitor >> retrieveTypeFrom: aName [
 			   ifAbsent: typeNotFoundBlock.
 		]
 	 ) at: aName ifAbsent: typeNotFoundBlock.
-]
-
-{ #category : 'private - helpers' }
-IASTAbstractFamixVisitor >> setIntrinsicTypes [
-
-	model attributeAt: #instrinsicTypes put: model intrinsicTypes.
-	model attributeAt: #unknownType put: [ model newTypeUnknown ]
 ]
 
 { #category : 'spawn' }

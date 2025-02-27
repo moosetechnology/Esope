@@ -14,6 +14,7 @@ FamixEsopeResolverTest >> setUp [
 
 	super setUp.
 
+	mooseModel setIntrinsicTypes.
 	resolver := FamixEsopeResolver on: mooseModel.
 ]
 
