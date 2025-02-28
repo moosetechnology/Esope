@@ -22,7 +22,10 @@ BaselineOfEsope >> baseline: spec [
 BaselineOfEsope >> defineDependencies: spec [
 	spec
 		baseline: 'PetitParser2' with: [ spec repository: 'github://kursjan/petitparser2' ];
-		baseline: 'FamixFortran' with: [ spec repository: 'github://moosetechnology/Famix-Fortran' ]
+		baseline: 'FamixFortran' with: [ spec 
+			loads: #('all');
+			repository: 'github://moosetechnology/Famix-Fortran' 
+		]
 
 ]
 
