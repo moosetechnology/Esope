@@ -417,7 +417,7 @@ JsonToIASTVisitor >> visitEsopeSegmentComment: anEsopeCommentNode [
 	data := self processEsopeComment: anEsopeCommentNode.
 	seg := IASTEsopeSegment new
 		sourceAnchor: (self makeIndexedAnchor: data second) ;
-		entityName: data fourth ;
+		entityName: data fourth asLowercase ;
 		declarations: (OrderedCollection new: 5) ;
 		yourself.
 	entityStack push: seg.

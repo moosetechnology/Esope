@@ -1490,6 +1490,24 @@ c@_   end segment
 ]
 
 { #category : 'tests-esope' }
+JsonToIASTVisitorTest >> testSegmentDeclarationUpperCaseName [
+	"subroutine hello
+c@_   segment,user
+c@_   end segment
+      end
+"
+	| programFile seg |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"./fortran77.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"comment":"@_   segment,USER","span":"(2:1)-(2:18)","tag":"comment"},{"anno":[],"comment":"@_   end segment","span":"(3:1)-(3:17)","tag":"comment"}],"name":"hello","options":[null,null],"span":"(1:7)-(4:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+
+	self assert: programFile body first body size equals: 1.
+	seg := programFile body first body first.
+
+	self assert: seg class equals: IASTEsopeSegment.
+	self assert: seg entityName equals: 'user'.
+]
+
+{ #category : 'tests-esope' }
 JsonToIASTVisitorTest >> testSegmentDeclarationWithArrayAttribute [
 
 	"
