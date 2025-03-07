@@ -29,7 +29,8 @@ Class {
 		'segment',
 		'segprt',
 		'commentLine',
-		'anyLine'
+		'anyLine',
+		'lastLine'
 	],
 	#category : 'EsopeImporter-Importer',
 	#package : 'EsopeImporter',
@@ -43,6 +44,8 @@ PPEsopeGrammar class >> getSourceFromFile: filename [
 
 { #category : 'grammar' }
 PPEsopeGrammar >> anyLine [
+	"The order between commentLine and fortranLine is important"
+
 	^ commentLine
 	/ fortranLine
 	/ emptyLine
@@ -118,9 +121,9 @@ PPEsopeGrammar >> file [
 		/ segsup
 	   "No-Esope construct"
 	   / include 
-		"The order between commentLine and fortranLine is important"
 		/ anyLine
-	) plus
+	) plus ,
+	lastLine
 ]
 
 { #category : 'grammar' }
@@ -160,6 +163,15 @@ PPEsopeGrammar >> includeName [
 		, (self terminal: $>)
 		) 
 	) flatten
+]
+
+{ #category : 'grammar' }
+PPEsopeGrammar >> lastLine [
+	"Same as fortranLine but with option endOfLine
+	 in case there is no return at the end of the file"
+
+	^ endOfLine negate star flatten
+	, endOfLine optional
 ]
 
 { #category : 'tokens' }
@@ -215,6 +227,7 @@ PPEsopeGrammar >> segsup [
 
 { #category : 'grammar' }
 PPEsopeGrammar >> start [
+
 	^file end
 ]
 

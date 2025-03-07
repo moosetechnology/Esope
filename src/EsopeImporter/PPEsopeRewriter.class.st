@@ -32,7 +32,7 @@ PPEsopeRewriter >> applySlashTransformation: inputSource [
 		regex := '\(\s?(\/)[^/]' asRegexIgnoringCase.
 		index := 1.
 		(regex matchingRangesIn: inputSource)
-		do: [ :interval | "1halt".
+		do: [ :interval |
 			oStream << (inputSource copyFrom: index to: interval first);
 				  	  << 'S__';
 				     << (inputSource copyFrom: interval first + 1 to: interval last).
@@ -177,8 +177,8 @@ PPEsopeRewriter >> fortranLine [
 	, endOfLine"
 
 	^ super fortranLine
-	==> [ :nodes |  | line | 
-	  line := self sanitize: nodes first.
+	==> [ :nodes |  | line |
+	  line := self sanitizeLineWithTab: nodes first.
 	  stream
 		  << ((self isCommentStatement: line)
 				   ifTrue:  [ line ]
@@ -270,6 +270,24 @@ PPEsopeRewriter >> isIfLogicalStatementFollowedBySegmentCommand: textLine [
 		ifFalse: [ false ]
 ]
 
+{ #category : 'rules' }
+PPEsopeRewriter >> lastLine [
+	" endOfLine negate star flatten
+	, endOfLine optional
+	
+	if last line contains something it means it does not finish with return
+	in that case, add one
+	Note: last line should not need to be checked for any Esope stuff"
+
+	^ super lastLine
+	==> [ :nodes |  | line |
+	  line := self sanitizeLineWithTab: nodes first.
+	  stream
+		  << line trimRight .
+		line ifNotEmpty: [ stream << OSPlatform current lineEnding ]
+	]
+]
+
 { #category : 'utilities' }
 PPEsopeRewriter >> logicalOperators [
 
@@ -326,7 +344,7 @@ PPEsopeRewriter >> processLinesInsideSegment: anOrderedCollection [
 		self addLineSeparator"""
 
 	anOrderedCollection do: [ :line | "option1"
-		line at: 1 put: (self sanitize: line first).
+		line at: 1 put: (self sanitizeLineWithTab: line first).
 		(self contains: line keyword: 'pointeur') ifTrue: [ line at: 1 put: self commentAnnotation , '   ' ].
 		line do: [ :part | part ifNotNil: [ stream << part value ] ] ]
 ]
@@ -370,13 +388,14 @@ PPEsopeRewriter >> rewriteFrom: esopeFile to: annotatedFile [
 	"Note: end-of-line character may be an issue on none Linux computers
 	 Could use `OSPlatform current lineEnding` to get the 'correct line-ending'"
 
-	self parse: esopeFile contents.
-	
+	self parse: esopeFile contents onError: [ Error signal: 'Rewriting error' ].
+
 	annotatedFile writeStreamDo: [ :fileStream |  fileStream << self generatedCode ]
 ]
 
 { #category : 'utilities' }
-PPEsopeRewriter >> sanitize: aString [
+PPEsopeRewriter >> sanitizeLineWithTab: aString [
+	"replaces tab by spaces at the start of a line"
 
 	| firstSixChars index |
 	firstSixChars := aString size < 6 
