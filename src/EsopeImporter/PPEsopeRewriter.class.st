@@ -370,8 +370,8 @@ PPEsopeRewriter >> rewriteFrom: esopeFile to: annotatedFile [
 	"Note: end-of-line character may be an issue on none Linux computers
 	 Could use `OSPlatform current lineEnding` to get the 'correct line-ending'"
 
-	self parse: esopeFile contents.
-	
+	self parse: esopeFile contents onError: [ Error signal: 'Rewriting error' ].
+
 	annotatedFile writeStreamDo: [ :fileStream |  fileStream << self generatedCode ]
 ]
 
