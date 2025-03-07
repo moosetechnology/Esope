@@ -154,7 +154,7 @@ EsopeRewriterTest >> testNoEndOfLine [
       end'.
 	self parse: sourcecode.
 
-	self assert: parser generatedCode equals: sourcecode , String cr
+	self assert: parser generatedCode equals: sourcecode , OSPlatform current lineEnding
 ]
 
 { #category : 'tests' }

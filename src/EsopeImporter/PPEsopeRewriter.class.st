@@ -32,7 +32,7 @@ PPEsopeRewriter >> applySlashTransformation: inputSource [
 		regex := '\(\s?(\/)[^/]' asRegexIgnoringCase.
 		index := 1.
 		(regex matchingRangesIn: inputSource)
-		do: [ :interval | "1halt".
+		do: [ :interval |
 			oStream << (inputSource copyFrom: index to: interval first);
 				  	  << 'S__';
 				     << (inputSource copyFrom: interval first + 1 to: interval last).
@@ -276,16 +276,15 @@ PPEsopeRewriter >> lastLine [
 	, endOfLine optional
 	
 	if last line contains something it means it does not finish with return
-	in that case, add one"
+	in that case, add one
+	Note: last line should not need to be checked for any Esope stuff"
 
 	^ super lastLine
 	==> [ :nodes |  | line |
-	  line := self sanitize: nodes first.
+	  line := self sanitizeLineWithTab: nodes first.
 	  stream
-		  << ((self isCommentStatement: line)
-				   ifTrue:  [ line ]
-				   ifFalse: [ self applyTransformation: line ]).
-		line ifNotEmpty: [ stream cr ]
+		  << line trimRight .
+		line ifNotEmpty: [ stream << OSPlatform current lineEnding ]
 	]
 ]
 
