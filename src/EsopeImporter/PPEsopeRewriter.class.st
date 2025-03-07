@@ -178,7 +178,7 @@ PPEsopeRewriter >> fortranLine [
 
 	^ super fortranLine
 	==> [ :nodes |  | line |
-	  line := self sanitize: nodes first.
+	  line := self sanitizeLineWithTab: nodes first.
 	  stream
 		  << ((self isCommentStatement: line)
 				   ifTrue:  [ line ]
@@ -345,7 +345,7 @@ PPEsopeRewriter >> processLinesInsideSegment: anOrderedCollection [
 		self addLineSeparator"""
 
 	anOrderedCollection do: [ :line | "option1"
-		line at: 1 put: (self sanitize: line first).
+		line at: 1 put: (self sanitizeLineWithTab: line first).
 		(self contains: line keyword: 'pointeur') ifTrue: [ line at: 1 put: self commentAnnotation , '   ' ].
 		line do: [ :part | part ifNotNil: [ stream << part value ] ] ]
 ]
@@ -395,7 +395,7 @@ PPEsopeRewriter >> rewriteFrom: esopeFile to: annotatedFile [
 ]
 
 { #category : 'utilities' }
-PPEsopeRewriter >> sanitize: aString [
+PPEsopeRewriter >> sanitizeLineWithTab: aString [
 	"replaces tab by spaces at the start of a line"
 
 	| firstSixChars index |
