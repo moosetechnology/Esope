@@ -377,6 +377,7 @@ PPEsopeRewriter >> rewriteFrom: esopeFile to: annotatedFile [
 
 { #category : 'utilities' }
 PPEsopeRewriter >> sanitize: aString [
+	"replaces tab by spaces at the start of a line"
 
 	| firstSixChars index |
 	firstSixChars := aString size < 6 
