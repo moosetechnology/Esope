@@ -147,6 +147,17 @@ EsopeRewriterTest >> testFortranLineStartWithTab [
 ]
 
 { #category : 'tests' }
+EsopeRewriterTest >> testNoEndOfLine [
+
+	| sourcecode |
+	sourcecode := '      function toto
+      end'.
+	self parse: sourcecode.
+
+	self assert: parser generatedCode equals: sourcecode , String cr
+]
+
+{ #category : 'tests' }
 EsopeRewriterTest >> testNoTranslateFormat [
 
 	| sourcecode |

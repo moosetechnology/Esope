@@ -177,7 +177,7 @@ PPEsopeRewriter >> fortranLine [
 	, endOfLine"
 
 	^ super fortranLine
-	==> [ :nodes |  | line | 
+	==> [ :nodes |  | line |
 	  line := self sanitize: nodes first.
 	  stream
 		  << ((self isCommentStatement: line)
@@ -268,6 +268,25 @@ PPEsopeRewriter >> isIfLogicalStatementFollowedBySegmentCommand: textLine [
 	^ (textLine trimLeft beginsWith: 'if' caseSensitive: false)
 		ifTrue:  [ self containsSegmentCommand: textLine ]
 		ifFalse: [ false ]
+]
+
+{ #category : 'rules' }
+PPEsopeRewriter >> lastLine [
+	" endOfLine negate star flatten
+	, endOfLine optional
+	
+	if last line contains something it means it does not finish with return
+	in that case, add one"
+
+	^ super lastLine
+	==> [ :nodes |  | line |
+	  line := self sanitize: nodes first.
+	  stream
+		  << ((self isCommentStatement: line)
+				   ifTrue:  [ line ]
+				   ifFalse: [ self applyTransformation: line ]).
+		line ifNotEmpty: [ stream cr ]
+	]
 ]
 
 { #category : 'utilities' }

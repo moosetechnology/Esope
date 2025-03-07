@@ -165,6 +165,15 @@ PPEsopeGrammar >> includeName [
 	) flatten
 ]
 
+{ #category : 'grammar' }
+PPEsopeGrammar >> lastLine [
+	"Same as fortranLine but with option endOfLine
+	 in case there is no return at the end of the file"
+
+	^ endOfLine negate star flatten
+	, endOfLine optional
+]
+
 { #category : 'tokens' }
 PPEsopeGrammar >> optionalBlanks [
 
@@ -218,6 +227,7 @@ PPEsopeGrammar >> segsup [
 
 { #category : 'grammar' }
 PPEsopeGrammar >> start [
+
 	^file end
 ]
 
