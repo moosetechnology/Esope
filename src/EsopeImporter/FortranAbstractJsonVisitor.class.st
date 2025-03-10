@@ -259,7 +259,7 @@ FortranAbstractJsonVisitor >> visitCloseStatement: aCloseStatementNode [
 
 { #category : 'visiting statement' }
 FortranAbstractJsonVisitor >> visitComment: aCommentNode [
-	1halt.
+
 	^{ self visitSpan: (aCommentNode at: 'span') .
 	  aCommentNode at: 'comment' }
 	
@@ -1178,6 +1178,16 @@ FortranAbstractJsonVisitor >> visitRange: aRangeNode [
  	 self visitJsonElement: (aRangeNode at: 'lower') .
  	 self visitJsonElement: (aRangeNode at: 'upper') .
  	 self visitJsonElement: (aRangeNode at: 'stride')  }
+]
+
+{ #category : 'visiting statement' }
+FortranAbstractJsonVisitor >> visitRead2Statement: aStatementNode [ 
+
+	^{
+	  (self visitSpan: (aStatementNode at: 'span')).
+	  (self visitJsonElement: (aStatementNode at: 'format')).
+	  (self visitArguments: (aStatementNode at: 'arguments')) 
+	}
 ]
 
 { #category : 'visiting statement' }
