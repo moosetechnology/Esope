@@ -35,6 +35,13 @@ FamixEsopeTEntityCreator >> newCommandSegadj [
 ]
 
 { #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegcop [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegcop new
+]
+
+{ #category : 'entity creation' }
 FamixEsopeTEntityCreator >> newCommandSegdes [
 
 	<generated>
@@ -46,6 +53,13 @@ FamixEsopeTEntityCreator >> newCommandSegini [
 
 	<generated>
 	^ self add: FamixEsopeCommandSegini new
+]
+
+{ #category : 'entity creation' }
+FamixEsopeTEntityCreator >> newCommandSegmov [
+
+	<generated>
+	^ self add: FamixEsopeCommandSegmov new
 ]
 
 { #category : 'entity creation' }
@@ -88,11 +102,4 @@ FamixEsopeTEntityCreator >> newSegment [
 
 	<generated>
 	^ self add: FamixEsopeSegment new
-]
-
-{ #category : 'entity creation' }
-FamixEsopeTEntityCreator >> newSegmentParameter [
-
-	<generated>
-	^ self add: FamixEsopeSegmentParameter new
 ]
