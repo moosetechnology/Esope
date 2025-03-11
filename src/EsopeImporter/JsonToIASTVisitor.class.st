@@ -713,6 +713,14 @@ JsonToIASTVisitor >> visitProgram_units: aCollection [
 ]
 
 { #category : 'visiting statement' }
+JsonToIASTVisitor >> visitRead2Statement: aReadStatementNode [
+
+	^ (super visitRead2Statement: aReadStatementNode)
+		  entityName: 'read';
+		  yourself
+]
+
+{ #category : 'visiting statement' }
 JsonToIASTVisitor >> visitReadStatement: aReadStatementNode [
 
 	^ (super visitReadStatement: aReadStatementNode)
