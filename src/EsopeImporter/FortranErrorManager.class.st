@@ -28,8 +28,10 @@ FortranErrorManager >> enterFile: aFilename [
 
 { #category : 'accessing' }
 FortranErrorManager >> error: anException [
+	"if #stop is true, raises an error. If it's false, record the error, unless it is a Halt (ie. debugging)"
 
 	stop ifTrue: [ anException pass ].
+
 	(anException isKindOf: Halt) ifTrue: [ anException pass ].
 
 	errors add: (
