@@ -11,10 +11,9 @@ change `/path/to/...` in the importer initialiser, regardless of your project's 
 ```st
 importer := FortranProjectImporter new.
 
-model := importer 
+importer 
 	sourceFolder: '/path/to/project/rootdir'; 
-	includeFolder: '/path/to/include/folder'; 
-	import
+	includeFolder: '/path/to/include/folder'
 
 ```
 ### Construct the model
@@ -33,15 +32,29 @@ This is done in various steps (see `#importSteps`):
 - resolve  symbols in Famix
 
 
+### Managing import errors
 
-
-### Check the importer errors
-
-If an error occurs while importing the project, it will be reported to the importer's `errorHandler` instance variable
+Importing errors are recorded by the importer's `errorHandler`
 
 ```st
 error := importer errorHandler.
 ```
+
+You can also list all errors after the import with:
+```st
+importer errors.
+```
+
+Additional checking can be run on the final model:
+```st
+importer withSanityChecks: true.
+```
+
+Finally, for debugging, you can instruct the importer to stop at errors:
+```st
+importer stopOnError: true.
+```
+
 "
 Class {
 	#name : 'FortranProjectImporter',
@@ -440,8 +453,7 @@ FortranProjectImporter >> initialize [
 
 	super initialize.
 
-	errorHandler := FortranErrorManager new.
-	errorHandler stopOnError: self stopOnError.
+	errorHandler := FortranErrorManager new
 
 ]
 
@@ -574,13 +586,13 @@ FortranProjectImporter >> sourceFolder: folder [
 { #category : 'error management' }
 FortranProjectImporter >> stopOnError [
 
-	^ stopOnError ifNil: [ false ]
+	^errorHandler stop
 ]
 
 { #category : 'error management' }
 FortranProjectImporter >> stopOnError: anObject [
 
-	stopOnError := anObject
+	errorHandler stopOnError: anObject
 ]
 
 { #category : 'private - helpers' }
