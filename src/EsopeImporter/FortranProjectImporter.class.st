@@ -453,8 +453,7 @@ FortranProjectImporter >> initialize [
 
 	super initialize.
 
-	errorHandler := FortranErrorManager new.
-	errorHandler stopOnError: self stopOnError.
+	errorHandler := FortranErrorManager new
 
 ]
 
@@ -587,13 +586,13 @@ FortranProjectImporter >> sourceFolder: folder [
 { #category : 'error management' }
 FortranProjectImporter >> stopOnError [
 
-	^ stopOnError ifNil: [ false ]
+	^errorHandler stop
 ]
 
 { #category : 'error management' }
 FortranProjectImporter >> stopOnError: anObject [
 
-	stopOnError := anObject
+	errorHandler stopOnError: anObject
 ]
 
 { #category : 'private - helpers' }
