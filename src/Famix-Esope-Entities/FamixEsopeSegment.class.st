@@ -24,11 +24,6 @@ The statement is included between the words `SEGMENT` and `ENDSEGMENT`. Remember
 ## Relations
 ======================
 
-### Children
-| Relation | Origin | Opposite | Type | Comment |
-|---|
-| `segmentParameters` | `FamixEsopeSegment` | `segment` | `FamixEsopeSegmentParameter` | |
-
 ### Outgoing dependencies
 | Relation | Origin | Opposite | Type | Comment |
 |---|
@@ -42,9 +37,6 @@ Class {
 	#superclass : 'FamixFortranUserDefinedType',
 	#traits : 'FamixTWithAccesses',
 	#classTraits : 'FamixTWithAccesses classTrait',
-	#instVars : [
-		'#segmentParameters => FMMany type: #FamixEsopeSegmentParameter opposite: #segment'
-	],
 	#category : 'Famix-Esope-Entities-Entities',
 	#package : 'Famix-Esope-Entities',
 	#tag : 'Entities'
@@ -57,33 +49,4 @@ FamixEsopeSegment class >> annotation [
 	<package: #'Famix-Esope-Entities'>
 	<generated>
 	^ self
-]
-
-{ #category : 'adding' }
-FamixEsopeSegment >> addSegmentParameter: anObject [
-	<generated>
-	^ self segmentParameters add: anObject
-]
-
-{ #category : 'accessing' }
-FamixEsopeSegment >> segmentParameters [
-	"Relation named: #segmentParameters type: #FamixEsopeSegmentParameter opposite: #segment"
-
-	<generated>
-	<derived>
-	^ segmentParameters
-]
-
-{ #category : 'accessing' }
-FamixEsopeSegment >> segmentParameters: anObject [
-
-	<generated>
-	segmentParameters value: anObject
-]
-
-{ #category : 'navigation' }
-FamixEsopeSegment >> segmentParametersGroup [
-	<generated>
-	<navigation: 'SegmentParameters'>
-	^ MooseSpecializedGroup withAll: self segmentParameters asSet
 ]

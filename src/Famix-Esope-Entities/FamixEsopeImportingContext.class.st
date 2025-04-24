@@ -32,6 +32,13 @@ FamixEsopeImportingContext >> importCommandSegadj [
 ]
 
 { #category : 'importing' }
+FamixEsopeImportingContext >> importCommandSegcop [
+
+	<generated>
+	^ self importConcreteEntity: (self class fm3ClassNamed: #CommandSegcop)
+]
+
+{ #category : 'importing' }
 FamixEsopeImportingContext >> importCommandSegdes [
 
 	<generated>
@@ -43,6 +50,13 @@ FamixEsopeImportingContext >> importCommandSegini [
 
 	<generated>
 	^ self importConcreteEntity: (self class fm3ClassNamed: #CommandSegini)
+]
+
+{ #category : 'importing' }
+FamixEsopeImportingContext >> importCommandSegmov [
+
+	<generated>
+	^ self importConcreteEntity: (self class fm3ClassNamed: #CommandSegmov)
 ]
 
 { #category : 'importing' }
@@ -87,13 +101,6 @@ FamixEsopeImportingContext >> importSegment [
 	^ self importConcreteEntity: (self class fm3ClassNamed: #Segment)
 ]
 
-{ #category : 'importing' }
-FamixEsopeImportingContext >> importSegmentParameter [
-
-	<generated>
-	^ self importConcreteEntity: (self class fm3ClassNamed: #SegmentParameter)
-]
-
 { #category : 'testing' }
 FamixEsopeImportingContext >> shouldImportCommandSegact [
 
@@ -109,6 +116,13 @@ FamixEsopeImportingContext >> shouldImportCommandSegadj [
 ]
 
 { #category : 'testing' }
+FamixEsopeImportingContext >> shouldImportCommandSegcop [
+
+	<generated>
+	^ self shouldImport: #CommandSegcop
+]
+
+{ #category : 'testing' }
 FamixEsopeImportingContext >> shouldImportCommandSegdes [
 
 	<generated>
@@ -120,6 +134,13 @@ FamixEsopeImportingContext >> shouldImportCommandSegini [
 
 	<generated>
 	^ self shouldImport: #CommandSegini
+]
+
+{ #category : 'testing' }
+FamixEsopeImportingContext >> shouldImportCommandSegmov [
+
+	<generated>
+	^ self shouldImport: #CommandSegmov
 ]
 
 { #category : 'testing' }
@@ -162,11 +183,4 @@ FamixEsopeImportingContext >> shouldImportSegment [
 
 	<generated>
 	^ self shouldImport: #Segment
-]
-
-{ #category : 'testing' }
-FamixEsopeImportingContext >> shouldImportSegmentParameter [
-
-	<generated>
-	^ self shouldImport: #SegmentParameter
 ]

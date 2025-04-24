@@ -453,6 +453,32 @@ IASTToFamixVisitorTest >> testFamixEsopeCommandSegini [
 ]
 
 { #category : 'tests-esope' }
+IASTToFamixVisitorTest >> testFamixEsopeCommandSeginiCopy [
+
+	"
+	segini new=old
+	"
+
+	| famixSegcop iastSegini progFile |
+	self skip: #TODO.
+
+	iastSegini := self defaultSegmentComand: 'segini' on: 'new=old'.
+
+	programFile body: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: { iastSegini };
+			 yourself }.
+
+	progFile := programFile accept: visitor.
+	
+	self assert: progFile programUnits size equals: 1.
+
+	self assert: (visitor model allWithSubTypesOf: FamixEsopeCommand) size equals: 1.
+	famixSegcop := (visitor model allWithSubTypesOf: FamixEsopeCommand) anyOne.
+	self assert: famixSegcop class equals: FamixEsopeCommandSegcop.
+]
+
+{ #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixEsopePointerAccess [
 	"SUBROUTINE sub
       ptr.att = 5

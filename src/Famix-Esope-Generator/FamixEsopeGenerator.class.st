@@ -83,14 +83,15 @@ Class {
 		'pointer',
 		'intrinsicRoutine',
 		'intrinsicProcedure',
-		'segmentParameter',
 		'userDefinedType',
 		'commandSegini',
 		'commandSegadj',
 		'commandSegsup',
 		'commandSegprt',
 		'commandSegact',
-		'commandSegdes'
+		'commandSegdes',
+		'commandSegcop',
+		'commandSegmov'
 	],
 	#category : 'Famix-Esope-Generator',
 	#package : 'Famix-Esope-Generator'
@@ -287,18 +288,18 @@ FamixEsopeGenerator >> defineClasses [
 	commandSegadj := self newClassNamed: #CommandSegadj.
 	commandSegsup := self newClassNamed: #CommandSegsup.
 	commandSegprt := self newClassNamed: #CommandSegprt.
+	commandSegcop := self newClassNamed: #CommandSegcop.
+	commandSegmov := self newClassNamed: #CommandSegmov.
 	commandSegact := self newClassNamed: #CommandSegact.
 	commandSegdes := self newClassNamed: #CommandSegdes.
 
-	segmentParameter := self
-		                      newClassNamed: #SegmentParameter
-		                      comment: self segmentParameterComment.
-
 	implicitPointer := self
-		                   newClassNamed: #ImplicitPointer
-		                   comment: self commentImplicitPointer.
+		newClassNamed: #ImplicitPointer
+		comment: self commentImplicitPointer.
 	
-	intrinsicProcedure := self newClassNamed: #IntrinsicProcedure comment: 'Procedure defined in esope itself'.
+	intrinsicProcedure := self 
+		newClassNamed: #IntrinsicProcedure 
+		comment: 'Procedure defined in esope itself'.
 	
 	intrinsicRoutine := self remoteEntity: #IntrinsicRoutine withPrefix: #FamixF77.
 		
@@ -322,6 +323,8 @@ FamixEsopeGenerator >> defineHierarchy [
 	commandSegadj --|> command.
 	commandSegsup --|> command.
 	commandSegprt --|> command.
+	commandSegcop --|> command.
+	commandSegmov --|> command.
 	commandSegact --|> command.
 	commandSegdes --|> command.
 
@@ -333,8 +336,6 @@ FamixEsopeGenerator >> defineHierarchy [
 
 	segment --|> userDefinedType.
 	segment --|> #TWithAccesses.
-
-	segmentParameter --|> variable
 ]
 
 { #category : 'definition' }
@@ -342,7 +343,11 @@ FamixEsopeGenerator >> defineRelations [
 
 	super defineRelations.
 
-	segment <>-* segmentParameter
+	(commandSegcop property: #newAccess)
+	- (access property: #newAccessOwner).
+
+	(commandSegmov property: #changedAccess)
+	- (access property: #changedAccessOwner)  
 ]
 
 { #category : 'definition' }
