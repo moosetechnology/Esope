@@ -352,9 +352,11 @@ FortranProjectImporter >> import [
 
 	srcFolder ifNil: [ Warning signal: 'Set source folder first' ].
 
-	UIManager default displayProgress: ''
-		from: 0 to: (self importSteps size - 1)
-		during: [:bar |
+	UIManager default 
+		displayProgress: ''
+		from: 0 
+		to: (self importSteps size - 1)
+		during: [ :bar |
 			self importSteps withIndexDo: [ :step :i |
 				bar label: step key.
 				bar current: i.
