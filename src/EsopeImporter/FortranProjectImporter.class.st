@@ -79,6 +79,19 @@ Class {
 	#tag : 'Importer'
 }
 
+{ #category : 'constants' }
+FortranProjectImporter class >> extensionsEsope [
+	"Add F and fc as esope files in order to let the ReWriter handle the include statement for this type of file"
+
+	^#(E ec e F fc)
+]
+
+{ #category : 'constants' }
+FortranProjectImporter class >> extensionsFortran [
+
+	^#(f for)
+]
+
 { #category : 'importing' }
 FortranProjectImporter class >> import [
 	<script>
@@ -107,6 +120,24 @@ FortranProjectImporter class >> parseString: fortranCode [
 		parseFortran77File: srcFile to: destFile.
 
 	^destFile contents
+]
+
+{ #category : 'constants' }
+FortranProjectImporter class >> workingEsopeName [
+
+	^'tmpEsopeImport'
+]
+
+{ #category : 'constants' }
+FortranProjectImporter class >> workingFortranName [
+
+	^'tmpFortranImport'
+]
+
+{ #category : 'constants' }
+FortranProjectImporter class >> workingJsonName [
+	
+	^'tmpJsonImport'
 ]
 
 { #category : 'private - files' }
@@ -146,7 +177,7 @@ FortranProjectImporter >> collectFilesIn: srcFileReference withExtensions: exten
 { #category : 'private - files' }
 FortranProjectImporter >> collectIncludedFileNames [
 
-	^(self collectFilesIn: srcFolder withExtensions: self extensionsEsope)
+	^(self collectFilesIn: srcFolder withExtensions: FortranProjectImporter extensionsEsope)
 		flatCollectAsSet: [ :srcFileReference | self includedNamesIn: srcFileReference]
 ]
 
@@ -231,26 +262,12 @@ FortranProjectImporter >> esopeToFortran [
 			to: self tempFortranFolder
 		].
 
-	(self collectFilesIn: srcFolder withExtensions: self extensionsEsope) do: [ :srcFile |
-		"self copy: srcFile from: srcFolder to: (self tempEsopeFolder / 'src')."
+	(self collectFilesIn: srcFolder withExtensions: FortranProjectImporter extensionsEsope) do: [ :srcFile |
 		self
 			deEsopify: srcFile
 			from: srcFolder
 			to: (self tempFortranFolder / 'src')
 		]
-]
-
-{ #category : 'constants' }
-FortranProjectImporter >> extensionsEsope [
-	"Add F and fc as esope files in order to let the ReWriter handle the include statement for this type of file"
-
-	^#(E ec e F fc)
-]
-
-{ #category : 'constants' }
-FortranProjectImporter >> extensionsFortran [
-
-	^#(f for)
 ]
 
 { #category : 'accessing' }
@@ -309,7 +326,7 @@ FortranProjectImporter >> fortranToJsonAST [
 	(self collectFilesIn: self tempFortranFolder) do: [ :localPath |
 		self parseFortran77: localPath from: self tempFortranFolder to: self tempJsonFolder ].
 
-	(self collectFilesIn: srcFolder withExtensions: self extensionsFortran) do: [ :projectPath |
+	(self collectFilesIn: srcFolder withExtensions: FortranProjectImporter extensionsFortran) do: [ :projectPath |
 		| localPath |
 		localPath := projectPath relativeTo: srcFolder.
 		"projectPath asFileReference
@@ -614,7 +631,7 @@ FortranProjectImporter >> tempEsopeFolder [
 
 	^tempEsopeFolder
 		ifNil: [
-			tempEsopeFolder := self ensureEmptyFolder: self workingEsopeName asFileReference
+			tempEsopeFolder := self ensureEmptyFolder: FortranProjectImporter workingEsopeName asFileReference
 		]
 
 ]
@@ -624,7 +641,7 @@ FortranProjectImporter >> tempFortranFolder [
 
 	^tempFortranFolder
 		ifNil: [
-			tempFortranFolder := self ensureEmptyFolder: self workingFortranName asFileReference
+			tempFortranFolder := self ensureEmptyFolder: FortranProjectImporter workingFortranName asFileReference
 		]
 
 ]
@@ -634,7 +651,7 @@ FortranProjectImporter >> tempJsonFolder [
 
 	^tempJsonFolder
 		ifNil: [
-			tempJsonFolder := self ensureEmptyFolder: self workingJsonName asFileReference
+			tempJsonFolder := self ensureEmptyFolder: FortranProjectImporter workingJsonName asFileReference
 		]
 
 ]
@@ -660,25 +677,7 @@ FortranProjectImporter >> withSanityChecks: anObject [
 	withSanityChecks := anObject
 ]
 
-{ #category : 'constants' }
-FortranProjectImporter >> workingEsopeName [
-
-	^'tmpEsopeImport'
-]
-
-{ #category : 'constants' }
-FortranProjectImporter >> workingFortranName [
-
-	^'tmpFortranImport'
-]
-
-{ #category : 'constants' }
-FortranProjectImporter >> workingJsonName [
-	
-	^'tmpJsonImport'
-]
-
-{ #category : 'constants' }
+{ #category : 'private - helpers' }
 FortranProjectImporter >> writeFakeEsopeProgramUnit: name from: content on: writeStream [
 
 	writeStream
