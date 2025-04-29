@@ -72,7 +72,9 @@ Class {
 		'resolver',
 		'withSanityChecks',
 		'includeFolder',
-		'srcFolder'
+		'srcFolder',
+		'withEsope',
+		'fortranVersion'
 	],
 	#category : 'EsopeImporter-Importer',
 	#package : 'EsopeImporter',
@@ -89,7 +91,7 @@ FortranProjectImporter class >> extensionsEsope [
 { #category : 'constants' }
 FortranProjectImporter class >> extensionsFortran [
 
-	^#(f for)
+	^#(f for F90)
 ]
 
 { #category : 'importing' }
@@ -224,6 +226,13 @@ FortranProjectImporter >> defaultFileEncoding: aString [
 	defaultFileEncoding := aString
 ]
 
+{ #category : 'accessing' }
+FortranProjectImporter >> defaultFortranVersion [
+	"known Fortran versions: Fortran[66/77/77Legacy/77Extended/90/2003]
+	 66 77 77l 77e 90 2003"
+	^'77l'
+]
+
 { #category : 'private - files' }
 FortranProjectImporter >> ensureEmptyFolder: folder [
 
@@ -255,6 +264,8 @@ FortranProjectImporter >> esopeToFortran [
 	"'de-esopifying Esope files to be able to parse them in Fortran
 	The result goes in the FortranWorkingDirectory"
 
+	withEsope ifFalse: [ ^self ].
+
 	(self collectFilesIn: self tempEsopeFolder) do: [ :path |
 		self
 			deEsopify: path
@@ -273,7 +284,7 @@ FortranProjectImporter >> esopeToFortran [
 { #category : 'accessing' }
 FortranProjectImporter >> f77parser [
 
-	^ 'fortran-src-extras serialize -t json -v77l encode '
+	^ 'fortran-src-extras serialize -t json -v' , self fortranVersion , ' encode '
 ]
 
 { #category : 'private - import' }
@@ -332,6 +343,19 @@ FortranProjectImporter >> fortranToJsonAST [
 		"projectPath asFileReference
 			copyTo: (self appendPath: localPath toParent: tempFortranFolder / 'src')."
 		self parseFortran77: projectPath from: srcFolder to: self tempJsonFolder / 'src' ]
+]
+
+{ #category : 'accessing' }
+FortranProjectImporter >> fortranVersion [
+
+	^fortranVersion ifNil: [ self defaultFortranVersion ]
+]
+
+{ #category : 'accessing' }
+FortranProjectImporter >> fortranVersion: version [
+	(#('66' '77' '77l' '77e' '90' '2003') includes: version)
+		ifFalse: [ Error signal: 'Unknown Fortran version: ' , version , ' choose one of 66 77 77l 77e 90 2003' ].
+	fortranVersion := version
 ]
 
 { #category : 'private - files' }
@@ -434,6 +458,8 @@ FortranProjectImporter >> includeFolder: folder [
 { #category : 'run' }
 FortranProjectImporter >> includedFilesToEsope [
 
+	withEsope ifFalse: [ ^self ].
+
 	self collectIncludedFileNames
 		do: [ :fileName |
 			errorHandler enterContext: fileName.
@@ -472,7 +498,10 @@ FortranProjectImporter >> initialize [
 
 	super initialize.
 
-	errorHandler := FortranErrorManager new
+	withEsope := true.
+
+	errorHandler := FortranErrorManager new.
+	errorHandler stopOnError: self stopOnError.
 
 ]
 
@@ -498,13 +527,17 @@ FortranProjectImporter >> jsonASTToIAST [
 			iastEntity := nil.
 			jsonDOM := nil.
 			errorHandler enterContext: jsonFile fullName.
+
 			[ jsonDOM := NeoJSONReader fromString: code ]
 			on: NeoJSONParseError
 			do: [  JsonASTParseException signal: code ].
+		
 		 	jsonDOM ifNotNil: [ iastEntity := visitor visitProgramFile: jsonDOM ].
+			
 			errorHandler leaveContext.
 			iastEntity
 		]
+	thenReject: #isNil
 
 ]
 
@@ -519,6 +552,12 @@ FortranProjectImporter >> newResolver [
 
 	^resolver := (FamixEsopeResolver on: famixModel)
 		errorHandler: errorHandler
+]
+
+{ #category : 'accessing' }
+FortranProjectImporter >> noEsope [
+
+	withEsope := false
 ]
 
 { #category : 'private - import' }
@@ -663,6 +702,12 @@ FortranProjectImporter >> unquoteIncludedFile: fileName [
 	^(#( $" $< ) includes: fileName first)
 		ifTrue: [ fileName copyFrom: 2 to: fileName size -1 ]
 		ifFalse: [ fileName ]
+]
+
+{ #category : 'accessing' }
+FortranProjectImporter >> withEsope [
+
+	^withEsope
 ]
 
 { #category : 'accessing' }
