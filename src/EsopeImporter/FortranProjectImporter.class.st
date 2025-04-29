@@ -72,7 +72,9 @@ Class {
 		'resolver',
 		'withSanityChecks',
 		'includeFolder',
-		'srcFolder'
+		'srcFolder',
+		'withEsope',
+		'fortranVersion'
 	],
 	#category : 'EsopeImporter-Importer',
 	#package : 'EsopeImporter',
@@ -254,6 +256,8 @@ FortranProjectImporter >> errors [
 FortranProjectImporter >> esopeToFortran [
 	"'de-esopifying Esope files to be able to parse them in Fortran
 	The result goes in the FortranWorkingDirectory"
+
+	withEsope ifFalse: [ ^self ].
 
 	(self collectFilesIn: self tempEsopeFolder) do: [ :path |
 		self
@@ -474,7 +478,10 @@ FortranProjectImporter >> initialize [
 
 	super initialize.
 
-	errorHandler := FortranErrorManager new
+	withEsope := true.
+
+	errorHandler := FortranErrorManager new.
+	errorHandler stopOnError: self stopOnError.
 
 ]
 
