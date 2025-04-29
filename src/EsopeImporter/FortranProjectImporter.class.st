@@ -499,6 +499,7 @@ FortranProjectImporter >> initialize [
 	super initialize.
 
 	withEsope := true.
+	withSanityChecks := true.
 
 	errorHandler := FortranErrorManager new.
 	errorHandler stopOnError: self stopOnError.
