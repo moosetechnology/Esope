@@ -273,7 +273,7 @@ FortranProjectImporter >> esopeToFortran [
 { #category : 'accessing' }
 FortranProjectImporter >> f77parser [
 
-	^ 'fortran-src-extras serialize -t json -v77l encode '
+	^ 'fortran-src-extras serialize -t json -v90 encode '
 ]
 
 { #category : 'private - import' }
@@ -434,6 +434,8 @@ FortranProjectImporter >> includeFolder: folder [
 { #category : 'run' }
 FortranProjectImporter >> includedFilesToEsope [
 
+	withEsope ifFalse: [ ^self ].
+
 	self collectIncludedFileNames
 		do: [ :fileName |
 			errorHandler enterContext: fileName.
@@ -498,13 +500,17 @@ FortranProjectImporter >> jsonASTToIAST [
 			iastEntity := nil.
 			jsonDOM := nil.
 			errorHandler enterContext: jsonFile fullName.
+
 			[ jsonDOM := NeoJSONReader fromString: code ]
 			on: NeoJSONParseError
 			do: [  JsonASTParseException signal: code ].
+		
 		 	jsonDOM ifNotNil: [ iastEntity := visitor visitProgramFile: jsonDOM ].
+			
 			errorHandler leaveContext.
 			iastEntity
 		]
+	thenReject: #isNil
 
 ]
 
@@ -519,6 +525,12 @@ FortranProjectImporter >> newResolver [
 
 	^resolver := (FamixEsopeResolver on: famixModel)
 		errorHandler: errorHandler
+]
+
+{ #category : 'accessing' }
+FortranProjectImporter >> noEsope [
+
+	withEsope := false
 ]
 
 { #category : 'private - import' }
@@ -663,6 +675,12 @@ FortranProjectImporter >> unquoteIncludedFile: fileName [
 	^(#( $" $< ) includes: fileName first)
 		ifTrue: [ fileName copyFrom: 2 to: fileName size -1 ]
 		ifFalse: [ fileName ]
+]
+
+{ #category : 'accessing' }
+FortranProjectImporter >> withEsope [
+
+	^withEsope
 ]
 
 { #category : 'accessing' }
