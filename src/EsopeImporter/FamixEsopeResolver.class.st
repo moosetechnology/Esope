@@ -15,7 +15,7 @@ Class {
 
 { #category : 'private-helper' }
 FamixEsopeResolver class >> esopeIntrinsicRoutines [
-	"The following routines will not be translated
+	"The following routines will not be translated -> see '#FASTEsopeObsoleteCommandRule >> invocationsToIgnore'
 		ooostp
 		ooossg
 		oooeta
@@ -23,8 +23,29 @@ FamixEsopeResolver class >> esopeIntrinsicRoutines [
 		desstr
 		oooxln ???
 	"
+	"
+		'rdstr' replacedBy 'load_str' '#FamixEsopeResolver class >> replaceCallByLoadStr:'
+		'wrstr' replacedBy 'store_str' '#FamixEsopeResolver class >> replaceCallByStoreStr:'
+	"
 
-	^#( oooeta ooossg ooostp oooxln actstr desstr inistr supstr ajpnt mypnt dupstr copstr typpnt dimstr )
+	^#( 
+		oooeta
+		ooossg
+		ooostp
+		oooxln
+		actstr
+		desstr
+		inistr
+		supstr
+		ajpnt
+		mypnt
+		dupstr
+		copstr
+		typpnt
+		dimstr
+		rdstr
+		wrstr
+	)
 ]
 
 { #category : 'private-helper' }
