@@ -91,7 +91,7 @@ FortranProjectImporter class >> extensionsEsope [
 { #category : 'constants' }
 FortranProjectImporter class >> extensionsFortran [
 
-	^#(f for)
+	^#(f for F90)
 ]
 
 { #category : 'importing' }
@@ -226,6 +226,13 @@ FortranProjectImporter >> defaultFileEncoding: aString [
 	defaultFileEncoding := aString
 ]
 
+{ #category : 'accessing' }
+FortranProjectImporter >> defaultFortranVersion [
+	"known Fortran versions: Fortran[66/77/77Legacy/77Extended/90/2003]
+	 66 77 77l 77e 90 2003"
+	^'77l'
+]
+
 { #category : 'private - files' }
 FortranProjectImporter >> ensureEmptyFolder: folder [
 
@@ -277,7 +284,7 @@ FortranProjectImporter >> esopeToFortran [
 { #category : 'accessing' }
 FortranProjectImporter >> f77parser [
 
-	^ 'fortran-src-extras serialize -t json -v90 encode '
+	^ 'fortran-src-extras serialize -t json -v' , self fortranVersion , ' encode '
 ]
 
 { #category : 'private - import' }
@@ -336,6 +343,19 @@ FortranProjectImporter >> fortranToJsonAST [
 		"projectPath asFileReference
 			copyTo: (self appendPath: localPath toParent: tempFortranFolder / 'src')."
 		self parseFortran77: projectPath from: srcFolder to: self tempJsonFolder / 'src' ]
+]
+
+{ #category : 'accessing' }
+FortranProjectImporter >> fortranVersion [
+
+	^fortranVersion ifNil: [ self defaultFortranVersion ]
+]
+
+{ #category : 'accessing' }
+FortranProjectImporter >> fortranVersion: version [
+	(#('66' '77' '77l' '77e' '90' '2003') includes: version)
+		ifFalse: [ Error signal: 'Unknown Fortran version: ' , version , ' choose one of 66 77 77l 77e 90 2003' ].
+	fortranVersion := version
 ]
 
 { #category : 'private - files' }
