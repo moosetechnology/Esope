@@ -3,7 +3,7 @@ Extension { #name : 'FamixF77IncludedFile' }
 { #category : '*EsopeImporter' }
 FamixF77IncludedFile >> allTypes [
 
-	"empty collection because because members of included files are treated by the including files"
+	"empty collection because members of included files are treated by the including files"
 
 	^#()
 ]
