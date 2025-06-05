@@ -902,7 +902,7 @@ IASTToFamixVisitorTest >> testFamixFortran77Comment [
 
 	entity := entity comments first.
 	self assert: entity class equals: FamixF77Comment.
-	self assert: entity content equals: ' a comment'.
+	self assert: entity sourceAnchor sourceText equals: ' a comment'.
 ]
 
 { #category : 'tests-fortran' }
@@ -924,7 +924,7 @@ IASTToFamixVisitorTest >> testFamixFortran77CommentInSubRoutine [
 
 	entity := entity comments first.
 	self assert: entity class equals: FamixF77Comment.
-	self assert: entity content equals: ' a comment'.
+	self assert: entity sourceAnchor sourceText equals: ' a comment'.
 ]
 
 { #category : 'tests-esope' }

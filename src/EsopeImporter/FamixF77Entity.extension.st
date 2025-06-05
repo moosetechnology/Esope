@@ -1,6 +1,14 @@
 Extension { #name : 'FamixF77Entity' }
 
 { #category : '*EsopeImporter' }
+FamixF77Entity >> declaredType: aType [
+
+	self assert: self mooseModel isNotNil.
+	self typing: (self mooseModel newEntityTyping declaredType: aType).
+
+]
+
+{ #category : '*EsopeImporter' }
 FamixF77Entity >> famixImportSanityCheck [
 	"nothing special by default"
 ]
