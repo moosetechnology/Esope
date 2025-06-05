@@ -6,7 +6,7 @@ FamixF77Variable >> famixImportSanityCheck [
 	super famixImportSanityCheck.
 
 	self sanityCheck: parentBehaviouralEntity isNotNil description: 'Variable ', name , ' without parentBehaviouralEntity'.
-	self sanityCheck: typing isNotNil description: 'Variable ', name , ' without declaredType'.
+	self sanityCheck: self declaredType isNotNil description: 'Variable ', name , ' without declaredType'.
 ]
 
 { #category : '*EsopeImporter' }
