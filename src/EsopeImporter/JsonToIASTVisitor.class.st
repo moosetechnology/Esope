@@ -280,6 +280,8 @@ JsonToIASTVisitor >> visitDeclarationStatement: aDeclarationStatementNode [
 
 { #category : 'visiting statement' }
 JsonToIASTVisitor >> visitDeclarator: aDeclaratorNode [
+	"span initial length type variable"
+
 	^self visitDeclaratorVariable: aDeclaratorNode
 ]
 
@@ -674,18 +676,18 @@ JsonToIASTVisitor >> visitParameterStatement: aParameterStatementNode [
 	"span declarators
 
 	 Variable in PARAMETER statement will come back as IASTVariable-s
-	 We need them to be IASTVarAccess"
+	 We also need them as IASTVarAccess"
 
 	| data |
 	data := super visitParameterStatement: aParameterStatementNode.
 
 	^data second collect: [ :v |
-		IASTVarAccess new
-			isWrite: true ;
+		IASTVariable new
 			entityName: v entityName ;
 			sourceAnchor: v sourceAnchor ;
 			yourself
 	]
+
 ]
 
 { #category : 'visiting prog-unit' }

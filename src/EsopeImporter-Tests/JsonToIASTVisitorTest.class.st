@@ -1185,7 +1185,7 @@ JsonToIASTVisitorTest >> testParameterStatement [
 	self assert: stmt size equals: 4.
 
 	stmt do: [ :each |
-		self assert: each class equals: IASTVarAccess ].
+		self assert: each class equals: IASTVariable ].
 	self
 		assertCollection: (stmt collect: #entityName)
 		hasSameElements: #(legere grave fatale finale).
