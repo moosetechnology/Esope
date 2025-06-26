@@ -61,6 +61,7 @@ IASTToFamixFortranVisitor >> initialize [
 
 	super initialize.
 	model := FamixEsopeModel new.
+	model setIntrinsicTypes.
 	f77sourcefile := ''
 ]
 
