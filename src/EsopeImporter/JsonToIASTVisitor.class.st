@@ -682,7 +682,8 @@ JsonToIASTVisitor >> visitParameterStatement: aParameterStatementNode [
 	data := super visitParameterStatement: aParameterStatementNode.
 
 	^data second collect: [ :v |
-		IASTVariable new
+		IASTVarAccess new
+			isWrite: true ;
 			entityName: v entityName ;
 			sourceAnchor: v sourceAnchor ;
 			yourself
