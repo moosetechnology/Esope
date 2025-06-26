@@ -288,6 +288,7 @@ JsonToIASTVisitor >> visitDeclarator: aDeclaratorNode [
 { #category : 'visiting statement' }
 JsonToIASTVisitor >> visitDeclaratorVariable: aDeclaratorVariableNode [
 	| data dimensions |
+
 	data := super visitDeclaratorVariable: (aDeclaratorVariableNode at: 'variable').
 	dimensions := (aDeclaratorVariableNode at: 'dims' ifAbsent: []) 
 		ifNotNil: [ :dims | self visitDims: dims ].
@@ -838,6 +839,13 @@ JsonToIASTVisitor >> visitUnary: aUnaryNode [
 	data := super visitUnary: aUnaryNode.
 
 	^data third ifNil: [ nil ] ifNotNil: [ :entity | entity ]
+]
+
+{ #category : 'visiting expression' }
+JsonToIASTVisitor >> visitUpper: aUpperNode [
+
+	^(self visitArrayDimensionBoundary: aUpperNode)
+		ifNil: [ IASTUnknownArrayDimension new ]
 ]
 
 { #category : 'visiting expression' }

@@ -854,6 +854,34 @@ IASTToFamixVisitorTest >> testFamixFortran77 [
 ]
 
 { #category : 'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77ArrayWithUnknownDimension [
+
+	| entity var |
+	var := self defaultVariable: 'array' withType: 'integer'.
+	var dimensions: { IASTUnknownArrayDimension new }.
+	programFile body: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: { var };
+			 yourself }.
+	programFile accept: visitor.
+	var := nil.
+
+	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
+
+	self assert: entity programUnits first localVariables size equals: 1.
+
+	var := entity programUnits first localVariables first.
+	self assert: var class equals: FamixF77Variable.
+	self assert: var name equals: 'array'.
+	self assert: var declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: var declaredType name equals: 'integer'.
+	self assert: var parentBehaviouralEntity isNotNil.
+	self
+		assert: var parentBehaviouralEntity
+		equals: entity programUnits first
+]
+
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77Call [
 	"subroutine mysub
       fct(msg)
