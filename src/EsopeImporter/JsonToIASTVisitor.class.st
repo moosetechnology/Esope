@@ -280,6 +280,8 @@ JsonToIASTVisitor >> visitDeclarationStatement: aDeclarationStatementNode [
 
 { #category : 'visiting statement' }
 JsonToIASTVisitor >> visitDeclarator: aDeclaratorNode [
+	"span initial length type variable"
+
 	^self visitDeclaratorVariable: aDeclaratorNode
 ]
 
