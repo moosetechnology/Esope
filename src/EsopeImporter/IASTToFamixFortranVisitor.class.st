@@ -297,6 +297,12 @@ IASTToFamixFortranVisitor >> visitIASTSubroutine: aSubroutine [
 ]
 
 { #category : 'visiting' }
+IASTToFamixFortranVisitor >> visitIASTUnknownArrayDimension: anIASTUnknownArrayDimension [
+
+	"nothing"
+]
+
+{ #category : 'visiting' }
 IASTToFamixFortranVisitor >> visitIASTVarAccess: aVarAccess [
 
 	aVarAccess isExternal ifTrue: [
