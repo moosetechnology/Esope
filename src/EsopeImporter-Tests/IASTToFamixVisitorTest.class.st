@@ -192,7 +192,6 @@ IASTToFamixVisitorTest >> setUp [
 	
 	programFile := IASTProgramFile new filename: 'fortran77.f' ; yourself.
 	visitor := IASTToFamixFortranVisitor new.
-	visitor model setIntrinsicTypes 
 ]
 
 { #category : 'tests-fortran' }
