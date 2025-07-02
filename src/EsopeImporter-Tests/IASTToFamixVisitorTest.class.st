@@ -453,8 +453,7 @@ IASTToFamixVisitorTest >> testFamixEsopeCommandSegini [
 	self assert: famixSegini class equals: FamixEsopeCommandSegini.
 	self assert: famixSegini accessor class equals: FamixF77PUSubroutine.
 	self assert: famixSegini accessor name equals: 'sub'.
-	self assert: famixSegini variable class equals: FamixF77Variable.
-	self assert: famixSegini variable name equals: 'ptr'.
+	self assert: famixSegini variable isNil
 	
 ]
 
