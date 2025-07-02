@@ -13,7 +13,7 @@ Class {
 	#tag : 'Visitor'
 }
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> anchorFrom: startPoint to: endPoint [
 
 	^ IASTIndexedFileAnchor new
@@ -25,13 +25,13 @@ IASTToFamixVisitorTest >> anchorFrom: startPoint to: endPoint [
 		  yourself
 ]
 
-{ #category : 'tests-esope' }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> attribute: symbol for: famixEntity [
 
 	^ famixEntity attributeAt: symbol ifAbsent: [ nil ]
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultAnchor [
 
 	^ self anchorFrom: 1 @ 7 to: 2 @ 10
@@ -47,13 +47,13 @@ IASTToFamixVisitorTest >> defaultEmptySegment: segmentName [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultImplicitNone [
 
 	^ IASTImplicit new
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultNamedEntity: entityName for: aClassName [
 
 	^ aClassName new
@@ -62,7 +62,7 @@ IASTToFamixVisitorTest >> defaultNamedEntity: entityName for: aClassName [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultParameter [
 
 	^ IASTParameter new
@@ -92,7 +92,7 @@ IASTToFamixVisitorTest >> defaultSegment: segmentName with: dictDeclarations [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultSegmentComand: commandName on: varName [
 
 	^ IASTEsopeSegCommand new
@@ -102,7 +102,7 @@ IASTToFamixVisitorTest >> defaultSegmentComand: commandName on: varName [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultType: typeName [
 
 	^ IASTTypeRef new
@@ -111,13 +111,13 @@ IASTToFamixVisitorTest >> defaultType: typeName [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultVarAccess: name [
 
 	^ self defaultVarAccess: name isWrite: false
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultVarAccess: name isWrite: boolean [
 
 	^ IASTVarAccess new
@@ -160,7 +160,7 @@ IASTToFamixVisitorTest >> defaultVariable: assoc [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultVariable: varName withType: typeName [
 
 	^ IASTVariable new
@@ -170,7 +170,7 @@ IASTToFamixVisitorTest >> defaultVariable: varName withType: typeName [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> implicitRule: typeName range: ranges [
 
 	^ IASTImplicitTypingRule new
@@ -974,6 +974,45 @@ IASTToFamixVisitorTest >> testFamixFortran77ESOAtWithArrayArgument [
 ]
 
 { #category : 'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77ImpliedDo [
+	"program main
+      WRITE(*,*)(A,B, I=1,MAX)
+    end"
+
+	| entity caller impliedDo |
+
+	impliedDo := IASTImpliedDo new.
+	impliedDo doSpecs: { self defaultVarAccess: 'i'  isWrite: true . self defaultVarAccess: 'max' }.
+	impliedDo expressions: { self defaultVarAccess: 'a' . self defaultVarAccess: 'b' }.
+
+	caller := IASTMainProgram new
+			entityName: 'main' ;
+			body: { IASTIOStatement new
+				entityName: 'write' ;
+				format: #() ;
+				arguments: { impliedDo } ;
+				yourself } ;
+			yourself.
+	programFile body: { caller }.
+
+	programFile accept: visitor.
+	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
+	
+	self assert: entity programUnits anyOne class equals: FamixF77PUMain.
+
+	self assert: entity programUnits anyOne accesses size equals: 4.
+	entity programUnits anyOne accesses do: [:fmxAccess |
+		((self attribute: #entity for: fmxAccess) entityName = 'i')
+			ifTrue: [ self assert: fmxAccess isWrite ]
+			ifFalse: [
+				#(a b max) anySatisfy: [ :e | e = (self attribute: #entity for: fmxAccess) entityName ].
+				self deny: fmxAccess isWrite
+			]
+	]
+
+]
+
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77Invocation [
 	| entity invocation caller callee |
 
@@ -1173,6 +1212,37 @@ IASTToFamixVisitorTest >> testFamixFortran77Subroutine [
 	self assert: entity name equals: 'sub'.
 	self assert: entity programFile isNotNil.
 	self assert: entity parameters size equals: 0
+]
+
+{ #category : 'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77VarAccesses [
+	"program main
+	someVar = otherVar
+	end "
+
+	| entity pgm |
+
+	pgm := IASTMainProgram new
+			entityName: 'main';
+			body: {
+				self defaultVarAccess: 'somevar' isWrite: true .
+				self defaultVarAccess: 'othervar' }
+			yourself.
+	programFile body: { pgm }.
+
+	programFile accept: visitor.
+	entity := visitor model detect: [:each | each class = FamixF77PUMain ].
+	
+	self assert: entity accesses size equals: 2.
+
+	entity accesses do: [:fmxAccess |
+		((self attribute: #entity for: fmxAccess) entityName = 'somevar')
+			ifTrue: [ self assert: fmxAccess isWrite ]
+			ifFalse: [
+				self assert: (self attribute: #entity for: fmxAccess) entityName equals: 'othervar'.
+				self deny: fmxAccess isWrite
+			]
+	]
 ]
 
 { #category : 'tests-fortran' }

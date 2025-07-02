@@ -33,7 +33,7 @@ IASTToFamixFortranVisitor >> f77sourcefile: anObject [
 	f77sourcefile := anObject
 ]
 
-{ #category : 'visiting' }
+{ #category : 'accessing' }
 IASTToFamixFortranVisitor >> iASTProgramUnit: aProgramUnit toFamix: aFamixFortranClass [
 
 	| progUnit |
@@ -65,7 +65,7 @@ IASTToFamixFortranVisitor >> initialize [
 	f77sourcefile := ''
 ]
 
-{ #category : 'visiting' }
+{ #category : 'accessing' }
 IASTToFamixFortranVisitor >> ioStatements [
 
 	^ #( write read close open rewind backspace decode encode endfile
@@ -171,12 +171,12 @@ IASTToFamixFortranVisitor >> visitIASTFunction: aFunction [
 IASTToFamixFortranVisitor >> visitIASTIOStatement: anIOStatement [
 
 	^ (anIOStatement arguments
-		   ifNotNil: [ :arguments |
-			   arguments collect: [ :argument | argument accept: self ] ]
-		   ifNil: [ #(  ) ]) , (anIOStatement format
-		   ifNotNil: [ :format |
-		   format collect: [ :each | each accept: self ] ]
-		   ifNil: [ #(  ) ])
+			ifNotNil: [ :arguments | arguments collect: [ :argument | argument accept: self ] ]
+			ifNil: [ #() ]) 
+		,
+		(anIOStatement format
+			ifNotNil: [ :format | format collect: [ :each | each accept: self ] ]
+			ifNil: [ #() ])
 ]
 
 { #category : 'visiting' }
@@ -188,6 +188,18 @@ IASTToFamixFortranVisitor >> visitIASTImplicit: anImplicit [
 			 ifAbsentPut: [ OrderedCollection new ]
 		) addAll: rules 
 	]
+]
+
+{ #category : 'visiting' }
+IASTToFamixFortranVisitor >> visitIASTImpliedDo: anIASTImpliedDo [
+
+	^(anIASTImpliedDo doSpecs 
+			ifNotNil: [ :specs | specs collect: [ :each | each accept: self ] ]
+			ifNil: [ #() ]) 
+	,
+	(anIASTImpliedDo expressions 
+			ifNotNil: [ :exprs | exprs collect: [ :each | each accept: self ] ]
+			ifNil: [ #() ]) 
 ]
 
 { #category : 'visiting' }
