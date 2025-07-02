@@ -1859,7 +1859,7 @@ JsonToIASTVisitorTest >> testWriteStatementWithImpliedDo [
      WRITE(*,*)(A,B,C, I=1,IMAX)
       end"
 
-	| programFile stmt refs |
+	| programFile stmt |
 	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran2003","miFilename":"srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:6)-(2:32)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"do_spec":{"anno":[],"increment":null,"initial":{"anno":[],"expression":{"anno":[],"span":"(2:26)-(2:26)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"span":"(2:24)-(2:26)","tag":"assign_expression","target":{"anno":[],"span":"(2:24)-(2:24)","tag":"value","value":{"contents":"i","tag":"variable"}}},"limit":{"anno":[],"span":"(2:28)-(2:31)","tag":"value","value":{"contents":"imax","tag":"variable"}},"span":"(2:24)-(2:31)"},"expressions":{"anno":[],"list":[{"anno":[],"span":"(2:17)-(2:17)","tag":"value","value":{"contents":"a","tag":"variable"}},{"anno":[],"span":"(2:19)-(2:19)","tag":"value","value":{"contents":"b","tag":"variable"}},{"anno":[],"span":"(2:21)-(2:21)","tag":"value","value":{"contents":"c","tag":"variable"}}],"span":"(2:17)-(2:21)"},"span":"(2:16)-(2:32)","tag":"implied_do"}],"span":"(2:16)-(2:32)"},"format":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:12)-(2:12)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:12)-(2:12)"},{"anno":[],"expr":{"anno":[],"span":"(2:14)-(2:14)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:14)-(2:14)"}],"span":"(2:11)-(2:15)"},"span":"(2:6)-(2:32)","tag":"write"},"tag":"statement"}],"name":"mysub","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
 
 
@@ -1889,6 +1889,30 @@ JsonToIASTVisitorTest >> testWriteStatementWithImpliedDo [
 		self deny: varRef isWrite
 	].
 
+]
+
+{ #category : 'tests-statement' }
+JsonToIASTVisitorTest >> testWriteStatementWithImpliedDoAndVariables [
+	"subroutine mysub
+     WRITE(*,*)GAUCHE,(' ',I=1,IMAX-2),DROITE
+      end"
+
+	| programFile stmt |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran2003","miFilename":"srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:6)-(2:45)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:16)-(2:21)","tag":"value","value":{"contents":"gauche","tag":"variable"}},{"anno":[],"do_spec":{"anno":[],"increment":null,"initial":{"anno":[],"expression":{"anno":[],"span":"(2:30)-(2:30)","tag":"value","value":{"contents":["1",null],"tag":"integer"}},"span":"(2:28)-(2:30)","tag":"assign_expression","target":{"anno":[],"span":"(2:28)-(2:28)","tag":"value","value":{"contents":"i","tag":"variable"}}},"limit":{"anno":[],"left":{"anno":[],"span":"(2:32)-(2:35)","tag":"value","value":{"contents":"imax","tag":"variable"}},"op":{"tag":"subtraction"},"right":{"anno":[],"span":"(2:37)-(2:37)","tag":"value","value":{"contents":["2",null],"tag":"integer"}},"span":"(2:32)-(2:37)","tag":"binary"},"span":"(2:28)-(2:37)"},"expressions":{"anno":[],"list":[{"anno":[],"span":"(2:24)-(2:26)","tag":"value","value":{"contents":" ","tag":"string"}}],"span":"(2:24)-(2:26)"},"span":"(2:23)-(2:38)","tag":"implied_do"},{"anno":[],"span":"(2:40)-(2:45)","tag":"value","value":{"contents":"droite","tag":"variable"}}],"span":"(2:16)-(2:45)"},"format":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:12)-(2:12)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:12)-(2:12)"},{"anno":[],"expr":{"anno":[],"span":"(2:14)-(2:14)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:14)-(2:14)"}],"span":"(2:11)-(2:15)"},"span":"(2:6)-(2:45)","tag":"write"},"tag":"statement"}],"name":"mysub","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+
+	self assert: programFile body first body size equals: 1.
+
+	stmt := programFile body first body first.
+	self assert: stmt class equals: IASTIOStatement.
+	self assert: stmt entityName equals: 'write'.
+	self assert: stmt format size equals: 0.
+
+	self assert: stmt arguments size equals: 3.
+	self assert: stmt arguments first class equals: IASTVarAccess.
+	self assert: stmt arguments second class equals: IASTImpliedDo.
+	self assert: stmt arguments second doSpecs size equals: 2.
+	self assert: stmt arguments second expressions size equals: 0
 ]
 
 { #category : 'tests-statement' }
