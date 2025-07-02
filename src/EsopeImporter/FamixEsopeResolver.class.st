@@ -223,9 +223,6 @@ FamixEsopeResolver >> requalifyParameterDeclaration: param [
 		do: [ :varDeclaration |
 			(varDeclaration = param)
 			ifFalse: [
-				varDeclaration declaredType 
-					ifNil: [ self resolveDeclaredTypeOfPointers ]. 
-
 				param declaredType: varDeclaration declaredType.
 				self mergeVariable: varDeclaration into: param
 			]
