@@ -1274,6 +1274,49 @@ IASTToFamixVisitorTest >> testFamixFortran77WriteInvocation [
 	self assert: iastEntity entityName equals:  'var'.
 ]
 
+{ #category : 'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77WriteWithImpliedDoAndArguments [
+	"program main
+      WRITE(*,*)GAUCHE,(' ',I=1,IMAX-2),DROITE
+    end"
+
+	| entity caller impliedDo |
+
+	impliedDo := IASTImpliedDo new.
+	impliedDo doSpecs: { self defaultVarAccess: 'i'  isWrite: true . self defaultVarAccess: 'max' }.
+	impliedDo expressions: #().
+
+	caller := IASTMainProgram new
+			entityName: 'main' ;
+			body: { IASTIOStatement new
+				entityName: 'write' ;
+				format: #() ;
+				arguments: { 
+					self defaultVarAccess: 'gauche' .
+					impliedDo .
+					self defaultVarAccess: 'droite' } ;
+				yourself } ;
+			yourself.
+	programFile body: { caller }.
+
+	programFile accept: visitor.
+	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
+	
+	self assert: entity programUnits anyOne class equals: FamixF77PUMain.
+
+	self assert: entity programUnits anyOne accesses size equals: 4.
+	entity programUnits anyOne accesses do: [:fmxAccess |
+		((self attribute: #entity for: fmxAccess) entityName = 'i')
+			ifTrue: [ self assert: fmxAccess isWrite ]
+			ifFalse: [
+				#(gauche droite imax) anySatisfy: [ :e |
+					e = (self attribute: #entity for: fmxAccess) entityName ].
+				self deny: fmxAccess isWrite
+			]
+	]
+
+]
+
 { #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixFunctionReturnValue [
 	"

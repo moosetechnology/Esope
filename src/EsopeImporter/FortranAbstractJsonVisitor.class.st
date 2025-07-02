@@ -804,7 +804,8 @@ FortranAbstractJsonVisitor >> visitImplied_do:  anImpliedDoListsNode [
 		self visitSpan: (anImpliedDoListsNode at: 'span') .
 		self visitDo_spec: (anImpliedDoListsNode at: 'do_spec') .
 		((anImpliedDoListsNode at: 'expressions' at: 'list')
-			collect: [ :expr | self visitJsonMap: expr ])
+			collect: [ :expr | self visitJsonMap: expr ]
+			thenReject: #isNil)
 	}
 ]
 
