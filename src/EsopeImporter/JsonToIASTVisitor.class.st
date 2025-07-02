@@ -335,6 +335,7 @@ JsonToIASTVisitor >> visitDo: aDoNode [
 { #category : 'visiting statement' }
 JsonToIASTVisitor >> visitDo_spec: aDoSpecNode [
 	| data |
+
 	data := (super visitDo_spec: aDoSpecNode).
 	^data allButFirst flattened reject: #isNil
 	 
@@ -611,6 +612,23 @@ JsonToIASTVisitor >> visitImplicitStatementRange: anImplicitStatementRangeNode [
 	^data third
 		ifNil: [ { data second . data second } ]
 		ifNotNil: [ { data second . data third } ]
+]
+
+{ #category : 'visiting' }
+JsonToIASTVisitor >> visitImplied_do:  anImpliedDoListsNode [
+	"span do_spec expressions"
+
+	| data |
+	data := super visitImplied_do: anImpliedDoListsNode.
+
+	^{
+		data first
+		.
+		(IASTImpliedDo new
+			doSpecs: data second ;
+			expressions: data third ;
+			yourself)
+	}
 ]
 
 { #category : 'visiting expression' }
