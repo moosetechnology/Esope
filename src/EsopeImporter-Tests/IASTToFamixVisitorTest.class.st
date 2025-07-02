@@ -13,7 +13,7 @@ Class {
 	#tag : 'Visitor'
 }
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> anchorFrom: startPoint to: endPoint [
 
 	^ IASTIndexedFileAnchor new
@@ -25,13 +25,13 @@ IASTToFamixVisitorTest >> anchorFrom: startPoint to: endPoint [
 		  yourself
 ]
 
-{ #category : 'tests-esope' }
+{ #category : 'running' }
 IASTToFamixVisitorTest >> attribute: symbol for: famixEntity [
 
 	^ famixEntity attributeAt: symbol ifAbsent: [ nil ]
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultAnchor [
 
 	^ self anchorFrom: 1 @ 7 to: 2 @ 10
@@ -47,13 +47,13 @@ IASTToFamixVisitorTest >> defaultEmptySegment: segmentName [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultImplicitNone [
 
 	^ IASTImplicit new
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultNamedEntity: entityName for: aClassName [
 
 	^ aClassName new
@@ -62,7 +62,7 @@ IASTToFamixVisitorTest >> defaultNamedEntity: entityName for: aClassName [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultParameter [
 
 	^ IASTParameter new
@@ -92,7 +92,7 @@ IASTToFamixVisitorTest >> defaultSegment: segmentName with: dictDeclarations [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultSegmentComand: commandName on: varName [
 
 	^ IASTEsopeSegCommand new
@@ -102,7 +102,7 @@ IASTToFamixVisitorTest >> defaultSegmentComand: commandName on: varName [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultType: typeName [
 
 	^ IASTTypeRef new
@@ -111,13 +111,13 @@ IASTToFamixVisitorTest >> defaultType: typeName [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultVarAccess: name [
 
 	^ self defaultVarAccess: name isWrite: false
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultVarAccess: name isWrite: boolean [
 
 	^ IASTVarAccess new
@@ -160,7 +160,7 @@ IASTToFamixVisitorTest >> defaultVariable: assoc [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> defaultVariable: varName withType: typeName [
 
 	^ IASTVariable new
