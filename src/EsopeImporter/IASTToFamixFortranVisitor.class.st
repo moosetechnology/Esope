@@ -33,7 +33,7 @@ IASTToFamixFortranVisitor >> f77sourcefile: anObject [
 	f77sourcefile := anObject
 ]
 
-{ #category : 'visiting' }
+{ #category : 'accessing' }
 IASTToFamixFortranVisitor >> iASTProgramUnit: aProgramUnit toFamix: aFamixFortranClass [
 
 	| progUnit |
@@ -65,7 +65,7 @@ IASTToFamixFortranVisitor >> initialize [
 	f77sourcefile := ''
 ]
 
-{ #category : 'visiting' }
+{ #category : 'accessing' }
 IASTToFamixFortranVisitor >> ioStatements [
 
 	^ #( write read close open rewind backspace decode encode endfile
