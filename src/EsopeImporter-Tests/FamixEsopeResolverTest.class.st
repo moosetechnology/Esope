@@ -338,6 +338,40 @@ FamixEsopeResolverTest >> testRequalifyParameterDeclarations [
 
 ]
 
+{ #category : 'tests' }
+FamixEsopeResolverTest >> testRequalifyParameterDeclarationsUntyped [
+
+	"both 'declarations' are un-typed.
+	 (Note: added a segini to highlight a previous bug)
+
+      subroutine sub(var)
+      dimension var(*)
+      end
+	"
+
+	| sub entity |
+
+	sub := (self newPU: 'sub')
+		addParameter: (self defaultParameter: 'var') ;
+		addLocalVariable: (self newEntity: FamixF77Variable named: 'var') ;
+		yourself.
+	resolver model newCommandSegini
+		accessor: sub ;
+		attributeAt: #entity put: (IASTEsopeSegCommand new entityName: 'ptr').
+
+
+ 	resolver requalifyParameterDeclarations.
+
+	self assert: sub localVariables isEmpty.
+	self assert: (resolver model allWithType: FamixF77Variable) isEmpty.
+
+	self assert: sub parameters size equals: 1.
+	entity := sub parameters anyOne.
+	self assert: entity declaredType isNil.
+
+
+]
+
 { #category : 'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccesses [
 	"program main
