@@ -974,6 +974,45 @@ IASTToFamixVisitorTest >> testFamixFortran77ESOAtWithArrayArgument [
 ]
 
 { #category : 'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77ImpliedDo [
+	"program main
+      WRITE(*,*)(A,B, I=1,MAX)
+    end"
+
+	| entity caller impliedDo |
+
+	impliedDo := IASTImpliedDo new.
+	impliedDo doSpecs: { self defaultVarAccess: 'i'  isWrite: true . self defaultVarAccess: 'max' }.
+	impliedDo expressions: { self defaultVarAccess: 'a' . self defaultVarAccess: 'b' }.
+
+	caller := IASTMainProgram new
+			entityName: 'main' ;
+			body: { IASTIOStatement new
+				entityName: 'write' ;
+				format: #() ;
+				arguments: { impliedDo } ;
+				yourself } ;
+			yourself.
+	programFile body: { caller }.
+
+	programFile accept: visitor.
+	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
+	
+	self assert: entity programUnits anyOne class equals: FamixF77PUMain.
+
+	self assert: entity programUnits anyOne accesses size equals: 4.
+	entity programUnits anyOne accesses do: [:fmxAccess |
+		((self attribute: #entity for: fmxAccess) entityName = 'i')
+			ifTrue: [ self assert: fmxAccess isWrite ]
+			ifFalse: [
+				#(a b max) anySatisfy: [ :e | e = (self attribute: #entity for: fmxAccess) entityName ].
+				self deny: fmxAccess isWrite
+			]
+	]
+
+]
+
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77Invocation [
 	| entity invocation caller callee |
 
@@ -1173,6 +1212,37 @@ IASTToFamixVisitorTest >> testFamixFortran77Subroutine [
 	self assert: entity name equals: 'sub'.
 	self assert: entity programFile isNotNil.
 	self assert: entity parameters size equals: 0
+]
+
+{ #category : 'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77VarAccesses [
+	"program main
+	someVar = otherVar
+	end "
+
+	| entity pgm |
+
+	pgm := IASTMainProgram new
+			entityName: 'main';
+			body: {
+				self defaultVarAccess: 'somevar' isWrite: true .
+				self defaultVarAccess: 'othervar' }
+			yourself.
+	programFile body: { pgm }.
+
+	programFile accept: visitor.
+	entity := visitor model detect: [:each | each class = FamixF77PUMain ].
+	
+	self assert: entity accesses size equals: 2.
+
+	entity accesses do: [:fmxAccess |
+		((self attribute: #entity for: fmxAccess) entityName = 'somevar')
+			ifTrue: [ self assert: fmxAccess isWrite ]
+			ifFalse: [
+				self assert: (self attribute: #entity for: fmxAccess) entityName equals: 'othervar'.
+				self deny: fmxAccess isWrite
+			]
+	]
 ]
 
 { #category : 'tests-fortran' }
