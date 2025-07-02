@@ -547,7 +547,7 @@ FamixEsopeResolver >> resolvingSteps [
 
 ]
 
-{ #category : 'run' }
+{ #category : 'private' }
 FamixEsopeResolver >> setImplicitDeclaredType: anEntity in: owner [
 	"put a declaredType to anEntity based on IMPLICIT declarations in owner
 	 Note: implicit types are intrinsic types so we could simplify the use of #resolveTypeName:
