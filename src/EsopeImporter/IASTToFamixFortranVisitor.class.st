@@ -171,12 +171,12 @@ IASTToFamixFortranVisitor >> visitIASTFunction: aFunction [
 IASTToFamixFortranVisitor >> visitIASTIOStatement: anIOStatement [
 
 	^ (anIOStatement arguments
-		   ifNotNil: [ :arguments |
-			   arguments collect: [ :argument | argument accept: self ] ]
-		   ifNil: [ #(  ) ]) , (anIOStatement format
-		   ifNotNil: [ :format |
-		   format collect: [ :each | each accept: self ] ]
-		   ifNil: [ #(  ) ])
+			ifNotNil: [ :arguments | arguments collect: [ :argument | argument accept: self ] ]
+			ifNil: [ #() ]) 
+		,
+		(anIOStatement format
+			ifNotNil: [ :format | format collect: [ :each | each accept: self ] ]
+			ifNil: [ #() ])
 ]
 
 { #category : 'visiting' }
