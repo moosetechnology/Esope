@@ -170,7 +170,7 @@ IASTToFamixVisitorTest >> defaultVariable: varName withType: typeName [
 		  yourself
 ]
 
-{ #category : 'running' }
+{ #category : 'default values' }
 IASTToFamixVisitorTest >> implicitRule: typeName range: ranges [
 
 	^ IASTImplicitTypingRule new
