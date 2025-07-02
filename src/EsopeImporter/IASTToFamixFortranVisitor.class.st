@@ -191,6 +191,18 @@ IASTToFamixFortranVisitor >> visitIASTImplicit: anImplicit [
 ]
 
 { #category : 'visiting' }
+IASTToFamixFortranVisitor >> visitIASTImpliedDo: anIASTImpliedDo [
+
+	^(anIASTImpliedDo doSpecs 
+			ifNotNil: [ :specs | specs collect: [ :each | each accept: self ] ]
+			ifNil: [ #() ]) 
+	,
+	(anIASTImpliedDo expressions 
+			ifNotNil: [ :exprs | exprs collect: [ :each | each accept: self ] ]
+			ifNil: [ #() ]) 
+]
+
+{ #category : 'visiting' }
 IASTToFamixFortranVisitor >> visitIASTInclude: anInclude [
 
 	self flag: #FIXME.
