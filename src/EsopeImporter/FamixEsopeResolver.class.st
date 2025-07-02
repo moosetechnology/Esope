@@ -121,12 +121,12 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	 - cache :							ignore, should be empty
 	 - entityAttributes :				ignore, should be empty
 	 - mooseModel :						ignore, should be the same
-	 - isEsope :							ignore, keep value of variable1
+	 - isEsope :							ignore, keep value of variableToKeep
 	 - parentBehaviouralEntity :	ignore, should be the same (clear it in variableToRemove)
 	 - incomingAccesses :				merge
 	 - name :								ignore, should be the same
 	 - isStub :							ignore
-	 - sourceAnchor :					merge, keep the first one (clear it in variableToRemove)
+	 - sourceAnchor :					merge, keep value of variableToKeep (clear it in variableToRemove)
 	 - declaredType :					ignore, keep value of variableToKeep (clear it in variableToRemove)"
 
 	variableToRemove incomingAccesses do: [ :access |
