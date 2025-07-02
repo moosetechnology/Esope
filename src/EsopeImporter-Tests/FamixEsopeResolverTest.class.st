@@ -745,6 +745,29 @@ FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointersStubSegment [
 ]
 
 { #category : 'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveEsopeCommandVariable [
+	"program main
+	 segini , ptr
+	 end
+	"
+
+	| main access  |
+
+	main := self defaultMain: 'main'.
+	resolver model newCommandSegini
+		accessor: main ;
+		attributeAt: #entity put: (IASTEsopeSegCommand new entityName: 'ptr').
+
+ 	resolver resolveAccesses.
+
+	self assert: main accesses size equals: 1.
+	access := main accesses anyOne.
+
+	self assert: access variable class equals: FamixF77Variable.
+	self assert: access variable name equals: 'ptr'.
+]
+
+{ #category : 'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveExternalDeclarationWhereProcedureIsInTheModel [
 	"fct is defined in the model"
 
