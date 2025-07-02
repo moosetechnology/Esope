@@ -70,13 +70,11 @@ IASTToFamixEsopeVisitor >> visitIASTEsopeSegCommand: aSegmentCommand [
 
 	| esopeCommand |
 
-	self flag: '#TODO: usage of command subclasses'.
-
 	esopeCommand := (self newEsopeCommand: aSegmentCommand esopeCommand)
 		  sourceAnchor:
-			  (self visitIndexedFileAnchor: aSegmentCommand sourceAnchor);
-		  attributeAt: #entity put: aSegmentCommand;
-		  accessor: stack top;
+			  (self visitIndexedFileAnchor: aSegmentCommand sourceAnchor) ;
+		  attributeAt: #entity put: aSegmentCommand ;
+		  accessor: stack top ;
 		  yourself.
 		
 	self checkForModSuffix: esopeCommand.
