@@ -1355,8 +1355,8 @@ FamixEsopeResolverTest >> testResolvePointeurParameter [
 
 	| sub entity var |
 	"
-       subroutine relbk(lib)
-       pointeur lib.PSTR
+       subroutine relbk(p)
+       pointeur p.point
        end
 	"
 	var := self newEntity: FamixF77Variable named: 'p'.
