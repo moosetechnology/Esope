@@ -536,8 +536,8 @@ FamixEsopeResolver >> resolvingSteps [
 		#requalifyVariableDeclarations
 
 		#resolveAccesses
-		#resolveImplicits
 		#resolveDeclaredTypeOfPointers
+		#resolveImplicits
 	 	#resolveInvocations
 	)
 
