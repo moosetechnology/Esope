@@ -119,9 +119,9 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	 properties of FamixF77Varibale are:
 	 - mooseName :						ignore, should be the same (ignoring upper/lower case)
 	 - cache :							ignore, should be empty
-	 - entityAttributes :				ignore, should be empty
+	 - entityAttributes :				merge both, priority to values in variableToRemove
 	 - mooseModel :						ignore, should be the same
-	 - isEsope :							ignore, keep value of variableToKeep
+	 - isEsope :							true if any of the 2 variables is true
 	 - parentBehaviouralEntity :	ignore, should be the same (clear it in variableToRemove)
 	 - incomingAccesses :				merge
 	 - name :								ignore, should be the same
@@ -129,12 +129,13 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	 - sourceAnchor :					merge, keep value of variableToKeep (clear it in variableToRemove)
 	 - declaredType :					ignore, keep value of variableToKeep (clear it in variableToRemove)"
 
-	variableToRemove incomingAccesses do: [ :access |
-		access variable: variableToKeep ].
-
 	variableToRemove parentBehaviouralEntity: nil.
 	variableToRemove sourceAnchor: nil.
 	variableToRemove declaredType: nil.
+
+	variableToRemove incomingAccesses do: [ :access | access variable: variableToKeep ].
+	variableToRemove entityAttributes do: [ :assoc | variableToKeep attributeAt: assoc key put: assoc value ].
+	variableToKeep isEsope: (variableToRemove isEsope or: [variableToKeep isEsope]).
 
 	model removeEntity: variableToRemove
 ]
@@ -535,8 +536,8 @@ FamixEsopeResolver >> resolvingSteps [
 		#requalifyVariableDeclarations
 
 		#resolveAccesses
-		#resolveImplicits
 		#resolveDeclaredTypeOfPointers
+		#resolveImplicits
 	 	#resolveInvocations
 	)
 
