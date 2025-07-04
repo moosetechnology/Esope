@@ -349,7 +349,7 @@ FamixEsopeResolver >> resolveAttributeAccess: anAccess forPointer: aPointerVaria
 FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
 	"sets the declaredType of pointers"
 
-	(self model allWithType: FamixF77Variable) 
+	(self model allWithType: FamixF77StructuralEntity) 
 		do: [ :var | 
 			var isEsope ifTrue: [ self resolveEsopeVariable: var ]
 		].
