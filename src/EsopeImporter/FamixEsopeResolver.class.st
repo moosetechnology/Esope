@@ -324,26 +324,21 @@ FamixEsopeResolver >> resolveAsLocalVariable: variableName in: anAccessor [
 FamixEsopeResolver >> resolveAttributeAccess: anAccess forPointer: aPointerVariable [
 	"resolve access to a segment attribute"
 
-	| variableAccessed |
+	| variableAccessed declaredType |
 	variableAccessed := anAccess getAndRemoveAttribute: #entity.
 	self assert: variableAccessed isNotNil.
 
-	aPointerVariable declaredType 
-		ifNotNil: [ :declaredType |
-			anAccess variable: 
-				(declaredType attributes
-					detect: [ :att | att name asLowercase = variableAccessed entityName asLowercase ]
-					ifNone: [
-						(model newAttributeNamed: variableAccessed entityName asLowercase)
-							isStub: true
-					])
-			]
-		ifNil: [ 
-			self resolveDeclaredTypeOfPointers.
-			anAccess attributeAt: #entity put: variableAccessed.
-			self resolveAttributeAccess: anAccess forPointer: aPointerVariable
-		]
+	declaredType := aPointerVariable declaredType.
+	self assert: declaredType isNotNil.
 
+	anAccess variable: 
+		(declaredType attributes
+			detect: [ :att | att name asLowercase = variableAccessed entityName asLowercase ]
+			ifNone: [
+				(model newAttributeNamed: variableAccessed entityName asLowercase)
+					isStub: true
+			])
+	
 ]
 
 { #category : 'run' }
@@ -535,8 +530,8 @@ FamixEsopeResolver >> resolvingSteps [
 		#registerImplicitsDeclarations
 		#requalifyVariableDeclarations
 
-		#resolveAccesses
 		#resolveDeclaredTypeOfPointers
+		#resolveAccesses
 		#resolveImplicits
 	 	#resolveInvocations
 	)
