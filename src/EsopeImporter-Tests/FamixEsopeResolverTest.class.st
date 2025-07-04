@@ -792,7 +792,7 @@ FamixEsopeResolverTest >> testResolveEsopeCommandVariable [
 		accessor: main ;
 		attributeAt: #entity put: (IASTEsopeSegCommand new entityName: 'ptr').
 
- 	resolver resolveAccesses.
+ 	resolver resolve.
 
 	self assert: main accesses size equals: 1.
 	access := main accesses anyOne.
