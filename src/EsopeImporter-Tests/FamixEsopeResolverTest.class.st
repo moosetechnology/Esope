@@ -299,7 +299,7 @@ FamixEsopeResolverTest >> testRequalifyFunctionDeclarations [
 		addLocalVariable: (self defaultVariable: 'fct' withType: #integer) ;
 		yourself.
 
- 	resolver requalifyFunctionDeclarations.
+ 	resolver mergeVariableAndFunctionDeclarations.
 
 	self assert: sub localVariables isEmpty.
 	self assert: (resolver model allWithType: FamixF77Variable) isEmpty.
@@ -325,7 +325,7 @@ FamixEsopeResolverTest >> testRequalifyParameterDeclarations [
 		addLocalVariable: (self defaultVariable: 'var' withType: #integer) ;
 		yourself.
 
- 	resolver requalifyParameterDeclarations.
+ 	resolver mergeParameterAndVariableDeclarations.
 
 	self assert: sub localVariables isEmpty.
 	self assert: (resolver model allWithType: FamixF77Variable) isEmpty.
@@ -360,7 +360,7 @@ FamixEsopeResolverTest >> testRequalifyParameterDeclarationsUntyped [
 		attributeAt: #entity put: (IASTEsopeSegCommand new entityName: 'ptr').
 
 
- 	resolver requalifyParameterDeclarations.
+ 	resolver mergeParameterAndVariableDeclarations.
 
 	self assert: sub localVariables isEmpty.
 	self assert: (resolver model allWithType: FamixF77Variable) isEmpty.
