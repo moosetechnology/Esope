@@ -288,7 +288,8 @@ FamixEsopeResolver >> resolveAccess: aFamixAccess [
 { #category : 'run' }
 FamixEsopeResolver >> resolveAccesses [
 	"Access-es do not have #variable at this point but an IASTVariable
-	 sets the #variable property of all Access-es"
+	 sets the #variable property of all Access-es
+	 Note: some access may have been resolved in a previous step because of circular dependencies among steps"
 
 	(self model allWithSubTypesOf: FamixF77Access) do: [ :access |
 		self resolveAccess: access ]
@@ -351,7 +352,8 @@ FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
 		].
 
 	(self model allWithSubTypesOf: FamixEsopeCommand) 
-		do: [ :cmd | 
+		do: [ :cmd |
+			cmd variable ifNil: [ self resolveAccess: cmd ].
 			(cmd variable declaredType isEsopeSegment)  
 				ifFalse: [
 					cmd variable attributeAt: #segmentName put: nil.
