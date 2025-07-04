@@ -119,22 +119,23 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	 properties of FamixF77Varibale are:
 	 - mooseName :						ignore, should be the same (ignoring upper/lower case)
 	 - cache :							ignore, should be empty
-	 - entityAttributes :				ignore, should be empty
+	 - entityAttributes :				merge both, priority to values in variableToRemove
 	 - mooseModel :						ignore, should be the same
-	 - isEsope :							ignore, keep value of variable1
+	 - isEsope :							true if any of the 2 variables is true
 	 - parentBehaviouralEntity :	ignore, should be the same (clear it in variableToRemove)
 	 - incomingAccesses :				merge
 	 - name :								ignore, should be the same
 	 - isStub :							ignore
-	 - sourceAnchor :					merge, keep the first one (clear it in variableToRemove)
+	 - sourceAnchor :					merge, keep value of variableToKeep (clear it in variableToRemove)
 	 - declaredType :					ignore, keep value of variableToKeep (clear it in variableToRemove)"
-
-	variableToRemove incomingAccesses do: [ :access |
-		access variable: variableToKeep ].
 
 	variableToRemove parentBehaviouralEntity: nil.
 	variableToRemove sourceAnchor: nil.
 	variableToRemove declaredType: nil.
+
+	variableToRemove incomingAccesses do: [ :access | access variable: variableToKeep ].
+	variableToRemove entityAttributes do: [ :assoc | variableToKeep attributeAt: assoc key put: assoc value ].
+	variableToKeep isEsope: (variableToRemove isEsope or: [variableToKeep isEsope]).
 
 	model removeEntity: variableToRemove
 ]
@@ -223,9 +224,6 @@ FamixEsopeResolver >> requalifyParameterDeclaration: param [
 		do: [ :varDeclaration |
 			(varDeclaration = param)
 			ifFalse: [
-				varDeclaration declaredType 
-					ifNil: [ self resolveDeclaredTypeOfPointers ]. 
-
 				param declaredType: varDeclaration declaredType.
 				self mergeVariable: varDeclaration into: param
 			]
@@ -326,33 +324,28 @@ FamixEsopeResolver >> resolveAsLocalVariable: variableName in: anAccessor [
 FamixEsopeResolver >> resolveAttributeAccess: anAccess forPointer: aPointerVariable [
 	"resolve access to a segment attribute"
 
-	| variableAccessed |
+	| variableAccessed declaredType |
 	variableAccessed := anAccess getAndRemoveAttribute: #entity.
 	self assert: variableAccessed isNotNil.
 
-	aPointerVariable declaredType 
-		ifNotNil: [ :declaredType |
-			anAccess variable: 
-				(declaredType attributes
-					detect: [ :att | att name asLowercase = variableAccessed entityName asLowercase ]
-					ifNone: [
-						(model newAttributeNamed: variableAccessed entityName asLowercase)
-							isStub: true
-					])
-			]
-		ifNil: [ 
-			self resolveDeclaredTypeOfPointers.
-			anAccess attributeAt: #entity put: variableAccessed.
-			self resolveAttributeAccess: anAccess forPointer: aPointerVariable
-		]
+	declaredType := aPointerVariable declaredType.
+	self assert: declaredType isNotNil.
 
+	anAccess variable: 
+		(declaredType attributes
+			detect: [ :att | att name asLowercase = variableAccessed entityName asLowercase ]
+			ifNone: [
+				(model newAttributeNamed: variableAccessed entityName asLowercase)
+					isStub: true
+			])
+	
 ]
 
 { #category : 'run' }
 FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
 	"sets the declaredType of pointers"
 
-	(self model allWithType: FamixF77Variable) 
+	(self model allWithSubTypesOf: FamixF77StructuralEntity) 
 		do: [ :var | 
 			var isEsope ifTrue: [ self resolveEsopeVariable: var ]
 		].
@@ -537,9 +530,9 @@ FamixEsopeResolver >> resolvingSteps [
 		#registerImplicitsDeclarations
 		#requalifyVariableDeclarations
 
+		#resolveDeclaredTypeOfPointers
 		#resolveAccesses
 		#resolveImplicits
-		#resolveDeclaredTypeOfPointers
 	 	#resolveInvocations
 	)
 
@@ -547,7 +540,7 @@ FamixEsopeResolver >> resolvingSteps [
 
 ]
 
-{ #category : 'run' }
+{ #category : 'private' }
 FamixEsopeResolver >> setImplicitDeclaredType: anEntity in: owner [
 	"put a declaredType to anEntity based on IMPLICIT declarations in owner
 	 Note: implicit types are intrinsic types so we could simplify the use of #resolveTypeName:

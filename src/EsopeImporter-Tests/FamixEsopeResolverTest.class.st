@@ -338,6 +338,40 @@ FamixEsopeResolverTest >> testRequalifyParameterDeclarations [
 
 ]
 
+{ #category : 'tests' }
+FamixEsopeResolverTest >> testRequalifyParameterDeclarationsUntyped [
+
+	"both 'declarations' are un-typed.
+	 (Note: added a segini to highlight a previous bug)
+
+      subroutine sub(var)
+      dimension var(*)
+      end
+	"
+
+	| sub entity |
+
+	sub := (self newPU: 'sub')
+		addParameter: (self defaultParameter: 'var') ;
+		addLocalVariable: (self newEntity: FamixF77Variable named: 'var') ;
+		yourself.
+	resolver model newCommandSegini
+		accessor: sub ;
+		attributeAt: #entity put: (IASTEsopeSegCommand new entityName: 'ptr').
+
+
+ 	resolver requalifyParameterDeclarations.
+
+	self assert: sub localVariables isEmpty.
+	self assert: (resolver model allWithType: FamixF77Variable) isEmpty.
+
+	self assert: sub parameters size equals: 1.
+	entity := sub parameters anyOne.
+	self assert: entity declaredType isNil.
+
+
+]
+
 { #category : 'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccesses [
 	"program main
@@ -742,6 +776,29 @@ FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointersStubSegment [
 	self assert: entity declaredType name equals: 'point'.
 	self assert: entity declaredType isStub
 		
+]
+
+{ #category : 'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveEsopeCommandVariable [
+	"program main
+	 segini , ptr
+	 end
+	"
+
+	| main access  |
+
+	main := self defaultMain: 'main'.
+	resolver model newCommandSegini
+		accessor: main ;
+		attributeAt: #entity put: (IASTEsopeSegCommand new entityName: 'ptr').
+
+ 	resolver resolveAccesses.
+
+	self assert: main accesses size equals: 1.
+	access := main accesses anyOne.
+
+	self assert: access variable class equals: FamixF77Variable.
+	self assert: access variable name equals: 'ptr'.
 ]
 
 { #category : 'test - resolveAccess' }
@@ -1298,8 +1355,8 @@ FamixEsopeResolverTest >> testResolvePointeurParameter [
 
 	| sub entity var |
 	"
-       subroutine relbk(lib)
-       pointeur lib.PSTR
+       subroutine relbk(p)
+       pointeur p.point
        end
 	"
 	var := self newEntity: FamixF77Variable named: 'p'.

@@ -447,8 +447,14 @@ IASTToFamixVisitorTest >> testFamixEsopeCommandSegini [
 	self assert: progFile programUnits size equals: 1.
 
 	self assert: (visitor model allWithSubTypesOf: FamixEsopeCommand) size equals: 1.
+
 	famixSegini := (visitor model allWithSubTypesOf: FamixEsopeCommand) anyOne.
+
 	self assert: famixSegini class equals: FamixEsopeCommandSegini.
+	self assert: famixSegini accessor class equals: FamixF77PUSubroutine.
+	self assert: famixSegini accessor name equals: 'sub'.
+	self assert: famixSegini variable isNil
+	
 ]
 
 { #category : 'tests-esope' }
