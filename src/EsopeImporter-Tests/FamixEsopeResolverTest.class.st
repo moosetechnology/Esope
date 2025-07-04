@@ -779,6 +779,30 @@ FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointersStubSegment [
 ]
 
 { #category : 'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveEsopeCommandParameter [
+	"subroutine sub(ptr)
+	 segini , ptr
+	 end
+	"
+
+	| sub access  |
+
+	sub := self defaultSubroutine: 'sub'.
+	sub addParameter: (self newEntity: FamixF77Parameter named: 'ptr').
+	resolver model newCommandSegini
+		accessor: sub ;
+		attributeAt: #entity put: (IASTEsopeSegCommand new entityName: 'ptr').
+
+ 	resolver resolve.
+
+	self assert: sub accesses size equals: 1.
+	access := sub accesses anyOne.
+
+	self assert: access variable class equals: FamixF77Parameter.
+	self assert: access variable name equals: 'ptr'.
+]
+
+{ #category : 'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveEsopeCommandVariable [
 	"program main
 	 segini , ptr
