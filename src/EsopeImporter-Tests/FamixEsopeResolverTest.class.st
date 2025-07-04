@@ -299,7 +299,7 @@ FamixEsopeResolverTest >> testRequalifyFunctionDeclarations [
 		addLocalVariable: (self defaultVariable: 'fct' withType: #integer) ;
 		yourself.
 
- 	resolver requalifyFunctionDeclarations.
+ 	resolver mergeVariableAndFunctionDeclarations.
 
 	self assert: sub localVariables isEmpty.
 	self assert: (resolver model allWithType: FamixF77Variable) isEmpty.
@@ -325,7 +325,7 @@ FamixEsopeResolverTest >> testRequalifyParameterDeclarations [
 		addLocalVariable: (self defaultVariable: 'var' withType: #integer) ;
 		yourself.
 
- 	resolver requalifyParameterDeclarations.
+ 	resolver mergeParameterAndVariableDeclarations.
 
 	self assert: sub localVariables isEmpty.
 	self assert: (resolver model allWithType: FamixF77Variable) isEmpty.
@@ -360,7 +360,7 @@ FamixEsopeResolverTest >> testRequalifyParameterDeclarationsUntyped [
 		attributeAt: #entity put: (IASTEsopeSegCommand new entityName: 'ptr').
 
 
- 	resolver requalifyParameterDeclarations.
+ 	resolver mergeParameterAndVariableDeclarations.
 
 	self assert: sub localVariables isEmpty.
 	self assert: (resolver model allWithType: FamixF77Variable) isEmpty.
@@ -776,6 +776,30 @@ FamixEsopeResolverTest >> testResolveDeclaredTypeOfPointersStubSegment [
 	self assert: entity declaredType name equals: 'point'.
 	self assert: entity declaredType isStub
 		
+]
+
+{ #category : 'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveEsopeCommandParameter [
+	"subroutine sub(ptr)
+	 segini , ptr
+	 end
+	"
+
+	| sub access  |
+
+	sub := self defaultSubroutine: 'sub'.
+	sub addParameter: (self newEntity: FamixF77Parameter named: 'ptr').
+	resolver model newCommandSegini
+		accessor: sub ;
+		attributeAt: #entity put: (IASTEsopeSegCommand new entityName: 'ptr').
+
+ 	resolver resolve.
+
+	self assert: sub accesses size equals: 1.
+	access := sub accesses anyOne.
+
+	self assert: access variable class equals: FamixF77Parameter.
+	self assert: access variable name equals: 'ptr'.
 ]
 
 { #category : 'test - resolveAccess' }

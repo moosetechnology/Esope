@@ -109,6 +109,32 @@ FamixEsopeResolver >> makePointerVariableForEsopeCommand: esopeCmd [
 
 ]
 
+{ #category : 'symbols resolution' }
+FamixEsopeResolver >> mergeParameterAndVariableDeclaration: param [
+	"looks for a VariableDeclaration in the same program unit with the same name
+	 then merge the VariableDeclaration into param, but keeping the declaredType
+	 of the VariableDeclaration"
+
+	(self resolveAsLocalVariable: param name in: param parentBehaviouralEntity)
+		do: [ :varDeclaration |
+			(varDeclaration = param)
+			ifFalse: [
+				param declaredType: varDeclaration declaredType.
+				self mergeVariable: varDeclaration into: param
+			]
+		].
+
+]
+
+{ #category : 'symbols resolution' }
+FamixEsopeResolver >> mergeParameterAndVariableDeclarations [
+	"For each parameter, try to find a matching VariableDeclaration to merge them together"
+
+	(model allWithType: FamixF77Parameter) do: [ :param |
+		self mergeParameterAndVariableDeclaration: param
+	]
+]
+
 { #category : 'private' }
 FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	"merge meaningfull properties from variableToRemove into variableToKeep
@@ -138,6 +164,39 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	variableToKeep isEsope: (variableToRemove isEsope or: [variableToKeep isEsope]).
 
 	model removeEntity: variableToRemove
+]
+
+{ #category : 'symbols resolution' }
+FamixEsopeResolver >> mergeVariableAndFunctionDeclaration: external [
+	"external declaration of function followed by a VariableDeclaration of the same function
+	 we simply remove the VariableDeclaration
+	 We remove links with other entities (associations are bi-directional, this remove the
+	 variable from the other entities):
+	 - parentBehaviouralEntity:
+	 - declaredType -- probably useless, varDeclaration should have no declaredType
+	 - incomingAccesses -- probably useless, varDeclaration should have no incomingAccesses"
+
+	external programUnit localVariables
+		detect: [ :varDeclaration |
+			varDeclaration name = external name
+		]
+		ifFound: [ :varDeclaration |
+			varDeclaration parentBehaviouralEntity: nil.
+			varDeclaration declaredType: nil.
+			varDeclaration incomingAccesses: #().
+			model remove: varDeclaration.
+		]
+]
+
+{ #category : 'symbols resolution' }
+FamixEsopeResolver >> mergeVariableAndFunctionDeclarations [
+	"VariableDeclaration that are actually functions are simply removed
+	We know it is a function because there is an 'external' declaration for that name"
+
+	(model allWithType: FamixF77ExternalDeclaration) do: [ :external |
+		self mergeVariableAndFunctionDeclaration: external.
+		self resolveExternalDeclaration: external
+	]
 ]
 
 { #category : 'accessing' }
@@ -181,71 +240,13 @@ FamixEsopeResolver >> registerImplicitsDeclarations [
 	]
 ]
 
-{ #category : 'symbols resolution' }
-FamixEsopeResolver >> requalifyFunctionDeclaration: external [
-	"external declaration of function followed by a VariableDeclaration of the same function
-	 we simply remove the VariableDeclaration
-	 We remove links with other entities (associations are bi-directional, this remove the
-	 variable from the other entities):
-	 - parentBehaviouralEntity:
-	 - declaredType -- probably useless, varDeclaration should have no declaredType
-	 - incomingAccesses -- probably useless, varDeclaration should have no incomingAccesses"
-
-	external programUnit localVariables
-		detect: [ :varDeclaration |
-			varDeclaration name = external name
-		]
-		ifFound: [ :varDeclaration |
-			varDeclaration parentBehaviouralEntity: nil.
-			varDeclaration declaredType: nil.
-			varDeclaration incomingAccesses: #().
-			model remove: varDeclaration.
-		]
-]
-
-{ #category : 'symbols resolution' }
-FamixEsopeResolver >> requalifyFunctionDeclarations [
-	"VariableDeclaration that are actually functions are simply removed
-	We know it is a function because there is an 'external' declaration for that name"
-
-	(model allWithType: FamixF77ExternalDeclaration) do: [ :external |
-		self requalifyFunctionDeclaration: external.
-		self resolveExternalDeclaration: external
-	]
-]
-
-{ #category : 'symbols resolution' }
-FamixEsopeResolver >> requalifyParameterDeclaration: param [
-	"looks for a VariableDeclaration in the same program unit with the same name
-	 then merge the VariableDeclaration into param, but keeping the declaredType
-	 of the VariableDeclaration"
-
-	(self resolveAsLocalVariable: param name in: param parentBehaviouralEntity)
-		do: [ :varDeclaration |
-			(varDeclaration = param)
-			ifFalse: [
-				param declaredType: varDeclaration declaredType.
-				self mergeVariable: varDeclaration into: param
-			]
-		]
-]
-
-{ #category : 'symbols resolution' }
-FamixEsopeResolver >> requalifyParameterDeclarations [
-	"For each parameter, try to find a matching VariableDeclaration to merge them together"
-
-	(model allWithType: FamixF77Parameter) do: [ :param |
-		self requalifyParameterDeclaration: param
-	]
-]
-
 { #category : 'run' }
 FamixEsopeResolver >> requalifyVariableDeclarations [
 	"some LocalVariable entities are actually Functions
 	 for some other, there is a Parameter and a LocalVariable for the same Fortran entity"
 
-	self requalifyParameterDeclarations.
-	self requalifyFunctionDeclarations.
+	self mergeParameterAndVariableDeclarations.
+	self mergeVariableAndFunctionDeclarations.
 ]
 
 { #category : 'run' }
@@ -354,11 +355,8 @@ FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
 	(self model allWithSubTypesOf: FamixEsopeCommand) 
 		do: [ :cmd |
 			cmd variable ifNil: [ self resolveAccess: cmd ].
-			(cmd variable declaredType isEsopeSegment)  
-				ifFalse: [
-					cmd variable attributeAt: #segmentName put: nil.
-					self resolveEsopeVariable: cmd variable
-				]
+			cmd variable attributeAt: #segmentName put: nil.
+			self resolveEsopeVariable: cmd variable
 		].
 ]
 
