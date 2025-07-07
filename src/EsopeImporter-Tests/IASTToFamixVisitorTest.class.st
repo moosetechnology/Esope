@@ -1248,7 +1248,7 @@ IASTToFamixVisitorTest >> testFamixFortran77VarAccesses [
 			ifFalse: [
 				self assert: (self attribute: #entity for: fmxAccess) entityName equals: 'othervar'.
 				self deny: fmxAccess isWrite.
-				self deny: (fmxAccess attributeAt: #isParameterDefinition ifAbsent: [ nil ])
+				self deny: (fmxAccess attributeAt: #entity ifAbsent: [ nil ]) isParameterDefinition
 			]
 	]
 ]
