@@ -672,6 +672,31 @@ FamixEsopeResolverTest >> testResolveAccessesFromStatementFunctionToParentLocalV
 ]
 
 { #category : 'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveAccessesInIncludedFileParameterStatement [
+	"ParameterStatement in includedFile is resolved as LocalVariable
+
+      subroutine _$file_inc
+      PARAMETER (var = 2)
+      end
+	"
+
+	| accessor access  |
+	access := self defaultAccess: 'var'.
+	(access attributeAt: #entity ifAbsent: [ nil] )
+		isParameterDefinition: true.
+	accessor := self newEntity: FamixF77IncludedFile named: 'file.inc'.
+	accessor addAccess: access.
+
+ 	resolver resolveAccesses.
+
+	self assert: accessor accesses size equals: 1.
+	access := accessor accesses first.
+
+	self assert: access variable class equals: FamixF77Variable.
+	self assert: access variable name equals: 'var'.
+]
+
+{ #category : 'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesInIncludedFileToInside [
 	"Resolve accesses from includedFile to variable declared in the same includedIile
 
