@@ -63,14 +63,20 @@ FamixEsopeResolver class >> on: aMooseModel [
 ]
 
 { #category : 'symbols resolution' }
-FamixEsopeResolver >> ensureVariableNamed: variableName in: famixProgramUnit [
+FamixEsopeResolver >> ensureVariableNamed: variableName in: famixProgramUnit isParameterDefinition: isParameterDefinition [
+	"parameter definition need a special treatment. If they are not found, a LocalVariable need to be created
+	 This is important for IncludedFile where we do not want a UnknownVariable (see #createUnresolveVariable:with:)"
 
 	(famixProgramUnit class = FamixF77PUFunction and: [ variableName = famixProgramUnit name ])
 		ifTrue: [ ^nil ].
 
-	^(self resolveVariableNamed: variableName in: famixProgramUnit)
-		ifNotNil: [ :localVar | localVar ]
-		ifNil: [ famixProgramUnit createUnresolveVariable: variableName with: self ]
+	(self resolveVariableNamed: variableName in: famixProgramUnit)
+		ifNotNil: [ :localVar | ^localVar ].
+
+	^famixProgramUnit
+		createUnresolveVariable: variableName
+		with: self
+		isParameterDefinition: isParameterDefinition
 
 ]
 
@@ -281,7 +287,10 @@ FamixEsopeResolver >> resolveAccess: aFamixAccess [
 	iastVariable := aFamixAccess getAndRemoveAttribute: #entity.
 	self assert: iastVariable isNotNil.
 
-	(self ensureVariableNamed: iastVariable entityName trim in: aFamixAccess accessor)
+	(self
+		ensureVariableNamed: iastVariable entityName trim
+		in: aFamixAccess accessor 
+		isParameterDefinition: iastVariable isParameterDefinition)
 		ifNotNil: [ :variable |	aFamixAccess variable: variable ]
 
 ]

@@ -349,6 +349,7 @@ FortranProjectImporterTest >> testJsonASTToIAST [
 	stmt := programFile body first body second first.
 	self assert: stmt class equals: IASTVarAccess.
 	self assert: stmt isWrite.
+	self deny: stmt isParameterDefinition.
 	self assert: stmt entityName equals: 'somevar'.
 
 	stmt := programFile body first body second second.

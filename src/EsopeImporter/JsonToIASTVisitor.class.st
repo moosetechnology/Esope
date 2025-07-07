@@ -44,10 +44,11 @@ JsonToIASTVisitor >> createStatementFunctionOrVarAccess: data [
 		yourself ].
 
 	(data third anySatisfy: #isNil)
-	ifTrue: [ ^IASTVarAccess new
-		entityName: data second entityName ;
-		isWrite: true ;
-		yourself ].
+	ifTrue: [ 
+		^IASTVarAccess new
+			entityName: data second entityName ;
+			isWrite: true ;
+			yourself ].
 
 	^IASTStatementFunction new
 		entityName: data second entityName ;
@@ -703,6 +704,7 @@ JsonToIASTVisitor >> visitParameterStatement: aParameterStatementNode [
 	^data second collect: [ :v |
 		IASTVarAccess new
 			isWrite: true ;
+			isParameterDefinition: true ;
 			entityName: v entityName ;
 			sourceAnchor: v sourceAnchor ;
 			yourself

@@ -18,11 +18,12 @@ FamixEsopeSegment >> allTypes [
 ]
 
 { #category : '*EsopeImporter' }
-FamixEsopeSegment >> createUnresolveVariable: aString with: aFamixEsopeResolver [
+FamixEsopeSegment >> createUnresolveVariable: aString with: aFamixEsopeResolver isParameterDefinition: isParameterDefinition [
 
 	^ self typeContainer
 		  createUnresolveVariable: aString
 		  with: aFamixEsopeResolver
+		  isParameterDefinition: isParameterDefinition
 ]
 
 { #category : '*EsopeImporter' }

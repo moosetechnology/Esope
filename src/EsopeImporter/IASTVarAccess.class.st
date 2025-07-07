@@ -4,7 +4,8 @@ Class {
 	#instVars : [
 		'isWrite',
 		'indices',
-		'dereferencedVariable'
+		'dereferencedVariable',
+		'isParameterDefinition'
 	],
 	#category : 'EsopeImporter-AST-IR',
 	#package : 'EsopeImporter',
@@ -67,6 +68,18 @@ IASTVarAccess >> isFuntionReturn: aParent [
 
 	^ (aParent class = FamixF77PUFunction)
 		and: [ aParent name = self entityName ]
+]
+
+{ #category : 'accessing' }
+IASTVarAccess >> isParameterDefinition [
+
+	^isParameterDefinition ifNil: [ false ]
+]
+
+{ #category : 'accessing' }
+IASTVarAccess >> isParameterDefinition: aBoolean [
+
+	isParameterDefinition := aBoolean
 ]
 
 { #category : 'testing' }

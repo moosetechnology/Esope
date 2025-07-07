@@ -9,12 +9,25 @@ FamixF77IncludedFile >> allTypes [
 ]
 
 { #category : '*EsopeImporter' }
-FamixF77IncludedFile >> createUnresolveVariable: variableName with: resolver [
+FamixF77IncludedFile >> createUnresolveVariable: variableName with: resolver isParameterDefinition: isParameterDefinition [
 	"If a variable was not resolved within the IncludedFile, it means it depends on
 	 its includer to define this variable.
 	 Therefore we return an UnknownVariable"
 
-	^mooseModel newUnknownVariableNamed: variableName
+	| variable |
+
+	^isParameterDefinition 
+		ifTrue: [
+			variable := mooseModel newVariable
+				name: variableName ;
+				parentBehaviouralEntity: self ;
+				yourself.
+
+			variable declaredType:
+				(resolver resolveImplicitVariableType: variable) ;
+				yourself
+		]
+		ifFalse: [ mooseModel newUnknownVariableNamed: variableName ]
 
 ]
 

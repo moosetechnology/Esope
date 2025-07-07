@@ -30,6 +30,7 @@ JsonToIASTVisitorTest >> testAccessArrayWithIndices [
 	var := var indices first.
 	self assert: var class equals: IASTVarAccess.
 	self deny: var isWrite.
+	self deny: var isParameterDefinition.
 	self assert: var entityName equals: 'i'.
 
 ]
@@ -124,6 +125,7 @@ JsonToIASTVisitorTest >> testAssignementStatement [
 	var := programFile body first body first first.
 	self assert: var class equals: IASTVarAccess.
 	self assert: var isWrite.
+	self deny: var isParameterDefinition.
 	self assert: var entityName equals: 'somevar'.
 
 	var := programFile body first body first second.
@@ -200,14 +202,17 @@ JsonToIASTVisitorTest >> testBackspaceStatement [
 	self assert: stmt second first class equals: IASTVarAccess.
 	self assert: stmt second first entityName equals: 'iostat'.
 	self assert: stmt second first isWrite.
+	self deny: stmt second first isParameterDefinition.
 
 	self assert: stmt second second class equals: IASTVarAccess.
 	self assert: stmt second second entityName equals: 'code'.
 	self deny: stmt second second isWrite.
+	self deny: stmt second second isParameterDefinition.
 
 	self assert: stmt third first class equals: IASTVarAccess.
 	self assert: stmt third first entityName equals: 'err'.
 	self assert: stmt third first isWrite.
+	self deny: stmt third first isParameterDefinition.
 
 ]
 
@@ -346,12 +351,14 @@ JsonToIASTVisitorTest >> testDeref [
 	self assert: var class equals: IASTVarAccess.
 	self assert: var entityName equals: 'ptr'.
 	self assert: var isWrite.
+	self deny: var isParameterDefinition.
 	self assert: var dereferencedVariable isNotNil.
 
 	var := var dereferencedVariable.
 	self assert: var class equals: IASTVarAccess.
 	self assert: var entityName equals: 'att'.
 	self deny: var isWrite.
+	self deny: var isParameterDefinition.
 	self assert: var dereferencedVariable isNil.
 
 
@@ -664,6 +671,7 @@ JsonToIASTVisitorTest >> testEsoArWithDotArg [
 	self assert: arg class equals: IASTVarAccess.
 	self assert: arg entityName equals: 'p'.
 	self deny: arg isWrite.
+	self deny: arg isParameterDefinition.
 
 
 	arg := d__ entities second.
@@ -702,6 +710,7 @@ JsonToIASTVisitorTest >> testEsoArWithEsoAtArg [
 	arg := d__ entities first.
 	self assert: arg class equals: IASTVarAccess.
 	self deny: arg isWrite.
+	self deny: arg isParameterDefinition.
 	self assert: arg entityName equals: 'baz'.
 
 
@@ -735,6 +744,7 @@ JsonToIASTVisitorTest >> testEsoArWithVarArg [
 	arg := d__ entities first.
 	self assert: arg class equals: IASTVarAccess.
 	self deny: arg isWrite.
+	self deny: arg isParameterDefinition.
 	self assert: arg entityName equals: 'baz'.
 
 
@@ -1205,7 +1215,10 @@ JsonToIASTVisitorTest >> testParameterStatement [
 	self assert: stmt size equals: 4.
 
 	stmt do: [ :each |
-		self assert: each class equals: IASTVarAccess ].
+		self assert: each class equals: IASTVarAccess.
+		self assert: each isWrite.
+		self assert: each isParameterDefinition
+	].
 	self
 		assertCollection: (stmt collect: #entityName)
 		hasSameElements: #(legere grave fatale finale).

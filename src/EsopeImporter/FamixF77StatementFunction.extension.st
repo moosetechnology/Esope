@@ -13,7 +13,7 @@ FamixF77StatementFunction >> allTypes [
 ]
 
 { #category : '*EsopeImporter' }
-FamixF77StatementFunction >> createUnresolveVariable: variableName with: resolver [ 
+FamixF77StatementFunction >> createUnresolveVariable: variableName with: resolver isParameterDefinition: isParameterDefinition [ 
 	"StatementFunctions have Parameters and no LocalVariable,
 	 unresolved accesses may be found in their parentEntity"
 

@@ -46,6 +46,12 @@ IASTEsopeSegCommand >> isEsope [
 	^true
 ]
 
+{ #category : 'testing' }
+IASTEsopeSegCommand >> isParameterDefinition [ 
+
+	^false
+]
+
 { #category : 'accessing' }
 IASTEsopeSegCommand >> isWritable [
 

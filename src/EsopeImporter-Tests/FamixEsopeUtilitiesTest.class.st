@@ -26,12 +26,14 @@ FamixEsopeUtilitiesTest >> anchorFrom: startPoint to: endPoint [
 { #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultAccess: varName [
 
-	^ FamixF77Access new
-		  mooseModel: mooseModel ;
-		  attributeAt: #entity put: ((self defaultIASTVarAccess: varName) isWrite: false ; yourself) ;
-		  isWrite: false ;
-		  sourceAnchor: self defaultAnchor ;
-		  yourself
+	^FamixF77Access new
+		mooseModel: mooseModel ;
+		attributeAt: #entity
+			put: ((self defaultIASTVarAccess: varName)
+				isWrite: false) ;
+		isWrite: false ;
+		sourceAnchor: self defaultAnchor ;
+		yourself
 ]
 
 { #category : 'default values' }
@@ -67,10 +69,11 @@ FamixEsopeUtilitiesTest >> defaultIASTInvocation: name [
 { #category : 'default values' }
 FamixEsopeUtilitiesTest >> defaultIASTVarAccess: name [
 
-	^ IASTVarAccess new
-		  entityName: name ;
-		  isWrite: true ;
-		  yourself
+	^IASTVarAccess new
+		entityName: name ;
+		isWrite: true ;
+		isParameterDefinition: false ;
+		yourself
 ]
 
 { #category : 'default values' }
