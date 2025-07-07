@@ -1,13 +1,14 @@
 Class {
-	#name : #FamixEsopeTest,
-	#superclass : #TestCase,
+	#name : 'FamixEsopeTest',
+	#superclass : 'TestCase',
 	#instVars : [
 		'model'
 	],
-	#category : #'Famix-Esope-Tests'
+	#category : 'Famix-Esope-Tests',
+	#package : 'Famix-Esope-Tests'
 }
 
-{ #category : #running }
+{ #category : 'running' }
 FamixEsopeTest >> defaultAnchorFrom: startPoint to: endPoint [
 
 	^ (self newEntity: FamixF77IndexedFileAnchor)
@@ -19,7 +20,7 @@ FamixEsopeTest >> defaultAnchorFrom: startPoint to: endPoint [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 FamixEsopeTest >> defaultAttribute: varName withType: typeName [
 
 	^ (self newEntity: FamixFortranAttribute)
@@ -28,7 +29,7 @@ FamixEsopeTest >> defaultAttribute: varName withType: typeName [
 		  declaredType: (self defaultType: typeName)
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 FamixEsopeTest >> defaultSegment: segmentName with: dictDeclarations [
 
 	^ (self newEntity: FamixEsopeSegment)
@@ -39,7 +40,7 @@ FamixEsopeTest >> defaultSegment: segmentName with: dictDeclarations [
 		  yourself
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 FamixEsopeTest >> defaultSegmentComand: commandName [
 
 	^ (self newEntity: FamixEsopeCommand)
@@ -49,7 +50,7 @@ FamixEsopeTest >> defaultSegmentComand: commandName [
 		  yourself
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 FamixEsopeTest >> defaultSegmentComand: commandName on: varPointer [
 
 	^ (self newEntity: FamixEsopeCommand)
@@ -58,7 +59,7 @@ FamixEsopeTest >> defaultSegmentComand: commandName on: varPointer [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 FamixEsopeTest >> defaultType: typeName [
 
 	^ (self newEntity: FamixF77Type)
@@ -66,7 +67,7 @@ FamixEsopeTest >> defaultType: typeName [
 		  name: typeName
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 FamixEsopeTest >> defaultVariable: varName withType: typeName [
 
 	^ (self newEntity: FamixF77Variable)
@@ -75,7 +76,7 @@ FamixEsopeTest >> defaultVariable: varName withType: typeName [
 		  declaredType: (self defaultType: typeName)
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 FamixEsopeTest >> newEntity: aFamixClass [
 
 	^ aFamixClass new
@@ -83,7 +84,7 @@ FamixEsopeTest >> newEntity: aFamixClass [
 		  yourself
 ]
 
-{ #category : #running }
+{ #category : 'running' }
 FamixEsopeTest >> setUp [
 
 	super setUp.
@@ -91,7 +92,7 @@ FamixEsopeTest >> setUp [
 	model := FamixEsopeModel new
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 FamixEsopeTest >> testCreateSegmentCommandSegini [
 
 	"
@@ -108,7 +109,7 @@ FamixEsopeTest >> testCreateSegmentCommandSegini [
 	self assert: segini variable declaredType name equals: 'pointeur'
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 FamixEsopeTest >> testCreateSegmentWithMultipleAttributes [
 	"
 	segment myseg
@@ -132,7 +133,7 @@ FamixEsopeTest >> testCreateSegmentWithMultipleAttributes [
 	self assert: segment attributes first declaredType name equals: 'character'.
 ]
 
-{ #category : #tests }
+{ #category : 'tests' }
 FamixEsopeTest >> testCreateVariablePointeur [
 
 	"
