@@ -120,11 +120,12 @@ IASTToFamixVisitorTest >> defaultVarAccess: name [
 { #category : 'default values' }
 IASTToFamixVisitorTest >> defaultVarAccess: name isWrite: boolean [
 
-	^ IASTVarAccess new
-		  sourceAnchor: self defaultAnchor;
-		  isWrite: boolean;
-		  entityName: name;
-		  yourself
+	^IASTVarAccess new
+		sourceAnchor: self defaultAnchor ;
+		isWrite: boolean ;
+		entityName: name ;
+		isParameterDefinition: false ;
+		yourself
 ]
 
 { #category : 'default values' }
@@ -1246,7 +1247,8 @@ IASTToFamixVisitorTest >> testFamixFortran77VarAccesses [
 			ifTrue: [ self assert: fmxAccess isWrite ]
 			ifFalse: [
 				self assert: (self attribute: #entity for: fmxAccess) entityName equals: 'othervar'.
-				self deny: fmxAccess isWrite
+				self deny: fmxAccess isWrite.
+				self deny: (fmxAccess attributeAt: #isParameterDefinition ifAbsent: [ nil ])
 			]
 	]
 ]
