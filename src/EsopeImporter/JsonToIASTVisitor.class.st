@@ -232,11 +232,12 @@ JsonToIASTVisitor >> visitComment: aCommentNode [
 { #category : 'visiting statement' }
 JsonToIASTVisitor >> visitCommonGroup: aCommonGroupNode [
 	| data |
-	data := self visitCommonGroupName: (aCommonGroupNode at: 'name').
+	data := super visitCommonGroup: aCommonGroupNode.
 
-	^IASTVariable new
+	^IASTCommon new
 		sourceAnchor: (self makeIndexedAnchor: data first) ;
-		entityName: (data second) ;
+		entityName: (data second ifNotNil: [ :name | name second]) ;
+		variables: data third ;
 		yourself
 ]
 
