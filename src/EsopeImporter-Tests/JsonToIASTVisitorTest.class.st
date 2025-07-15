@@ -234,8 +234,11 @@ JsonToIASTVisitorTest >> testBlockDataWithOneCommon [
 	self assert: blockdata body size equals: 1.
 	
 	var := blockdata body first first.
-	self assert: var class equals: IASTVariable.
-	self assert: var entityName equals: 'mycom'
+	self assert: var class equals: IASTCommon.
+	self assert: var entityName equals: 'mycom'.
+	self assert: var variables size equals: 1.
+	self assert: var variables anyOne class equals: IASTVariable.
+	self assert: var variables anyOne entityName equals: 'i'.
 
 ]
 
@@ -317,6 +320,59 @@ JsonToIASTVisitorTest >> testCommentOutside [
 	self assert: stmt class equals: IASTComment.
 	self assert: stmt isProgUnit.
 	self assert: stmt text equals: '     blah'.
+
+]
+
+{ #category : 'tests-progUnit' }
+JsonToIASTVisitorTest >> testCommonStatementAnonymous [
+	"subroutine sub
+	COMMON v, m
+	end"
+
+	| programFile common |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:17)","statement":{"anno":[],"common_groups":{"anno":[],"list":[{"anno":[],"name":null,"span":"(2:14)-(2:17)","vars":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:14)-(2:14)","type":"scalar","variable":{"anno":[],"span":"(2:14)-(2:14)","tag":"value","value":{"contents":"v","tag":"variable"}}},{"anno":[],"initial":null,"length":null,"span":"(2:17)-(2:17)","type":"scalar","variable":{"anno":[],"span":"(2:17)-(2:17)","tag":"value","value":{"contents":"m","tag":"variable"}}}],"span":"(2:14)-(2:17)"}}],"span":"(2:14)-(2:17)"},"span":"(2:7)-(2:17)","tag":"common"},"tag":"statement"}],"name":"sub","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+
+	self assert: programFile class equals: IASTProgramFile.
+	self assert: programFile body size equals: 1.
+
+	common := programFile body first body first first.
+	self assert: common class equals: IASTCommon.
+	self assert: common entityName isNil.
+	self assert: common variables size equals: 2.
+	self assert: common variables first class equals: IASTVariable.
+	self assert: common variables first entityName equals: 'v'.
+	self assert: common variables second class equals: IASTVariable.
+	self assert: common variables second entityName equals: 'm'.
+
+]
+
+{ #category : 'tests-progUnit' }
+JsonToIASTVisitorTest >> testCommonStatementTwoGroups [
+	"subroutine sub
+	COMMON /X/ a /y/ b
+	end"
+
+	| programFile common |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:24)","statement":{"anno":[],"common_groups":{"anno":[],"list":[{"anno":[],"name":{"anno":[],"span":"(2:14)-(2:16)","tag":"value","value":{"contents":"x","tag":"variable"}},"span":"(2:14)-(2:18)","vars":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:18)-(2:18)","type":"scalar","variable":{"anno":[],"span":"(2:18)-(2:18)","tag":"value","value":{"contents":"a","tag":"variable"}}}],"span":"(2:18)-(2:18)"}},{"anno":[],"name":{"anno":[],"span":"(2:20)-(2:22)","tag":"value","value":{"contents":"y","tag":"variable"}},"span":"(2:20)-(2:24)","vars":{"anno":[],"list":[{"anno":[],"initial":null,"length":null,"span":"(2:24)-(2:24)","type":"scalar","variable":{"anno":[],"span":"(2:24)-(2:24)","tag":"value","value":{"contents":"b","tag":"variable"}}}],"span":"(2:24)-(2:24)"}}],"span":"(2:14)-(2:24)"},"span":"(2:7)-(2:24)","tag":"common"},"tag":"statement"}],"name":"sub","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+
+	self assert: programFile class equals: IASTProgramFile.
+	self assert: programFile body size equals: 1.
+
+	self assert: programFile body first body first size equals: 2.
+
+	common := programFile body first body first first.
+	self assert: common class equals: IASTCommon.
+	self assert: common entityName equals: 'x'.
+	self assert: common variables size equals: 1.
+	self assert: common variables first entityName equals: 'a'.
+
+	common := programFile body first body first second.
+	self assert: common class equals: IASTCommon.
+	self assert: common entityName equals: 'y'.
+	self assert: common variables size equals: 1.
+	self assert: common variables first entityName equals: 'b'.
 
 ]
 

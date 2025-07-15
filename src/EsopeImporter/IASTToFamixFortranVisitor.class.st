@@ -122,6 +122,24 @@ IASTToFamixFortranVisitor >> visitIASTComment: aComment [
 ]
 
 { #category : 'visiting' }
+IASTToFamixFortranVisitor >> visitIASTCommon: aCommon [
+	| fmx |
+
+	fmx := (self newEntity: FamixF77CommonGroup)
+		       sourceAnchor: (self visitIndexedFileAnchor: aCommon sourceAnchor) ;
+		       name: aCommon entityName ;
+				 isEsope: false ;
+		       yourself.
+	self symbolTable: stack top at: fmx name put: fmx. 
+
+	fmx localVariables: (aCommon variables collect: [ :iastVar | iastVar accept: self ]).
+
+	stack top addLocalVariable: fmx.
+
+	^ fmx
+]
+
+{ #category : 'visiting' }
 IASTToFamixFortranVisitor >> visitIASTEsopePointer: aPointerVarDeclaration [
 
 	| varPointer |
@@ -360,8 +378,7 @@ IASTToFamixFortranVisitor >> visitIASTVariable: aVariable [
 	| var |
 	self flag: '#TODO: we need to visit aVariable dimensions if any
 		- In case of segment: add it as parameter (subclass of access)
-		- For ProgramUnit add it as access
-	'.
+		- For ProgramUnit add it as access'.
 
 	var := (self newEntity: stack top localVariableClass)
 		       sourceAnchor:
