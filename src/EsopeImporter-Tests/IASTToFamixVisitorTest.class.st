@@ -985,7 +985,7 @@ IASTToFamixVisitorTest >> testFamixFortran77Common [
 
 	self assert: var localVariables size equals: 2.
 	self assert: var localVariables first name equals: 'x'.
-	self assert: var localVariables first name equals: 'y'.
+	self assert: var localVariables second name equals: 'y'.
 ]
 
 { #category : 'tests-esope' }

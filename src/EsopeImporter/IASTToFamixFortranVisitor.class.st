@@ -132,7 +132,7 @@ IASTToFamixFortranVisitor >> visitIASTCommon: aCommon [
 		       yourself.
 	self symbolTable: stack top at: fmx name put: fmx. 
 
-	aCommon variables do: [ :iastVar | (iastVar accept: self) parentBehaviouralEntity: fmx ].
+	fmx localVariables: (aCommon variables collect: [ :iastVar | iastVar accept: self ]).
 
 	stack top addLocalVariable: fmx.
 
