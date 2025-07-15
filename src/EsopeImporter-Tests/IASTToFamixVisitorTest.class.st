@@ -961,6 +961,33 @@ IASTToFamixVisitorTest >> testFamixFortran77CommentInSubRoutine [
 	self assert: entity sourceAnchor sourceText equals: ' a comment'.
 ]
 
+{ #category : 'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77Common [
+
+	| common entity var |
+	common := IASTCommon new
+		entityName: 'COM' ;
+		variables: { (IASTVariable new entityName: 'x') . (IASTVariable new entityName: 'y') }.
+	programFile body: { IASTSubroutine new
+			 entityName: 'sub';
+			 body: { common };
+			 yourself }.
+	programFile accept: visitor.
+
+	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
+
+	self assert: entity programUnits first localVariables size equals: 1.
+
+	var := entity programUnits first localVariables first.
+	self assert: var class equals: FamixF77CommonGroup.
+	self assert: var name equals: 'COM'.
+	self assert: var parentBehaviouralEntity equals: entity programUnits first.
+
+	self assert: var localVariables size equals: 2.
+	self assert: var localVariables first name equals: 'x'.
+	self assert: var localVariables first name equals: 'y'.
+]
+
 { #category : 'tests-esope' }
 IASTToFamixVisitorTest >> testFamixFortran77ESOAtWithArrayArgument [
 	"Special case of a D__ function call with an array as argument
