@@ -1217,6 +1217,43 @@ IASTToFamixVisitorTest >> testFamixFortran77ProgramFile [
 ]
 
 { #category : 'tests-fortran' }
+IASTToFamixVisitorTest >> testFamixFortran77ReadWithArguments [
+	"program main
+      READ(*,*) X, Y
+    end"
+
+	| entity caller fmxAccess |
+
+	caller := IASTMainProgram new
+			entityName: 'main' ;
+			body: { IASTIOStatement new
+				entityName: 'read' ;
+				format: #() ;
+				arguments: { 
+					self defaultVarAccess: 'x' isWrite: true .
+					self defaultVarAccess: 'y' isWrite: true } ;
+				yourself } ;
+			yourself.
+	programFile body: { caller }.
+
+	programFile accept: visitor.
+	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
+	
+	self assert: entity programUnits anyOne class equals: FamixF77PUMain.
+
+	self assert: entity programUnits anyOne accesses size equals: 2.
+
+	fmxAccess := entity programUnits anyOne accesses first.
+	self assert: (self attribute: #entity for: fmxAccess) entityName equals: 'x'.
+	self assert: fmxAccess isWrite.
+
+	fmxAccess := entity programUnits anyOne accesses second.
+	self assert: (self attribute: #entity for: fmxAccess) entityName equals: 'y'.
+	self assert: fmxAccess isWrite.
+
+]
+
+{ #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77SourceAnchor [
 	| entity |
 	entity := self defaultAnchor accept: visitor.
