@@ -131,9 +131,9 @@ FortranAbstractJsonVisitor >> visitArgs: anEntryArgsList [
 	^(anEntryArgsList at: 'list') collect: [ :each | self visitJsonElement: each]
 ]
 
-{ #category : 'visiting prog-unit' }
+{ #category : 'visiting' }
 FortranAbstractJsonVisitor >> visitArgument: anArgumentNode [
-	"used for argument in subprogram calls and parameter in subprogram definition
+	"used for argument in subprogram calls and parameter in subprogram definition and for IOStatements
 	 So can take different forms :-("
 
 	^(anArgumentNode includesKey: 'tag')
@@ -141,7 +141,7 @@ FortranAbstractJsonVisitor >> visitArgument: anArgumentNode [
 		ifFalse: [ self visitJsonMap: anArgumentNode keys: #(span expr) ]
 ]
 
-{ #category : 'visiting prog-unit' }
+{ #category : 'visiting' }
 FortranAbstractJsonVisitor >> visitArguments: anArgumentList [
 	anArgumentList ifNil: [ ^#() ].
 	^(anArgumentList at: 'list') collect: [ :each | self visitArgument: each]

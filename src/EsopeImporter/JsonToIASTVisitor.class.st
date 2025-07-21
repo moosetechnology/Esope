@@ -129,7 +129,7 @@ JsonToIASTVisitor >> varAccessToParameter: aCollection [
 	]
 ]
 
-{ #category : 'visiting prog-unit' }
+{ #category : 'visiting' }
 JsonToIASTVisitor >> visitArgument: anArgumentNode [
 	"used for argument in subprogram calls and parameter in subprogram definition"
 
@@ -144,7 +144,7 @@ JsonToIASTVisitor >> visitArgument: anArgumentNode [
 	^arg
 ]
 
-{ #category : 'visiting prog-unit' }
+{ #category : 'visiting' }
 JsonToIASTVisitor >> visitArguments: anArgumentList [
 	^(super visitArguments: anArgumentList)
 		reject: #isNil
