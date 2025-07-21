@@ -76,7 +76,7 @@ JsonToIASTVisitor >> initialize [
 	entityStack := Stack new
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'private - utilities' }
 JsonToIASTVisitor >> ioStatementFormat [
 
 	^ #( access blank direct end err exist file fmt form formatted
@@ -102,7 +102,7 @@ JsonToIASTVisitor >> makeIndexedAnchor: aPointPair [
 		  yourself
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'private - utilities' }
 JsonToIASTVisitor >> makeIoFormat: aCollection [
 
 	^ aCollection flattened 
@@ -129,7 +129,7 @@ JsonToIASTVisitor >> varAccessToParameter: aCollection [
 	]
 ]
 
-{ #category : 'visiting prog-unit' }
+{ #category : 'visiting' }
 JsonToIASTVisitor >> visitArgument: anArgumentNode [
 	"used for argument in subprogram calls and parameter in subprogram definition"
 
@@ -144,7 +144,7 @@ JsonToIASTVisitor >> visitArgument: anArgumentNode [
 	^arg
 ]
 
-{ #category : 'visiting prog-unit' }
+{ #category : 'visiting' }
 JsonToIASTVisitor >> visitArguments: anArgumentList [
 	^(super visitArguments: anArgumentList)
 		reject: #isNil
@@ -748,9 +748,11 @@ JsonToIASTVisitor >> visitRead2Statement: aReadStatementNode [
 { #category : 'visiting statement' }
 JsonToIASTVisitor >> visitReadStatement: aReadStatementNode [
 
-	^ (super visitReadStatement: aReadStatementNode)
-		  entityName: 'read';
-		  yourself
+	| iastEntity |
+	iastEntity := super visitReadStatement: aReadStatementNode.
+	iastEntity entityName: 'read'.
+	iastEntity arguments do: [ :iastArg | iastArg isWrite: true ].
+	^iastEntity 
 ]
 
 { #category : 'visiting expression' }
