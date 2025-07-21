@@ -76,7 +76,7 @@ JsonToIASTVisitor >> initialize [
 	entityStack := Stack new
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'private - utilities' }
 JsonToIASTVisitor >> ioStatementFormat [
 
 	^ #( access blank direct end err exist file fmt form formatted
@@ -102,7 +102,7 @@ JsonToIASTVisitor >> makeIndexedAnchor: aPointPair [
 		  yourself
 ]
 
-{ #category : 'visiting statement' }
+{ #category : 'private - utilities' }
 JsonToIASTVisitor >> makeIoFormat: aCollection [
 
 	^ aCollection flattened 
