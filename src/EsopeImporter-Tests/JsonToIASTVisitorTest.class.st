@@ -1453,6 +1453,38 @@ JsonToIASTVisitorTest >> testProgramWithSimpleIfStatementWithoutBody [
 ]
 
 { #category : 'tests-statement' }
+JsonToIASTVisitorTest >> testReadStatementWithVarArgument [
+	"subroutine mysub
+      read(*,*) V1, V2
+      end
+"
+
+	| programFile stmt arg |
+	programFile :=  self visitJsonCode: '{"meta":{"miVersion":"fortran77","miFilename":"srcCode.f"},"program_units":[{"anno":[],"arguments":null,"blocks":[{"anno":[],"label":null,"span":"(2:7)-(2:22)","statement":{"anno":[],"arguments":{"anno":[],"list":[{"anno":[],"span":"(2:17)-(2:18)","tag":"value","value":{"contents":"v1","tag":"variable"}},{"anno":[],"span":"(2:21)-(2:22)","tag":"value","value":{"contents":"v2","tag":"variable"}}],"span":"(2:17)-(2:22)"},"format":{"anno":[],"list":[{"anno":[],"expr":{"anno":[],"span":"(2:12)-(2:12)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:12)-(2:12)"},{"anno":[],"expr":{"anno":[],"span":"(2:14)-(2:14)","tag":"value","value":{"tag":"star"}},"name":null,"span":"(2:14)-(2:14)"}],"span":"(2:11)-(2:15)"},"span":"(2:7)-(2:22)","tag":"read"},"tag":"statement"}],"name":"mysub","options":[null,null],"span":"(1:7)-(3:9)","subprograms":null,"tag":"subroutine"}]}'.
+
+
+	self assert: programFile body first body size equals: 1.
+
+	stmt := programFile body first body first.
+	self assert: stmt class equals: IASTIOStatement.
+	self assert: stmt entityName equals: 'read'.
+	self assert: stmt arguments size equals: 2.
+	self assert: stmt format size equals: 0.
+	self assert: stmt sourceAnchor isNotNil.
+
+	arg := stmt arguments first.
+	self assert: arg class equals: IASTVarAccess.
+	self assert: arg entityName equals: 'v1'.
+	self assert: arg isWrite.
+
+	arg := stmt arguments second.
+	self assert: arg class equals: IASTVarAccess.
+	self assert: arg entityName equals: 'v2'.
+	self assert: arg isWrite.
+
+]
+
+{ #category : 'tests-statement' }
 JsonToIASTVisitorTest >> testReturnConstantStatement [
 "      integer function hello()
       return 42

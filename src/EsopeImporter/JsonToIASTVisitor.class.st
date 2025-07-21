@@ -748,9 +748,11 @@ JsonToIASTVisitor >> visitRead2Statement: aReadStatementNode [
 { #category : 'visiting statement' }
 JsonToIASTVisitor >> visitReadStatement: aReadStatementNode [
 
-	^ (super visitReadStatement: aReadStatementNode)
-		  entityName: 'read';
-		  yourself
+	| iastEntity |
+	iastEntity := super visitReadStatement: aReadStatementNode.
+	iastEntity entityName: 'read'.
+	iastEntity arguments do: [ :iastArg | iastArg isWrite: true ].
+	^iastEntity 
 ]
 
 { #category : 'visiting expression' }
