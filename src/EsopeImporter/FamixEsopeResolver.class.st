@@ -63,6 +63,16 @@ FamixEsopeResolver class >> on: aMooseModel [
 ]
 
 { #category : 'symbols resolution' }
+FamixEsopeResolver >> createSegmentStub: segmentName [
+	"WARGNING: If any segment with this found in the model, we create stub one"
+	
+	^self model newSegment
+		name: segmentName ;
+		isStub: true ;
+		yourself
+]
+
+{ #category : 'symbols resolution' }
 FamixEsopeResolver >> ensureVariableNamed: variableName in: famixProgramUnit isParameterDefinition: isParameterDefinition [
 	"parameter definition need a special treatment. If they are not found, a LocalVariable need to be created
 	 This is important for IncludedFile where we do not want a UnknownVariable (see #createUnresolveVariable:with:)"
@@ -356,16 +366,17 @@ FamixEsopeResolver >> resolveAttributeAccess: anAccess forPointer: aPointerVaria
 FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
 	"sets the declaredType of pointers"
 
-	(self model allWithSubTypesOf: FamixF77StructuralEntity) 
-		do: [ :var | 
-			var isEsope ifTrue: [ self resolveEsopeVariable: var ]
+	(self model allWithSubTypesOf: FamixF77StructuralEntity)
+		select: [ :structuralEntity | structuralEntity isEsope ]
+		thenDo: [ :esopeStructuralEntity | 
+			self resolveEsopeVariable: esopeStructuralEntity
 		].
 
 	(self model allWithSubTypesOf: FamixEsopeCommand) 
-		do: [ :cmd |
-			cmd variable ifNil: [ self resolveAccess: cmd ].
-			cmd variable attributeAt: #segmentName put: nil.
-			self resolveEsopeVariable: cmd variable
+		do: [ :famixEsopeCmd |
+			famixEsopeCmd variable ifNil: [ self resolveAccess: famixEsopeCmd ].
+			self resolveEsopeVariable: famixEsopeCmd variable.
+			famixEsopeCmd variable attributeAt: #segmentName put: nil
 		].
 ]
 
@@ -375,6 +386,8 @@ FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 
 	| allSegments segment segmentName |
 
+	aFamixVariable declaredType ifNotNil: [ ^self ].
+
 	allSegments := self model allWithType: FamixEsopeSegment.
 	segmentName := aFamixVariable segment
 		ifNil: [ aFamixVariable name ]
@@ -382,15 +395,9 @@ FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 
 	segment := allSegments
 		detect: [ :seg | seg name asLowercase = segmentName asLowercase ]
-		ifNone: [ 
-			self flag: 'WARGNING: If any segment with this found in the model, we create stub one'.
-			self model newSegment
-				name: segmentName ;
-				isStub: true ;
-				yourself
-		].
+		ifNone: [ self createSegmentStub: segmentName ].
 
-	aFamixVariable declaredType: segment.
+	aFamixVariable declaredType: segment
 ]
 
 { #category : 'symbols resolution' }

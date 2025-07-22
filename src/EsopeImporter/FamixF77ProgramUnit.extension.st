@@ -77,21 +77,19 @@ FamixF77ProgramUnit >> implicitDictionary [
 { #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> implicitFortranTypeFor: variableName [
 
-	self implicitDictionary
+	^self implicitDictionary
 		at: variableName first
-		ifPresent: [ :typeName | ^typeName ].
-
-	^nil
+		ifPresent: [ :typeName | ^typeName ]
+		ifAbsent: [ nil ]
 ]
 
 { #category : '*EsopeImporter' }
 FamixF77ProgramUnit >> implicitSegmentTypeFor: variableName [
 
-	self implicitDictionary
+	^self implicitDictionary
 		at: variableName
-		ifPresent: [ :typeName | ^typeName ].
-
-	^nil
+		ifPresent: [ :typeName | ^typeName ]
+		ifAbsent: [ nil ]
 ]
 
 { #category : '*EsopeImporter' }
