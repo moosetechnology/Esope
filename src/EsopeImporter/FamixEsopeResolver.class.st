@@ -63,11 +63,21 @@ FamixEsopeResolver class >> on: aMooseModel [
 ]
 
 { #category : 'symbols resolution' }
+FamixEsopeResolver >> createSegmentStub: segmentName [
+	"WARGNING: If any segment with this found in the model, we create stub one"
+	
+	^self model newSegment
+		name: segmentName ;
+		isStub: true ;
+		yourself
+]
+
+{ #category : 'symbols resolution' }
 FamixEsopeResolver >> ensureVariableNamed: variableName in: famixProgramUnit isParameterDefinition: isParameterDefinition [
 	"parameter definition need a special treatment. If they are not found, a LocalVariable need to be created
 	 This is important for IncludedFile where we do not want a UnknownVariable (see #createUnresolveVariable:with:)"
 
-	(famixProgramUnit class = FamixF77PUFunction and: [ variableName = famixProgramUnit name ])
+	(famixProgramUnit class = FamixF77PUFunction and: [ variableName sameAs: famixProgramUnit name ])
 		ifTrue: [ ^nil ].
 
 	(self resolveVariableNamed: variableName in: famixProgramUnit)
@@ -184,7 +194,7 @@ FamixEsopeResolver >> mergeVariableAndFunctionDeclaration: external [
 
 	external programUnit localVariables
 		detect: [ :varDeclaration |
-			varDeclaration name = external name
+			varDeclaration name sameAs: external name
 		]
 		ifFound: [ :varDeclaration |
 			varDeclaration parentBehaviouralEntity: nil.
@@ -356,16 +366,17 @@ FamixEsopeResolver >> resolveAttributeAccess: anAccess forPointer: aPointerVaria
 FamixEsopeResolver >> resolveDeclaredTypeOfPointers [
 	"sets the declaredType of pointers"
 
-	(self model allWithSubTypesOf: FamixF77StructuralEntity) 
-		do: [ :var | 
-			var isEsope ifTrue: [ self resolveEsopeVariable: var ]
+	(self model allWithSubTypesOf: FamixF77StructuralEntity)
+		select: [ :structuralEntity | structuralEntity isEsope ]
+		thenDo: [ :esopeStructuralEntity | 
+			self resolveEsopeVariable: esopeStructuralEntity
 		].
 
 	(self model allWithSubTypesOf: FamixEsopeCommand) 
-		do: [ :cmd |
-			cmd variable ifNil: [ self resolveAccess: cmd ].
-			cmd variable attributeAt: #segmentName put: nil.
-			self resolveEsopeVariable: cmd variable
+		do: [ :famixEsopeCmd |
+			famixEsopeCmd variable ifNil: [ self resolveAccess: famixEsopeCmd ].
+			self resolveEsopeVariable: famixEsopeCmd variable.
+			famixEsopeCmd variable attributeAt: #segmentName put: nil
 		].
 ]
 
@@ -375,29 +386,25 @@ FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 
 	| allSegments segment segmentName |
 
+	aFamixVariable declaredType ifNotNil: [ ^self ].
+
 	allSegments := self model allWithType: FamixEsopeSegment.
 	segmentName := aFamixVariable segment
 		ifNil: [ aFamixVariable name ]
 		ifNotNil: [ :declaredSegmentName | declaredSegmentName ].
 
 	segment := allSegments
-		detect: [ :seg | seg name asLowercase = segmentName asLowercase ]
-		ifNone: [ 
-			self flag: 'WARGNING: If any segment with this found in the model, we create stub one'.
-			self model newSegment
-				name: segmentName ;
-				isStub: true ;
-				yourself
-		].
+		detect: [ :seg | seg name sameAs: segmentName ]
+		ifNone: [ self createSegmentStub: segmentName ].
 
-	aFamixVariable declaredType: segment.
+	aFamixVariable declaredType: segment
 ]
 
 { #category : 'symbols resolution' }
 FamixEsopeResolver >> resolveExternalDeclaration: external [
 	
 	(model allWithSubTypesOf: FamixF77PUProcedure)
-		detect: [ :procedure | procedure name = external name ]
+		detect: [ :procedure | procedure name sameAs: external name ]
 		ifFound: [ :procedure | 
 			external externalProcedure: procedure.	
 		]

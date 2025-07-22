@@ -1098,7 +1098,8 @@ FamixEsopeResolverTest >> testResolveImplicitPointer [
 		addType: type;
 		yourself.
 
-	var := self defaultVariable: 'point' withType: (self defaultType: 'real').
+	var := self newEntity: FamixF77Variable named: 'point'.
+	var attributeAt: #segmentName put: 'point'.
 	(self newEntity: FamixEsopeCommandSegini)
 		accessor: sub ;
 		variable: var.
