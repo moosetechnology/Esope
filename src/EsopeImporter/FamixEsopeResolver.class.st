@@ -77,7 +77,7 @@ FamixEsopeResolver >> ensureVariableNamed: variableName in: famixProgramUnit isP
 	"parameter definition need a special treatment. If they are not found, a LocalVariable need to be created
 	 This is important for IncludedFile where we do not want a UnknownVariable (see #createUnresolveVariable:with:)"
 
-	(famixProgramUnit class = FamixF77PUFunction and: [ variableName = famixProgramUnit name ])
+	(famixProgramUnit class = FamixF77PUFunction and: [ variableName sameAs: famixProgramUnit name ])
 		ifTrue: [ ^nil ].
 
 	(self resolveVariableNamed: variableName in: famixProgramUnit)
@@ -194,7 +194,7 @@ FamixEsopeResolver >> mergeVariableAndFunctionDeclaration: external [
 
 	external programUnit localVariables
 		detect: [ :varDeclaration |
-			varDeclaration name = external name
+			varDeclaration name sameAs: external name
 		]
 		ifFound: [ :varDeclaration |
 			varDeclaration parentBehaviouralEntity: nil.
@@ -394,7 +394,7 @@ FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 		ifNotNil: [ :declaredSegmentName | declaredSegmentName ].
 
 	segment := allSegments
-		detect: [ :seg | seg name asLowercase = segmentName asLowercase ]
+		detect: [ :seg | seg name sameAs: segmentName ]
 		ifNone: [ self createSegmentStub: segmentName ].
 
 	aFamixVariable declaredType: segment
@@ -404,7 +404,7 @@ FamixEsopeResolver >> resolveEsopeVariable: aFamixVariable [
 FamixEsopeResolver >> resolveExternalDeclaration: external [
 	
 	(model allWithSubTypesOf: FamixF77PUProcedure)
-		detect: [ :procedure | procedure name = external name ]
+		detect: [ :procedure | procedure name sameAs: external name ]
 		ifFound: [ :procedure | 
 			external externalProcedure: procedure.	
 		]
