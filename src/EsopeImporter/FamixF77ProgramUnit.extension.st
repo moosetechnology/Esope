@@ -79,7 +79,7 @@ FamixF77ProgramUnit >> implicitFortranTypeFor: variableName [
 
 	^self implicitDictionary
 		at: variableName first
-		ifPresent: [ :typeName | ^typeName ]
+		ifPresent: [ :typeName | typeName ]
 		ifAbsent: [ nil ]
 ]
 
@@ -88,7 +88,7 @@ FamixF77ProgramUnit >> implicitSegmentTypeFor: variableName [
 
 	^self implicitDictionary
 		at: variableName
-		ifPresent: [ :typeName | ^typeName ]
+		ifPresent: [ :typeName | typeName ]
 		ifAbsent: [ nil ]
 ]
 
