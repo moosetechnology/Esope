@@ -9,7 +9,8 @@ change `/path/to/...` in the importer initialiser, regardless of your project's 
 
 ### Initialise the project importer
 ```st
-importer := FortranProjectImporter new.
+importer := FamixEsopeImporter new.
+""importer := FamixFortranImporter new.""
 
 importer 
 	sourceFolder: '/path/to/project/rootdir'; 
@@ -57,7 +58,7 @@ importer stopOnError: true.
 
 "
 Class {
-	#name : 'FortranProjectImporter',
+	#name : 'FamixFortranImporter',
 	#superclass : 'Object',
 	#instVars : [
 		'famixModel',
@@ -82,34 +83,34 @@ Class {
 }
 
 { #category : 'constants' }
-FortranProjectImporter class >> extensionsEsope [
+FamixFortranImporter class >> extensionsEsope [
 	"Add F and fc as esope files in order to let the ReWriter handle the include statement for this type of file"
 
 	^#(E ec e F fc)
 ]
 
 { #category : 'constants' }
-FortranProjectImporter class >> extensionsFortran [
+FamixFortranImporter class >> extensionsFortran [
 
 	^#(f for F90)
 ]
 
 { #category : 'importing' }
-FortranProjectImporter class >> import [
+FamixFortranImporter class >> import [
 	<script>
 	^self new
 		import
 ]
 
 { #category : 'testing' }
-FortranProjectImporter class >> isDummySubroutine: aName [
+FamixFortranImporter class >> isDummySubroutine: aName [
 	"name matches: _$ + a sequence of at least one character"
 
 	^ '_$#*' match: aName
 ]
 
 { #category : 'importing' }
-FortranProjectImporter class >> parseString: fortranCode [
+FamixFortranImporter class >> parseString: fortranCode [
 
 	| srcFile destFile |
 	srcFile  := './srcCodeOrigin.f' asFileReference ensureDelete.
@@ -125,25 +126,25 @@ FortranProjectImporter class >> parseString: fortranCode [
 ]
 
 { #category : 'constants' }
-FortranProjectImporter class >> workingEsopeName [
+FamixFortranImporter class >> workingEsopeName [
 
 	^'tmpEsopeImport'
 ]
 
 { #category : 'constants' }
-FortranProjectImporter class >> workingFortranName [
+FamixFortranImporter class >> workingFortranName [
 
 	^'tmpFortranImport'
 ]
 
 { #category : 'constants' }
-FortranProjectImporter class >> workingJsonName [
+FamixFortranImporter class >> workingJsonName [
 	
 	^'tmpJsonImport'
 ]
 
 { #category : 'private - files' }
-FortranProjectImporter >> appendPath: aPath toParent: aFolder [
+FamixFortranImporter >> appendPath: aPath toParent: aFolder [
 	"aPath may be a relative or absolute path, we want it 'concatenated' to aFolder
 	 to give something like: 'aFolder / aPath' 
 	 Additionaly, we make sure the resulting parent path exist so that if it is a file,
@@ -162,7 +163,7 @@ FortranProjectImporter >> appendPath: aPath toParent: aFolder [
 ]
 
 { #category : 'private - files' }
-FortranProjectImporter >> collectFilesIn: aFileReference [
+FamixFortranImporter >> collectFilesIn: aFileReference [
 
 	^aFileReference isDirectory
 		ifTrue: [ aFileReference children flatCollect: [ :child | self collectFilesIn: child  ] ]
@@ -170,21 +171,21 @@ FortranProjectImporter >> collectFilesIn: aFileReference [
 ]
 
 { #category : 'private - files' }
-FortranProjectImporter >> collectFilesIn: srcFileReference withExtensions: extensions [
+FamixFortranImporter >> collectFilesIn: srcFileReference withExtensions: extensions [
 
 	^(self collectFilesIn: srcFileReference)
 		select: [ :file | extensions includes: file extension ]
 ]
 
 { #category : 'private - files' }
-FortranProjectImporter >> collectIncludedFileNames [
+FamixFortranImporter >> collectIncludedFileNames [
 
-	^(self collectFilesIn: srcFolder withExtensions: FortranProjectImporter extensionsEsope)
+	^(self collectFilesIn: srcFolder withExtensions: FamixFortranImporter extensionsEsope)
 		flatCollectAsSet: [ :srcFileReference | self includedNamesIn: srcFileReference]
 ]
 
 { #category : 'private - files' }
-FortranProjectImporter >> copy: aPath from: src to: dest [
+FamixFortranImporter >> copy: aPath from: src to: dest [
 
 	| localizedPath |
 	localizedPath := aPath relativeTo: src.
@@ -193,7 +194,7 @@ FortranProjectImporter >> copy: aPath from: src to: dest [
 ]
 
 { #category : 'private - import' }
-FortranProjectImporter >> deEsopify: srcFile from: sourceFolder to: destFolder [
+FamixFortranImporter >> deEsopify: srcFile from: sourceFolder to: destFolder [
 	"de-esopify localPath in sourceFolder to fortran file in destFolder"
 
 	| localPath destFile |
@@ -211,7 +212,7 @@ FortranProjectImporter >> deEsopify: srcFile from: sourceFolder to: destFolder [
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> defaultFileEncoding [
+FamixFortranImporter >> defaultFileEncoding [
 	"other possibilities are 'latin1', 'utf8', ...
 	see `ZnCharacterEncoder knownEncodingIdentifiers` for all possibilities"
 
@@ -219,7 +220,7 @@ FortranProjectImporter >> defaultFileEncoding [
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> defaultFileEncoding: aString [
+FamixFortranImporter >> defaultFileEncoding: aString [
 	"other possibilities are 'latin1', 'utf8', ...
 	see `ZnCharacterEncoder knownEncodingIdentifiers` for all possibilities"
 
@@ -227,14 +228,14 @@ FortranProjectImporter >> defaultFileEncoding: aString [
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> defaultFortranVersion [
+FamixFortranImporter >> defaultFortranVersion [
 	"known Fortran versions: Fortran[66/77/77Legacy/77Extended/90/2003]
 	 66 77 77l 77e 90 2003"
 	^'77l'
 ]
 
 { #category : 'private - files' }
-FortranProjectImporter >> ensureEmptyFolder: folder [
+FamixFortranImporter >> ensureEmptyFolder: folder [
 
 	folder exists ifTrue: [ folder deleteAll  ].
 	folder ensureCreateDirectory.
@@ -242,25 +243,25 @@ FortranProjectImporter >> ensureEmptyFolder: folder [
 ]
 
 { #category : 'error management' }
-FortranProjectImporter >> errorHandler [
+FamixFortranImporter >> errorHandler [
 
 	^ errorHandler ifNil: [ errorHandler := FortranErrorManager new ]
 ]
 
 { #category : 'error management' }
-FortranProjectImporter >> errorHandler: anObject [
+FamixFortranImporter >> errorHandler: anObject [
 
 	errorHandler := anObject
 ]
 
 { #category : 'error management' }
-FortranProjectImporter >> errors [
+FamixFortranImporter >> errors [
 
 	^errorHandler errors
 ]
 
 { #category : 'run' }
-FortranProjectImporter >> esopeToFortran [
+FamixFortranImporter >> esopeToFortran [
 	"'de-esopifying Esope files to be able to parse them in Fortran
 	The result goes in the FortranWorkingDirectory"
 
@@ -273,7 +274,7 @@ FortranProjectImporter >> esopeToFortran [
 			to: self tempFortranFolder
 		].
 
-	(self collectFilesIn: srcFolder withExtensions: FortranProjectImporter extensionsEsope) do: [ :srcFile |
+	(self collectFilesIn: srcFolder withExtensions: FamixFortranImporter extensionsEsope) do: [ :srcFile |
 		self
 			deEsopify: srcFile
 			from: srcFolder
@@ -282,13 +283,13 @@ FortranProjectImporter >> esopeToFortran [
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> f77parser [
+FamixFortranImporter >> f77parser [
 
 	^ 'fortran-src-extras serialize -t json -v' , self fortranVersion , ' encode '
 ]
 
 { #category : 'private - import' }
-FortranProjectImporter >> fakeEsopeProgramUnit: includedFile from: sourceFolder to: workingEsopeFolder [
+FamixFortranImporter >> fakeEsopeProgramUnit: includedFile from: sourceFolder to: workingEsopeFolder [
 	"creates a fake programUnit from an includedFile"
 
 	| localizedSrcFile destFile |
@@ -308,19 +309,19 @@ FortranProjectImporter >> fakeEsopeProgramUnit: includedFile from: sourceFolder 
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> famixModel [
+FamixFortranImporter >> famixModel [
 
 	^ famixModel
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> famixModel: anObject [
+FamixFortranImporter >> famixModel: anObject [
 
 	famixModel := anObject
 ]
 
 { #category : 'run' }
-FortranProjectImporter >> famixResolve [
+FamixFortranImporter >> famixResolve [
 	"creates a resolver and resolve all pending names"
 
 	self newResolver
@@ -329,7 +330,7 @@ FortranProjectImporter >> famixResolve [
 ]
 
 { #category : 'run' }
-FortranProjectImporter >> fortranToJsonAST [
+FamixFortranImporter >> fortranToJsonAST [
 	"Goes through all Fortran-77 files and parses each one to produce a corresponding Json AST
 	 - 1st, de-esopified files
 	 - 2nd, pure Fortran files"
@@ -337,7 +338,7 @@ FortranProjectImporter >> fortranToJsonAST [
 	(self collectFilesIn: self tempFortranFolder) do: [ :localPath |
 		self parseFortran77: localPath from: self tempFortranFolder to: self tempJsonFolder ].
 
-	(self collectFilesIn: srcFolder withExtensions: FortranProjectImporter extensionsFortran) do: [ :projectPath |
+	(self collectFilesIn: srcFolder withExtensions: FamixFortranImporter extensionsFortran) do: [ :projectPath |
 		| localPath |
 		localPath := projectPath relativeTo: srcFolder.
 		"projectPath asFileReference
@@ -346,20 +347,20 @@ FortranProjectImporter >> fortranToJsonAST [
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> fortranVersion [
+FamixFortranImporter >> fortranVersion [
 
 	^fortranVersion ifNil: [ self defaultFortranVersion ]
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> fortranVersion: version [
+FamixFortranImporter >> fortranVersion: version [
 	(#('66' '77' '77l' '77e' '90' '2003') includes: version)
 		ifFalse: [ Error signal: 'Unknown Fortran version: ' , version , ' choose one of 66 77 77l 77e 90 2003' ].
 	fortranVersion := version
 ]
 
 { #category : 'private - files' }
-FortranProjectImporter >> getIncludedFileName: aString [
+FamixFortranImporter >> getIncludedFileName: aString [
 
 	| file |
 	file := (Character space split: aString) allButFirst
@@ -369,13 +370,13 @@ FortranProjectImporter >> getIncludedFileName: aString [
 ]
 
 { #category : 'error management' }
-FortranProjectImporter >> hasErrors [
+FamixFortranImporter >> hasErrors [
 
 	^errorHandler isNotEmpty
 ]
 
 { #category : 'run' }
-FortranProjectImporter >> iASTToFamix [
+FamixFortranImporter >> iASTToFamix [
 
 	| visitor |
 	visitor := IASTToFamixFortranVisitor new.
@@ -390,19 +391,19 @@ FortranProjectImporter >> iASTToFamix [
 ]
 
 { #category : 'private - testing' }
-FortranProjectImporter >> iastModel [
+FamixFortranImporter >> iastModel [
 
 	^ iastmodel
 ]
 
 { #category : 'private - testing' }
-FortranProjectImporter >> iastModel: anObject [
+FamixFortranImporter >> iastModel: anObject [
 
 	iastmodel := anObject
 ]
 
 { #category : 'run' }
-FortranProjectImporter >> import [
+FamixFortranImporter >> import [
 
 	srcFolder ifNil: [ Warning signal: 'Set source folder first' ].
 
@@ -425,7 +426,7 @@ FortranProjectImporter >> import [
 ]
 
 { #category : 'run' }
-FortranProjectImporter >> importSteps [
+FamixFortranImporter >> importSteps [
 	^{
 		'Converting included files to Esope' -> #includedFilesToEsope .
 		'De-Esopifying files' -> #esopeToFortran .
@@ -440,13 +441,13 @@ FortranProjectImporter >> importSteps [
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> includeFolder [
+FamixFortranImporter >> includeFolder [
 
 	^ includeFolder ifNil: [ self sourceFolder ]
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> includeFolder: folder [
+FamixFortranImporter >> includeFolder: folder [
 	"folder is either a String of a FileReference"
 
 	includeFolder := folder isString
@@ -456,7 +457,7 @@ FortranProjectImporter >> includeFolder: folder [
 ]
 
 { #category : 'run' }
-FortranProjectImporter >> includedFilesToEsope [
+FamixFortranImporter >> includedFilesToEsope [
 
 	withEsope ifFalse: [ ^self ].
 
@@ -473,7 +474,7 @@ FortranProjectImporter >> includedFilesToEsope [
 ]
 
 { #category : 'private - files' }
-FortranProjectImporter >> includedNamesIn: srcFileReference [
+FamixFortranImporter >> includedNamesIn: srcFileReference [
 	"finds all file inclusions from srcFileReference"
 
 	| value |
@@ -494,7 +495,7 @@ FortranProjectImporter >> includedNamesIn: srcFileReference [
 ]
 
 { #category : 'run' }
-FortranProjectImporter >> initialize [
+FamixFortranImporter >> initialize [
 
 	super initialize.
 
@@ -507,7 +508,7 @@ FortranProjectImporter >> initialize [
 ]
 
 { #category : 'private - files' }
-FortranProjectImporter >> isIncludeLine: aString [
+FamixFortranImporter >> isIncludeLine: aString [
 
 	(aString beginsWith: '#include ' caseSensitive: false) ifTrue: [ ^true ].
 	(aString beginsWith: '%INC ' caseSensitive: false) ifTrue: [ ^true ].
@@ -517,7 +518,7 @@ FortranProjectImporter >> isIncludeLine: aString [
 ]
 
 { #category : 'run' }
-FortranProjectImporter >> jsonASTToIAST [
+FamixFortranImporter >> jsonASTToIAST [
 
 	| visitor |
 	visitor := JsonToIASTVisitor new.
@@ -543,26 +544,26 @@ FortranProjectImporter >> jsonASTToIAST [
 ]
 
 { #category : 'private - helpers' }
-FortranProjectImporter >> newLine [
+FamixFortranImporter >> newLine [
 
 	^ OSPlatform current lineEnding
 ]
 
 { #category : 'private - import' }
-FortranProjectImporter >> newResolver [
+FamixFortranImporter >> newResolver [
 
 	^resolver := (FamixEsopeResolver on: famixModel)
 		errorHandler: errorHandler
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> noEsope [
+FamixFortranImporter >> noEsope [
 
 	withEsope := false
 ]
 
 { #category : 'private - import' }
-FortranProjectImporter >> parseFortran77: srcFile from: srcDir to: destDir [
+FamixFortranImporter >> parseFortran77: srcFile from: srcDir to: destDir [
 	"runs fortran77 parser on localPath in srcDir to JSON file in destDir"
 
 	| localizedFile destFile cmdReturn |
@@ -581,7 +582,7 @@ FortranProjectImporter >> parseFortran77: srcFile from: srcDir to: destDir [
 ]
 
 { #category : 'private - import' }
-FortranProjectImporter >> parseFortran77File: srcFileReference to: destFileReference [
+FamixFortranImporter >> parseFortran77File: srcFileReference to: destFileReference [
 
 	^LibC runCommand: (
 		'{1} "{2}" > "{3}" 2>&1'
@@ -594,7 +595,7 @@ FortranProjectImporter >> parseFortran77File: srcFileReference to: destFileRefer
 ]
 
 { #category : 'private - files' }
-FortranProjectImporter >> pathOf: includedFileName in: folder [
+FamixFortranImporter >> pathOf: includedFileName in: folder [
 	"search for includedFileName in #folder or sub-folders
 	 Returns the first path to the file relative to #folder.
 	 Returns nil if no such includedFileName is found
@@ -615,7 +616,7 @@ FortranProjectImporter >> pathOf: includedFileName in: folder [
 ]
 
 { #category : 'run' }
-FortranProjectImporter >> postImportChecks [
+FamixFortranImporter >> postImportChecks [
 
 	withSanityChecks ifTrue: [
 		famixModel entities do: [ :entity |
@@ -627,13 +628,13 @@ FortranProjectImporter >> postImportChecks [
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> sourceFolder [
+FamixFortranImporter >> sourceFolder [
 
 	^srcFolder 
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> sourceFolder: folder [
+FamixFortranImporter >> sourceFolder: folder [
 	"folder is either a String or a FileReference"
 
 	srcFolder := folder isString
@@ -643,19 +644,19 @@ FortranProjectImporter >> sourceFolder: folder [
 ]
 
 { #category : 'error management' }
-FortranProjectImporter >> stopOnError [
+FamixFortranImporter >> stopOnError [
 
 	^errorHandler stop
 ]
 
 { #category : 'error management' }
-FortranProjectImporter >> stopOnError: anObject [
+FamixFortranImporter >> stopOnError: anObject [
 
 	errorHandler stopOnError: anObject
 ]
 
 { #category : 'private - helpers' }
-FortranProjectImporter >> subroutineNamed: name [
+FamixFortranImporter >> subroutineNamed: name [
 
 	| prefix |
 
@@ -667,37 +668,37 @@ FortranProjectImporter >> subroutineNamed: name [
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> tempEsopeFolder [
+FamixFortranImporter >> tempEsopeFolder [
 
 	^tempEsopeFolder
 		ifNil: [
-			tempEsopeFolder := self ensureEmptyFolder: FortranProjectImporter workingEsopeName asFileReference
+			tempEsopeFolder := self ensureEmptyFolder: FamixFortranImporter workingEsopeName asFileReference
 		]
 
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> tempFortranFolder [
+FamixFortranImporter >> tempFortranFolder [
 
 	^tempFortranFolder
 		ifNil: [
-			tempFortranFolder := self ensureEmptyFolder: FortranProjectImporter workingFortranName asFileReference
+			tempFortranFolder := self ensureEmptyFolder: FamixFortranImporter workingFortranName asFileReference
 		]
 
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> tempJsonFolder [
+FamixFortranImporter >> tempJsonFolder [
 
 	^tempJsonFolder
 		ifNil: [
-			tempJsonFolder := self ensureEmptyFolder: FortranProjectImporter workingJsonName asFileReference
+			tempJsonFolder := self ensureEmptyFolder: FamixFortranImporter workingJsonName asFileReference
 		]
 
 ]
 
 { #category : 'private - files' }
-FortranProjectImporter >> unquoteIncludedFile: fileName [
+FamixFortranImporter >> unquoteIncludedFile: fileName [
 	"returns the name of an included file in an include line, without optional quotes"
 
 	^(#( $" $< ) includes: fileName first)
@@ -706,25 +707,25 @@ FortranProjectImporter >> unquoteIncludedFile: fileName [
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> withEsope [
+FamixFortranImporter >> withEsope [
 
 	^withEsope
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> withSanityChecks [
+FamixFortranImporter >> withSanityChecks [
 
 	^ withSanityChecks
 ]
 
 { #category : 'accessing' }
-FortranProjectImporter >> withSanityChecks: anObject [
+FamixFortranImporter >> withSanityChecks: anObject [
 
 	withSanityChecks := anObject
 ]
 
 { #category : 'private - helpers' }
-FortranProjectImporter >> writeFakeEsopeProgramUnit: name from: content on: writeStream [
+FamixFortranImporter >> writeFakeEsopeProgramUnit: name from: content on: writeStream [
 
 	writeStream
 		<< '      subroutine ';

@@ -2070,7 +2070,7 @@ JsonToIASTVisitorTest >> visitF77Code: f77Code [
 	visitor := JsonToIASTVisitor new.
 	^visitor visitProgramFile: 
 		(NeoJSONReader 
-			fromString: (FortranProjectImporter parseString: f77Code)
+			fromString: (FamixFortranImporter parseString: f77Code)
 		)
 ]
 
