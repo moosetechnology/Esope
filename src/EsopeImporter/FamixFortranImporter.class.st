@@ -109,6 +109,32 @@ FamixFortranImporter class >> isDummySubroutine: aName [
 	^ '_$#*' match: aName
 ]
 
+{ #category : 'api' }
+FamixFortranImporter class >> onFile: aPathString [
+
+	self assert: aPathString asFileReference exists.
+
+	^self onSourceString: (aPathString asFileReference contents)
+]
+
+{ #category : 'api' }
+FamixFortranImporter class >> onSourceString: aSourceString [
+
+	| jsonToIastVisitor iastToFamixVistor |
+
+	jsonToIastVisitor :=  JsonToIASTVisitor new 
+		visitProgramFile: (NeoJSONReader 
+			fromString: (self parseString: aSourceString)
+		).
+
+	iastToFamixVistor := IASTToFamixFortranVisitor new.
+	iastToFamixVistor visit: jsonToIastVisitor.
+
+	FamixEsopeResolver new model: iastToFamixVistor model; resolve.
+
+	^iastToFamixVistor model.
+]
+
 { #category : 'importing' }
 FamixFortranImporter class >> parseString: fortranCode [
 
