@@ -713,6 +713,12 @@ JsonToIASTVisitor >> visitParameterStatement: aParameterStatementNode [
 
 ]
 
+{ #category : 'visiting' }
+JsonToIASTVisitor >> visitPrintsArguments: anArgumentList [
+	^(super visitPrintArguments: anArgumentList)
+		reject: #isNil
+]
+
 { #category : 'visiting prog-unit' }
 JsonToIASTVisitor >> visitProgramFile: aProgramFileNode [
 	| programFile data |
