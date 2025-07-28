@@ -1338,6 +1338,31 @@ FamixEsopeResolverTest >> testResolveInvocationToIntrinsic [
 ]
 
 { #category : 'tests' }
+FamixEsopeResolverTest >> testResolveInvocationToStatementFunction [
+	| invocation caller statementFunction |
+
+	statementFunction := self newEntity: FamixF77StatementFunction named: 'identity'.
+
+	caller := (self defaultMain: 'main')
+		addStatementFunction: statementFunction;
+		addOutgoingInvocation: (self defaultInvocation: 'identity');
+		yourself.
+
+ 	resolver resolve.
+
+	self assert: caller outgoingInvocations size equals: 1.
+	invocation := caller outgoingInvocations first.
+	
+	self assert: invocation class equals: FamixF77Invocation.
+	self assert: invocation sender equals: caller.
+	
+	self assert: invocation candidates size equals: 1.
+	self assert: invocation candidates anyOne class equals: FamixF77StatementFunction.
+	self assert: invocation candidates anyOne equals: statementFunction.
+	self assert: invocation candidates anyOne name equals: 'identity'
+]
+
+{ #category : 'tests' }
 FamixEsopeResolverTest >> testResolveInvocationToWrite [
 	| invocation caller |
 	
