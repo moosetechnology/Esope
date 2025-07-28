@@ -1146,6 +1146,25 @@ FortranAbstractJsonVisitor >> visitPauseStatement: aPauseStatementNode [
 	^self visitJsonMap: aPauseStatementNode keys: #(span message)
 ]
 
+{ #category : 'visiting' }
+FortranAbstractJsonVisitor >> visitPrintArgument: anArgumentNode [
+	"The same code is used in 'FortranAbstractJsonVisitor >> visitArgument:', 
+	but we want to call 'JsonToIASTVisitor >> visitArgument:' instead. 
+	However, 'JsonToIASTVisitor >> visitArgument:' is too general (it applies to function calls, subprogram arguments, statement function arguments, etc.). 
+	This causes errors in the print statement, for example when we have a binary expression.
+	This method avoids this issue."
+
+	^(anArgumentNode includesKey: 'tag')
+		ifTrue: [ self visitJsonTaggedElement: anArgumentNode ]
+		ifFalse: [ self visitJsonMap: anArgumentNode keys: #(span expr) ]
+]
+
+{ #category : 'visiting' }
+FortranAbstractJsonVisitor >> visitPrintArguments: anArgumentList [
+	anArgumentList ifNil: [ ^#() ].
+	^(anArgumentList at: 'list') collect: [ :each | self visitPrintArgument: each]
+]
+
 { #category : 'visiting statement' }
 FortranAbstractJsonVisitor >> visitPrintFormat: aPrintFormatNode [
 
@@ -1159,7 +1178,7 @@ FortranAbstractJsonVisitor >> visitPrintStatement: aPrintStatementNode [
 
 	^{ self visitSpan: (aPrintStatementNode at: 'span') .
 	 self visitPrintFormat: (aPrintStatementNode at: 'format') .
-	 self visitArguments: (aPrintStatementNode at: 'arguments') }
+	 self visitPrintArguments: (aPrintStatementNode at: 'arguments') }
 ]
 
 { #category : 'visiting prog-unit' }
