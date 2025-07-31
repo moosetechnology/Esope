@@ -37,11 +37,13 @@ IASTToFamixFortranVisitor >> f77sourcefile: anObject [
 IASTToFamixFortranVisitor >> iASTProgramUnit: aProgramUnit toFamix: aFamixFortranClass [
 
 	| progUnit |
+
 	progUnit := (self newEntity: aFamixFortranClass)
-		            sourceAnchor:
-			            (self visitIndexedFileAnchor: aProgramUnit sourceAnchor);
-		            name: aProgramUnit entityName;
-		            yourself.
+		sourceAnchor:
+			(self visitIndexedFileAnchor: aProgramUnit sourceAnchor);
+		name: aProgramUnit entityName;
+		yourself.
+
 	stack push: progUnit.
 
 	self createSymbolTableFor: progUnit.
@@ -49,10 +51,11 @@ IASTToFamixFortranVisitor >> iASTProgramUnit: aProgramUnit toFamix: aFamixFortra
 	aProgramUnit body ifNotNil: [ :body | 
 		body deepFlatten do: [ :each |
 			(each isNil or: [ each isPoint])
-			ifFalse: [ each accept: self] ]
+				ifFalse: [ each accept: self] ]
 	].
 
 	stack pop.
+
 	^ progUnit
 ]
 
@@ -114,11 +117,15 @@ IASTToFamixFortranVisitor >> visitIASTBlockData: aBlockData [
 { #category : 'visiting' }
 IASTToFamixFortranVisitor >> visitIASTComment: aComment [
 
-	^(self newEntity: FamixF77Comment)
-		commentedEntity: stack top ;
+	| famixComment |
+	famixComment := (self newEntity: FamixF77Comment)
 		sourceAnchor: (FamixF77SourceTextAnchor new source: aComment text) ;
 		isEsope: aComment isEsope ;
-		yourself
+		yourself.
+
+	stack top addComment: famixComment.
+
+	^famixComment
 ]
 
 { #category : 'visiting' }
@@ -280,17 +287,15 @@ IASTToFamixFortranVisitor >> visitIASTProgramFile: aProgramFile [
 	| progFile |
 	self f77sourcefile: aProgramFile filename.
 	progFile := self model newProgramFile
-		            filename: aProgramFile filename;
-		            name: aProgramFile filename;
-		            yourself.
+		filename: aProgramFile filename;
+		name: aProgramFile filename;
+		yourself.
 
 	stack push: progFile.
 
 	aProgramFile body do: [ :child || famixEntity |
 		famixEntity := child accept: self.
-		child isComment
-		ifTrue: [ famixEntity commentedEntity: progFile ]
-		ifFalse: [ progFile addProgramUnit: famixEntity ]
+		child isComment ifFalse: [ progFile addProgramUnit: famixEntity ]
 	].
 
 	stack pop.

@@ -2,7 +2,7 @@
 I am a test class for testing the management of files and paths in FortranProjectImporter
 "
 Class {
-	#name : 'FortranProjectImporterTest',
+	#name : 'FamixFortranImporterTest',
 	#superclass : 'FamixEsopeUtilitiesTest',
 	#instVars : [
 		'importer',
@@ -14,7 +14,7 @@ Class {
 }
 
 { #category : 'running' }
-FortranProjectImporterTest >> prepareWorkspace [
+FamixFortranImporterTest >> prepareWorkspace [
 
 	| f1 f2 |
 	fileSystem createDirectory: '/project'.
@@ -49,10 +49,10 @@ FortranProjectImporterTest >> prepareWorkspace [
 ]
 
 { #category : 'running' }
-FortranProjectImporterTest >> setUp [
+FamixFortranImporterTest >> setUp [
 	super setUp.
 
-	importer := FortranProjectImporter new.
+	importer := FamixFortranImporter new.
 	importer errorHandler: FortranErrorManager new.
 
 	fileSystem := FileSystem memory.
@@ -62,7 +62,7 @@ FortranProjectImporterTest >> setUp [
 ]
 
 { #category : 'running' }
-FortranProjectImporterTest >> tearDown [ 
+FamixFortranImporterTest >> tearDown [ 
 
 	| folder |
 	super tearDown.
@@ -79,7 +79,7 @@ FortranProjectImporterTest >> tearDown [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testCollectFilesIn [
+FamixFortranImporterTest >> testCollectFilesIn [
 
 	| files |
 	self prepareWorkspace.
@@ -98,7 +98,7 @@ FortranProjectImporterTest >> testCollectFilesIn [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testCollectFilesInWithExtensions [
+FamixFortranImporterTest >> testCollectFilesInWithExtensions [
 
 	| files |
 	self prepareWorkspace.
@@ -111,7 +111,7 @@ FortranProjectImporterTest >> testCollectFilesInWithExtensions [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testCollectFilesInWithExtensionsSeveralFiles [
+FamixFortranImporterTest >> testCollectFilesInWithExtensionsSeveralFiles [
 
 	| files |
 	self prepareWorkspace.
@@ -126,7 +126,7 @@ FortranProjectImporterTest >> testCollectFilesInWithExtensionsSeveralFiles [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testCollectIncludedFileNames [
+FamixFortranImporterTest >> testCollectIncludedFileNames [
 
 	self prepareWorkspace.
 
@@ -136,7 +136,7 @@ FortranProjectImporterTest >> testCollectIncludedFileNames [
 ]
 
 { #category : 'tests - import steps' }
-FortranProjectImporterTest >> testDeEsopifyFromTo [
+FamixFortranImporterTest >> testDeEsopifyFromTo [
 
 	| srcFile destFile |
 	srcFile := fileSystem / 'esope.e'.
@@ -159,7 +159,7 @@ c@_   segini p
 ]
 
 { #category : 'tests - import steps' }
-FortranProjectImporterTest >> testEsopeToFortran [
+FamixFortranImporterTest >> testEsopeToFortran [
 
 	| tempFolder |
 	self prepareWorkspace.
@@ -179,7 +179,7 @@ FortranProjectImporterTest >> testEsopeToFortran [
 ]
 
 { #category : 'tests - import steps' }
-FortranProjectImporterTest >> testFakeEsopeProgramUnitFromTo [
+FamixFortranImporterTest >> testFakeEsopeProgramUnitFromTo [
 
 	| srcFile resultFile |
 	importer includeFolder: (fileSystem / 'inc').
@@ -203,7 +203,7 @@ a line
 ]
 
 { #category : 'tests - import steps' }
-FortranProjectImporterTest >> testFortranToJsonAST [
+FamixFortranImporterTest >> testFortranToJsonAST [
 
 	| tempFolder |
 	self skip: 'Depends on having a parser available, but parsers are external to Pharo so, would fail on CI'.
@@ -229,7 +229,7 @@ FortranProjectImporterTest >> testFortranToJsonAST [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testGetIncludedFile [
+FamixFortranImporterTest >> testGetIncludedFile [
 
 	| names |
 	names := importer getIncludedFileName: '#include  "blah.inc"'.
@@ -238,7 +238,7 @@ FortranProjectImporterTest >> testGetIncludedFile [
 ]
 
 { #category : 'tests - import steps' }
-FortranProjectImporterTest >> testIASTToFamix [
+FamixFortranImporterTest >> testIASTToFamix [
 	"json file and assert: taken from
 	   IASTToFamixVisitorTest >> testFamixFortran77PUFunctionWithParameter"
 
@@ -276,7 +276,7 @@ FortranProjectImporterTest >> testIASTToFamix [
 ]
 
 { #category : 'tests - import steps' }
-FortranProjectImporterTest >> testIncludedFilesToEsope [
+FamixFortranImporterTest >> testIncludedFilesToEsope [
 
 	| tempFolder |
 	self prepareWorkspace.
@@ -304,7 +304,7 @@ FortranProjectImporterTest >> testIncludedFilesToEsope [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testIncludedNamesIn [
+FamixFortranImporterTest >> testIncludedNamesIn [
 	| includer files |
 	self prepareWorkspace.
 
@@ -317,7 +317,7 @@ FortranProjectImporterTest >> testIncludedNamesIn [
 ]
 
 { #category : 'tests - import steps' }
-FortranProjectImporterTest >> testJsonASTToIAST [
+FamixFortranImporterTest >> testJsonASTToIAST [
 	"json file and assert: taken from JsonToIASTVisitorTest >> testMultipleStatements
 
 		subroutine hello
@@ -360,7 +360,7 @@ FortranProjectImporterTest >> testJsonASTToIAST [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testPathOfIn [
+FamixFortranImporterTest >> testPathOfIn [
 
 	| path |
 	(fileSystem / 'included.h') createFile.
@@ -371,7 +371,7 @@ FortranProjectImporterTest >> testPathOfIn [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testPathOfInFirstPathFound [
+FamixFortranImporterTest >> testPathOfInFirstPathFound [
 
 	| path |
 	(fileSystem / 'inc1') createDirectory.
@@ -385,7 +385,7 @@ FortranProjectImporterTest >> testPathOfInFirstPathFound [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testPathOfInNoExtension [
+FamixFortranImporterTest >> testPathOfInNoExtension [
 
 	| path |
 
@@ -397,7 +397,7 @@ FortranProjectImporterTest >> testPathOfInNoExtension [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testPathOfInNotFound [
+FamixFortranImporterTest >> testPathOfInNotFound [
 
 	| path |
 	(fileSystem / 'excluded.h') createFile.
@@ -408,7 +408,7 @@ FortranProjectImporterTest >> testPathOfInNotFound [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testPathOfInSubDirectory [
+FamixFortranImporterTest >> testPathOfInSubDirectory [
 
 	| path |
 	(fileSystem / 'includes') createDirectory.
@@ -420,7 +420,7 @@ FortranProjectImporterTest >> testPathOfInSubDirectory [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testPathOfInWithPath [
+FamixFortranImporterTest >> testPathOfInWithPath [
 
 	| path |
 	(fileSystem / 'includes') createDirectory.
@@ -432,7 +432,7 @@ FortranProjectImporterTest >> testPathOfInWithPath [
 ]
 
 { #category : 'tests - import steps' }
-FortranProjectImporterTest >> testPostImportChecks [
+FamixFortranImporterTest >> testPostImportChecks [
 	"test copied from #testSanityCheckParameterPass"
 
 	(self newEntity: FamixF77Parameter)
@@ -448,7 +448,7 @@ FortranProjectImporterTest >> testPostImportChecks [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckAccessNoAccessor [
+FamixFortranImporterTest >> testSanityCheckAccessNoAccessor [
 
 	| access |
 	access := self newEntity: FamixF77Access.
@@ -459,7 +459,7 @@ FortranProjectImporterTest >> testSanityCheckAccessNoAccessor [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckAccessNoVariable [
+FamixFortranImporterTest >> testSanityCheckAccessNoVariable [
 
 	| access |
 	access := self newEntity: FamixF77Access.
@@ -470,7 +470,7 @@ FortranProjectImporterTest >> testSanityCheckAccessNoVariable [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckAccessPass [
+FamixFortranImporterTest >> testSanityCheckAccessPass [
 
 	| access |
 	access := self newEntity: FamixF77Access.
@@ -482,7 +482,7 @@ FortranProjectImporterTest >> testSanityCheckAccessPass [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckAttributeNoDeclaredType [
+FamixFortranImporterTest >> testSanityCheckAttributeNoDeclaredType [
 
 	| var |
 	var := self newEntity: FamixFortranAttribute named: 'anAttribute'.
@@ -493,7 +493,7 @@ FortranProjectImporterTest >> testSanityCheckAttributeNoDeclaredType [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckAttributeNoParent [
+FamixFortranImporterTest >> testSanityCheckAttributeNoParent [
 
 	| var |
 	var := self newEntity: FamixFortranAttribute named: 'anAttribute'.
@@ -504,7 +504,7 @@ FortranProjectImporterTest >> testSanityCheckAttributeNoParent [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckAttributePass [
+FamixFortranImporterTest >> testSanityCheckAttributePass [
 
 	| var |
 	var := self newEntity: FamixFortranAttribute named: 'anAttribute'.
@@ -516,7 +516,7 @@ FortranProjectImporterTest >> testSanityCheckAttributePass [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckEsopeCommandNoAccessor [
+FamixFortranImporterTest >> testSanityCheckEsopeCommandNoAccessor [
 
 	| cmd |
 	cmd := self newEntity: FamixEsopeCommand.
@@ -528,7 +528,7 @@ FortranProjectImporterTest >> testSanityCheckEsopeCommandNoAccessor [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckEsopeCommandNoVariable [
+FamixFortranImporterTest >> testSanityCheckEsopeCommandNoVariable [
 
 	| cmd |
 	cmd := self newEntity: FamixEsopeCommand.
@@ -539,7 +539,7 @@ FortranProjectImporterTest >> testSanityCheckEsopeCommandNoVariable [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckEsopeCommandNotPointer [
+FamixFortranImporterTest >> testSanityCheckEsopeCommandNotPointer [
 
 	| cmd |
 	cmd := self newEntity: FamixEsopeCommand.
@@ -552,7 +552,7 @@ FortranProjectImporterTest >> testSanityCheckEsopeCommandNotPointer [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckEsopeCommandPass [
+FamixFortranImporterTest >> testSanityCheckEsopeCommandPass [
 
 	| cmd |
 	cmd := self newEntity: FamixEsopeCommand.
@@ -565,7 +565,7 @@ FortranProjectImporterTest >> testSanityCheckEsopeCommandPass [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckIncludedFileNoInclusion [
+FamixFortranImporterTest >> testSanityCheckIncludedFileNoInclusion [
 
 	| includedFile |
 	includedFile := self newEntity: FamixF77IncludedFile named: 'file.inc'.
@@ -576,7 +576,7 @@ FortranProjectImporterTest >> testSanityCheckIncludedFileNoInclusion [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckIncludedFileNoParent [
+FamixFortranImporterTest >> testSanityCheckIncludedFileNoParent [
 
 	| includedFile |
 	includedFile := self newEntity: FamixF77IncludedFile named: 'file.inc'.
@@ -587,7 +587,7 @@ FortranProjectImporterTest >> testSanityCheckIncludedFileNoParent [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckIncludedFilePass [
+FamixFortranImporterTest >> testSanityCheckIncludedFilePass [
 
 	| includedFile |
 	includedFile := self newEntity: FamixF77IncludedFile named: 'file.inc'.
@@ -599,7 +599,7 @@ FortranProjectImporterTest >> testSanityCheckIncludedFilePass [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckIntrinsicRoutineNoInvoker [
+FamixFortranImporterTest >> testSanityCheckIntrinsicRoutineNoInvoker [
 
 	| includedFile |
 	includedFile := self newEntity: FamixF77IntrinsicRoutine named: 'write'.
@@ -610,7 +610,7 @@ FortranProjectImporterTest >> testSanityCheckIntrinsicRoutineNoInvoker [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckIntrinsicRoutinePass [
+FamixFortranImporterTest >> testSanityCheckIntrinsicRoutinePass [
 
 	| includedFile |
 	includedFile := self newEntity: FamixF77IntrinsicRoutine named: 'write'.
@@ -621,7 +621,7 @@ FortranProjectImporterTest >> testSanityCheckIntrinsicRoutinePass [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckInvocationNoCandidates [
+FamixFortranImporterTest >> testSanityCheckInvocationNoCandidates [
 
 	| invok |
 	invok := self newEntity: FamixF77Invocation.
@@ -633,7 +633,7 @@ FortranProjectImporterTest >> testSanityCheckInvocationNoCandidates [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckInvocationNoSender [
+FamixFortranImporterTest >> testSanityCheckInvocationNoSender [
 
 	| invok |
 	invok := self newEntity: FamixF77Invocation.
@@ -644,7 +644,7 @@ FortranProjectImporterTest >> testSanityCheckInvocationNoSender [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckInvocationPass [
+FamixFortranImporterTest >> testSanityCheckInvocationPass [
 
 	| invok |
 	invok := self newEntity: FamixF77Invocation.
@@ -656,7 +656,7 @@ FortranProjectImporterTest >> testSanityCheckInvocationPass [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckMainNoParent [
+FamixFortranImporterTest >> testSanityCheckMainNoParent [
 
 	| main |
 	main := self newEntity: FamixF77PUMain named: 'myMain'.
@@ -666,7 +666,7 @@ FortranProjectImporterTest >> testSanityCheckMainNoParent [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckMainPass [
+FamixFortranImporterTest >> testSanityCheckMainPass [
 
 	| main |
 	main := self newEntity: FamixF77PUMain named: 'myMain'.
@@ -677,7 +677,7 @@ FortranProjectImporterTest >> testSanityCheckMainPass [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckPUFunctionNoDeclaredType [
+FamixFortranImporterTest >> testSanityCheckPUFunctionNoDeclaredType [
 
 	| fct |
 	fct := self newEntity: FamixF77PUFunction named: 'f'.
@@ -688,7 +688,7 @@ FortranProjectImporterTest >> testSanityCheckPUFunctionNoDeclaredType [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckPUFunctionNoParent [
+FamixFortranImporterTest >> testSanityCheckPUFunctionNoParent [
 
 	| fct |
 	fct := self newEntity: FamixF77PUFunction named: 'f'.
@@ -699,7 +699,7 @@ FortranProjectImporterTest >> testSanityCheckPUFunctionNoParent [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckPUFunctionPass [
+FamixFortranImporterTest >> testSanityCheckPUFunctionPass [
 
 	| fct |
 	fct := self newEntity: FamixF77PUFunction named: 'f'.
@@ -711,7 +711,7 @@ FortranProjectImporterTest >> testSanityCheckPUFunctionPass [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckParameterNoDeclaredType [
+FamixFortranImporterTest >> testSanityCheckParameterNoDeclaredType [
 
 	| param |
 	param := self newEntity: FamixF77Parameter.
@@ -722,7 +722,7 @@ FortranProjectImporterTest >> testSanityCheckParameterNoDeclaredType [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckParameterNoParent [
+FamixFortranImporterTest >> testSanityCheckParameterNoParent [
 
 	| param |
 	param := self newEntity: FamixF77Parameter.
@@ -733,7 +733,7 @@ FortranProjectImporterTest >> testSanityCheckParameterNoParent [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckParameterPass [
+FamixFortranImporterTest >> testSanityCheckParameterPass [
 
 	| param |
 	param := self newEntity: FamixF77Parameter.
@@ -745,7 +745,7 @@ FortranProjectImporterTest >> testSanityCheckParameterPass [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckStatementFunctionNoParent [
+FamixFortranImporterTest >> testSanityCheckStatementFunctionNoParent [
 
 	| fct |
 	fct := self newEntity: FamixF77StatementFunction named: 'f'.
@@ -755,7 +755,7 @@ FortranProjectImporterTest >> testSanityCheckStatementFunctionNoParent [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckStatementFunctionPass [
+FamixFortranImporterTest >> testSanityCheckStatementFunctionPass [
 
 	| fct |
 	fct := self newEntity: FamixF77StatementFunction named: 'f'.
@@ -766,7 +766,7 @@ FortranProjectImporterTest >> testSanityCheckStatementFunctionPass [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckUnknownVariableNoAccess [
+FamixFortranImporterTest >> testSanityCheckUnknownVariableNoAccess [
 
 	| var |
 	var := self newEntity: FamixF77UnknownVariable.
@@ -777,7 +777,7 @@ FortranProjectImporterTest >> testSanityCheckUnknownVariableNoAccess [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckUnknownVariablePass [
+FamixFortranImporterTest >> testSanityCheckUnknownVariablePass [
 
 	| var |
 	var := self newEntity: FamixF77UnknownVariable.
@@ -788,7 +788,7 @@ FortranProjectImporterTest >> testSanityCheckUnknownVariablePass [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckVariableNoDeclaredType [
+FamixFortranImporterTest >> testSanityCheckVariableNoDeclaredType [
 
 	| var |
 	var := self newEntity: FamixF77Variable named: 'aVariable'.
@@ -799,7 +799,7 @@ FortranProjectImporterTest >> testSanityCheckVariableNoDeclaredType [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckVariableNoParent [
+FamixFortranImporterTest >> testSanityCheckVariableNoParent [
 
 	| var |
 	var := self newEntity: FamixF77Variable named: 'aVariable'.
@@ -810,7 +810,7 @@ FortranProjectImporterTest >> testSanityCheckVariableNoParent [
 ]
 
 { #category : 'test - sanityCheck' }
-FortranProjectImporterTest >> testSanityCheckVariablePass [
+FamixFortranImporterTest >> testSanityCheckVariablePass [
 
 	| var |
 	var := self newEntity: FamixF77Variable named: 'aVariable'.
@@ -822,7 +822,7 @@ FortranProjectImporterTest >> testSanityCheckVariablePass [
 ]
 
 { #category : 'tests - file-management' }
-FortranProjectImporterTest >> testUnquoteIncludedFile [
+FamixFortranImporterTest >> testUnquoteIncludedFile [
 
 	self assert: (importer unquoteIncludedFile: 'blah') equals: 'blah'.
 	self assert: (importer unquoteIncludedFile: 'blah.f') equals: 'blah.f'.

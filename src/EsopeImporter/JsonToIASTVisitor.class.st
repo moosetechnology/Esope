@@ -713,6 +713,12 @@ JsonToIASTVisitor >> visitParameterStatement: aParameterStatementNode [
 
 ]
 
+{ #category : 'visiting' }
+JsonToIASTVisitor >> visitPrintsArguments: anArgumentList [
+	^(super visitPrintArguments: anArgumentList)
+		reject: #isNil
+]
+
 { #category : 'visiting prog-unit' }
 JsonToIASTVisitor >> visitProgramFile: aProgramFileNode [
 	| programFile data |
@@ -796,7 +802,7 @@ JsonToIASTVisitor >> visitSubroutine: aSubroutineNode [
 	| data entity |
 	data := super visitSubroutine: aSubroutineNode.
 
-	entity := (FortranProjectImporter isDummySubroutine: data second)
+	entity := (FamixFortranImporter isDummySubroutine: data second)
 		          ifTrue: [ IASTIncludedFile new ]
 		          ifFalse: [ 
 			          IASTSubroutine new

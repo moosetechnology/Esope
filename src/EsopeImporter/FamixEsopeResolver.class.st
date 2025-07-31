@@ -481,11 +481,10 @@ FamixEsopeResolver >> resolveIncludes [
 FamixEsopeResolver >> resolveInvocables: invocable [
 	^(model allWithSubTypesOf: FamixF77PUProcedure)
 		detect: [ :entity | 
-			(entity name = invocable entityName)
+			(entity name sameAs: invocable entityName)
 				"and: [ entity parameters size = (invocable arguments ifNil: [ #() ]) size ]"
 		]
-		ifFound: [ :entity | entity ]
-		ifNone: [ nil ]
+		ifNone: [ self searchInStatementFunction: invocable ]
 ]
 
 { #category : 'symbols resolution' }
@@ -554,6 +553,16 @@ FamixEsopeResolver >> resolvingSteps [
 
 	"#propagatePointerType"
 
+]
+
+{ #category : 'symbols resolution' }
+FamixEsopeResolver >> searchInStatementFunction: invocable [
+
+	^(model allWithType: FamixF77StatementFunction)
+		detect: [ :statementFunction |
+			(statementFunction name sameAs: invocable entityName)
+		]
+		ifNone: [ nil ]
 ]
 
 { #category : 'private' }

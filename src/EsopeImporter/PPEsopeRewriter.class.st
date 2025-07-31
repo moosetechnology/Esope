@@ -17,6 +17,26 @@ PPEsopeRewriter class >> ignoredNames [
 	^ super ignoredNames , #(stream)
 ]
 
+{ #category : 'api' }
+PPEsopeRewriter class >> onFile: aPathString [
+
+	| aFileReference |
+	aFileReference := aPathString asFileReference.
+	self assert: aFileReference exists.
+
+	^self onSourceString: aFileReference contents
+]
+
+{ #category : 'api' }
+PPEsopeRewriter class >> onSourceString: aSourceString [
+
+	| parser |
+	parser := self new.
+	parser parse: aSourceString onError: [ Error signal: 'Rewriting error' ].
+
+	^parser generatedCode
+]
+
 { #category : 'utilities' }
 PPEsopeRewriter class >> rewriteFrom: esopeFile to: annotatedFile [
 	self new
