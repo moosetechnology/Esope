@@ -37,11 +37,13 @@ IASTToFamixFortranVisitor >> f77sourcefile: anObject [
 IASTToFamixFortranVisitor >> iASTProgramUnit: aProgramUnit toFamix: aFamixFortranClass [
 
 	| progUnit |
+
 	progUnit := (self newEntity: aFamixFortranClass)
-		            sourceAnchor:
-			            (self visitIndexedFileAnchor: aProgramUnit sourceAnchor);
-		            name: aProgramUnit entityName;
-		            yourself.
+		sourceAnchor:
+			(self visitIndexedFileAnchor: aProgramUnit sourceAnchor);
+		name: aProgramUnit entityName;
+		yourself.
+
 	stack push: progUnit.
 
 	self createSymbolTableFor: progUnit.
@@ -49,10 +51,11 @@ IASTToFamixFortranVisitor >> iASTProgramUnit: aProgramUnit toFamix: aFamixFortra
 	aProgramUnit body ifNotNil: [ :body | 
 		body deepFlatten do: [ :each |
 			(each isNil or: [ each isPoint])
-			ifFalse: [ each accept: self] ]
+				ifFalse: [ each accept: self] ]
 	].
 
 	stack pop.
+
 	^ progUnit
 ]
 
