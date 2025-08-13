@@ -427,6 +427,39 @@ FamixEsopeResolverTest >> testResolveAccessesForALocalVariableImplicit [
 ]
 
 { #category : 'test - resolveAccess' }
+FamixEsopeResolverTest >> testResolveAccessesForALocalVariableWithImplicitNone [
+	"program main
+	 implicit none
+	 var
+	 end
+	"
+
+	| main access  var |
+
+	main := (self defaultMain: 'main')
+		attributeAt: #implicits put: { self defaultImplicitNone } ;
+		addAccess: (self defaultAccess: 'var') ;
+		yourself.
+
+	self assert: main localVariables size equals: 0.
+
+ 	resolver resolveAccesses.
+
+	self assert: main localVariables size equals: 1.
+	var := main localVariables anyOne.
+	self assert: var name equals: 'var'.
+	self assert: var declaredType class equals: FamixF77TypeIntrinsic.
+	self assert: var declaredType name equals: 'real'.
+
+	self assert: main accesses size equals: 1.
+
+	access := main accesses anyOne.
+	self assert: access variable equals: var.
+	self assert: access accessor equals: main.
+
+]
+
+{ #category : 'test - resolveAccess' }
 FamixEsopeResolverTest >> testResolveAccessesForAParameter [
 
 	| subrtn access |
