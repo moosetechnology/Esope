@@ -77,6 +77,9 @@ FamixEsopeResolver >> ensureVariableNamed: variableName in: famixProgramUnit isP
 	"parameter definition need a special treatment. If they are not found, a LocalVariable need to be created
 	 This is important for IncludedFile where we do not want a UnknownVariable (see #createUnresolveVariable:with:)"
 
+	"variableName maybe a function name, for example: 
+		integer myfunc
+	myfunc is not a variable but a function return type declaration"
 	(famixProgramUnit class = FamixF77PUFunction and: [ variableName sameAs: famixProgramUnit name ])
 		ifTrue: [ ^nil ].
 
@@ -285,6 +288,7 @@ FamixEsopeResolver >> resolveAccess: aFamixAccess [
 	 - otherwise let the accessor resolve the variable within itself"
 
 	| iastVariable |
+	
 	aFamixAccess variable ifNotNil: [ ^self ].
 
 	(aFamixAccess getAndRemoveAttribute: #parentAccess)
@@ -296,6 +300,9 @@ FamixEsopeResolver >> resolveAccess: aFamixAccess [
  
 	iastVariable := aFamixAccess getAndRemoveAttribute: #entity.
 	self assert: iastVariable isNotNil.
+
+	"""Trying to fix undeclared variables, the following code is for debug purpose only""	
+	(iastVariable entityName trim sameAs: 'ifbk') ifTrue: [ 1halt. ]."
 
 	(self
 		ensureVariableNamed: iastVariable entityName trim
@@ -522,7 +529,7 @@ FamixEsopeResolver >> resolveTypeName: aName [
 	self flag: 'should test the referring PU (ex: for an included segment)'.
 
 	^(self model allWithSubTypesOf: FamixF77Type)
-		detect: [ :type | type name = aName ]
+		detect: [ :type | type name sameAs: aName ]
 		ifNone: [ self model newTypeUnknown ]
 ]
 
