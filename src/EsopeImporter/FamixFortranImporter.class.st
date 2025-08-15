@@ -120,15 +120,14 @@ FamixFortranImporter class >> onFile: aPathString [
 { #category : 'api' }
 FamixFortranImporter class >> onSourceString: aSourceString [
 
-	| jsonToIastVisitor iastToFamixVistor |
-
-	jsonToIastVisitor :=  JsonToIASTVisitor new 
-		visitProgramFile: (NeoJSONReader 
-			fromString: (self parseString: aSourceString)
-		).
+	| iastToFamixVistor |
 
 	iastToFamixVistor := IASTToFamixFortranVisitor new.
-	iastToFamixVistor visit: jsonToIastVisitor.
+	iastToFamixVistor visit: (JsonToIASTVisitor new 
+		visitProgramFile: (NeoJSONReader 
+			fromString: (self parseString: aSourceString)
+		)
+	).
 
 	FamixEsopeResolver new model: iastToFamixVistor model; resolve.
 
