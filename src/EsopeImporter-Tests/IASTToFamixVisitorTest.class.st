@@ -979,7 +979,7 @@ IASTToFamixVisitorTest >> testFamixFortran77Common [
 	self assert: entity programUnits first localVariables size equals: 1.
 
 	var := entity programUnits first localVariables first.
-	self assert: var class equals: FamixF77CommonGroup.
+	self assert: var class equals: FamixF77CommonBlock.
 	self assert: var name equals: 'COM'.
 	self assert: var parentBehaviouralEntity equals: entity programUnits first.
 
