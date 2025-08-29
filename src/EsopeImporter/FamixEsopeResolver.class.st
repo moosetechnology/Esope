@@ -105,6 +105,13 @@ FamixEsopeResolver >> errorHandler: anErrorHandler [
 	errorHandler := anErrorHandler
 ]
 
+{ #category : 'symbols resolution' }
+FamixEsopeResolver >> findLocalVariablesWithSameNameAsParameter: parameterName in: puUnit [
+
+	^puUnit localVariables
+		select: [ :localVariable | localVariable name sameAs: parameterName ]
+]
+
 { #category : 'private' }
 FamixEsopeResolver >> isIntrinsicRoutine: invocated [
 
@@ -134,14 +141,10 @@ FamixEsopeResolver >> mergeParameterAndVariableDeclaration: param [
 	 then merge the VariableDeclaration into param, but keeping the declaredType
 	 of the VariableDeclaration"
 
-	(self resolveAsLocalVariable: param name in: param parentBehaviouralEntity)
-		do: [ :varDeclaration |
-			(varDeclaration = param)
-			ifFalse: [
-				param declaredType: varDeclaration declaredType.
-				self mergeVariable: varDeclaration into: param
-			]
-		].
+	(self 
+		findLocalVariablesWithSameNameAsParameter: param name
+		in: param parentBehaviouralEntity
+	) do: [ :localVariable | self mergeVariable: localVariable into: param ]
 
 ]
 
@@ -174,6 +177,14 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	 - sourceAnchor :					merge, keep value of variableToKeep (clear it in variableToRemove)
 	 - declaredType :					ignore, keep value of variableToKeep (clear it in variableToRemove)"
 
+	| parentBehaviouralEntity nbLocalVariables |
+	parentBehaviouralEntity := variableToRemove parentBehaviouralEntity.
+	nbLocalVariables := parentBehaviouralEntity localVariables size.
+	
+	variableToKeep declaredType ifNil: [ 
+		variableToKeep declaredType: variableToRemove declaredType
+	].
+	
 	variableToRemove parentBehaviouralEntity: nil.
 	variableToRemove sourceAnchor: nil.
 	variableToRemove declaredType: nil.
@@ -182,7 +193,9 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	variableToRemove entityAttributes do: [ :assoc | variableToKeep attributeAt: assoc key put: assoc value ].
 	variableToKeep isEsope: (variableToRemove isEsope or: [variableToKeep isEsope]).
 
-	model removeEntity: variableToRemove
+	model removeEntity: variableToRemove.
+	parentBehaviouralEntity localVariables remove: variableToRemove.
+	self assert: (nbLocalVariables - 1) = parentBehaviouralEntity localVariables size
 ]
 
 { #category : 'symbols resolution' }
@@ -345,7 +358,7 @@ FamixEsopeResolver >> resolveAsImplicitAttribute: variableName in: anAccessor [
 FamixEsopeResolver >> resolveAsLocalVariable: variableName in: anAccessor [
 
 	^anAccessor allLocalVariables
-		select: [ :entity | entity name asLowercase = variableName asLowercase ]
+		select: [ :entity | entity name sameAs: variableName ]
 ]
 
 { #category : 'symbols resolution' }
