@@ -132,18 +132,16 @@ IASTToFamixFortranVisitor >> visitIASTComment: aComment [
 IASTToFamixFortranVisitor >> visitIASTCommon: aCommon [
 	| fmx |
 
-	fmx := (self newEntity: FamixF77CommonGroup)
+	fmx := (self newEntity: FamixF77CommonBlock)
 		       sourceAnchor: (self visitIndexedFileAnchor: aCommon sourceAnchor) ;
 		       name: aCommon entityName ;
-				 isEsope: false ;
+				 parentBehaviouralEntity: stack top ;
 		       yourself.
 	self symbolTable: stack top at: fmx name put: fmx. 
 
 	fmx localVariables: (aCommon variables collect: [ :iastVar | iastVar accept: self ]).
 
-	stack top addLocalVariable: fmx.
-
-	^ fmx
+	^fmx
 ]
 
 { #category : 'visiting' }
