@@ -177,9 +177,6 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	 - sourceAnchor :					merge, keep value of variableToKeep (clear it in variableToRemove)
 	 - declaredType :					ignore, keep value of variableToKeep (clear it in variableToRemove)"
 
-	| parentBehaviouralEntity nbLocalVariables |
-	parentBehaviouralEntity := variableToRemove parentBehaviouralEntity.
-	nbLocalVariables := parentBehaviouralEntity localVariables size.
 	
 	variableToKeep declaredType ifNil: [ 
 		variableToKeep declaredType: variableToRemove declaredType
@@ -193,9 +190,8 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	variableToRemove entityAttributes do: [ :assoc | variableToKeep attributeAt: assoc key put: assoc value ].
 	variableToKeep isEsope: (variableToRemove isEsope or: [variableToKeep isEsope]).
 
-	model removeEntity: variableToRemove.
-	parentBehaviouralEntity localVariables remove: variableToRemove.
-	self assert: (nbLocalVariables - 1) = parentBehaviouralEntity localVariables size
+	model removeEntity: variableToRemove
+
 ]
 
 { #category : 'symbols resolution' }

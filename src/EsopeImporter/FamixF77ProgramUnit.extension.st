@@ -40,9 +40,8 @@ FamixF77ProgramUnit >> createUnresolveVariable: variableName with: resolver isPa
 
 	implicitVariable := mooseModel newVariable
 		name: variableName ;
+		parentBehaviouralEntity: self ;
 		yourself.
-	
-	self addLocalVariable: implicitVariable.
 
 	implicitVariable declaredType:
 		(resolver resolveImplicitVariableType: implicitVariable).
