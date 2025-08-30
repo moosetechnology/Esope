@@ -134,7 +134,7 @@ IASTToFamixFortranVisitor >> visitIASTCommon: aCommon [
 
 	fmx := (self newEntity: FamixF77CommonBlock)
 		sourceAnchor: (self visitIndexedFileAnchor: aCommon sourceAnchor) ;
-		name: aCommon entityName ;
+		name: (aCommon entityName ifNil: [ '' ]) ;
 		parentBehaviouralEntity: stack top ;
 		yourself.
 
