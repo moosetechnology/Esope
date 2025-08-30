@@ -106,9 +106,9 @@ FamixEsopeResolver >> errorHandler: anErrorHandler [
 ]
 
 { #category : 'symbols resolution' }
-FamixEsopeResolver >> findLocalVariablesWithSameNameAsParameter: parameterName in: puUnit [
+FamixEsopeResolver >> findLocalVariablesWithSameNameAsParameter: parameterName in: progUnit [
 
-	^puUnit localVariables
+	^progUnit localVariables
 		select: [ :localVariable | localVariable name sameAs: parameterName ]
 ]
 
@@ -177,11 +177,10 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	 - sourceAnchor :					merge, keep value of variableToKeep (clear it in variableToRemove)
 	 - declaredType :					ignore, keep value of variableToKeep (clear it in variableToRemove)"
 
-	
 	variableToKeep declaredType ifNil: [ 
 		variableToKeep declaredType: variableToRemove declaredType
 	].
-	
+
 	variableToRemove parentBehaviouralEntity: nil.
 	variableToRemove sourceAnchor: nil.
 	variableToRemove declaredType: nil.
@@ -191,7 +190,6 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	variableToKeep isEsope: (variableToRemove isEsope or: [variableToKeep isEsope]).
 
 	model removeEntity: variableToRemove
-
 ]
 
 { #category : 'symbols resolution' }
