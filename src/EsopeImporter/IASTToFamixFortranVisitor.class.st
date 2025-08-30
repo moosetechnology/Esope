@@ -140,8 +140,8 @@ IASTToFamixFortranVisitor >> visitIASTCommon: aCommon [
 
 	self symbolTable: stack top at: fmx name put: fmx.
 	
-	fmx attributeAt: #iatVariables put: aCommon variables.
-
+	self flag: '#TODO: fix this in the resolver'.
+	fmx attributeAt: #iastVariables put: aCommon variables.
 	fmx variables: (
 		aCommon variables collect: [ :iastVar | iastVar accept: self ]
 	).
