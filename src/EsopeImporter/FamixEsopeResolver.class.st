@@ -105,6 +105,13 @@ FamixEsopeResolver >> errorHandler: anErrorHandler [
 	errorHandler := anErrorHandler
 ]
 
+{ #category : 'symbols resolution' }
+FamixEsopeResolver >> findLocalVariablesWithSameNameAsParameter: parameterName in: progUnit [
+
+	^progUnit localVariables
+		select: [ :localVariable | localVariable name sameAs: parameterName ]
+]
+
 { #category : 'private' }
 FamixEsopeResolver >> isIntrinsicRoutine: invocated [
 
@@ -134,14 +141,10 @@ FamixEsopeResolver >> mergeParameterAndVariableDeclaration: param [
 	 then merge the VariableDeclaration into param, but keeping the declaredType
 	 of the VariableDeclaration"
 
-	(self resolveAsLocalVariable: param name in: param parentBehaviouralEntity)
-		do: [ :varDeclaration |
-			(varDeclaration = param)
-			ifFalse: [
-				param declaredType: varDeclaration declaredType.
-				self mergeVariable: varDeclaration into: param
-			]
-		].
+	(self 
+		findLocalVariablesWithSameNameAsParameter: param name
+		in: param parentBehaviouralEntity
+	) do: [ :localVariable | self mergeVariable: localVariable into: param ]
 
 ]
 
@@ -173,6 +176,10 @@ FamixEsopeResolver >> mergeVariable: variableToRemove into: variableToKeep [
 	 - isStub :							ignore
 	 - sourceAnchor :					merge, keep value of variableToKeep (clear it in variableToRemove)
 	 - declaredType :					ignore, keep value of variableToKeep (clear it in variableToRemove)"
+
+	variableToKeep declaredType ifNil: [ 
+		variableToKeep declaredType: variableToRemove declaredType
+	].
 
 	variableToRemove parentBehaviouralEntity: nil.
 	variableToRemove sourceAnchor: nil.
@@ -345,7 +352,7 @@ FamixEsopeResolver >> resolveAsImplicitAttribute: variableName in: anAccessor [
 FamixEsopeResolver >> resolveAsLocalVariable: variableName in: anAccessor [
 
 	^anAccessor allLocalVariables
-		select: [ :entity | entity name asLowercase = variableName asLowercase ]
+		select: [ :entity | entity name sameAs: variableName ]
 ]
 
 { #category : 'symbols resolution' }

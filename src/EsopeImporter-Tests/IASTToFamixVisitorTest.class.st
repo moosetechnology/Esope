@@ -964,7 +964,7 @@ IASTToFamixVisitorTest >> testFamixFortran77CommentInSubRoutine [
 { #category : 'tests-fortran' }
 IASTToFamixVisitorTest >> testFamixFortran77Common [
 
-	| common entity var |
+	| common entity cmnBlock |
 	common := IASTCommon new
 		entityName: 'COM' ;
 		variables: { (IASTVariable new entityName: 'x') . (IASTVariable new entityName: 'y') }.
@@ -976,16 +976,18 @@ IASTToFamixVisitorTest >> testFamixFortran77Common [
 
 	entity := visitor model detect: [:each | each class = FamixF77ProgramFile ].
 
-	self assert: entity programUnits first localVariables size equals: 1.
+	self assert: entity programUnits first commonBlocks size equals: 1.
 
-	var := entity programUnits first localVariables first.
-	self assert: var class equals: FamixF77CommonGroup.
-	self assert: var name equals: 'COM'.
-	self assert: var parentBehaviouralEntity equals: entity programUnits first.
+	cmnBlock := entity programUnits first commonBlocks first.
+	self assert: cmnBlock class equals: FamixF77CommonBlock.
+	self assert: cmnBlock name equals: 'COM'.
+	self assert: cmnBlock parentBehaviouralEntity equals: entity programUnits first.
 
-	self assert: var localVariables size equals: 2.
-	self assert: var localVariables first name equals: 'x'.
-	self assert: var localVariables second name equals: 'y'.
+	self assert: cmnBlock variables size equals: 2.
+	self assert: cmnBlock variables first name equals: 'x'.
+	self assert: cmnBlock variables second name equals: 'y'.
+
+	self assert: (cmnBlock attributeAt: #iastVariables ifAbsent: [ #() ]) isNotEmpty
 ]
 
 { #category : 'tests-esope' }
