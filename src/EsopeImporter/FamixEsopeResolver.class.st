@@ -38,6 +38,7 @@ FamixEsopeResolver class >> esopeIntrinsicRoutines [
 		inistr
 		supstr
 		ajpnt
+		suppnt
 		mypnt
 		dupstr
 		copstr
