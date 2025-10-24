@@ -608,8 +608,13 @@ IASTToFamixVisitorTest >> testFamixEsopeSegment [
 	
 	self assert: entity programUnits size equals: 1.
 
-	self assert: (visitor model allWithType: FamixEsopeSegment) size equals: 1.
+	self assert: (visitor model allWithType: FamixEsopeSegment) size equals: 2.
 	entity := (visitor model allWithType: FamixEsopeSegment) first.
+	self assert: entity name equals: 'PSTR'.
+	self assert: entity isType.
+	self assert: entity isStub.
+
+	entity := (visitor model allWithType: FamixEsopeSegment) second.
 	self assert: entity name equals: 'myseg'.
 	self assert: entity isType.
 	self assert: entity attributes size equals: 3.
@@ -661,11 +666,15 @@ IASTToFamixVisitorTest >> testFamixEsopeSegmentWithAcces [
 	
 	self assert: entity programUnits size equals: 1.
 
-	self assert: (visitor model allWithType: FamixEsopeSegment) size equals: 1.
+	self assert: (visitor model allWithType: FamixEsopeSegment) size equals: 2.
 	entity := (visitor model allWithType: FamixEsopeSegment) first.
-	self assert: entity name equals: 'foo'.
+	self assert: entity name equals: 'PSTR'.
 	self assert: entity isType.
-	
+	self assert: entity isStub.
+
+	entity := (visitor model allWithType: FamixEsopeSegment) second.
+	self assert: entity name equals: 'foo'.
+	self assert: entity isType.	
 	self assert: entity attributes size equals: 1.
 	attribute := entity attributes anyOne.
 	self assert: attribute class equals: FamixFortranAttribute.
@@ -846,7 +855,7 @@ IASTToFamixVisitorTest >> testFamixFortran77 [
 	}.
 	programFile accept: visitor.
 
-	self assert: visitor model size equals: 7.
+	self assert: visitor model size equals: 8.
 	
 	entity := visitor model allWithType: FamixF77ProgramFile.
 	self assert: entity size equals: 1.
@@ -1207,7 +1216,7 @@ IASTToFamixVisitorTest >> testFamixFortran77ProgramFile [
 	| entity |
 	programFile accept: visitor.
 
-	self assert: visitor model size equals: 6.
+	self assert: visitor model size equals: 7.
 
 	entity := visitor model allWithType: FamixF77ProgramFile.
 	self assert: entity size equals: 1.
