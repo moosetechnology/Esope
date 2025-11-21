@@ -5,7 +5,7 @@ FamixEsopeCommand >> famixImportSanityCheck [
 
 	super famixImportSanityCheck.
 
-	self sanityCheck: (variable declaredType isEsopeSegment) description: 'EsopeCommand on non-pointer variable'.
+	self sanityCheck: (self variable declaredType isEsopeSegment) description: 'EsopeCommand on non-pointer variable'.
 ]
 
 { #category : '*EsopeImporter' }
